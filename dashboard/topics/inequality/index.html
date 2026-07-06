@@ -8,9 +8,11 @@
   <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/katex@0.16.11/dist/katex.min.css" crossorigin="anonymous">
   <script defer src="https://cdn.jsdelivr.net/npm/katex@0.16.11/dist/katex.min.js" crossorigin="anonymous"></script>
   <link rel="stylesheet" href="../../shared/topic-shell.css">
+  <link rel="stylesheet" href="sign-flip-doors.css">
   <script defer src="../../shared/deck-touch-nav.js"></script>
   <script defer src="inequality-tools.js?v=20260706-ipad"></script>
   <script defer src="inequality-game.js"></script>
+  <script defer src="sign-flip-doors.js"></script>
   <script defer src="inequality-quiz.js?v=20260706q3"></script>
   <style>
     :root {
@@ -373,7 +375,7 @@
   <nav class="tabs">
     <button class="tab active" data-tab="slides">Concept &amp; Formula</button>
     <button class="tab" data-tab="tools">Interactive Tool</button>
-    <button class="tab" data-tab="game">Match-up Game</button>
+    <button class="tab" data-tab="game">Games</button>
     <button class="tab" data-tab="summary">Summary</button>
     <button class="tab" data-tab="quiz">Quiz</button>
     <button class="tab" data-tab="wayground">WayGround</button>
@@ -404,25 +406,169 @@
     </div>
   </section>
 
-  <!-- TAB 3: match-up memory game -->
+  <!-- TAB 3: games -->
   <section id="panel-game" class="panel hidden">
-    <div class="mg-hud">
-      <div class="mg-stat">Round <b id="mg-round">1</b><span style="color:var(--dim)">/3</span>
-        <span id="mg-pips"></span></div>
-      <div class="mg-stat">Matched <b id="mg-matched">0</b><span style="color:var(--dim)">/4</span></div>
-      <div class="mg-stat">Moves <b id="mg-moves">0</b></div>
-      <button id="mg-restart" class="mg-btn mg-restart" title="restart the game">&#8635; Restart</button>
+    <div class="subnav">
+      <button type="button" class="chip active" data-ineq-game="matchup">Match-up Game</button>
+      <button type="button" class="chip" data-ineq-game="doors">Sign Flip Doors</button>
     </div>
 
-    <div class="mg-bar">
-      <p id="mg-msg" class="mg-msg"></p>
-      <button id="mg-action" class="mg-btn primary"></button>
+    <div id="game-matchup">
+      <div class="mg-hud">
+        <div class="mg-stat">Round <b id="mg-round">1</b><span style="color:var(--dim)">/3</span>
+          <span id="mg-pips"></span></div>
+        <div class="mg-stat">Matched <b id="mg-matched">0</b><span style="color:var(--dim)">/4</span></div>
+        <div class="mg-stat">Moves <b id="mg-moves">0</b></div>
+        <button id="mg-restart" class="mg-btn mg-restart" title="restart the game">&#8635; Restart</button>
+      </div>
+
+      <div class="mg-bar">
+        <p id="mg-msg" class="mg-msg"></p>
+        <button id="mg-action" class="mg-btn primary"></button>
+      </div>
+
+      <div id="mg-stage" class="mg-stage"></div>
+
+      <p class="mg-done">Match each inequality (<span style="font-family:monospace">x&ge;0, x&gt;0, x&le;0, x&lt;0</span>)
+        to its number-line picture &mdash; filled dot = &ldquo;or equal&rdquo;, hollow dot = strict.</p>
     </div>
 
-    <div id="mg-stage" class="mg-stage"></div>
-
-    <p class="mg-done">Match each inequality (<span style="font-family:monospace">x&ge;0, x&gt;0, x&le;0, x&lt;0</span>)
-      to its number-line picture &mdash; filled dot = &ldquo;or equal&rdquo;, hollow dot = strict.</p>
+    <div id="game-doors" class="door-game hidden">
+      <div class="dungeon-toolbar">
+        <button id="df-start" class="mg-btn primary">Begin Quest</button>
+        <button id="df-continue" class="mg-btn hidden">Continue from Camp</button>
+        <button id="df-victory-again" class="mg-btn primary hidden">Play Again &#127922;</button>
+        <button id="df-restart" class="mg-btn hidden">&#8635; Retry</button>
+      </div>
+      <div id="df-scene" class="dungeon-scene stage-forest">
+        <div id="df-stage-pill" class="dungeon-stage-pill">Stage 1 &mdash; <b>The Dark Forest</b></div>
+        <div class="dungeon-powers">
+          <span id="df-shield-tag" class="power-tag hidden">&#128737; Shield</span>
+          <span id="df-flash-tag" class="power-tag hidden">&#128294; Flashlight</span>
+        </div>
+        <div id="df-victory-confetti" class="victory-confetti hidden" aria-hidden="true">
+          <i></i><i></i><i></i><i></i><i></i><i></i><i></i><i></i><i></i><i></i><i></i><i></i>
+        </div>
+        <div class="dungeon-map" aria-hidden="true">
+          <div class="dungeon-map-label">Map</div>
+          <svg id="df-map-svg" class="dungeon-map-svg" viewBox="0 0 100 88" xmlns="http://www.w3.org/2000/svg">
+            <path id="df-map-path" d="M12,72 Q40,60 55,35 T88,12" fill="none" stroke="#c0392b" stroke-width="2.5" stroke-dasharray="4 3"/>
+            <circle id="df-map-you" cx="12" cy="72" r="5" fill="#2c3e50"/>
+            <text x="78" y="14" font-size="8" font-weight="bold" fill="#5c3d1e">HOME</text>
+            <text x="82" y="22" font-size="12">&#127968;</text>
+          </svg>
+        </div>
+        <div class="dungeon-problem">
+          <div id="df-prompt" class="dungeon-prompt"></div>
+          <div id="df-sub" class="dungeon-sub">(Select the correct <i>x</i>)</div>
+        </div>
+        <div class="dungeon-hall">
+          <div id="df-char-wrap" class="dungeon-hero">
+            <div class="hero-sprite">
+              <div class="hero-glow"></div>
+              <div class="hero-head"></div>
+              <div class="hero-body"></div>
+            </div>
+          </div>
+          <div class="dungeon-doors">
+            <button type="button" id="df-door-a" class="dungeon-door" data-door="a" disabled>
+              <div id="df-ans-a" class="door-ineq"></div>
+              <div class="door-frame">
+                <div class="door-inner">
+                  <div class="door-danger"></div>
+                  <div class="door-chains"></div>
+                  <span class="door-monster" aria-hidden="true">&#128127;</span>
+                  <div class="door-home-view"></div>
+                </div>
+              </div>
+            </button>
+            <button type="button" id="df-door-b" class="dungeon-door" data-door="b" disabled>
+              <div id="df-ans-b" class="door-ineq"></div>
+              <div class="door-frame">
+                <div class="door-inner">
+                  <div class="door-danger"></div>
+                  <div class="door-chains"></div>
+                  <span class="door-monster" aria-hidden="true">&#128127;</span>
+                  <div class="door-home-view"></div>
+                </div>
+              </div>
+            </button>
+            <button type="button" id="df-door-c" class="dungeon-door" data-door="c" disabled>
+              <div id="df-ans-c" class="door-ineq"></div>
+              <div class="door-frame">
+                <div class="door-inner">
+                  <div class="door-danger"></div>
+                  <div class="door-chains"></div>
+                  <span class="door-monster" aria-hidden="true">&#128127;</span>
+                  <div class="door-home-view"></div>
+                </div>
+              </div>
+            </button>
+            <button type="button" id="df-door-d" class="dungeon-door" data-door="d" disabled>
+              <div id="df-ans-d" class="door-ineq"></div>
+              <div class="door-frame">
+                <div class="door-inner">
+                  <div class="door-danger"></div>
+                  <div class="door-chains"></div>
+                  <span class="door-monster" aria-hidden="true">&#128127;</span>
+                  <div class="door-home-view"></div>
+                </div>
+              </div>
+            </button>
+          </div>
+        </div>
+        <div class="dungeon-hud">
+          <div class="dungeon-pill">Streak &mdash; Correct answers: <b id="df-progress">0</b> / 15</div>
+          <div class="dungeon-pill dungeon-lives-pill" id="df-lives-pill">
+            <span class="lives-label">Life</span>
+            <span id="df-hearts" class="dungeon-hearts" aria-label="Lives remaining">
+              <span class="heart full" aria-hidden="true">&#10084;</span>
+              <span class="heart full" aria-hidden="true">&#10084;</span>
+              <span class="heart full" aria-hidden="true">&#10084;</span>
+            </span>
+            <span id="df-lives" class="visually-hidden" aria-hidden="true">3</span>
+          </div>
+          <button type="button" id="df-hud-play-again" class="mg-btn primary dungeon-hud-play hidden">Play Again &#127922;</button>
+        </div>
+        <div id="df-victory-banner" class="dungeon-victory-banner hidden">
+          <p class="victory-banner-lead">You mastered sign flips across all three stages!</p>
+          <ul class="victory-skills">
+            <li>Flipping the sign when &times; or &divide; by a negative</li>
+            <li>Fraction gates &mdash; division flips the inequality too</li>
+            <li>Multi-step problems with hidden negatives at the end</li>
+          </ul>
+          <p class="victory-encourage">Keep it up &mdash; you&rsquo;ve got this! &#128170;</p>
+        </div>
+        <div id="df-checkpoint" class="dungeon-checkpoint hidden">
+          <div class="checkpoint-card">
+            <h3>&#127957; Safe Camp</h3>
+            <p id="df-checkpoint-msg">Checkpoint reached! Progress saved.</p>
+            <p style="font-size:12px;color:#7aa86a;margin:-8px 0 14px">Choose one power-up for the road ahead:</p>
+            <div class="checkpoint-powers">
+              <button type="button" class="power-btn" data-power="shield">
+                <strong>&#128737; Shield</strong>
+                <span>Blocks one wrong door (no life lost)</span>
+              </button>
+              <button type="button" class="power-btn" data-power="flashlight">
+                <strong>&#128294; Flashlight</strong>
+                <span>Removes one obviously wrong door</span>
+              </button>
+            </div>
+          </div>
+        </div>
+        <div id="df-gameover" class="dungeon-gameover hidden">
+          <div class="gameover-card">
+            <div class="gameover-icon">&#128128;</div>
+            <h3>No Lives Left!</h3>
+            <p class="gameover-lead">The chained doors were too dangerous. Remember to flip the sign when &times; or &divide; by a negative!</p>
+            <p class="gameover-stat">Doors cleared: <b id="df-gameover-progress">0</b> / 15</p>
+            <button type="button" id="df-gameover-retry" class="mg-btn primary">Try Again &#8635;</button>
+          </div>
+        </div>
+      </div>
+      <p id="df-msg" class="door-msg">Three stages of 5 doors. Rest at safe camps after doors 5 &amp; 10!</p>
+      <p class="door-hint">Stage 1: basic negatives &bull; Stage 2: fraction gates &bull; Stage 3: multi-step traps. Keys: <b>A</b> <b>B</b> <b>C</b> <b>D</b>.</p>
+    </div>
   </section>
 
   <!-- TAB 4: summary sheet -->

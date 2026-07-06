@@ -63,7 +63,21 @@
     stage: null, els: {}, cards: [], slots: [],
     cols: 4, cardW: 0, cardH: 0, gap: 14,
     phase: "idle", round: 1, matched: 0, moves: 0, flipped: [], lock: true, built: false,
+    activeMode: "matchup",
   };
+
+  function setGameMode(modeName) {
+    G.activeMode = modeName;
+    document.querySelectorAll("[data-ineq-game]").forEach((b) => {
+      b.classList.toggle("active", b.dataset.ineqGame === modeName);
+    });
+    const matchup = document.getElementById("game-matchup");
+    const doors = document.getElementById("game-doors");
+    if (matchup) matchup.classList.toggle("hidden", modeName !== "matchup");
+    if (doors) doors.classList.toggle("hidden", modeName !== "doors");
+    if (modeName === "matchup" && G.built) layout();
+    if (modeName === "doors" && window.SignFlipDoors) window.SignFlipDoors.mount();
+  }
 
   function buildCards() {
     G.stage.querySelectorAll(".mcard").forEach((n) => n.remove());
@@ -258,6 +272,9 @@
     };
     G.els.action.addEventListener("click", onAction);
     G.els.restart.addEventListener("click", startGame);
+    document.querySelectorAll("[data-ineq-game]").forEach((b) => {
+      b.addEventListener("click", () => setGameMode(b.dataset.ineqGame));
+    });
     window.addEventListener("resize", () => { if (G.built) layout(); });
 
     buildCards();
@@ -265,7 +282,16 @@
     setUI("Match each inequality to its number-line picture. Three rounds &mdash; the cards shuffle more each time.", "Start \u25B6");
     G.phase = "idle";
 
-    window.IneqGame = { onShow: layout };
+    window.IneqGame = {
+      onShow() {
+        if (G.activeMode === "matchup") layout();
+        else if (window.SignFlipDoors) window.SignFlipDoors.mount();
+      },
+      setMode: setGameMode,
+    };
+
+    const qGame = new URLSearchParams(location.search).get("game");
+    if (qGame === "doors" || qGame === "matchup") setGameMode(qGame);
   }
 
   if (window.katex) window.addEventListener("DOMContentLoaded", init);

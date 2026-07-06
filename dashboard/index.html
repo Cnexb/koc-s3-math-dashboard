@@ -299,11 +299,11 @@
           id: "inequality",
           title: "Inequality",
           subtitle: "KOC S3 Math · Summer 2026 · L03 Inequality",
-          desc: "Signs, number lines, and solving — grapher tool, matching game, three-style summary, and quiz.",
+          desc: "Signs, number lines, and solving — sign-flip lab, match-up & Sign Flip Doors games, summary, and quiz.",
           path: "topics/inequality/index.html",
           cover: "cover-in",
           icon: "\u{2264}",
-          tags: ["L03", "Number line", "Game", "Summary"],
+          tags: ["L03", "Number line", "Games", "Summary"],
         },
         {
           id: "probability",
@@ -358,13 +358,18 @@
         return null;
       }
 
+      function topicSrc(t) {
+        return t.path + (location.search || "");
+      }
+
       function openTopic(id) {
         var t = findTopic(id);
         if (!t) return;
+        var src = topicSrc(t);
         viewerTitle.textContent = t.title;
         if (viewerMeta) viewerMeta.textContent = t.subtitle || "";
-        openLink.href = t.path;
-        frame.src = t.path;
+        openLink.href = src;
+        frame.src = src;
         galleryView.classList.add("hidden");
         viewerView.classList.add("active");
         viewerView.setAttribute("aria-hidden", "false");

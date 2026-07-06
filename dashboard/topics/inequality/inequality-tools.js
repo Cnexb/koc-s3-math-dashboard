@@ -511,9 +511,15 @@
 
   function applyDeepLink() {
     const q = new URLSearchParams(location.search);
-    const tab = q.get("tab"), deck = q.get("deck"), style = q.get("style");
+    const tab = q.get("tab"), deck = q.get("deck"), style = q.get("style"), game = q.get("game");
     if (tab) { const b = document.querySelector(`[data-tab="${tab}"]`); if (b) b.click(); }
     if (deck) { const b = document.querySelector(`[data-deck*="/${deck}/"]`); if (b) b.click(); }
+    if (game === "doors" || game === "matchup") {
+      if (!tab) {
+        const gameTab = document.querySelector('[data-tab="game"]');
+        if (gameTab) gameTab.click();
+      }
+    }
     if (style && /^style-[1-3]$/.test(style)) {
       if (!tab) {
         const summaryTab = document.querySelector('[data-tab="summary"]');
