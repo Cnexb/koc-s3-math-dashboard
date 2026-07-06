@@ -8,7 +8,8 @@
   <script defer src="https://cdn.jsdelivr.net/npm/katex@0.16.11/dist/katex.min.js" crossorigin="anonymous"></script>
   <link href="https://fonts.googleapis.com/css2?family=Hanken+Grotesk:wght@400;600;700&family=JetBrains+Mono:wght@400;700&display=swap" rel="stylesheet">
   <link rel="stylesheet" href="../../shared/topic-shell.css">
-  <script defer src="factorization-tools.js?v=20260706-ipad4"></script>
+  <script defer src="../../shared/deck-touch-nav.js"></script>
+  <script defer src="factorization-tools.js?v=20260706-ipad5"></script>
   <script defer src="factorization-game.js"></script>
   <script defer src="factorization-quiz.js?v=20260706"></script>
   <style>
@@ -479,25 +480,6 @@
     html.tablet-touch .pair-group { padding: 10px 12px; gap: 10px; }
     html.tablet-touch input[type=range]::-webkit-slider-thumb { width: 26px; height: 26px; }
     html.tablet-touch input[type=range]::-moz-range-thumb { width: 26px; height: 26px; }
-    /* Concept slides: iPad swipe + arrow nav (desktop layout unchanged) */
-    .deck-slideshow { max-width: 1100px; margin: 0 auto; }
-    .deck-nav-btn, .hint-deck-tablet { display: none; }
-    html.tablet-touch .deck-slideshow {
-      display: flex; align-items: center; gap: 10px;
-    }
-    html.tablet-touch .deck-nav-btn {
-      display: flex; flex: none; align-items: center; justify-content: center;
-      width: 44px; height: 44px; border-radius: 50%;
-      border: 1px solid var(--line); background: var(--panel2); color: var(--ink);
-      font: inherit; font-size: 20px; font-weight: 700; cursor: pointer;
-      transition: border-color .15s, color .15s;
-    }
-    html.tablet-touch .deck-nav-btn:active { border-color: var(--a); color: var(--a); }
-    html.tablet-touch #panel-slides .deck-wrap {
-      flex: 1; min-width: 0; touch-action: pan-y pinch-zoom;
-    }
-    html.tablet-touch .hint-deck-desktop { display: none; }
-    html.tablet-touch .hint-deck-tablet { display: block; }
   </style>
 </head>
 <body>

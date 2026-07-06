@@ -182,6 +182,7 @@
       btns.forEach((x) => x.classList.toggle("active", x === b));
       frame.src = b.dataset.deck;
     }));
+    if (window.KOCDeckTouch) window.KOCDeckTouch.initDeckTouchNav(frame);
   }
 
   function applyDeepLink() {
@@ -224,7 +225,13 @@
     render();
   }
 
-  function start() { initTabs(); initDecks(); initInterestTool(); initGames(); initSummarySlideshow(); applyDeepLink(); }
+  function start() {
+    if (window.KOCDeckTouch) {
+      window.KOCDeckTouch.initTabletClass();
+      window.KOCDeckTouch.initTabletMode();
+    }
+    initTabs(); initDecks(); initInterestTool(); initGames(); initSummarySlideshow(); applyDeepLink();
+  }
   if (window.katex) { window.addEventListener("DOMContentLoaded", start); }
   else { window.addEventListener("DOMContentLoaded", () => {
     (function wait() { if (window.katex) start(); else setTimeout(wait, 30); })();

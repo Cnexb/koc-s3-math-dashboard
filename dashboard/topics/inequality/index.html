@@ -8,7 +8,8 @@
   <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/katex@0.16.11/dist/katex.min.css" crossorigin="anonymous">
   <script defer src="https://cdn.jsdelivr.net/npm/katex@0.16.11/dist/katex.min.js" crossorigin="anonymous"></script>
   <link rel="stylesheet" href="../../shared/topic-shell.css">
-  <script defer src="inequality-tools.js?v=20260706s"></script>
+  <script defer src="../../shared/deck-touch-nav.js"></script>
+  <script defer src="inequality-tools.js?v=20260706-ipad"></script>
   <script defer src="inequality-game.js"></script>
   <script defer src="inequality-quiz.js?v=20260706q3"></script>
   <style>
@@ -384,10 +385,15 @@
       <button class="chip active" data-deck="../../slides/inequality/signs/index.html">Signs &amp; number line</button>
       <button class="chip" data-deck="../../slides/inequality/negative-coefficient/index.html">Multiply / divide by a negative</button>
     </div>
-    <div class="deck-wrap">
-      <iframe id="deck-frame" src="../../slides/inequality/signs/index.html" title="Inequality concept slides"></iframe>
+    <div class="deck-slideshow">
+      <button type="button" class="deck-nav-btn deck-prev" id="deck-prev" aria-label="Previous slide">&larr;</button>
+      <div class="deck-wrap">
+        <iframe id="deck-frame" src="../../slides/inequality/signs/index.html" title="Inequality concept slides"></iframe>
+      </div>
+      <button type="button" class="deck-nav-btn deck-next" id="deck-next" aria-label="Next slide">&rarr;</button>
     </div>
-    <p class="hint">Use → / Space to advance, ← to go back. Each slide builds the idea step by step.</p>
+    <p class="hint hint-deck-desktop">Use → / Space to advance, ← to go back. Each slide builds the idea step by step.</p>
+    <p class="hint hint-deck-tablet">Swipe left for next slide, right for previous — or use the arrows. Each slide builds the idea step by step.</p>
   </section>
 
   <!-- TAB 2: sign-flip lab -->

@@ -9,11 +9,12 @@
   <link href="https://fonts.googleapis.com/css2?family=Hanken+Grotesk:wght@400;600;700&family=JetBrains+Mono:wght@400;700&display=swap" rel="stylesheet">
   <link href="https://fonts.googleapis.com/css2?family=Press+Start+2P&display=swap" rel="stylesheet">
   <link rel="stylesheet" href="../../shared/topic-shell.css">
+  <script defer src="../../shared/deck-touch-nav.js"></script>
   <script defer src="percentage-game-engine.js"></script>
   <script defer src="percentage-calc.js"></script>
   <script defer src="percentage-game.js"></script>
   <script defer src="percentage-bank-game.js"></script>
-  <script defer src="percentage-tools.js"></script>
+  <script defer src="percentage-tools.js?v=20260706-ipad"></script>
   <script defer src="percentage-quiz.js?v=20260706"></script>
   <style>
     :root {
@@ -510,10 +511,15 @@
       <button class="chip" data-deck="../../slides/percentage/interest/index.html">Simple &amp; compound interest</button>
       <button class="chip" data-deck="../../slides/percentage/tax/index.html">Progressive salaries tax</button>
     </div>
-    <div class="deck-wrap">
-      <iframe id="deck-frame" src="../../slides/percentage/change-factor/index.html" title="Percentages concept slides"></iframe>
+    <div class="deck-slideshow">
+      <button type="button" class="deck-nav-btn deck-prev" id="deck-prev" aria-label="Previous slide">&larr;</button>
+      <div class="deck-wrap">
+        <iframe id="deck-frame" src="../../slides/percentage/change-factor/index.html" title="Percentages concept slides"></iframe>
+      </div>
+      <button type="button" class="deck-nav-btn deck-next" id="deck-next" aria-label="Next slide">&rarr;</button>
     </div>
-    <p class="hint">Use → / Space to advance, ← to go back. Each slide builds the idea step by step.</p>
+    <p class="hint hint-deck-desktop">Use → / Space to advance, ← to go back. Each slide builds the idea step by step.</p>
+    <p class="hint hint-deck-tablet">Swipe left for next slide, right for previous — or use the arrows. Each slide builds the idea step by step.</p>
   </section>
 
   <!-- TAB 2: interactive tool — simple vs compound interest -->

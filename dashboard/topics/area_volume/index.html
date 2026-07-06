@@ -8,7 +8,8 @@
   <script defer src="https://cdn.jsdelivr.net/npm/katex@0.16.11/dist/katex.min.js" crossorigin="anonymous"></script>
   <link href="https://fonts.googleapis.com/css2?family=Hanken+Grotesk:wght@400;600;700&family=JetBrains+Mono:wght@400;700&display=swap" rel="stylesheet">
   <link rel="stylesheet" href="../../shared/topic-shell.css">
-  <script defer src="area-volume-tools.js"></script>
+  <script defer src="../../shared/deck-touch-nav.js"></script>
+  <script defer src="area-volume-tools.js?v=20260706-ipad"></script>
   <script defer src="area-volume-game.js"></script>
   <script defer src="area-volume-worked.js"></script>
   <script defer src="area-volume-quiz.js?v=20260706"></script>
@@ -485,10 +486,15 @@
       <button class="chip active" data-deck="../../slides/area_volume/plane-shapes/index.html">2D Shapes — Area</button>
       <button class="chip" data-deck="../../slides/area_volume/solids/index.html">3D Solids — Volume &amp; Surface Area</button>
     </div>
-    <div class="deck-wrap">
-      <iframe id="deck-frame" src="../../slides/area_volume/plane-shapes/index.html" title="Area &amp; Volume concept slides"></iframe>
+    <div class="deck-slideshow">
+      <button type="button" class="deck-nav-btn deck-prev" id="deck-prev" aria-label="Previous slide">&larr;</button>
+      <div class="deck-wrap">
+        <iframe id="deck-frame" src="../../slides/area_volume/plane-shapes/index.html" title="Area &amp; Volume concept slides"></iframe>
+      </div>
+      <button type="button" class="deck-nav-btn deck-next" id="deck-next" aria-label="Next slide">&rarr;</button>
     </div>
-    <p class="hint">Use → / Space to advance, ← to go back. Each slide builds the formula step by step from the figure.</p>
+    <p class="hint hint-deck-desktop">Use → / Space to advance, ← to go back. Each slide builds the formula step by step from the figure.</p>
+    <p class="hint hint-deck-tablet">Swipe left for next slide, right for previous — or use the arrows. Each slide builds the formula step by step from the figure.</p>
   </section>
 
   <!-- TAB 2: interactive tool — similar shapes & solids -->

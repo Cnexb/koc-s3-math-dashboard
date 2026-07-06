@@ -39,6 +39,53 @@ body {
   font-size: 13px;
 }
 
+/* iPad / tablet: swipe + arrow nav for embedded Reveal decks (desktop unchanged) */
+.deck-slideshow {
+  max-width: 1100px;
+  margin: 0 auto;
+}
+.deck-nav-btn,
+.hint-deck-tablet {
+  display: none;
+}
+html.tablet-touch .deck-slideshow {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+}
+html.tablet-touch .deck-nav-btn {
+  display: flex;
+  flex: none;
+  align-items: center;
+  justify-content: center;
+  width: 44px;
+  height: 44px;
+  border-radius: 50%;
+  border: 1px solid var(--line, #28365c);
+  background: var(--panel2, #1b2945);
+  color: var(--ink, #e5e7eb);
+  font: inherit;
+  font-size: 20px;
+  font-weight: 700;
+  cursor: pointer;
+  transition: border-color .15s, color .15s;
+}
+html.tablet-touch .deck-nav-btn:active {
+  border-color: var(--a, #4fc3f7);
+  color: var(--a, #4fc3f7);
+}
+html.tablet-touch #panel-slides .deck-wrap {
+  flex: 1;
+  min-width: 0;
+  touch-action: pan-y pinch-zoom;
+}
+html.tablet-touch .hint-deck-desktop {
+  display: none;
+}
+html.tablet-touch .hint-deck-tablet {
+  display: block;
+}
+
 /* ── Tools / game: natural block flow (no flex clip) ── */
 #panel-tools .subnav,
 #panel-game > .subnav:first-child,

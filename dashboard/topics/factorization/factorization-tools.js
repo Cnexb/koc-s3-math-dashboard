@@ -19,8 +19,11 @@
   };
   const NS = "http://www.w3.org/2000/svg";
   const TABLET_MAX_W = 1366;
+  const deckTouch = () => window.KOCDeckTouch;
 
   function isTouchTabletDevice() {
+    const D = deckTouch();
+    if (D) return D.isTouchTabletDevice();
     if (navigator.maxTouchPoints < 1) return false;
     const w = window.innerWidth;
     if (w < 768 || w > TABLET_MAX_W) return false;
@@ -33,10 +36,13 @@
   }
 
   function isTabletTouch() {
-    return document.documentElement.classList.contains("tablet-touch");
+    const D = deckTouch();
+    return D ? D.isTabletTouch() : document.documentElement.classList.contains("tablet-touch");
   }
 
   function initTabletMode(onChange) {
+    const D = deckTouch();
+    if (D) { D.initTabletMode(onChange); return; }
     function apply() {
       document.documentElement.classList.toggle("tablet-touch", isTouchTabletDevice());
       if (onChange) onChange();
@@ -1038,79 +1044,7 @@
       btns.forEach((x) => x.classList.toggle("active", x === b));
       frame.src = b.dataset.deck;
     }));
-    initDeckTouchNav(frame);
-  }
-
-  /** iPad/tablet only: swipe on deck area → next/prev slide inside iframe (desktop unchanged). */
-  function initDeckTouchNav(frame) {
-    const wrap = document.querySelector("#panel-slides .deck-wrap");
-    const prevBtn = document.getElementById("deck-prev");
-    const nextBtn = document.getElementById("deck-next");
-    if (!wrap || !frame) return;
-
-    const SWIPE_MIN = 48;
-
-    function deckStep(dir) {
-      if (!isTabletTouch()) return;
-      try {
-        const r = frame.contentWindow && frame.contentWindow.Reveal;
-        if (r && r.isReady && r.isReady()) {
-          if (dir === "next") r.next();
-          else r.prev();
-          return;
-        }
-      } catch (e) { /* cross-origin or not loaded */ }
-      try {
-        frame.contentWindow.postMessage(
-          JSON.stringify({ method: dir === "next" ? "next" : "prev", args: [] }),
-          "*"
-        );
-      } catch (e2) {}
-    }
-
-    function focusFrame() {
-      if (!isTabletTouch()) return;
-      try { frame.focus(); } catch (e) {}
-    }
-
-    if (isTouchTabletDevice()) frame.setAttribute("tabindex", "-1");
-
-    let startX = 0;
-    let startY = 0;
-    let tracking = false;
-
-    wrap.addEventListener("touchstart", (e) => {
-      if (!isTabletTouch() || e.touches.length !== 1) return;
-      startX = e.touches[0].clientX;
-      startY = e.touches[0].clientY;
-      tracking = true;
-      focusFrame();
-    }, { passive: true });
-
-    wrap.addEventListener("touchend", (e) => {
-      if (!tracking || !isTabletTouch()) {
-        tracking = false;
-        return;
-      }
-      tracking = false;
-      const t = e.changedTouches[0];
-      if (!t) return;
-      const dx = t.clientX - startX;
-      const dy = t.clientY - startY;
-      if (Math.abs(dx) < SWIPE_MIN) return;
-      if (Math.abs(dy) > Math.abs(dx) * 0.6) return;
-      e.preventDefault();
-      if (dx < 0) deckStep("next");
-      else deckStep("prev");
-    }, { passive: false });
-
-    wrap.addEventListener("pointerdown", (e) => {
-      if (!isTabletTouch() || e.pointerType !== "touch") return;
-      focusFrame();
-    });
-
-    if (prevBtn) prevBtn.addEventListener("click", (e) => { e.preventDefault(); focusFrame(); deckStep("prev"); });
-    if (nextBtn) nextBtn.addEventListener("click", (e) => { e.preventDefault(); focusFrame(); deckStep("next"); });
+    if (deckTouch()) deckTouch().initDeckTouchNav(frame);
   }
 
   function initSummarySlideshow() {
@@ -1175,7 +1109,7 @@
   }
 
   function start() {
-    document.documentElement.classList.toggle("tablet-touch", isTouchTabletDevice());
+    if (deckTouch()) deckTouch().initTabletClass();
     renderTexAttrs();
     initTabs();
     initDecks();

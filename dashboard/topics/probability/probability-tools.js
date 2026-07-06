@@ -614,8 +614,8 @@
       btns.forEach((x) => x.classList.toggle("active", x === b));
       frame.src = b.dataset.deck;
     }));
+    if (window.KOCDeckTouch) window.KOCDeckTouch.initDeckTouchNav(frame);
   }
-  function initToolNav() {
     const btns = document.querySelectorAll("[data-tool]");
     const tools = { card: document.getElementById("tool-card"), ball: document.getElementById("tool-ball") };
     btns.forEach((b) => b.addEventListener("click", () => {
@@ -655,7 +655,13 @@
     window.addEventListener("keydown", (e) => { if (e.key === "Escape") close(); });
   }
 
-  function start() { initTabs(); initDecks(); initToolNav(); initCardTool(); initBallTool(); initCardModal(); applyDeepLink(); }
+  function start() {
+    if (window.KOCDeckTouch) {
+      window.KOCDeckTouch.initTabletClass();
+      window.KOCDeckTouch.initTabletMode();
+    }
+    initTabs(); initDecks(); initToolNav(); initCardTool(); initBallTool(); initCardModal(); applyDeepLink();
+  }
   if (window.katex) { window.addEventListener("DOMContentLoaded", start); }
   else { window.addEventListener("DOMContentLoaded", () => {
     (function wait() { if (window.katex) start(); else setTimeout(wait, 30); })();

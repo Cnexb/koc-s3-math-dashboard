@@ -506,6 +506,7 @@
       btns.forEach((x) => x.classList.toggle("active", x === b));
       frame.src = b.dataset.deck;
     }));
+    if (window.KOCDeckTouch) window.KOCDeckTouch.initDeckTouchNav(frame);
   }
 
   function applyDeepLink() {
@@ -543,7 +544,13 @@
     setStyle(styleId);
   }
 
-  function start() { initTabs(); initDecks(); initSignFlipTool(); initSummaryStyles(); applyDeepLink(); }
+  function start() {
+    if (window.KOCDeckTouch) {
+      window.KOCDeckTouch.initTabletClass();
+      window.KOCDeckTouch.initTabletMode();
+    }
+    initTabs(); initDecks(); initSignFlipTool(); initSummaryStyles(); applyDeepLink();
+  }
   if (window.katex) window.addEventListener("DOMContentLoaded", start);
   else window.addEventListener("DOMContentLoaded", () => {
     (function wait() { if (window.katex) start(); else setTimeout(wait, 30); })();
