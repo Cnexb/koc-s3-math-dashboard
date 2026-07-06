@@ -361,6 +361,8 @@
       font-size: 13px; font-weight: 600; color: var(--dim);
     }
     .summary-meta b { color: var(--ink); font-family: "JetBrains Mono", monospace; }
+    .summary-set { position: absolute; inset: 0; }
+    .summary-set.hidden { display: none; }
     /* ── Quiz ── */
     .quiz-wrap { max-width: 720px; margin: 0 auto; }
     .quiz-progress-wrap { margin-bottom: 18px; }
@@ -705,29 +707,55 @@
 
   <!-- TAB 4: summary sheets -->
   <section id="panel-summary" class="panel hidden">
+    <div class="subnav" id="summary-style-nav">
+      <button type="button" class="chip active" data-summary-style="style-1">Style 1</button>
+      <button type="button" class="chip" data-summary-style="style-2">Style 2</button>
+      <button type="button" class="chip" data-summary-style="style-3">Style 3</button>
+    </div>
     <div class="summary-slideshow">
       <button type="button" class="summary-arrow" id="summary-prev" aria-label="Previous page">&larr;</button>
       <div class="summary-stage" id="summary-stage">
-        <figure class="summary-slide active">
-          <img src="summary/summary-1.png" alt="Factorization summary — page 1" loading="lazy"
-               onerror="this.hidden=true;this.parentElement.querySelector('.summary-placeholder').hidden=false">
-          <div class="summary-placeholder" hidden>Page 1 — drop image at <code>summary/summary-1.png</code></div>
-        </figure>
-        <figure class="summary-slide">
-          <img src="summary/summary-2.png" alt="Factorization summary — page 2" loading="lazy"
-               onerror="this.hidden=true;this.parentElement.querySelector('.summary-placeholder').hidden=false">
-          <div class="summary-placeholder" hidden>Page 2 — drop image at <code>summary/summary-2.png</code></div>
-        </figure>
-        <figure class="summary-slide">
-          <img src="summary/summary-3.png" alt="Factorization summary — page 3" loading="lazy"
-               onerror="this.hidden=true;this.parentElement.querySelector('.summary-placeholder').hidden=false">
-          <div class="summary-placeholder" hidden>Page 3 — drop image at <code>summary/summary-3.png</code></div>
-        </figure>
+        <div class="summary-set" data-summary-set="style-1">
+          <figure class="summary-slide active">
+            <img src="summary/style-1/summary-1.png" alt="Factorization summary — Style 1, page 1" loading="lazy"
+                 onerror="this.hidden=true;this.parentElement.querySelector('.summary-placeholder').hidden=false">
+            <div class="summary-placeholder" hidden>Page 1 — drop image at <code>summary/style-1/summary-1.png</code></div>
+          </figure>
+          <figure class="summary-slide">
+            <img src="summary/style-1/summary-2.png" alt="Factorization summary — Style 1, page 2" loading="lazy"
+                 onerror="this.hidden=true;this.parentElement.querySelector('.summary-placeholder').hidden=false">
+            <div class="summary-placeholder" hidden>Page 2 — drop image at <code>summary/style-1/summary-2.png</code></div>
+          </figure>
+        </div>
+        <div class="summary-set hidden" data-summary-set="style-2">
+          <figure class="summary-slide active">
+            <img src="summary/style-2/summary-1.png" alt="Factorization summary — Style 2, page 1" loading="lazy"
+                 onerror="this.hidden=true;this.parentElement.querySelector('.summary-placeholder').hidden=false">
+            <div class="summary-placeholder" hidden>Page 1 — drop image at <code>summary/style-2/summary-1.png</code></div>
+          </figure>
+          <figure class="summary-slide">
+            <img src="summary/style-2/summary-2.png" alt="Factorization summary — Style 2, page 2" loading="lazy"
+                 onerror="this.hidden=true;this.parentElement.querySelector('.summary-placeholder').hidden=false">
+            <div class="summary-placeholder" hidden>Page 2 — drop image at <code>summary/style-2/summary-2.png</code></div>
+          </figure>
+        </div>
+        <div class="summary-set hidden" data-summary-set="style-3">
+          <figure class="summary-slide active">
+            <img src="summary/style-3/summary-1.png" alt="Factorization summary — Style 3, page 1" loading="lazy"
+                 onerror="this.hidden=true;this.parentElement.querySelector('.summary-placeholder').hidden=false">
+            <div class="summary-placeholder" hidden>Page 1 — drop image at <code>summary/style-3/summary-1.png</code></div>
+          </figure>
+          <figure class="summary-slide">
+            <img src="summary/style-3/summary-2.png" alt="Factorization summary — Style 3, page 2" loading="lazy"
+                 onerror="this.hidden=true;this.parentElement.querySelector('.summary-placeholder').hidden=false">
+            <div class="summary-placeholder" hidden>Page 2 — drop image at <code>summary/style-3/summary-2.png</code></div>
+          </figure>
+        </div>
       </div>
       <button type="button" class="summary-arrow" id="summary-next" aria-label="Next page">&rarr;</button>
     </div>
-    <p class="summary-meta">Page <b id="summary-page-num">1</b> of <b id="summary-page-total">3</b></p>
-    <p class="hint">L01–02 More about Factorization — lesson summary. Use &larr; &rarr; or the arrows to switch pages.</p>
+    <p class="summary-meta">Page <b id="summary-page-num">1</b> of <b id="summary-page-total">2</b></p>
+    <p class="hint">L01–02 More about Factorization — pick a style, then use &larr; &rarr; or the arrows to switch pages.</p>
   </section>
 
   <!-- TAB 5: quiz -->
