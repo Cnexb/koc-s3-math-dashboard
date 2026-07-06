@@ -18,21 +18,44 @@
     cellB: "#3a2f06",  // dark text on amber
   };
   const NS = "http://www.w3.org/2000/svg";
-  const TABLET_MQ = "(hover: none) and (pointer: coarse) and (min-width: 768px) and (max-width: 1180px)";
+  const TABLET_MAX_W = 1366;
+
+  function isTouchTabletDevice() {
+    if (navigator.maxTouchPoints < 1) return false;
+    const w = window.innerWidth;
+    if (w < 768 || w > TABLET_MAX_W) return false;
+    const ua = navigator.userAgent || "";
+    if (/iPad/i.test(ua)) return true;
+    if (navigator.platform === "MacIntel" && navigator.maxTouchPoints > 1) return true;
+    if (window.matchMedia("(pointer: coarse)").matches) return true;
+    if (window.matchMedia("(hover: none)").matches) return true;
+    return false;
+  }
 
   function isTabletTouch() {
     return document.documentElement.classList.contains("tablet-touch");
   }
 
   function initTabletMode(onChange) {
-    const mq = window.matchMedia(TABLET_MQ);
     function apply() {
-      document.documentElement.classList.toggle("tablet-touch", mq.matches);
+      document.documentElement.classList.toggle("tablet-touch", isTouchTabletDevice());
       if (onChange) onChange();
     }
     apply();
-    if (mq.addEventListener) mq.addEventListener("change", apply);
-    else if (mq.addListener) mq.addListener(apply);
+    window.addEventListener("resize", apply);
+    window.addEventListener("orientationchange", () => setTimeout(apply, 120));
+  }
+
+  // Extra inset on tablet so side labels (4x, 2y) do not overlap cell values.
+  function figInsets(compact) {
+    if (!isTabletTouch()) {
+      return compact
+        ? { ml: 56, mr: 66, mt: 40, mb: 44, edgeX: 24, edgeTop: 20, edgeRight: 28, edgeBottom: 22 }
+        : { ml: 46, mr: 24, mt: 40, mb: 24, edgeX: 24, edgeTop: 20, edgeRight: 28, edgeBottom: 22 };
+    }
+    return compact
+      ? { ml: 78, mr: 72, mt: 48, mb: 48, edgeX: 46, edgeTop: 26, edgeRight: 40, edgeBottom: 28 }
+      : { ml: 68, mr: 36, mt: 46, mb: 30, edgeX: 42, edgeTop: 24, edgeRight: 34, edgeBottom: 26 };
   }
 
   // Plain SVG text for tablet — avoids WebKit foreignObject misalignment when the SVG scales.
@@ -217,7 +240,8 @@
     draw(svg, st, api) {
       // Scale the figure to fill the canvas so cells stay large & legible
       // regardless of how small a/b are; proportions still reflect a:b.
-      const ml = 46, mr = 24, mt = 40, mb = 24;
+      const inset = figInsets(false);
+      const ml = inset.ml, mr = inset.mr, mt = inset.mt, mb = inset.mb;
       const aw = 410 - ml - mr, ah = 380 - mt - mb;
       const S = Math.min(aw, ah), unit = S / (st.a + st.b);
       const A = st.a * unit, B = st.b * unit;
@@ -248,10 +272,10 @@
         { cy: top + A + B / 2, s: top + A, e: top + A + B, t: coefY(st.b), col: C.b },
       ];
       tops.forEach((L) => {
-        fade(tex(svg, L.cx, top - 20, L.t, L.col, 18, 60, 30), sc && !span(sc.x, sc.x + sc.w, L.s, L.e));
+        fade(tex(svg, L.cx, top - inset.edgeTop, L.t, L.col, 18, 60, 30), sc && !span(sc.x, sc.x + sc.w, L.s, L.e));
       });
       lefts.forEach((L) => {
-        fade(tex(svg, ox - 24, L.cy, L.t, L.col, 18, 40, 30), sc && !span(sc.y, sc.y + sc.h, L.s, L.e));
+        fade(tex(svg, ox - inset.edgeX, L.cy, L.t, L.col, 18, 40, 30), sc && !span(sc.y, sc.y + sc.h, L.s, L.e));
       });
     },
     latex(st) {
@@ -274,7 +298,8 @@
     ],
     clamp(st) { if (st.b > st.a - 1) st.b = st.a - 1; },
     draw(svg, st, api) {
-      const ml = 56, mr = 66, mt = 40, mb = 44;
+      const inset = figInsets(true);
+      const ml = inset.ml, mr = inset.mr, mt = inset.mt, mb = inset.mb;
       const aw = 410 - ml - mr, ah = 380 - mt - mb;
       const A = Math.min(aw, ah), unit = A / st.a;
       const B = st.b * unit, IN = A - B;
@@ -336,18 +361,18 @@
         { cy: top + IN + B / 2, s: top + IN, e: top + A, t: coefY(st.b), col: C.b, fz: 16 },
       ];
       tops.forEach((L) => {
-        fade(tex(svg, L.cx, top - 20, L.t, L.col, L.fz, 60, 30), sc && !span(sc.x, sc.x + sc.w, L.s, L.e));
+        fade(tex(svg, L.cx, top - inset.edgeTop, L.t, L.col, L.fz, 60, 30), sc && !span(sc.x, sc.x + sc.w, L.s, L.e));
       });
       rights.forEach((L) => {
-        fade(tex(svg, ox + A + 28, L.cy, L.t, L.col, L.fz, 60, 30), sc && !span(sc.y, sc.y + sc.h, L.s, L.e));
+        fade(tex(svg, ox + A + inset.edgeRight, L.cy, L.t, L.col, L.fz, 60, 30), sc && !span(sc.y, sc.y + sc.h, L.s, L.e));
       });
       // total side length a = (a-b) + b, shown on the otherwise-empty left &
       // bottom sides; lit when the selected piece spans that whole side (i.e.
       // makes clear each ab strip is a full a×b rectangle).
       const fullV = sc && sc.y <= top + 0.5 && sc.y + sc.h >= top + A - 0.5;
       const fullH = sc && sc.x <= ox + 0.5 && sc.x + sc.w >= ox + A - 0.5;
-      fade(tex(svg, ox - 30, top + A / 2, coefX(st.a), C.a, 18, 44, 30), sc && !fullV);
-      fade(tex(svg, ox + A / 2, top + A + 22, coefX(st.a), C.a, 18, 60, 30), sc && !fullH);
+      fade(tex(svg, ox - inset.edgeX, top + A / 2, coefX(st.a), C.a, 18, 44, 30), sc && !fullV);
+      fade(tex(svg, ox + A / 2, top + A + inset.edgeBottom, coefX(st.a), C.a, 18, 60, 30), sc && !fullH);
     },
     latex(st) {
       const a = st.a, b = st.b;
@@ -371,7 +396,10 @@
     clamp(st) { if (st.b > st.a - 1) st.b = st.a - 1; },
     draw(svg, st) {
       if (!st.mode) {
-        const ml = 34, mr = 48, mt = 40, mb = 52;
+        const inset = isTabletTouch()
+          ? { ml: 66, mr: 54, mt: 46, mb: 54, edgeX: 42, edgeTop: 24, edgeRight: 38, edgeBottom: 28 }
+          : { ml: 34, mr: 48, mt: 40, mb: 52, edgeX: 24, edgeTop: 20, edgeRight: 28, edgeBottom: 22 };
+        const ml = inset.ml, mr = inset.mr, mt = inset.mt, mb = inset.mb;
         const aw = 450 - ml - mr, ah = 380 - mt - mb;
         const A = Math.min(aw, ah), unit = A / st.a;
         const B = st.b * unit, IN = A - B;
@@ -382,12 +410,15 @@
         rectSvg(svg, ox, top, A, A, "none", 0, C.ink, 2.5);
         fitTex(svg, ox + A / 2, top + IN / 2, sqX(st.a) + "-" + sqY(st.b), C.ink, A, IN);
         fitTex(svg, ox + IN + B / 2, top + IN + B / 2, sqY(st.b), C.rm, B, B);
-        tex(svg, ox + A / 2, top - 20, coefX(st.a), C.a, 18, 60, 30);
-        tex(svg, ox - 24, top + A / 2, coefX(st.a), C.a, 18, 40, 30);
-        tex(svg, ox + IN + B / 2, top + A + 22, coefY(st.b), C.b, 18, 60, 30);
-        tex(svg, ox + A + 28, top + IN + B / 2, coefY(st.b), C.b, 18, 60, 30);
+        tex(svg, ox + A / 2, top - inset.edgeTop, coefX(st.a), C.a, 18, 60, 30);
+        tex(svg, ox - inset.edgeX, top + A / 2, coefX(st.a), C.a, 18, 40, 30);
+        tex(svg, ox + IN + B / 2, top + A + inset.edgeBottom, coefY(st.b), C.b, 18, 60, 30);
+        tex(svg, ox + A + inset.edgeRight, top + IN + B / 2, coefY(st.b), C.b, 18, 60, 30);
       } else {
-        const ml = 42, mr = 42, mt = 44, mb = 36;
+        const inset = isTabletTouch()
+          ? { ml: 58, mr: 52, mt: 48, mb: 40, edgeX: 40, edgeTop: 24 }
+          : { ml: 42, mr: 42, mt: 44, mb: 36, edgeX: 28, edgeTop: 20 };
+        const ml = inset.ml, mr = inset.mr, mt = inset.mt, mb = inset.mb;
         const aw = 450 - ml - mr, ah = 380 - mt - mb;
         const unit = Math.min(aw / (st.a + st.b), ah / (st.a - st.b));
         const A = st.a * unit, B = st.b * unit, IN = A - B;
@@ -398,8 +429,8 @@
         lineSvg(svg, ox + A, top, ox + A, top + H, C.ink, 1, "3 3");
         rectSvg(svg, ox, top, W, H, "none", 0, C.ink, 2.5);
         fitTex(svg, ox + W / 2, top + H / 2, sqX(st.a) + "-" + sqY(st.b), C.ink, W, H);
-        tex(svg, ox + W / 2, top - 20, "(" + coefX(st.a) + "+" + coefY(st.b) + ")", C.a, 16, 110, 30);
-        tex(svg, ox - 28, top + H / 2, "(" + coefX(st.a) + "-" + coefY(st.b) + ")", C.a, 15, 90, 30);
+        tex(svg, ox + W / 2, top - inset.edgeTop, "(" + coefX(st.a) + "+" + coefY(st.b) + ")", C.a, 16, 110, 30);
+        tex(svg, ox - inset.edgeX, top + H / 2, "(" + coefX(st.a) + "-" + coefY(st.b) + ")", C.a, 15, 90, 30);
       }
     },
     latex(st) {
