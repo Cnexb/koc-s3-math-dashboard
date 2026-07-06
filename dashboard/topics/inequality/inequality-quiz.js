@@ -14,7 +14,7 @@
     {
       id: 2,
       type: "mc",
-      stem: "\\text{If } 2x \\le 3\\text{, which of the following is not true?}",
+      prompt: "If 2x \u2264 3, which of the following is not true?",
       choices: [
         "4x \\le 2x + 3",
         "1 - 2x \\le -2",
@@ -26,7 +26,7 @@
     {
       id: 3,
       type: "mc",
-      stem: "\\text{If } x \\le y \\text{ and } z > y\\text{, where } z \\text{ is a negative number, which of the following is not true?}",
+      prompt: "If x \u2264 y and z > y, where z is a negative number, which of the following is not true?",
       choices: [
         "x \\le y < z",
         "y - x < z - x",
@@ -93,8 +93,8 @@
     {
       id: 9,
       type: "mc",
-      prompt: "A non-negative number x satisfies the equation below, where k is a positive integral constant.",
-      stem: "\\frac{2x-k}{3} = \\frac{5x-7}{4} + \\frac{x+k}{6}\\text{. How many possible values of }k\\text{?}",
+      prompt: "A non-negative number x satisfies the equation below, where k is a positive integral constant. How many possible values of k?",
+      stem: "\\frac{2x-k}{3} = \\frac{5x-7}{4} + \\frac{x+k}{6}",
       choices: ["1", "2", "3", "4"],
       answer: 2,
     },
@@ -102,7 +102,7 @@
       id: 10,
       type: "mc",
       prompt: "Using the same equation as above, find x when k = 3.",
-      stem: "\\frac{2x-k}{3} = \\frac{5x-7}{4} + \\frac{x+k}{6}\\text{ with }k=3",
+      stem: "\\frac{2x-k}{3} = \\frac{5x-7}{4} + \\frac{x+k}{6}",
       choices: ["x = \\frac{1}{3}", "x = -\\frac{1}{3}", "x = \\frac{7}{3}", "x = 3"],
       answer: 0,
     },
@@ -306,12 +306,6 @@
       num.className = "quiz-num";
       num.textContent = q.id + ".";
       head.appendChild(num);
-      if (q.prompt) {
-        const prompt = document.createElement("span");
-        prompt.className = "quiz-prompt";
-        prompt.textContent = q.prompt;
-        head.appendChild(prompt);
-      }
       if (reviewMode) {
         const mark = document.createElement("span");
         mark.className = "quiz-mark " + (ok ? "ok" : "bad");
@@ -322,10 +316,21 @@
 
       const content = document.createElement("div");
       content.className = "quiz-content";
-      if (q.stem) {
+      if (q.prompt || q.stem) {
         const stem = document.createElement("div");
         stem.className = "quiz-stem";
-        kx(stem, q.stem, true);
+        if (q.prompt) {
+          const line = document.createElement("p");
+          line.className = "quiz-stem-line";
+          line.textContent = q.prompt;
+          stem.appendChild(line);
+        }
+        if (q.stem) {
+          const line = document.createElement("p");
+          line.className = "quiz-stem-line quiz-stem-math";
+          kx(line, q.stem, false);
+          stem.appendChild(line);
+        }
         content.appendChild(stem);
       }
       if (q.items) {
