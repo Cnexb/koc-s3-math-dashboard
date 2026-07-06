@@ -18,6 +18,42 @@
     cellB: "#3a2f06",  // dark text on amber
   };
   const NS = "http://www.w3.org/2000/svg";
+  const TABLET_MQ = "(hover: none) and (pointer: coarse) and (min-width: 768px) and (max-width: 1180px)";
+
+  function isTabletTouch() {
+    return document.documentElement.classList.contains("tablet-touch");
+  }
+
+  function initTabletMode(onChange) {
+    const mq = window.matchMedia(TABLET_MQ);
+    function apply() {
+      document.documentElement.classList.toggle("tablet-touch", mq.matches);
+      if (onChange) onChange();
+    }
+    apply();
+    if (mq.addEventListener) mq.addEventListener("change", apply);
+    else if (mq.addListener) mq.addListener(apply);
+  }
+
+  // Plain SVG text for tablet — avoids WebKit foreignObject misalignment when the SVG scales.
+  function latexToPlain(latex) {
+    return latex
+      .replace(/\\text\{([^}]*)\}/g, "$1")
+      .replace(/\\textcolor\{#[0-9a-fA-F]+\}\{([^}]*)\}/g, "$1")
+      .replace(/[{}\\]/g, "")
+      .replace(/\^2/g, "\u00B2");
+  }
+
+  function svgLabel(p, cx, cy, latex, color, size) {
+    const t = E("text", {
+      x: cx, y: cy, fill: color, "font-size": size || 16,
+      "text-anchor": "middle", "dominant-baseline": "middle",
+      "font-family": "JetBrains Mono, monospace", "font-weight": "700",
+    });
+    t.textContent = latexToPlain(latex);
+    p.appendChild(t);
+    return t;
+  }
 
   function E(tag, attrs) {
     const e = document.createElementNS(NS, tag);
@@ -51,6 +87,7 @@
   }
   // LaTeX label centred at (cx, cy) inside the SVG via <foreignObject>.
   function tex(p, cx, cy, latex, color, size, w, h) {
+    if (isTabletTouch()) return svgLabel(p, cx, cy, latex, color, size);
     w = w || 170; h = h || 46;
     const fo = E("foreignObject", { x: cx - w / 2, y: cy - h / 2, width: w, height: h });
     fo.setAttribute("overflow", "visible");
@@ -80,6 +117,7 @@
     const availH = Math.max(0, ch - (opts.padY == null ? 8 : opts.padY));
     let fs = Math.min(maxFs, availW / em, availH * 0.8);
     fs = Math.max(minFs, fs);
+    if (isTabletTouch()) return svgLabel(p, cx, cy, latex, color, fs);
     const boxW = Math.max(cw, em * fs + 12);
     return tex(p, cx, cy, latex, color, fs, boxW, fs * 1.9);
   }
@@ -409,6 +447,12 @@
       if (current.clamp) current.clamp(state);
       clear(svg);
       current.draw(svg, state, api);
+      if (isTabletTouch() && current.viewBox) {
+        const vb = current.viewBox.split(/\s+/);
+        if (vb.length >= 4) svg.style.aspectRatio = vb[2] + " / " + vb[3];
+      } else {
+        svg.style.aspectRatio = "";
+      }
       renderEq(eqBox, current.latex(state));
       current.sliders.forEach((s) => {
         const badge = document.getElementById("val-" + s.key);
@@ -471,6 +515,10 @@
       }
     }
     toolBtns.forEach((b) => b.addEventListener("click", () => activate(b.dataset.tool)));
+    initTabletMode(() => {
+      if (current && toolLayout && !toolLayout.classList.contains("hidden")) redraw();
+      if (window.FZ_CROSS && window.FZ_CROSS.onTabletChange) window.FZ_CROSS.onTabletChange();
+    });
     activate("sum");
   }
 
@@ -535,6 +583,39 @@
     const prodSumEl = document.getElementById("cross-prod-sum");
     const slots = {};
     document.querySelectorAll(".drop-slot").forEach((el) => { slots[el.dataset.slot] = el; });
+
+    let selectedChip = null;
+
+    function clearChipSelection() {
+      selectedChip = null;
+      lab.classList.remove("chip-pick-active");
+      lab.querySelectorAll(".drag-chip.chip-selected").forEach((c) => c.classList.remove("chip-selected"));
+      Object.values(slots).forEach((s) => s.classList.remove("slot-targetable"));
+    }
+
+    function selectChip(chip, val, kind) {
+      if (selectedChip && selectedChip.value === val && selectedChip.kind === kind) {
+        clearChipSelection();
+        return;
+      }
+      clearChipSelection();
+      selectedChip = { value: val, kind: kind };
+      chip.classList.add("chip-selected");
+      lab.classList.add("chip-pick-active");
+      Object.values(slots).forEach((s) => {
+        s.classList.toggle("slot-targetable", s.dataset.kind === kind);
+      });
+    }
+
+    function placeChipInSlot(slotKey) {
+      if (!selectedChip) return;
+      const el = slots[slotKey];
+      if (selectedChip.kind !== el.dataset.kind) return;
+      wiz.values[slotKey] = selectedChip.value;
+      clearChipSelection();
+      renderSlot(slotKey);
+      updateCheck();
+    }
 
     const wiz = {
       step: 1,
@@ -638,13 +719,20 @@
       const chip = document.createElement("span");
       chip.className = "drag-chip " + (kind === "x" ? "x-chip" : "y-chip");
       chip.textContent = val;
-      chip.draggable = true;
       chip.dataset.value = String(val);
       chip.dataset.kind = kind;
-      chip.addEventListener("dragstart", (e) => {
-        e.dataTransfer.setData("text/plain", JSON.stringify({ value: val, kind: kind }));
-        e.dataTransfer.effectAllowed = "copy";
-      });
+      if (isTabletTouch()) {
+        chip.draggable = false;
+        chip.setAttribute("role", "button");
+        chip.tabIndex = 0;
+        chip.addEventListener("click", () => selectChip(chip, val, kind));
+      } else {
+        chip.draggable = true;
+        chip.addEventListener("dragstart", (e) => {
+          e.dataTransfer.setData("text/plain", JSON.stringify({ value: val, kind: kind }));
+          e.dataTransfer.effectAllowed = "copy";
+        });
+      }
       return chip;
     }
 
@@ -665,6 +753,7 @@
 
     function clearSlots() {
       wiz.values = { tl: null, tr: null, bl: null, br: null };
+      clearChipSelection();
       Object.keys(slots).forEach((k) => renderSlot(k));
       updateCheck();
     }
@@ -720,6 +809,9 @@
         renderSlot(slotKey);
         updateCheck();
       });
+      if (isTabletTouch()) {
+        el.addEventListener("click", () => placeChipInSlot(slotKey));
+      }
     }
 
     Object.keys(slots).forEach(setupDrop);
@@ -754,7 +846,9 @@
         prodSumEl.classList.add("hidden");
         const hint = document.createElement("span");
         hint.className = "cross-hint";
-        hint.textContent = "Fill all four slots to test a combination.";
+        hint.textContent = isTabletTouch()
+          ? "Tap all four slots to test a combination."
+          : "Fill all four slots to test a combination.";
         checkEl.appendChild(hint);
         Object.keys(slots).forEach((k) => slots[k].classList.remove("correct", "wrong"));
         return;
@@ -797,6 +891,12 @@
     function renderStep4() {
       document.getElementById("cross-a2-label").textContent = wiz.A2;
       document.getElementById("cross-c2-label").textContent = wiz.C2;
+      const step4Note = document.querySelector("#cross-step-4 .cross-step-note");
+      if (step4Note) {
+        step4Note.textContent = isTabletTouch()
+          ? "Tap a number from the factor pairs, then tap a slot to place it. Check whether the cross products give the correct xy term."
+          : "Drag numbers from the factor pairs into the four slots, then check whether the cross products give the correct xy term.";
+      }
       const eqEl = document.getElementById("cross-equation");
       clear(eqEl);
       eqEl.appendChild(kxEl(polyTex(wiz.A2, wiz.B2, wiz.C2)));
@@ -867,6 +967,15 @@
         renderTexAttrs(lab);
         updatePreview();
         showStep(wiz.step);
+      },
+      onTabletChange() {
+        const step4Note = document.querySelector("#cross-step-4 .cross-step-note");
+        if (step4Note) {
+          step4Note.textContent = isTabletTouch()
+            ? "Tap a number from the factor pairs, then tap a slot to place it. Check whether the cross products give the correct xy term."
+            : "Drag numbers from the factor pairs into the four slots, then check whether the cross products give the correct xy term.";
+        }
+        if (wiz.step === 4) renderStep4();
       },
     };
 

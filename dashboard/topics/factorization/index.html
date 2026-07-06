@@ -8,7 +8,7 @@
   <script defer src="https://cdn.jsdelivr.net/npm/katex@0.16.11/dist/katex.min.js" crossorigin="anonymous"></script>
   <link href="https://fonts.googleapis.com/css2?family=Hanken+Grotesk:wght@400;600;700&family=JetBrains+Mono:wght@400;700&display=swap" rel="stylesheet">
   <link rel="stylesheet" href="../../shared/topic-shell.css">
-  <script defer src="factorization-tools.js?v=20260706"></script>
+  <script defer src="factorization-tools.js?v=20260706-ipad"></script>
   <script defer src="factorization-game.js"></script>
   <script defer src="factorization-quiz.js?v=20260706"></script>
   <style>
@@ -454,6 +454,30 @@
     .quiz-part-stem { font-size: 20px; margin-bottom: 10px; }
     .quiz-part-result { display: flex; align-items: center; gap: 6px; margin: 4px 0; flex-wrap: wrap; }
     .quiz-part-result-lbl { font-weight: 700; color: var(--a); font-family: "JetBrains Mono", monospace; }
+    /* ── iPad / tablet touch (standard iPad landscape; desktop unchanged) ── */
+    @media (hover: none) and (pointer: coarse) and (min-width: 768px) and (max-width: 1180px) and (orientation: landscape) {
+      html.tablet-touch #panel-tools .tool-layout { grid-template-columns: 1fr; }
+      html.tablet-touch #panel-tools .figure-card { padding-bottom: 12px; }
+      html.tablet-touch #tool-svg { max-width: min(100%, 520px); margin: 0 auto; }
+      html.tablet-touch #panel-tools .cross-lab-layout { grid-template-columns: 1fr; }
+    }
+    @media (hover: none) and (pointer: coarse) and (min-width: 768px) and (max-width: 1180px) {
+      html.tablet-touch .drag-chip {
+        min-width: 44px; min-height: 44px; padding: 0 14px; font-size: 17px;
+        touch-action: manipulation; -webkit-user-select: none; user-select: none; cursor: pointer;
+      }
+      html.tablet-touch .drag-chip.chip-selected {
+        box-shadow: 0 0 0 2px var(--a), 0 0 12px rgba(79,195,247,.35);
+        transform: scale(1.06);
+      }
+      html.tablet-touch .drop-slot { min-height: 64px; touch-action: manipulation; cursor: pointer; }
+      html.tablet-touch .chip-pick-active .drop-slot.slot-targetable {
+        border-color: var(--a); background: rgba(79,195,247,.1);
+      }
+      html.tablet-touch .pair-group { padding: 10px 12px; gap: 10px; }
+      html.tablet-touch input[type=range]::-webkit-slider-thumb { width: 26px; height: 26px; }
+      html.tablet-touch input[type=range]::-moz-range-thumb { width: 26px; height: 26px; }
+    }
   </style>
 </head>
 <body>
