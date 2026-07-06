@@ -510,9 +510,17 @@
 
   function applyDeepLink() {
     const q = new URLSearchParams(location.search);
-    const tab = q.get("tab"), deck = q.get("deck");
+    const tab = q.get("tab"), deck = q.get("deck"), style = q.get("style");
     if (tab) { const b = document.querySelector(`[data-tab="${tab}"]`); if (b) b.click(); }
     if (deck) { const b = document.querySelector(`[data-deck*="/${deck}/"]`); if (b) b.click(); }
+    if (style && /^style-[1-3]$/.test(style)) {
+      if (!tab) {
+        const summaryTab = document.querySelector('[data-tab="summary"]');
+        if (summaryTab) summaryTab.click();
+      }
+      const chip = document.querySelector(`[data-summary-style="${style}"]`);
+      if (chip) chip.click();
+    }
   }
 
   function initSummaryStyles() {
