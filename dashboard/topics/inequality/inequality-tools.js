@@ -515,7 +515,27 @@
     if (deck) { const b = document.querySelector(`[data-deck*="/${deck}/"]`); if (b) b.click(); }
   }
 
-  function start() { initTabs(); initDecks(); initSignFlipTool(); applyDeepLink(); }
+  function initSummaryStyles() {
+    const sets = document.querySelectorAll("#summary-stage .summary-set");
+    const styleChips = document.querySelectorAll("[data-summary-style]");
+    if (!sets.length || !styleChips.length) return;
+
+    let styleId = "style-1";
+
+    function setStyle(id) {
+      styleId = id;
+      styleChips.forEach((c) => c.classList.toggle("active", c.dataset.summaryStyle === id));
+      sets.forEach((s) => s.classList.toggle("hidden", s.dataset.summarySet !== id));
+    }
+
+    styleChips.forEach((c) => {
+      c.addEventListener("click", () => setStyle(c.dataset.summaryStyle));
+    });
+
+    setStyle(styleId);
+  }
+
+  function start() { initTabs(); initDecks(); initSignFlipTool(); initSummaryStyles(); applyDeepLink(); }
   if (window.katex) window.addEventListener("DOMContentLoaded", start);
   else window.addEventListener("DOMContentLoaded", () => {
     (function wait() { if (window.katex) start(); else setTimeout(wait, 30); })();
