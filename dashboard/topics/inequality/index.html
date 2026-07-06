@@ -13,7 +13,7 @@
   <script defer src="inequality-tools.js?v=20260706-doors"></script>
   <script defer src="inequality-game.js?v=20260706-doors"></script>
   <script defer src="sign-flip-doors.js?v=20260706-doors"></script>
-  <script defer src="inequality-quiz.js?v=20260706q3"></script>
+  <script defer src="inequality-quiz.js?v=20260706-quiz"></script>
   <style>
     :root {
       --bg: #0f172a; --panel: #16213a; --panel2: #1b2945; --ink: #e5e7eb; --dim: #94a3b8;
@@ -284,21 +284,21 @@
     .quiz-item-list { margin-bottom: 14px; display: flex; flex-direction: column; gap: 6px; }
     .quiz-item-row { display: flex; align-items: baseline; gap: 8px; font-size: 20px; }
     .quiz-item-tag { font-weight: 700; color: var(--dim); min-width: 28px; font-family: "JetBrains Mono", monospace; }
-    .quiz-mc { display: flex; flex-direction: column; gap: 10px; overflow: visible; }
+    .quiz-mc { display: flex; flex-direction: column; gap: 10px; overflow: visible; min-width: 0; }
     .quiz-mc-opt {
-      display: block; padding: 12px 14px; border-radius: 10px;
+      display: flex; align-items: flex-start; gap: 10px;
+      padding: 12px 14px; border-radius: 10px;
       border: 1px solid var(--line); background: var(--panel2); cursor: pointer; transition: border-color .15s;
-      overflow: visible;
+      min-width: 0; overflow: visible;
     }
     .quiz-mc-opt:hover:not(.locked) { border-color: var(--a); }
     .quiz-mc-opt.locked { cursor: default; }
     .quiz-mc-opt.reveal-ok { border-color: var(--ab); background: rgba(102,187,106,.12); }
     .quiz-mc-opt.reveal-bad { border-color: #E57373; background: rgba(229,115,115,.1); }
-    .quiz-mc-head { display: flex; align-items: center; gap: 10px; margin-bottom: 6px; }
-    .quiz-mc-opt input { flex: none; accent-color: var(--a); margin: 0; }
-    .quiz-mc-letter { font-weight: 700; font-size: 20px; color: var(--dim); font-family: "JetBrains Mono", monospace; }
+    .quiz-mc-opt input { flex: none; accent-color: var(--a); margin: 2px 0 0; }
+    .quiz-mc-letter { font-weight: 700; font-size: 20px; color: var(--dim); min-width: 28px; font-family: "JetBrains Mono", monospace; }
     .quiz-mc-tex {
-      display: block; width: 100%; font-size: 20px; padding-left: 28px;
+      font-size: 20px; min-width: 0; flex: 1;
       overflow: visible; line-height: 1.45;
     }
     .quiz-mc-tex .katex { font-size: 1em; overflow: visible !important; display: inline-block; max-width: 100%; }

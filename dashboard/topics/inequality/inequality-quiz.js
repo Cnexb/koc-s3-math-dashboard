@@ -450,15 +450,12 @@
         inp.disabled = reviewMode;
         if (state.answers[q.id] === i) inp.checked = true;
         if (!reviewMode) inp.addEventListener("change", () => { state.answers[q.id] = i; });
-        const head = document.createElement("div");
-        head.className = "quiz-mc-head";
-        head.appendChild(inp);
+        label.appendChild(inp);
         const letter = document.createElement("span");
         letter.className = "quiz-mc-letter";
         letter.textContent = letters[i] + ".";
-        head.appendChild(letter);
-        label.appendChild(head);
-        const math = document.createElement("div");
+        label.appendChild(letter);
+        const math = document.createElement("span");
         math.className = "quiz-mc-tex";
         kx(math, tex, false);
         label.appendChild(math);
