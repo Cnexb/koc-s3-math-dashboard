@@ -8,12 +8,12 @@
   <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/katex@0.16.11/dist/katex.min.css" crossorigin="anonymous">
   <script defer src="https://cdn.jsdelivr.net/npm/katex@0.16.11/dist/katex.min.js" crossorigin="anonymous"></script>
   <link rel="stylesheet" href="../../shared/topic-shell.css">
-  <link rel="stylesheet" href="sign-flip-doors.css?v=20260706-doors">
+  <link rel="stylesheet" href="sign-flip-doors.css?v=20260706-quiz2">
   <script defer src="../../shared/deck-touch-nav.js"></script>
-  <script defer src="inequality-tools.js?v=20260706-doors"></script>
-  <script defer src="inequality-game.js?v=20260706-doors"></script>
-  <script defer src="sign-flip-doors.js?v=20260706-doors"></script>
-  <script defer src="inequality-quiz.js?v=20260706-quiz"></script>
+  <script defer src="inequality-tools.js?v=20260706-quiz2"></script>
+  <script defer src="inequality-game.js?v=20260706-quiz2"></script>
+  <script defer src="sign-flip-doors.js?v=20260706-quiz2"></script>
+  <script defer src="inequality-quiz.js?v=20260706-quiz2"></script>
   <style>
     :root {
       --bg: #0f172a; --panel: #16213a; --panel2: #1b2945; --ink: #e5e7eb; --dim: #94a3b8;
@@ -286,7 +286,7 @@
     .quiz-item-tag { font-weight: 700; color: var(--dim); min-width: 28px; font-family: "JetBrains Mono", monospace; }
     .quiz-mc { display: flex; flex-direction: column; gap: 10px; overflow: visible; min-width: 0; }
     .quiz-mc-opt {
-      display: flex; align-items: flex-start; gap: 10px;
+      display: flex; align-items: center; gap: 10px;
       padding: 12px 14px; border-radius: 10px;
       border: 1px solid var(--line); background: var(--panel2); cursor: pointer; transition: border-color .15s;
       min-width: 0; overflow: visible;
@@ -301,9 +301,11 @@
       font-size: 20px; min-width: 0; flex: 1;
       overflow: visible; line-height: 1.45;
     }
-    .quiz-mc-tex .katex { font-size: 1em; overflow: visible !important; display: inline-block; max-width: 100%; }
-    .quiz-mc-tex .katex-display { font-size: 1em; overflow: visible !important; margin: 0; display: block; text-align: left; }
-    .quiz-mc-tex .katex-display > .katex { white-space: normal; text-align: left; overflow: visible !important; }
+    .quiz-mc-tex .katex { font-size: 1em; overflow: visible !important; display: inline; }
+    .quiz-mc-opt .quiz-mc-tex .katex-display {
+      display: inline !important; margin: 0; text-align: left;
+    }
+    .quiz-mc-opt .quiz-mc-tex .katex-display > .katex { white-space: nowrap; overflow: visible !important; }
     #panel-quiz .katex, #panel-quiz .katex-display, #panel-quiz .katex-html, #panel-quiz .base {
       overflow: visible !important; max-height: none !important;
     }

@@ -459,6 +459,9 @@
         math.className = "quiz-mc-tex";
         kx(math, tex, false);
         label.appendChild(math);
+        // #region agent log
+        fetch('http://127.0.0.1:7343/ingest/474a74ed-e86f-45eb-826b-6126cb6afa26',{method:'POST',headers:{'Content-Type':'application/json','X-Debug-Session-Id':'7c7005'},body:JSON.stringify({sessionId:'7c7005',location:'inequality-quiz.js:buildMc',message:'mc option layout',data:{letter:letters[i],optDisplay:getComputedStyle(label).display,optAlign:getComputedStyle(label).alignItems,texDisplay:getComputedStyle(math).display,hasMcHead:!!label.querySelector('.quiz-mc-head'),katexDisplay:!!math.querySelector('.katex-display')},timestamp:Date.now(),hypothesisId:'H2-H3',runId:'post-fix'})}).catch(()=>{});
+        // #endregion
         if (reviewMode) {
           if (i === q.answer) label.classList.add("reveal-ok");
           if (state.answers[q.id] === i && i !== q.answer) label.classList.add("reveal-bad");
