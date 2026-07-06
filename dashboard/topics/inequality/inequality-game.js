@@ -291,7 +291,7 @@
     };
 
     const qGame = new URLSearchParams(location.search).get("game");
-    if (qGame === "doors" || qGame === "matchup") setGameMode(qGame);
+    setGameMode(qGame === "doors" ? "doors" : "matchup");
   }
 
   if (window.katex) window.addEventListener("DOMContentLoaded", init);
