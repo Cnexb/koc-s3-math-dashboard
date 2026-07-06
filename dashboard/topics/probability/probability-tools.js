@@ -599,6 +599,7 @@
       game: document.getElementById("panel-game"),
       worked: document.getElementById("panel-worked"),
       quiz: document.getElementById("panel-quiz"),
+      wayground: document.getElementById("panel-wayground"),
     };
     tabs.forEach((t) => t.addEventListener("click", () => {
       tabs.forEach((x) => x.classList.toggle("active", x === t));
