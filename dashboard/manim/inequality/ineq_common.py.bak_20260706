@@ -60,14 +60,6 @@ def make_axis(numbers, x_min, x_max, length=9.4, y=-1.7, num_color=MUTED):
     `numbers` are the integer positions that get a printed label; ticks are
     drawn at every integer so the line reads like a ruler.
     """
-    if numbers:
-        lo, hi = min(numbers), max(numbers)
-        # Pad past the outermost printed label so glyphs are not frame-clipped.
-        # Two-digit labels (10, 12, …) need more room than a single tick unit.
-        lo_pad = 2 if lo <= -10 else 1
-        hi_pad = 2 if hi >= 10 else 2
-        x_min = min(x_min, lo - lo_pad)
-        x_max = max(x_max, hi + hi_pad)
     nl = NumberLine(
         x_range=[x_min, x_max, 1],
         length=length,
