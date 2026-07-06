@@ -127,8 +127,14 @@
     { label: ")", insert: ")" },
   ];
 
+  function prepTex(tex) {
+    let t = String(tex);
+    if (!t.includes("\\displaystyle")) t = "\\displaystyle " + t;
+    return t.replace(/\\frac\{/g, "\\dfrac{");
+  }
+
   function kx(el, tex, display) {
-    try { katex.render(tex, el, { throwOnError: false, displayMode: !!display }); }
+    try { katex.render(prepTex(tex), el, { throwOnError: false, displayMode: !!display }); }
     catch (e) { el.textContent = tex; }
   }
 
@@ -328,7 +334,7 @@
         if (q.stem) {
           const line = document.createElement("p");
           line.className = "quiz-stem-line quiz-stem-math";
-          kx(line, q.stem, false);
+          kx(line, q.stem, true);
           stem.appendChild(line);
         }
         content.appendChild(stem);

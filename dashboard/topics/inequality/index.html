@@ -10,7 +10,7 @@
   <link rel="stylesheet" href="../../shared/topic-shell.css">
   <script defer src="inequality-tools.js"></script>
   <script defer src="inequality-game.js"></script>
-  <script defer src="inequality-quiz.js?v=20260706q"></script>
+  <script defer src="inequality-quiz.js?v=20260706q2"></script>
   <style>
     :root {
       --bg: #0f172a; --panel: #16213a; --panel2: #1b2945; --ink: #e5e7eb; --dim: #94a3b8;
@@ -223,7 +223,7 @@
     .mg-done { max-width: 920px; margin: 14px auto 0; text-align: center; color: var(--dim); font-size: 13px; }
 
     /* ── Quiz ── */
-    .quiz-wrap { max-width: 720px; margin: 0 auto; min-width: 0; }
+    .quiz-wrap { max-width: 960px; margin: 0 auto; min-width: 0; width: 100%; }
     .quiz-progress-wrap { margin-bottom: 18px; }
     .quiz-progress-wrap.done .quiz-progress-fill { background: var(--ab); }
     .quiz-progress-label {
@@ -252,43 +252,50 @@
     .quiz-card-review { margin-bottom: 12px; }
     .quiz-card-review .quiz-head { justify-content: flex-start; }
     .quiz-card-review .quiz-mark { margin-left: auto; }
-    .quiz-yours { margin-top: 10px; font-size: 18px; color: var(--dim); display: flex; align-items: center; gap: 6px; flex-wrap: wrap; }
+    .quiz-yours { margin-top: 10px; font-size: 20px; color: var(--dim); display: flex; align-items: center; gap: 6px; flex-wrap: wrap; }
     .quiz-yours-lbl { font-weight: 600; }
     .quiz-card {
       background: var(--panel); border: 1px solid var(--line); border-radius: 14px;
-      padding: 18px 20px; margin-bottom: 16px; min-width: 0; overflow: hidden;
+      padding: 18px 20px; margin-bottom: 16px; min-width: 0; overflow: visible;
     }
     .quiz-head { display: flex; align-items: baseline; gap: 8px; margin-bottom: 10px; flex-wrap: wrap; }
-    .quiz-num { font-weight: 700; font-size: 18px; color: var(--a); font-family: "JetBrains Mono", monospace; }
-    .quiz-content { min-width: 0; }
+    .quiz-num { font-weight: 700; font-size: 20px; color: var(--a); font-family: "JetBrains Mono", monospace; }
+    .quiz-content { min-width: 0; overflow: visible; }
     .quiz-stem {
-      font-size: 18px; font-weight: 600; color: var(--ink); margin-bottom: 14px; max-width: 100%;
-      line-height: 1.55; overflow-x: hidden;
+      font-size: 20px; font-weight: 600; color: var(--ink); margin-bottom: 14px; max-width: 100%;
+      line-height: 1.55; overflow: visible;
     }
     .quiz-stem-line {
-      margin: 0 0 8px; overflow-wrap: anywhere; word-break: break-word;
+      margin: 0 0 10px; overflow-wrap: anywhere; word-break: break-word; overflow: visible;
     }
     .quiz-stem-line:last-child { margin-bottom: 0; }
-    .quiz-stem-math { font-weight: 400; }
-    .quiz-stem .katex, .quiz-stem .katex-display { font-size: 1em; max-width: 100%; }
-    .quiz-stem .katex-display { display: inline; margin: 0; text-align: left; overflow-x: visible; }
+    .quiz-stem-math { font-weight: 400; font-size: 22px; }
+    .quiz-stem .katex, .quiz-stem .katex-display { font-size: 1em; max-width: 100%; overflow: visible !important; }
+    .quiz-stem .katex-display {
+      display: block; margin: 0; text-align: left; overflow: visible !important;
+      white-space: normal;
+    }
     .quiz-item-list { margin-bottom: 14px; display: flex; flex-direction: column; gap: 6px; }
-    .quiz-item-row { display: flex; align-items: baseline; gap: 8px; font-size: 18px; }
+    .quiz-item-row { display: flex; align-items: baseline; gap: 8px; font-size: 20px; }
     .quiz-item-tag { font-weight: 700; color: var(--dim); min-width: 28px; font-family: "JetBrains Mono", monospace; }
-    .quiz-mc { display: flex; flex-direction: column; gap: 8px; }
+    .quiz-mc { display: flex; flex-direction: column; gap: 10px; overflow: visible; }
     .quiz-mc-opt {
-      display: flex; align-items: flex-start; gap: 10px; padding: 10px 12px; border-radius: 10px;
+      display: flex; align-items: center; gap: 10px; padding: 12px 14px; border-radius: 10px;
       border: 1px solid var(--line); background: var(--panel2); cursor: pointer; transition: border-color .15s;
-      min-width: 0;
+      min-width: 0; overflow: visible; flex-wrap: wrap;
     }
     .quiz-mc-opt:hover:not(.locked) { border-color: var(--a); }
     .quiz-mc-opt.locked { cursor: default; }
     .quiz-mc-opt.reveal-ok { border-color: var(--ab); background: rgba(102,187,106,.12); }
     .quiz-mc-opt.reveal-bad { border-color: #E57373; background: rgba(229,115,115,.1); }
     .quiz-mc-opt input { flex: none; accent-color: var(--a); }
-    .quiz-mc-letter { font-weight: 700; font-size: 18px; color: var(--dim); min-width: 22px; font-family: "JetBrains Mono", monospace; }
-    .quiz-mc-tex { font-size: 18px; min-width: 0; flex: 1; overflow-x: hidden; overflow-wrap: anywhere; }
-    .quiz-mc-tex .katex { font-size: 1em; }
+    .quiz-mc-letter { font-weight: 700; font-size: 20px; color: var(--dim); min-width: 24px; font-family: "JetBrains Mono", monospace; }
+    .quiz-mc-tex {
+      font-size: 20px; min-width: 0; flex: 1 1 0; overflow: visible;
+      overflow-wrap: anywhere; word-break: break-word;
+    }
+    .quiz-mc-tex .katex, .quiz-mc-tex .katex-display { font-size: 1em; overflow: visible !important; }
+    .quiz-wrap .katex-display > .katex { overflow: visible !important; }
     .quiz-sym-bar { display: flex; flex-wrap: wrap; gap: 6px; margin-bottom: 10px; }
     .quiz-sym-btn {
       min-width: 36px; height: 34px; padding: 0 8px; border-radius: 8px; border: 1px solid var(--line);
@@ -314,16 +321,16 @@
     .quiz-mark { font-size: 28px; font-weight: 800; line-height: 1; }
     .quiz-mark.ok { color: var(--ab); }
     .quiz-mark.bad { color: #E57373; }
-    .quiz-result-msg { font-size: 18px; color: var(--dim); display: flex; align-items: center; gap: 6px; flex-wrap: wrap; }
-    .quiz-ans-tex { font-size: 18px; color: var(--ink); }
-    .quiz-ans-tex .katex { font-size: 1em; }
+    .quiz-result-msg { font-size: 20px; color: var(--dim); display: flex; align-items: center; gap: 6px; flex-wrap: wrap; }
+    .quiz-ans-tex { font-size: 20px; color: var(--ink); overflow: visible; }
+    .quiz-ans-tex .katex, .quiz-ans-tex .katex-display { font-size: 1em; overflow: visible !important; }
     .quiz-part { margin-bottom: 18px; padding-bottom: 16px; border-bottom: 1px solid var(--line); }
     .quiz-part:last-child { margin-bottom: 0; padding-bottom: 0; border-bottom: none; }
     .quiz-part-head { display: flex; align-items: center; gap: 10px; margin-bottom: 6px; }
-    .quiz-part-label { font-weight: 700; font-size: 18px; color: var(--a); font-family: "JetBrains Mono", monospace; }
+    .quiz-part-label { font-weight: 700; font-size: 20px; color: var(--a); font-family: "JetBrains Mono", monospace; }
     .quiz-part-mark { font-size: 22px; }
-    .quiz-part-stem { font-size: 18px; margin-bottom: 10px; max-width: 100%; overflow-x: hidden; line-height: 1.55; overflow-wrap: anywhere; }
-    .quiz-part-stem .katex { font-size: 1em; }
+    .quiz-part-stem { font-size: 20px; margin-bottom: 10px; max-width: 100%; overflow: visible; line-height: 1.55; overflow-wrap: anywhere; }
+    .quiz-part-stem .katex, .quiz-part-stem .katex-display { font-size: 1em; overflow: visible !important; }
     .quiz-part-result { display: flex; align-items: center; gap: 6px; margin: 4px 0; flex-wrap: wrap; }
     .quiz-part-result-lbl { font-weight: 700; color: var(--a); font-family: "JetBrains Mono", monospace; }
     /* ── Summary ── */
