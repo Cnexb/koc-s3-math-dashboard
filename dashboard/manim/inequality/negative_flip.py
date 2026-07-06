@@ -27,12 +27,40 @@ EQ_FS = 60
 NOTE_FS = 30
 
 
-def _place(eq, sign_x, y):
-    """Position an equation at height ``y`` with its relation sign (index 1)
-    snapped to ``sign_x`` so the signs line up vertically across rows."""
+def _place(eq, sign_x, y, sign_idx=1):
+    """Position an equation at height ``y`` with its relation sign snapped to
+    ``sign_x`` so ``<``, ``>``, ``=``, ``?`` line up vertically across rows."""
     eq.move_to([0, y, 0])
-    eq.shift(RIGHT * (sign_x - eq[1].get_center()[0]))
+    eq.shift(RIGHT * (sign_x - eq[sign_idx].get_center()[0]))
     return eq
+
+
+def _place_flipped_row(minus_l, num_l, sign, minus_r, num_r, sign_x, left_x, right_x, y,
+                       *, minus_buff=0.08, sign_gap=0.30):
+    """Bottom row: digits share columns with the row above; sign on ``sign_x``."""
+    num_l.move_to([left_x, y, 0])
+    num_r.move_to([right_x, y, 0])
+    sign.move_to([sign_x, y, 0])
+    minus_l.next_to(num_l, LEFT, buff=minus_buff)
+
+    # Keep the right-hand minus in the gap between the relation sign and digit 5.
+    gap_left = sign.get_right()[0] + sign_gap
+    gap_right = num_r.get_left()[0] - minus_buff
+    minus_x = gap_right - minus_r.width / 2
+    if minus_x - minus_r.width / 2 < gap_left:
+        minus_x = gap_left + minus_r.width / 2
+    minus_r.move_to([minus_x, y, 0])
+    return VGroup(minus_l, num_l, sign, minus_r, num_r)
+
+
+def _reserve_minus_gap(true_stmt, row_y, *, minus_w, minus_buff=0.08, sign_gap=0.30):
+    """Shift the top-row right digit right if needed so a minus fits before the 5 below."""
+    sign = true_stmt[1]
+    num_r = true_stmt[2]
+    min_right_x = sign.get_right()[0] + sign_gap + minus_w + minus_buff + num_r.width / 2
+    if num_r.get_center()[0] < min_right_x:
+        num_r.move_to([min_right_x, row_y, 0])
+    return num_r.get_center()[0]
 
 
 class NegativeCoefficient(IneqSlide):
@@ -58,23 +86,48 @@ class NegativeCoefficient(IneqSlide):
 
     # ----------------------------------------------------------------------
     def _motivation(self):
+        SIGN_X = 0.0
+        ROW_TOP = 1.85
+        ROW_BOT = 0.1
+
         true_stmt = MathTex("3", "<", "5", font_size=72, color=INK)
         true_stmt[1].set_color(AMBER)
-        true_stmt.move_to([0, 1.85, 0])
+        _place(true_stmt, SIGN_X, ROW_TOP)
+        minus_probe = MathTex("-", font_size=72, color=INK)
+        left_x = true_stmt[0].get_center()[0]
+        right_x = _reserve_minus_gap(true_stmt, ROW_TOP, minus_w=minus_probe.width)
         check = Tex(r"true", font_size=32, color=SAFE).next_to(true_stmt, RIGHT, buff=0.5)
 
         op = Tex(r"multiply both sides by $-1$", font_size=34, color=GOLD)
         op.move_to([0, 0.95, 0])
 
-        flipped = MathTex("-3", r"\;\;?\;\;", "-5", font_size=72, color=INK)
-        flipped.move_to([0, 0.1, 0])
+        minus_l = MathTex("-", font_size=72, color=INK)
+        num_l = MathTex("3", font_size=72, color=INK)
+        qm = MathTex("?", font_size=72, color=INK)
+        minus_r = MathTex("-", font_size=72, color=INK)
+        num_r = MathTex("5", font_size=72, color=INK)
+        flipped = _place_flipped_row(
+            minus_l, num_l, qm, minus_r, num_r, SIGN_X, left_x, right_x, ROW_BOT,
+        )
 
         self.play(Write(true_stmt))
         self.play(FadeIn(check, shift=LEFT * 0.2))
         self.play(FadeIn(op, shift=DOWN * 0.2))
-        self.play(TransformFromCopy(true_stmt[0], flipped[0]),
-                  TransformFromCopy(true_stmt[2], flipped[2]),
-                  Write(flipped[1]))
+
+        pos_l, pos_r = minus_l.get_center().copy(), minus_r.get_center().copy()
+        minus_l.set_opacity(0).move_to(pos_l + LEFT * 0.22)
+        minus_r.set_opacity(0).move_to(pos_r + LEFT * 0.22)
+
+        self.play(
+            TransformFromCopy(true_stmt[0], num_l),
+            TransformFromCopy(true_stmt[2], num_r),
+            Write(qm),
+        )
+        self.play(
+            minus_l.animate.set_opacity(1).move_to(pos_l),
+            minus_r.animate.set_opacity(1).move_to(pos_r),
+            run_time=0.55,
+        )
 
         nl = make_axis([-5, -3, 0, 3, 5], -6, 6, length=9.0, y=-1.9)
         dn5 = closed_dot(nl, -5, INK)
@@ -88,8 +141,8 @@ class NegativeCoefficient(IneqSlide):
                      font_size=30, color=MUTED).next_to(nl, DOWN, buff=0.45)
         self.play(FadeIn(bigger))
 
-        gt = MathTex(">", font_size=72, color=GREEN).move_to(flipped[1])
-        self.play(Transform(flipped[1], gt))
+        gt = MathTex(">", font_size=72, color=GREEN).move_to(qm)
+        self.play(Transform(qm, gt))
         conclusion = Tex(r"the sign \textbf{reversed}", font_size=32, color=GREEN)
         conclusion.next_to(flipped, RIGHT, buff=0.5)
         self.play(FadeIn(conclusion, shift=LEFT * 0.2))

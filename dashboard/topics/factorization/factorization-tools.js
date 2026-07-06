@@ -797,6 +797,9 @@
     function renderStep4() {
       document.getElementById("cross-a2-label").textContent = wiz.A2;
       document.getElementById("cross-c2-label").textContent = wiz.C2;
+      const eqEl = document.getElementById("cross-equation");
+      clear(eqEl);
+      eqEl.appendChild(kxEl(polyTex(wiz.A2, wiz.B2, wiz.C2)));
       const targetB = document.getElementById("cross-target-b");
       clear(targetB);
       targetB.appendChild(kxEl(midTex(wiz.B2)));
@@ -896,7 +899,39 @@
     }));
   }
 
-  function start() { renderTexAttrs(); initTabs(); initDecks(); initTools(); initCrossLab(); }
+  function initSummarySlideshow() {
+    const slides = document.querySelectorAll("#panel-summary .summary-slide");
+    const prevBtn = document.getElementById("summary-prev");
+    const nextBtn = document.getElementById("summary-next");
+    const pageNum = document.getElementById("summary-page-num");
+    const pageTotal = document.getElementById("summary-page-total");
+    if (!slides.length || !prevBtn || !nextBtn) return;
+
+    if (pageTotal) pageTotal.textContent = String(slides.length);
+
+    let idx = 0;
+
+    function render() {
+      slides.forEach((s, i) => s.classList.toggle("active", i === idx));
+      if (pageNum) pageNum.textContent = String(idx + 1);
+      prevBtn.disabled = idx === 0;
+      nextBtn.disabled = idx === slides.length - 1;
+    }
+
+    prevBtn.addEventListener("click", () => { if (idx > 0) { idx--; render(); } });
+    nextBtn.addEventListener("click", () => { if (idx < slides.length - 1) { idx++; render(); } });
+
+    document.addEventListener("keydown", (e) => {
+      const panel = document.getElementById("panel-summary");
+      if (!panel || panel.classList.contains("hidden")) return;
+      if (e.key === "ArrowLeft" && idx > 0) { idx--; render(); }
+      else if (e.key === "ArrowRight" && idx < slides.length - 1) { idx++; render(); }
+    });
+
+    render();
+  }
+
+  function start() { renderTexAttrs(); initTabs(); initDecks(); initTools(); initCrossLab(); initSummarySlideshow(); }
   if (window.katex) { window.addEventListener("DOMContentLoaded", start); }
   else { window.addEventListener("DOMContentLoaded", () => {
     // KaTeX is deferred; ensure it is present before first render.

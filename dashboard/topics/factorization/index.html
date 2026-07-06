@@ -173,6 +173,8 @@
     .slot-clear { position: absolute; top: 2px; right: 4px; background: none; border: none; color: var(--dim);
       font-size: 16px; cursor: pointer; line-height: 1; padding: 2px 4px; }
     .slot-clear:hover { color: var(--ink); }
+    .cross-equation { font-size: 28px; text-align: center; margin: 0 0 10px; line-height: 1.5; min-height: 42px; }
+    .cross-equation .katex { font-size: 1.15em; }
     .cross-target { font-size: 16px; color: var(--dim); text-align: center; margin-bottom: 12px; }
     .cross-products {
       display: grid; grid-template-columns: 84px 26px 52px 84px 26px;
@@ -270,15 +272,83 @@
     .sum-arrow { color: var(--dim); }
     .sum-ans { color: var(--ink); }
     .sum-correct { color: var(--ab); margin-left: auto; }
-    /* ── Summary ── */
-    .summary-stack {
-      max-width: 1100px; margin: 0 auto; display: flex; flex-direction: column; gap: 20px;
+    #game-blaster.hidden, #snake-game.hidden { display: none; }
+    .snake-wrap { max-width: 1120px; margin: 0 auto; }
+    .snake-how {
+      background: var(--panel); border: 1px solid var(--line); border-radius: 14px;
+      padding: 14px 18px; margin-bottom: 14px; color: #cdd6e4; line-height: 1.55;
     }
-    .summary-frame {
-      margin: 0; background: var(--panel); border: 1px solid var(--line); border-radius: 12px;
-      overflow: hidden; aspect-ratio: 16 / 9;
+    .snake-how h3 { margin: 0 0 6px; color: var(--ab); font-size: 17px; }
+    .snake-hud { display: flex; flex-wrap: wrap; align-items: center; gap: 14px; margin-bottom: 12px; }
+    .snake-stat {
+      background: var(--panel); border: 1px solid var(--line); border-radius: 11px;
+      padding: 9px 13px; color: var(--dim); font-weight: 700;
     }
-    .summary-frame img {
+    .snake-stat b { color: var(--ink); font-family: "JetBrains Mono", monospace; margin-left: 5px; }
+    .snake-modes {
+      display: inline-flex; background: var(--panel); border: 1px solid var(--line);
+      border-radius: 999px; overflow: hidden;
+    }
+    .snake-mode { background: none; border: 0; color: var(--dim); font: inherit; font-weight: 800; padding: 9px 14px; cursor: pointer; }
+    .snake-mode.active { background: var(--ab); color: #06283d; }
+    .snake-btn {
+      margin-left: auto; background: var(--a); color: #06283d; border: 0; font: inherit;
+      font-weight: 800; padding: 10px 18px; border-radius: 999px; cursor: pointer;
+    }
+    .snake-btn:hover { filter: brightness(1.06); }
+    .snake-play { display: grid; grid-template-columns: minmax(0, 1fr) 180px; gap: 16px; align-items: center; }
+    @media (max-width: 840px) { .snake-play { grid-template-columns: 1fr; } .snake-pad { margin: 0 auto; } }
+    .snake-board-wrap { background: #07101f; border: 1px solid var(--line); border-radius: 16px; padding: 12px; }
+    #snake-board {
+      width: min(100%, 760px); aspect-ratio: 1 / 1; max-height: 78vh; display: block; margin: 0 auto;
+      border-radius: 12px; background: radial-gradient(circle at 50% 0%, #142442, #07101f 62%);
+    }
+    .snake-prompt {
+      margin: 0 0 12px; background: var(--panel); border: 1px solid var(--line); border-radius: 14px;
+      padding: 14px 16px; text-align: center; font-size: 20px; min-height: 58px;
+      display: flex; align-items: center; justify-content: center;
+    }
+    .snake-msg { min-height: 24px; color: var(--dim); font-size: 14px; margin-left: auto; }
+    .snake-msg.ok { color: var(--ab); font-weight: 800; }
+    .snake-msg.bad { color: #E57373; font-weight: 800; }
+    .snake-pad {
+      display: grid; grid-template-columns: repeat(3, 56px); grid-template-rows: repeat(3, 56px); gap: 8px;
+      justify-content: center; align-content: center; background: var(--panel); border: 1px solid var(--line);
+      border-radius: 16px; padding: 14px; touch-action: none;
+    }
+    .snake-pad button {
+      border: 1px solid var(--line); border-radius: 14px; background: linear-gradient(180deg,#e2e8f0,#94a3b8);
+      color: #0f172a; font: 900 24px "JetBrains Mono", monospace; cursor: pointer;
+      box-shadow: 0 7px 15px rgba(0,0,0,.22);
+    }
+    .snake-pad button:active { transform: translateY(2px); box-shadow: 0 3px 8px rgba(0,0,0,.24); }
+    .snake-pad .up { grid-column: 2; grid-row: 1; }
+    .snake-pad .left { grid-column: 1; grid-row: 2; }
+    .snake-pad .right { grid-column: 3; grid-row: 2; }
+    .snake-pad .down { grid-column: 2; grid-row: 3; }
+    /* ── Summary slideshow ── */
+    .summary-slideshow {
+      max-width: 1100px; margin: 0 auto; display: flex; align-items: center; gap: 12px;
+    }
+    .summary-arrow {
+      flex: none; width: 44px; height: 44px; border-radius: 50%;
+      border: 1px solid var(--line); background: var(--panel2); color: var(--ink);
+      font: inherit; font-size: 20px; font-weight: 700; cursor: pointer;
+      display: flex; align-items: center; justify-content: center;
+      transition: border-color .15s, background .15s;
+    }
+    .summary-arrow:hover:not(:disabled) { border-color: var(--a); color: var(--a); }
+    .summary-arrow:disabled { opacity: .35; cursor: default; }
+    .summary-stage {
+      flex: 1; min-width: 0; position: relative; aspect-ratio: 16 / 9;
+      background: var(--panel); border: 1px solid var(--line); border-radius: 12px; overflow: hidden;
+    }
+    .summary-slide {
+      position: absolute; inset: 0; margin: 0; opacity: 0; visibility: hidden;
+      transition: opacity .22s ease;
+    }
+    .summary-slide.active { opacity: 1; visibility: visible; }
+    .summary-slide img {
       width: 100%; height: 100%; display: block; object-fit: contain; background: #000;
     }
     .summary-placeholder {
@@ -286,6 +356,11 @@
       padding: 24px; text-align: center; color: var(--dim); font-size: 14px; line-height: 1.5;
     }
     .summary-placeholder code { font-family: "JetBrains Mono", monospace; font-size: 13px; color: var(--a); }
+    .summary-meta {
+      max-width: 1100px; margin: 10px auto 0; text-align: center;
+      font-size: 13px; font-weight: 600; color: var(--dim);
+    }
+    .summary-meta b { color: var(--ink); font-family: "JetBrains Mono", monospace; }
     /* ── Quiz ── */
     .quiz-wrap { max-width: 720px; margin: 0 auto; }
     .quiz-progress-wrap { margin-bottom: 18px; }
@@ -496,6 +571,7 @@
             </div>
           </aside>
           <div class="cross-board">
+            <div class="cross-equation" id="cross-equation"></div>
             <div class="cross-target">Target xy coefficient: <span id="cross-target-b"></span></div>
             <div class="cross-board-inner" id="cross-board-inner">
               <div class="cross-grid">
@@ -537,6 +613,12 @@
 
   <!-- TAB 3: game -->
   <section id="panel-game" class="panel hidden">
+    <div class="subnav">
+      <button type="button" class="chip active" data-factor-game="blaster">Factor Blaster</button>
+      <button type="button" class="chip" data-factor-game="snake">Cross Method Snake</button>
+    </div>
+
+    <div id="game-blaster">
     <div class="game-hud">
       <div class="hud-item">Score <b id="g-score">0</b></div>
       <div class="hud-item">Q <b id="g-qnum">0/0</b></div>
@@ -586,23 +668,66 @@
       </div>
     </div>
     <p class="hint">One shot per question — the round ends after your chosen number of questions, then you get a summary.</p>
+    </div>
+
+    <div id="snake-game" class="snake-wrap hidden">
+      <div class="snake-how">
+        <h3>How to play</h3>
+        <p>Use arrow keys or WASD to guide the snake. Eat the correct factorization for the trinomial shown above the board. There is no time limit. You have 3 lives, clear 5 levels to win, and avoid walls or your own body.</p>
+        <p><b>Normal:</b> eat the correct factor pair in one step. <b>Advanced:</b> first eat the common factor, then eat both correct linear factors.</p>
+      </div>
+      <div class="snake-hud">
+        <div class="snake-stat">Level <b id="sn-level">1</b>/5</div>
+        <div class="snake-stat">Lives <b id="sn-lives">3</b></div>
+        <div class="snake-stat">Score <b id="sn-score">0</b></div>
+        <div class="snake-modes" aria-label="Snake mode">
+          <button class="snake-mode active" data-snake-mode="normal" type="button">Normal</button>
+          <button class="snake-mode" data-snake-mode="advanced" type="button">Advanced</button>
+        </div>
+        <span id="sn-msg" class="snake-msg"></span>
+        <button id="sn-start" class="snake-btn" type="button">Start Snake</button>
+      </div>
+      <div id="sn-prompt" class="snake-prompt"></div>
+      <div class="snake-play">
+        <div class="snake-board-wrap">
+          <canvas id="snake-board" width="520" height="520"></canvas>
+        </div>
+        <div class="snake-pad" aria-label="Snake direction controls">
+          <button class="up" data-snake-dir="up" type="button" aria-label="up">&#8593;</button>
+          <button class="left" data-snake-dir="left" type="button" aria-label="left">&#8592;</button>
+          <button class="right" data-snake-dir="right" type="button" aria-label="right">&#8594;</button>
+          <button class="down" data-snake-dir="down" type="button" aria-label="down">&#8595;</button>
+        </div>
+      </div>
+      <p class="hint">Controls: Arrow keys / WASD · Mobile: use the direction pad · Click <b>Start Snake</b> to begin</p>
+    </div>
   </section>
 
   <!-- TAB 4: summary sheets -->
   <section id="panel-summary" class="panel hidden">
-    <div class="summary-stack">
-      <figure class="summary-frame">
-        <img id="summary-img-1" src="summary/summary-1.png" alt="Factorization summary — page 1" loading="lazy"
-             onerror="this.hidden=true;this.parentElement.querySelector('.summary-placeholder').hidden=false">
-        <div class="summary-placeholder" hidden>Page 1 — drop image at <code>summary/summary-1.png</code></div>
-      </figure>
-      <figure class="summary-frame">
-        <img id="summary-img-2" src="summary/summary-2.png" alt="Factorization summary — page 2" loading="lazy"
-             onerror="this.hidden=true;this.parentElement.querySelector('.summary-placeholder').hidden=false">
-        <div class="summary-placeholder" hidden>Page 2 — drop image at <code>summary/summary-2.png</code></div>
-      </figure>
+    <div class="summary-slideshow">
+      <button type="button" class="summary-arrow" id="summary-prev" aria-label="Previous page">&larr;</button>
+      <div class="summary-stage" id="summary-stage">
+        <figure class="summary-slide active">
+          <img src="summary/summary-1.png" alt="Factorization summary — page 1" loading="lazy"
+               onerror="this.hidden=true;this.parentElement.querySelector('.summary-placeholder').hidden=false">
+          <div class="summary-placeholder" hidden>Page 1 — drop image at <code>summary/summary-1.png</code></div>
+        </figure>
+        <figure class="summary-slide">
+          <img src="summary/summary-2.png" alt="Factorization summary — page 2" loading="lazy"
+               onerror="this.hidden=true;this.parentElement.querySelector('.summary-placeholder').hidden=false">
+          <div class="summary-placeholder" hidden>Page 2 — drop image at <code>summary/summary-2.png</code></div>
+        </figure>
+        <figure class="summary-slide">
+          <img src="summary/summary-3.png" alt="Factorization summary — page 3" loading="lazy"
+               onerror="this.hidden=true;this.parentElement.querySelector('.summary-placeholder').hidden=false">
+          <div class="summary-placeholder" hidden>Page 3 — drop image at <code>summary/summary-3.png</code></div>
+        </figure>
+      </div>
+      <button type="button" class="summary-arrow" id="summary-next" aria-label="Next page">&rarr;</button>
     </div>
-    <p class="hint">L01–02 More about Factorization — lesson summary (2 pages).</p>
+    <p class="summary-meta">Page <b id="summary-page-num">1</b> of <b id="summary-page-total">3</b></p>
+    <p class="hint">L01–02 More about Factorization — lesson summary. Use &larr; &rarr; or the arrows to switch pages.</p>
   </section>
 
   <!-- TAB 5: quiz -->

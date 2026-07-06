@@ -11,6 +11,7 @@
   <script defer src="area-volume-tools.js"></script>
   <script defer src="area-volume-game.js"></script>
   <script defer src="area-volume-worked.js"></script>
+  <script defer src="area-volume-quiz.js"></script>
   <style>
     :root {
       --bg: #0f172a; --panel: #16213a; --panel2: #1b2945; --ink: #e5e7eb; --dim: #94a3b8;
@@ -395,6 +396,66 @@
     .mm-svg { width: 100%; max-width: 320px; height: auto; display: block; margin: 8px auto 4px; }
     .mm-map { display: flex; flex-wrap: wrap; gap: 10px 22px; margin: 10px 0; font-size: 15px; }
     .mm-map .mm-pair b { color: var(--a); }
+    /* ── Quiz ── */
+    .quiz-wrap { max-width: 720px; margin: 0 auto; min-width: 0; }
+    .quiz-progress-wrap { margin-bottom: 18px; }
+    .quiz-progress-wrap.done .quiz-progress-fill { background: var(--ab); }
+    .quiz-progress-label { font-size: 14px; font-weight: 600; color: var(--dim); margin-bottom: 8px; text-align: center; }
+    .quiz-progress-track { height: 8px; border-radius: 999px; background: var(--panel2); border: 1px solid var(--line); overflow: hidden; }
+    .quiz-progress-fill { height: 100%; width: 0; border-radius: 999px; background: var(--a); transition: width .25s ease; }
+    .quiz-nav { display: flex; justify-content: space-between; align-items: center; gap: 12px; margin-top: 20px; }
+    .quiz-nav-btn { font: inherit; font-weight: 700; padding: 12px 24px; border-radius: 999px; cursor: pointer; border: 1px solid var(--line); background: var(--panel2); color: var(--ink); min-width: 100px; }
+    .quiz-nav-btn.hidden { visibility: hidden; pointer-events: none; }
+    .quiz-nav-btn.primary { background: var(--a); color: #06283d; border-color: var(--a); box-shadow: 0 6px 18px rgba(79,195,247,.35); margin-left: auto; }
+    .quiz-nav-btn.retry { background: transparent; color: var(--ink); border: 1px solid var(--line); box-shadow: none; }
+    .quiz-review-header { text-align: center; margin-bottom: 16px; }
+    .quiz-review-header h2 { margin: 0; font-size: 22px; color: var(--a); }
+    .quiz-card-review { margin-bottom: 12px; }
+    .quiz-card-review .quiz-head { justify-content: flex-start; }
+    .quiz-card-review .quiz-mark { margin-left: auto; }
+    .quiz-yours { margin-top: 10px; font-size: 15px; color: var(--dim); display: flex; align-items: center; gap: 6px; flex-wrap: wrap; }
+    .quiz-yours-lbl { font-weight: 600; }
+    .quiz-card { background: var(--panel); border: 1px solid var(--line); border-radius: 14px; padding: 18px 20px; margin-bottom: 16px; min-width: 0; overflow: hidden; }
+    .quiz-head { display: flex; align-items: baseline; gap: 8px; margin-bottom: 10px; flex-wrap: wrap; }
+    .quiz-num { font-weight: 700; font-size: 18px; color: var(--a); font-family: "JetBrains Mono", monospace; }
+    .quiz-prompt { font-size: 16px; font-weight: 600; color: var(--dim); line-height: 1.55; flex: 1 1 100%; word-wrap: break-word; overflow-wrap: break-word; }
+    .quiz-stem { font-size: 22px; margin-bottom: 14px; max-width: 100%; overflow-x: auto; line-height: 1.5; -webkit-overflow-scrolling: touch; }
+    .quiz-stem .katex, .quiz-stem .katex-display { font-size: 1.05em; max-width: 100%; }
+    .quiz-stem .katex-display { margin: 0; text-align: left; overflow-x: auto; }
+    .quiz-mc { display: flex; flex-direction: column; gap: 8px; min-width: 0; }
+    .quiz-mc-opt { display: flex; align-items: flex-start; gap: 10px; padding: 10px 12px; border-radius: 10px; border: 1px solid var(--line); background: var(--panel2); cursor: pointer; transition: border-color .15s; min-width: 0; }
+    .quiz-mc-opt:hover:not(.locked) { border-color: var(--a); }
+    .quiz-mc-opt.locked { cursor: default; }
+    .quiz-mc-opt.reveal-ok { border-color: var(--ab); background: rgba(129,199,132,.12); }
+    .quiz-mc-opt.reveal-bad { border-color: #E57373; background: rgba(229,115,115,.1); }
+    .quiz-mc-opt input { flex: none; accent-color: var(--a); }
+    .quiz-mc-letter { font-weight: 700; color: var(--dim); min-width: 22px; font-family: "JetBrains Mono", monospace; }
+    .quiz-mc-tex { font-size: 18px; min-width: 0; flex: 1; overflow-x: auto; }
+    .quiz-sym-bar { display: flex; flex-wrap: wrap; gap: 6px; margin-bottom: 10px; }
+    .quiz-sym-btn { min-width: 36px; height: 34px; padding: 0 8px; border-radius: 8px; border: 1px solid var(--line); background: var(--panel2); color: var(--ink); font: inherit; font-weight: 600; cursor: pointer; }
+    .quiz-sym-btn:hover:not(:disabled) { border-color: var(--a); color: var(--a); }
+    .quiz-sym-btn:disabled { opacity: .4; cursor: default; }
+    .quiz-short-input { width: 100%; background: var(--panel2); color: var(--ink); border: 1px solid var(--line); border-radius: 10px; padding: 10px 12px; font-family: "JetBrains Mono", monospace; font-size: 15px; resize: vertical; min-height: 52px; }
+    .quiz-short-input:focus { outline: none; border-color: var(--a); }
+    .quiz-preview { margin-top: 10px; min-height: 36px; padding: 8px 12px; border-radius: 8px; background: rgba(8,16,32,.55); font-size: 20px; }
+    .quiz-preview.empty { color: var(--dim); font-size: 14px; font-family: "Hanken Grotesk", sans-serif; }
+    .quiz-result { display: flex; align-items: center; gap: 10px; margin-top: 14px; padding-top: 12px; border-top: 1px solid var(--line); flex-wrap: wrap; }
+    .quiz-mark { font-size: 28px; font-weight: 800; line-height: 1; }
+    .quiz-mark.ok { color: var(--ab); }
+    .quiz-mark.bad { color: #E57373; }
+    .quiz-result-msg { font-size: 15px; color: var(--dim); display: flex; align-items: center; gap: 6px; flex-wrap: wrap; }
+    .quiz-ans-tex { font-size: 18px; color: var(--ink); }
+    .quiz-part { margin-bottom: 18px; padding-bottom: 16px; border-bottom: 1px solid var(--line); }
+    .quiz-part:last-child { margin-bottom: 0; padding-bottom: 0; border-bottom: none; }
+    .quiz-part-head { display: flex; align-items: center; gap: 10px; margin-bottom: 6px; }
+    .quiz-part-label { font-weight: 700; font-size: 16px; color: var(--a); font-family: "JetBrains Mono", monospace; }
+    .quiz-part-mark { font-size: 22px; }
+    .quiz-part-stem { font-size: 20px; margin-bottom: 10px; max-width: 100%; overflow-x: auto; line-height: 1.5; }
+    .quiz-part-stem .katex, .quiz-part-stem .katex-display { max-width: 100%; }
+    .quiz-part-stem .katex-display { margin: 0; text-align: left; overflow-x: auto; }
+    .quiz-part .quiz-prompt { margin-bottom: 8px; }
+    .quiz-part-result { display: flex; align-items: center; gap: 6px; margin: 4px 0; flex-wrap: wrap; }
+    .quiz-part-result-lbl { font-weight: 700; color: var(--a); font-family: "JetBrains Mono", monospace; }
   </style>
 </head>
 <body>
@@ -408,6 +469,7 @@
     <button class="tab" data-tab="tools">Interactive Tool</button>
     <button class="tab" data-tab="game">Builder Game</button>
     <button class="tab" data-tab="worked">Worked Solutions</button>
+    <button class="tab" data-tab="quiz">Quiz</button>
   </nav>
 
   <!-- TAB 1: slide decks -->
@@ -517,6 +579,22 @@
       <iframe id="worked-ppt-frame" src="../../slides/area_volume/l07-main-deck/index.html" title="Pre S3 Maths L07-09 Area and Volume (2025)"></iframe>
     </div>
     <p class="hint">Exported from <em>Pre S3 Maths L07-09 Area and Volume (2025)</em>. Space = play/pause · ← rewinds 5s. Re-export <code>l07-09-main.mp4</code> here if the video is missing.</p>
+  </section>
+
+  <!-- TAB 5: quiz -->
+  <section id="panel-quiz" class="panel hidden">
+    <div class="quiz-wrap">
+      <div class="quiz-progress-wrap" id="quiz-progress-wrap">
+        <div class="quiz-progress-label" id="quiz-progress-label">Question 1 of 1</div>
+        <div class="quiz-progress-track"><div class="quiz-progress-fill" id="quiz-progress-fill"></div></div>
+      </div>
+      <div id="quiz-root"></div>
+      <div class="quiz-nav" id="quiz-nav">
+        <button type="button" class="quiz-nav-btn" id="quiz-back">Back</button>
+        <button type="button" class="quiz-nav-btn primary" id="quiz-next">Next</button>
+      </div>
+    </div>
+    <p class="hint">Pre S3 L07–09 Area and Volume Quiz — answer each question, use Next to move on. Submit on Q8 to see all results. Diagrams are on the paper PDF.</p>
   </section>
 
   <!-- formula popup modal -->

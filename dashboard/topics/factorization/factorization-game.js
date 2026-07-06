@@ -277,6 +277,334 @@
   }
   function resize() { if (!stage) return; enemies.forEach(placeEnemy); placeCannon(); }
 
+  /* ── Cross Method Snake ─────────────────────────────────────────────────── */
+  const SN = {
+    mounted: false, running: false, won: false, loop: null, mode: "normal",
+    canvas: null, ctx: null, prompt: null, msg: null, startBtn: null,
+    levelEl: null, livesEl: null, scoreEl: null,
+    level: 1, lives: 3, score: 0, grow: 0, cell: 22, cols: 24, rows: 24,
+    snake: [], dir: { x: 1, y: 0 }, nextDir: { x: 1, y: 0 },
+    foods: [], cur: null, collected: [], gcfCollected: false,
+  };
+  function gcfChoices(k) {
+    if (k === 2) return [1, 2, 4];
+    if (k === 3 || k === 5 || k === 7) return [3, 5, 7];
+    const facs = [];
+    for (let i = 2; i <= k; i++) if (k % i === 0) facs.push(i);
+    if (facs.length >= 3) return facs.slice().sort((a, b) => a - b);
+    const pool = k % 2 === 1 ? [1, 3, 5, 7, 9] : [2, 4, 6, 8];
+    const extras = pool.filter((n) => !facs.includes(n));
+    const third = extras[(Math.random() * extras.length) | 0];
+    return shuffle(facs.concat([third]));
+  }
+  function plainExpr(s) { return s.replace(/\s+/g, ""); }
+  function signed(n) { return n < 0 ? String(n) : "+" + n; }
+  function linFactor(n) { return "(x" + signed(n) + ")"; }
+  function factorKey(s) {
+    const nums = [];
+    const re = /\(x([+-]\d+)\)/g;
+    let m;
+    while ((m = re.exec(s))) nums.push(parseInt(m[1], 10));
+    return nums.sort((a, b) => a - b).join(",");
+  }
+  function trinomial(p, q, k) {
+    k = k || 1;
+    const b = p + q, c = p * q;
+    const A = k, B = k * b, Cc = k * c;
+    const lead = A === 1 ? "x^2" : A + "x^2";
+    const mid = B === 0 ? "" : (B === 1 ? "+x" : B === -1 ? "-x" : signed(B) + "x");
+    return lead + mid + signed(Cc);
+  }
+  function randRoot() {
+    let n = 0;
+    while (n === 0) n = ((Math.random() * 19) | 0) - 9;
+    return n;
+  }
+  function snakeQuestion() {
+    let p = randRoot(), q = randRoot();
+    while (q === p || q === -p || p + q === 0) q = randRoot();
+    const f1 = linFactor(p), f2 = linFactor(q);
+    if (SN.mode === "advanced") {
+      const k = [2, 3, 4, 5, 6, 7, 8, 9][(Math.random() * 8) | 0];
+      const otherFactors = [];
+      while (otherFactors.length < 2) {
+        const r = randRoot();
+        const tex = linFactor(r);
+        if (tex !== f1 && tex !== f2 && !otherFactors.includes(tex)) otherFactors.push(tex);
+      }
+      return {
+        prompt: trinomial(p, q, k),
+        k,
+        correct: [f1, f2],
+        gcfOpts: shuffle(gcfChoices(k)),
+        opts: shuffle([f1, f2].concat(otherFactors)),
+      };
+    }
+    const correct = f1 + f2;
+    const distractors = [
+      linFactor(-p) + linFactor(q),
+      linFactor(p) + linFactor(-q),
+      linFactor(p + (p > 0 ? 1 : -1)) + linFactor(q),
+      linFactor(p) + linFactor(q + (q > 0 ? 1 : -1)),
+      linFactor(-p) + linFactor(-q),
+    ].filter((x, i, arr) => x !== correct && arr.indexOf(x) === i);
+    return { prompt: trinomial(p, q), correct, opts: shuffle([correct].concat(shuffle(distractors).slice(0, 3))) };
+  }
+  function snakeResetBody() {
+    const len = 3 + Math.max(0, SN.level - 1);
+    SN.snake = [];
+    for (let i = 0; i < len; i++) SN.snake.push({ x: 8 - i, y: 10 });
+    SN.dir = { x: 1, y: 0 }; SN.nextDir = { x: 1, y: 0 };
+  }
+  function snakeFoodSpots() {
+    const spots = [];
+    const blocked = (x, y, w, h) => {
+      if (SN.snake.some((p) => p.x >= x - 1 && p.x < x + w + 1 && p.y >= y - 1 && p.y < y + h + 1)) return true;
+      return spots.some((s) => x < s.x + s.w + 1 && x + w + 1 > s.x && y < s.y + s.h + 1 && y + h + 1 > s.y);
+    };
+    const items = [];
+    if (SN.mode === "advanced") {
+      if (!SN.gcfCollected) {
+        SN.cur.gcfOpts.forEach((val) => {
+          items.push({ type: "gcf", value: val, correct: val === SN.cur.k, tex: String(val), w: 2, h: 2 });
+        });
+      }
+      SN.cur.opts.forEach((tex) => {
+        if (SN.collected.includes(tex)) return;
+        items.push({ type: "factor", tex, correct: SN.cur.correct.includes(tex), w: 5, h: 2 });
+      });
+    } else {
+      SN.cur.opts.forEach((tex) => {
+        const correct = factorKey(tex) === factorKey(SN.cur.correct);
+        items.push({ type: "factor", tex, correct, w: 5, h: 2 });
+      });
+    }
+    items.forEach((item) => {
+      const w = item.w, h = item.h;
+      let x = 1, y = 1, guard = 0;
+      do { x = (Math.random() * (SN.cols - w - 1) + 1) | 0; y = (Math.random() * (SN.rows - h - 1) + 1) | 0; guard++; }
+      while (blocked(x, y, w, h) && guard < 300);
+      spots.push(Object.assign({ x, y }, item));
+    });
+    SN.foods = spots;
+  }
+  function snakeAdvancedDone() {
+    return SN.gcfCollected && SN.collected.length >= 2;
+  }
+  function snakeAdvancedNeedMsg() {
+    const need = [];
+    if (!SN.gcfCollected) need.push("the common factor");
+    if (SN.collected.length < 2) need.push(SN.collected.length ? "the other factor" : "both factors");
+    return "Good. Eat " + need.join(" and ") + " too.";
+  }
+  function snakeFinishLevel() {
+    SN.score += 100;
+    if (SN.level >= 5) {
+      SN.won = true;
+      snakeStop("You win! 5 levels cleared.", "ok");
+      return true;
+    }
+    SN.level++;
+    snakeNewLevel(true);
+    return true;
+  }
+  function snakeRenderPrompt() {
+    if (!SN.prompt) return;
+    SN.prompt.innerHTML = "";
+    const span = document.createElement("span");
+    kx(span, SN.cur ? SN.cur.prompt : "\\;");
+    SN.prompt.appendChild(span);
+  }
+  function snakeNewLevel(keepSnake) {
+    SN.cur = snakeQuestion();
+    SN.collected = [];
+    SN.gcfCollected = false;
+    if (!keepSnake) snakeResetBody();
+    snakeFoodSpots();
+    snakeRenderPrompt();
+    snakeUpdateHud("");
+    snakeDraw();
+  }
+  function snakeStart() {
+    SN.level = 1; SN.lives = 3; SN.score = 0; SN.grow = 0; SN.won = false; SN.running = true;
+    SN.startBtn.textContent = "Restart Snake";
+    snakeNewLevel(false);
+    clearInterval(SN.loop);
+    SN.loop = setInterval(snakeStep, 330);
+  }
+  function snakeUpdateHud(message, cls) {
+    SN.levelEl.textContent = SN.level;
+    SN.livesEl.textContent = SN.lives;
+    SN.scoreEl.textContent = SN.score;
+    SN.msg.textContent = message || "";
+    SN.msg.className = "snake-msg" + (cls ? " " + cls : "");
+  }
+  function snakeStop(message, cls) {
+    SN.running = false;
+    clearInterval(SN.loop);
+    snakeUpdateHud(message, cls);
+  }
+  function snakeLoseLife(reason) {
+    SN.lives--;
+    if (SN.lives <= 0) {
+      snakeStop("Game over. Press Restart Snake to try again.", "bad");
+      return;
+    }
+    snakeUpdateHud(reason + " Lost 1 life.", "bad");
+    snakeResetBody();
+    snakeDraw();
+  }
+  function snakeEat(food) {
+    if (!food.correct) {
+      snakeLoseLife(food.type === "gcf" ? "Wrong common factor." : "Wrong factorization.");
+      return false;
+    }
+    if (SN.mode === "advanced") {
+      if (food.type === "gcf") {
+        SN.gcfCollected = true;
+        SN.score += 50;
+      } else if (!SN.collected.includes(food.tex)) {
+        SN.collected.push(food.tex);
+      }
+      SN.foods = SN.foods.filter((f) => f !== food);
+      if (snakeAdvancedDone()) return snakeFinishLevel();
+      snakeUpdateHud(snakeAdvancedNeedMsg(), "ok");
+      return false;
+    }
+    SN.foods = SN.foods.filter((f) => f !== food);
+    var shouldGrow = true;
+    SN.score += 100;
+    if (SN.level >= 5) {
+      SN.won = true;
+      snakeStop("You win! 5 levels cleared.", "ok");
+      return shouldGrow;
+    }
+    SN.level++;
+    snakeNewLevel(true);
+    return shouldGrow;
+  }
+  function snakeStep() {
+    if (!SN.running) return;
+    if (SN.nextDir.x + SN.dir.x !== 0 || SN.nextDir.y + SN.dir.y !== 0) SN.dir = SN.nextDir;
+    const head = SN.snake[0];
+    const next = { x: head.x + SN.dir.x, y: head.y + SN.dir.y };
+    if (next.x < 0 || next.x >= SN.cols || next.y < 0 || next.y >= SN.rows) {
+      snakeLoseLife("The snake hit a wall.");
+      return;
+    }
+    if (SN.snake.some((p) => p.x === next.x && p.y === next.y)) {
+      snakeLoseLife("The snake ran into itself.");
+      return;
+    }
+    SN.snake.unshift(next);
+    const food = SN.foods.find((f) => next.x >= f.x && next.x < f.x + f.w && next.y >= f.y && next.y < f.y + f.h);
+    if (food) {
+      if (!snakeEat(food)) SN.snake.pop();
+    }
+    else if (SN.grow > 0) SN.grow--;
+    else SN.snake.pop();
+    snakeDraw();
+  }
+  function snakeDrawFoodText(ctx, text, bx, by, bw, bh) {
+    const base = Math.min(16, Math.floor(bh * 0.52));
+    let size = base;
+    ctx.fillStyle = "#0f172a";
+    ctx.textAlign = "center";
+    ctx.textBaseline = "middle";
+    const maxW = bw - 6;
+    do {
+      ctx.font = "900 " + size + "px JetBrains Mono, monospace";
+      if (ctx.measureText(text).width <= maxW || size <= 8) break;
+      size--;
+    } while (size > 8);
+    ctx.fillText(text, bx + bw / 2, by + bh / 2);
+  }
+  function snakeDraw() {
+    if (!SN.ctx) return;
+    const ctx = SN.ctx, W = SN.canvas.width, H = SN.canvas.height;
+    SN.cell = W / SN.cols;
+    ctx.clearRect(0, 0, W, H);
+    ctx.fillStyle = "#07101f"; ctx.fillRect(0, 0, W, H);
+    ctx.strokeStyle = "rgba(148,163,184,.12)";
+    for (let i = 0; i <= SN.cols; i++) { ctx.beginPath(); ctx.moveTo(i * SN.cell, 0); ctx.lineTo(i * SN.cell, H); ctx.stroke(); }
+    for (let j = 0; j <= SN.rows; j++) { ctx.beginPath(); ctx.moveTo(0, j * SN.cell); ctx.lineTo(W, j * SN.cell); ctx.stroke(); }
+    SN.foods.forEach((f) => {
+      const x = f.x * SN.cell, y = f.y * SN.cell;
+      const bw = SN.cell * f.w, bh = SN.cell * f.h;
+      const pad = f.type === "gcf" ? 2 : 3;
+      const radius = f.type === "gcf" ? 5 : 8;
+      ctx.fillStyle = f.type === "gcf" ? "#fde68a" : "#cbd5e1";
+      ctx.strokeStyle = "#0f172a"; ctx.lineWidth = 2;
+      roundRect(ctx, x + pad, y + pad, bw - pad * 2, bh - pad * 2, radius, true, true);
+      snakeDrawFoodText(ctx, f.type === "gcf" ? String(f.value) : plainExpr(f.tex), x, y, bw, bh);
+    });
+    SN.snake.forEach((p, i) => {
+      ctx.fillStyle = i === 0 ? "#fb923c" : "#fde047";
+      roundRect(ctx, p.x * SN.cell + 3, p.y * SN.cell + 3, SN.cell - 6, SN.cell - 6, 7, true, false);
+    });
+  }
+  function roundRect(ctx, x, y, w, h, r, fill, stroke) {
+    ctx.beginPath();
+    ctx.moveTo(x + r, y); ctx.arcTo(x + w, y, x + w, y + h, r); ctx.arcTo(x + w, y + h, x, y + h, r);
+    ctx.arcTo(x, y + h, x, y, r); ctx.arcTo(x, y, x + w, y, r); ctx.closePath();
+    if (fill) ctx.fill(); if (stroke) ctx.stroke();
+  }
+  function snakeKey(ev) {
+    const k = ev.key.toLowerCase();
+    if (k === "arrowleft" || k === "a") SN.nextDir = { x: -1, y: 0 };
+    else if (k === "arrowright" || k === "d") SN.nextDir = { x: 1, y: 0 };
+    else if (k === "arrowup" || k === "w") SN.nextDir = { x: 0, y: -1 };
+    else if (k === "arrowdown" || k === "s") SN.nextDir = { x: 0, y: 1 };
+    else return;
+    ev.preventDefault();
+  }
+  function setSnakeDir(dir) {
+    if (dir === "left") SN.nextDir = { x: -1, y: 0 };
+    else if (dir === "right") SN.nextDir = { x: 1, y: 0 };
+    else if (dir === "up") SN.nextDir = { x: 0, y: -1 };
+    else if (dir === "down") SN.nextDir = { x: 0, y: 1 };
+  }
+  function mountSnake() {
+    if (SN.mounted) return;
+    SN.canvas = document.getElementById("snake-board");
+    if (!SN.canvas) return;
+    SN.ctx = SN.canvas.getContext("2d");
+    SN.prompt = document.getElementById("sn-prompt");
+    SN.msg = document.getElementById("sn-msg");
+    SN.startBtn = document.getElementById("sn-start");
+    SN.levelEl = document.getElementById("sn-level");
+    SN.livesEl = document.getElementById("sn-lives");
+    SN.scoreEl = document.getElementById("sn-score");
+    SN.startBtn.addEventListener("click", snakeStart);
+    document.querySelectorAll("[data-snake-mode]").forEach((b) => {
+      b.addEventListener("click", () => {
+        document.querySelectorAll("[data-snake-mode]").forEach((x) => x.classList.toggle("active", x === b));
+        SN.mode = b.dataset.snakeMode;
+        SN.running = false; clearInterval(SN.loop);
+        SN.level = 1; SN.lives = 3; SN.score = 0; SN.gcfCollected = false; SN.startBtn.textContent = "Start Snake";
+        SN.cur = snakeQuestion(); snakeResetBody(); snakeFoodSpots(); snakeRenderPrompt(); snakeUpdateHud(""); snakeDraw();
+      });
+    });
+    document.querySelectorAll("[data-snake-dir]").forEach((b) => {
+      b.addEventListener("pointerdown", (e) => { e.preventDefault(); setSnakeDir(b.dataset.snakeDir); });
+      b.addEventListener("click", (e) => { e.preventDefault(); setSnakeDir(b.dataset.snakeDir); });
+    });
+    window.addEventListener("keydown", (e) => {
+      if (activeFlag && document.getElementById("snake-game") && !document.getElementById("snake-game").classList.contains("hidden")) snakeKey(e);
+    });
+    SN.mounted = true;
+    SN.cur = snakeQuestion(); snakeResetBody(); snakeFoodSpots(); snakeRenderPrompt(); snakeDraw();
+  }
+  function setFactorGame(modeName) {
+    document.querySelectorAll("[data-factor-game]").forEach((b) => b.classList.toggle("active", b.dataset.factorGame === modeName));
+    const blaster = document.getElementById("game-blaster"), snake = document.getElementById("snake-game");
+    if (blaster) blaster.classList.toggle("hidden", modeName !== "blaster");
+    if (snake) snake.classList.toggle("hidden", modeName !== "snake");
+    running = false; cancelAnimationFrame(rafId);
+    if (modeName !== "snake") { SN.running = false; clearInterval(SN.loop); }
+    if (modeName === "snake") { mountSnake(); snakeDraw(); }
+  }
+
   const Game = {
     mounted: false,
     mount() {
@@ -318,11 +646,24 @@
       hudSpeed.addEventListener("input", () => setSpeed(hudSpeed.value));
       setSpeed(ovSpeed.value);
 
-      window.addEventListener("keydown", (e) => { if (activeFlag) onKey(e); });
+      document.querySelectorAll("[data-factor-game]").forEach((b) => b.addEventListener("click", () => setFactorGame(b.dataset.factorGame)));
+      mountSnake();
+
+      window.addEventListener("keydown", (e) => {
+        if (!activeFlag) return;
+        const blaster = document.getElementById("game-blaster");
+        if (blaster && !blaster.classList.contains("hidden")) onKey(e);
+      });
       window.addEventListener("resize", resize);
     },
-    show() { this.mount(); activeFlag = true; if (inRound && !running) { running = true; lastT = performance.now(); cancelAnimationFrame(rafId); rafId = requestAnimationFrame(loop); } },
-    hide() { activeFlag = false; running = false; cancelAnimationFrame(rafId); },
+    show() {
+      this.mount(); activeFlag = true;
+      const blaster = document.getElementById("game-blaster");
+      if (inRound && !running && blaster && !blaster.classList.contains("hidden")) {
+        running = true; lastT = performance.now(); cancelAnimationFrame(rafId); rafId = requestAnimationFrame(loop);
+      }
+    },
+    hide() { activeFlag = false; running = false; cancelAnimationFrame(rafId); SN.running = false; clearInterval(SN.loop); },
   };
 
   window.FactGame = Game;

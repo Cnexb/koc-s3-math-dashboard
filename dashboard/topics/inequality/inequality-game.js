@@ -31,12 +31,13 @@
   const SHUFFLE = { 1: { n: 0, delay: 0 }, 2: { n: 5, delay: 520 }, 3: { n: 11, delay: 300 } };
 
   function diagramSVG(dir, filled) {
-    const cx = 110, axisY = 68, dotY = 30, dotR = 9;
-    const end = dir === "right" ? 198 : 22;
+    const cx = 110, axisY = 68, dotY = 30, dotR = 9, arrowLen = 11;
+    const tip = dir === "right" ? 198 : 22;
     const rayStart = dir === "right" ? cx + dotR : cx - dotR;
+    const lineEnd = dir === "right" ? tip - arrowLen : tip + arrowLen;
     const head = dir === "right"
-      ? `M${end},${dotY} l-11,-6 l0,12 z`
-      : `M${end},${dotY} l11,-6 l0,12 z`;
+      ? `M${tip},${dotY} l-${arrowLen},-6 l0,12 z`
+      : `M${tip},${dotY} l${arrowLen},-6 l0,12 z`;
     const dot = filled
       ? `<circle cx="${cx}" cy="${dotY}" r="${dotR}" fill="${ACC}"/>`
       : `<circle cx="${cx}" cy="${dotY}" r="${dotR}" fill="${CARD_BG}" stroke="${ACC}" stroke-width="3.5"/>`;
@@ -44,7 +45,7 @@
       <line x1="14" y1="${axisY}" x2="206" y2="${axisY}" stroke="${AXIS}" stroke-width="2.5"/>
       <line x1="${cx}" y1="${axisY - 8}" x2="${cx}" y2="${axisY + 8}" stroke="${ZERO}" stroke-width="2"/>
       <line x1="${cx}" y1="${axisY}" x2="${cx}" y2="${dotY + dotR}" stroke="${ACC}" stroke-width="2.5"/>
-      <line x1="${rayStart}" y1="${dotY}" x2="${end}" y2="${dotY}" stroke="${ACC}" stroke-width="5.5" stroke-linecap="round"/>
+      <line x1="${rayStart}" y1="${dotY}" x2="${lineEnd}" y2="${dotY}" stroke="${ACC}" stroke-width="5.5" stroke-linecap="butt"/>
       <path d="${head}" fill="${ACC}"/>
       ${dot}
       <text x="${cx}" y="90" fill="${ZERO}" font-size="14" text-anchor="middle"
