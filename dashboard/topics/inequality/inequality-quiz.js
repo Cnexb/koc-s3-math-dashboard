@@ -127,15 +127,19 @@
     { label: ")", insert: ")" },
   ];
 
-  function prepTex(tex) {
-    let t = String(tex);
-    if (!t.includes("\\displaystyle")) t = "\\displaystyle " + t;
-    return t.replace(/\\frac\{/g, "\\dfrac{");
+  function prepTex(tex, mode) {
+    let t = String(tex).replace(/\\frac\{/g, "\\dfrac{");
+    if (mode === "block" && !t.includes("\\displaystyle")) {
+      t = "\\displaystyle " + t;
+    }
+    return t;
   }
 
   function kx(el, tex, display) {
-    try { katex.render(prepTex(tex), el, { throwOnError: false, displayMode: !!display }); }
-    catch (e) { el.textContent = tex; }
+    const mode = display ? "block" : "inline";
+    try {
+      katex.render(prepTex(tex, mode), el, { throwOnError: false, displayMode: !!display });
+    } catch (e) { el.textContent = tex; }
   }
 
   function partKey(qid, tag) { return qid + "-" + tag; }
@@ -446,14 +450,17 @@
         inp.disabled = reviewMode;
         if (state.answers[q.id] === i) inp.checked = true;
         if (!reviewMode) inp.addEventListener("change", () => { state.answers[q.id] = i; });
-        label.appendChild(inp);
+        const head = document.createElement("div");
+        head.className = "quiz-mc-head";
+        head.appendChild(inp);
         const letter = document.createElement("span");
         letter.className = "quiz-mc-letter";
         letter.textContent = letters[i] + ".";
-        label.appendChild(letter);
-        const math = document.createElement("span");
+        head.appendChild(letter);
+        label.appendChild(head);
+        const math = document.createElement("div");
         math.className = "quiz-mc-tex";
-        kx(math, tex);
+        kx(math, tex, false);
         label.appendChild(math);
         if (reviewMode) {
           if (i === q.answer) label.classList.add("reveal-ok");

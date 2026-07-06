@@ -10,7 +10,7 @@
   <link rel="stylesheet" href="../../shared/topic-shell.css">
   <script defer src="inequality-tools.js"></script>
   <script defer src="inequality-game.js"></script>
-  <script defer src="inequality-quiz.js?v=20260706q2"></script>
+  <script defer src="inequality-quiz.js?v=20260706q3"></script>
   <style>
     :root {
       --bg: #0f172a; --panel: #16213a; --panel2: #1b2945; --ink: #e5e7eb; --dim: #94a3b8;
@@ -223,7 +223,8 @@
     .mg-done { max-width: 920px; margin: 14px auto 0; text-align: center; color: var(--dim); font-size: 13px; }
 
     /* ── Quiz ── */
-    .quiz-wrap { max-width: 960px; margin: 0 auto; min-width: 0; width: 100%; }
+    #panel-quiz { overflow: visible; }
+    .quiz-wrap { max-width: 960px; margin: 0 auto; min-width: 0; width: 100%; overflow: visible; }
     .quiz-progress-wrap { margin-bottom: 18px; }
     .quiz-progress-wrap.done .quiz-progress-fill { background: var(--ab); }
     .quiz-progress-label {
@@ -273,29 +274,35 @@
     .quiz-stem .katex, .quiz-stem .katex-display { font-size: 1em; max-width: 100%; overflow: visible !important; }
     .quiz-stem .katex-display {
       display: block; margin: 0; text-align: left; overflow: visible !important;
-      white-space: normal;
     }
+    .quiz-stem .katex-display > .katex { white-space: normal; text-align: left; overflow: visible !important; }
     .quiz-item-list { margin-bottom: 14px; display: flex; flex-direction: column; gap: 6px; }
     .quiz-item-row { display: flex; align-items: baseline; gap: 8px; font-size: 20px; }
     .quiz-item-tag { font-weight: 700; color: var(--dim); min-width: 28px; font-family: "JetBrains Mono", monospace; }
     .quiz-mc { display: flex; flex-direction: column; gap: 10px; overflow: visible; }
     .quiz-mc-opt {
-      display: flex; align-items: center; gap: 10px; padding: 12px 14px; border-radius: 10px;
+      display: block; padding: 12px 14px; border-radius: 10px;
       border: 1px solid var(--line); background: var(--panel2); cursor: pointer; transition: border-color .15s;
-      min-width: 0; overflow: visible; flex-wrap: wrap;
+      overflow: visible;
     }
     .quiz-mc-opt:hover:not(.locked) { border-color: var(--a); }
     .quiz-mc-opt.locked { cursor: default; }
     .quiz-mc-opt.reveal-ok { border-color: var(--ab); background: rgba(102,187,106,.12); }
     .quiz-mc-opt.reveal-bad { border-color: #E57373; background: rgba(229,115,115,.1); }
-    .quiz-mc-opt input { flex: none; accent-color: var(--a); }
-    .quiz-mc-letter { font-weight: 700; font-size: 20px; color: var(--dim); min-width: 24px; font-family: "JetBrains Mono", monospace; }
+    .quiz-mc-head { display: flex; align-items: center; gap: 10px; margin-bottom: 6px; }
+    .quiz-mc-opt input { flex: none; accent-color: var(--a); margin: 0; }
+    .quiz-mc-letter { font-weight: 700; font-size: 20px; color: var(--dim); font-family: "JetBrains Mono", monospace; }
     .quiz-mc-tex {
-      font-size: 20px; min-width: 0; flex: 1 1 0; overflow: visible;
-      overflow-wrap: anywhere; word-break: break-word;
+      display: block; width: 100%; font-size: 20px; padding-left: 28px;
+      overflow: visible; line-height: 1.45;
     }
-    .quiz-mc-tex .katex, .quiz-mc-tex .katex-display { font-size: 1em; overflow: visible !important; }
-    .quiz-wrap .katex-display > .katex { overflow: visible !important; }
+    .quiz-mc-tex .katex { font-size: 1em; overflow: visible !important; display: inline-block; max-width: 100%; }
+    .quiz-mc-tex .katex-display { font-size: 1em; overflow: visible !important; margin: 0; display: block; text-align: left; }
+    .quiz-mc-tex .katex-display > .katex { white-space: normal; text-align: left; overflow: visible !important; }
+    #panel-quiz .katex, #panel-quiz .katex-display, #panel-quiz .katex-html, #panel-quiz .base {
+      overflow: visible !important; max-height: none !important;
+    }
+    #panel-quiz .katex-display > .katex > .katex-html { overflow: visible !important; }
     .quiz-sym-bar { display: flex; flex-wrap: wrap; gap: 6px; margin-bottom: 10px; }
     .quiz-sym-btn {
       min-width: 36px; height: 34px; padding: 0 8px; border-radius: 8px; border: 1px solid var(--line);
