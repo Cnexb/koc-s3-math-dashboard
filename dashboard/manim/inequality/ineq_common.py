@@ -40,6 +40,8 @@ STROKE = 3.0
 THIN = 2.0
 FORMULA_FS = 60
 DOT_R = 0.16
+LABEL_BUFF = 0.28
+LABEL_FS = 28
 
 
 class IneqSlide(Slide):
@@ -62,12 +64,11 @@ def make_axis(numbers, x_min, x_max, length=9.4, y=-1.7, num_color=MUTED):
     """
     if numbers:
         lo, hi = min(numbers), max(numbers)
-        # Pad past the outermost printed label so glyphs are not frame-clipped.
-        # Two-digit labels (10, 12, …) need more room than a single tick unit.
-        lo_pad = 2 if lo <= -10 else 1
-        hi_pad = 2 if hi >= 10 else 2
+        lo_pad = 2 if lo <= -10 else 2
+        hi_pad = 3 if hi >= 10 else 3
         x_min = min(x_min, lo - lo_pad)
         x_max = max(x_max, hi + hi_pad)
+
     nl = NumberLine(
         x_range=[x_min, x_max, 1],
         length=length,
@@ -76,15 +77,24 @@ def make_axis(numbers, x_min, x_max, length=9.4, y=-1.7, num_color=MUTED):
         stroke_width=STROKE,
         color=INK,
         include_tip=False,
+        include_numbers=False,
     )
     nl.add_tip(tip_length=0.24, tip_width=0.22)
     nl.add_tip(tip_length=0.24, tip_width=0.22, at_start=True)
-    nl.add_numbers(numbers, font_size=30, color=num_color, buff=0.28)
-    # add_tip shortens the axis, so the labels drift off the ticks; snap each
-    # label back under its own tick mark.
-    for label, val in zip(getattr(nl, "numbers", []), numbers):
-        label.set_x(tick_point(nl, val)[0])
+
+    # Manual MathTex labels (Create() on add_numbers clips edge digits during draw).
+    labels = VGroup()
+    for val in numbers:
+        lbl = MathTex(str(val), font_size=LABEL_FS, color=num_color)
+        tp = tick_point(nl, val)
+        lbl.move_to(np.array([tp[0], tp[1] - LABEL_BUFF, 0.0]))
+        labels.add(lbl)
+    nl.labels = labels
+    nl.add(labels)
+
+    # Nudge left so rightmost labels (4, 12, …) stay inside the frame.
     nl.move_to([0, y, 0])
+    nl.shift(LEFT * 0.38)
     return nl
 
 

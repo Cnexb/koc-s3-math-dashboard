@@ -53,6 +53,7 @@ class InequalitySigns(IneqSlide):
                 self.play(FadeOut(prev))
             self.play(FadeIn(grp[0]))            # statement + name + examples
             self.play(*grp[1])                    # number-line build animations
+            self.wait(0.8)
             prev = grp[2]
             self.next_slide()
 
@@ -103,7 +104,7 @@ class InequalitySigns(IneqSlide):
                                               sign_col, rise=0.95)
 
         anims = [
-            Create(nl),
+            FadeIn(nl, shift=UP * 0.08),
             Create(connector),
             GrowFromCenter(dot),
             Create(ray),

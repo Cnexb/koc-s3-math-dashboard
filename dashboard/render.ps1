@@ -34,6 +34,18 @@ try {
     & $Venv convert --to=html $SceneName $OutHtml
     if ($LASTEXITCODE -ne 0) { exit $LASTEXITCODE }
 
+    # Patch deck: autoplay background videos to final frame on each slide.
+    $VideoPatch = Join-Path $Here "slides\slide-video-autoplay.js"
+    if (Test-Path $VideoPatch) {
+        $DeckDir = Split-Path $OutHtml -Parent
+        Copy-Item -Force $VideoPatch (Join-Path $DeckDir "slide-video-autoplay.js")
+        $html = Get-Content $OutHtml -Raw
+        if ($html -notmatch 'slide-video-autoplay\.js') {
+            $html = $html -replace '(</body>)', "    <script src=`"slide-video-autoplay.js`"></script>`n  `$1"
+            Set-Content -Path $OutHtml -Value $html -NoNewline
+        }
+    }
+
     Write-Host "Done: $OutHtml" -ForegroundColor Green
 }
 finally {

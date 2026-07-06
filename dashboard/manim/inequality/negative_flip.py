@@ -134,7 +134,7 @@ class NegativeCoefficient(IneqSlide):
         dn3 = closed_dot(nl, -3, INK)
         l5 = MathTex("-5", font_size=30, color=MUTED).next_to(dn5, UP, buff=0.28)
         l3 = MathTex("-3", font_size=30, color=MUTED).next_to(dn3, UP, buff=0.28)
-        self.play(Create(nl))
+        self.play(FadeIn(nl, shift=UP * 0.08))
         self.play(GrowFromCenter(dn5), GrowFromCenter(dn3), FadeIn(l5), FadeIn(l3))
 
         bigger = Tex(r"$-3$ lies to the \emph{right} of $-5$, so $-3$ is larger",
