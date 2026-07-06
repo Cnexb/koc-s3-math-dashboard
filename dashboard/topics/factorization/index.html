@@ -8,7 +8,7 @@
   <script defer src="https://cdn.jsdelivr.net/npm/katex@0.16.11/dist/katex.min.js" crossorigin="anonymous"></script>
   <link href="https://fonts.googleapis.com/css2?family=Hanken+Grotesk:wght@400;600;700&family=JetBrains+Mono:wght@400;700&display=swap" rel="stylesheet">
   <link rel="stylesheet" href="../../shared/topic-shell.css">
-  <script defer src="factorization-tools.js?v=20260706-ipad2"></script>
+  <script defer src="factorization-tools.js?v=20260706-ipad3"></script>
   <script defer src="factorization-game.js"></script>
   <script defer src="factorization-quiz.js?v=20260706"></script>
   <style>
@@ -458,7 +458,12 @@
     html.tablet-touch #panel-tools .tool-layout { grid-template-columns: 1fr; }
     html.tablet-touch #panel-tools .figure-card { padding-bottom: 12px; }
     html.tablet-touch #tool-svg { max-width: min(100%, 560px); margin: 0 auto; }
-    html.tablet-touch #panel-tools .cross-lab-layout { grid-template-columns: 1fr; }
+    /* Cross method: keep pair bank left, cross board right on iPad */
+    html.tablet-touch .cross-lab-layout {
+      grid-template-columns: minmax(180px, 260px) minmax(0, 1fr);
+      gap: 14px;
+    }
+    html.tablet-touch .cross-pair-bank { max-height: 480px; }
     html.tablet-touch .drag-chip {
       min-width: 44px; min-height: 44px; padding: 0 14px; font-size: 17px;
       touch-action: manipulation; -webkit-user-select: none; user-select: none; cursor: pointer;
