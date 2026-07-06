@@ -260,16 +260,22 @@
     }
     .quiz-head { display: flex; align-items: baseline; gap: 8px; margin-bottom: 10px; flex-wrap: wrap; }
     .quiz-num { font-weight: 700; font-size: 18px; color: var(--a); font-family: "JetBrains Mono", monospace; }
-    .quiz-prompt { font-size: 16px; font-weight: 600; color: var(--dim); line-height: 1.55; flex: 1 1 100%; }
+    .quiz-prompt { font-size: 16px; font-weight: 600; color: var(--dim); line-height: 1.55; flex: 1 1 100%; word-wrap: break-word; overflow-wrap: break-word; }
+    .quiz-content { min-width: 0; }
     .quiz-stem {
       font-size: 22px; margin-bottom: 14px; max-width: 100%; overflow-x: auto;
-      line-height: 1.5;
+      line-height: 1.5; -webkit-overflow-scrolling: touch;
     }
-    .quiz-stem .katex { font-size: 1.05em; max-width: 100%; }
+    .quiz-stem .katex, .quiz-stem .katex-display { font-size: 1.05em; max-width: 100%; }
+    .quiz-stem .katex-display { margin: 0; text-align: left; overflow-x: auto; }
+    .quiz-item-list { margin-bottom: 14px; display: flex; flex-direction: column; gap: 6px; }
+    .quiz-item-row { display: flex; align-items: baseline; gap: 8px; font-size: 18px; }
+    .quiz-item-tag { font-weight: 700; color: var(--dim); min-width: 28px; font-family: "JetBrains Mono", monospace; }
     .quiz-mc { display: flex; flex-direction: column; gap: 8px; }
     .quiz-mc-opt {
-      display: flex; align-items: center; gap: 10px; padding: 10px 12px; border-radius: 10px;
+      display: flex; align-items: flex-start; gap: 10px; padding: 10px 12px; border-radius: 10px;
       border: 1px solid var(--line); background: var(--panel2); cursor: pointer; transition: border-color .15s;
+      min-width: 0;
     }
     .quiz-mc-opt:hover:not(.locked) { border-color: var(--a); }
     .quiz-mc-opt.locked { cursor: default; }
@@ -277,7 +283,7 @@
     .quiz-mc-opt.reveal-bad { border-color: #E57373; background: rgba(229,115,115,.1); }
     .quiz-mc-opt input { flex: none; accent-color: var(--a); }
     .quiz-mc-letter { font-weight: 700; color: var(--dim); min-width: 22px; font-family: "JetBrains Mono", monospace; }
-    .quiz-mc-tex { font-size: 18px; }
+    .quiz-mc-tex { font-size: 18px; min-width: 0; flex: 1; overflow-x: auto; }
     .quiz-sym-bar { display: flex; flex-wrap: wrap; gap: 6px; margin-bottom: 10px; }
     .quiz-sym-btn {
       min-width: 36px; height: 34px; padding: 0 8px; border-radius: 8px; border: 1px solid var(--line);

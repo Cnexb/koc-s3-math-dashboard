@@ -1,21 +1,27 @@
-/* Area & Volume quiz — Pre S3 L07–09 Area and Volume Quiz (QUE); paginated MC + short */
+/* Area & Volume quiz — Pre S3 L07–09; paginated MC (10), figures beside stems */
 (function () {
   "use strict";
+
+  const FIG = "quiz-figures/";
 
   const QUIZ = [
     {
       id: 1,
       type: "mc",
-      prompt: "Refer to the figure in the quiz paper.",
       stem: "\\text{What is the volume of the pyramid?}",
+      figures: [{ src: FIG + "q1-pyramid.png", alt: "Right pyramid with base 5 cm, 12 cm and height 16 cm" }],
       choices: ["320\\text{ cm}^3", "230\\text{ cm}^3", "160\\text{ cm}^3", "80\\text{ cm}^3"],
       answer: 2,
     },
     {
       id: 2,
       type: "mc",
-      prompt: "Refer to the figure. Cone: height 4 cm, radius 3 cm. Cylinder: radius 2 cm. They have the same volume.",
+      prompt: "The cone and cylinder have the same volume. Cone: height 4 cm, radius 3 cm. Cylinder: radius 2 cm.",
       stem: "\\text{Find the height of the cylinder.}",
+      figures: [
+        { src: FIG + "q2-cone.png", alt: "Cone height 4 cm, radius 3 cm" },
+        { src: FIG + "q2-cylinder.png", alt: "Cylinder radius 2 cm" },
+      ],
       choices: ["2\\text{ cm}", "3\\text{ cm}", "4\\text{ cm}", "6\\text{ cm}"],
       answer: 1,
     },
@@ -31,66 +37,73 @@
       id: 4,
       type: "mc",
       stem: "\\text{The surface area of a sphere is }64\\pi\\text{ cm}^2\\text{. Find its volume.}",
-      choices: ["\\frac{64}{3}\\pi\\text{ cm}^3", "\\frac{128}{3}\\pi\\text{ cm}^3", "64\\pi\\text{ cm}^3", "\\frac{256}{3}\\pi\\text{ cm}^3"],
+      choices: [
+        "\\frac{64}{3}\\pi\\text{ cm}^3",
+        "\\frac{128}{3}\\pi\\text{ cm}^3",
+        "64\\pi\\text{ cm}^3",
+        "\\frac{256}{3}\\pi\\text{ cm}^3",
+      ],
       answer: 3,
     },
     {
       id: 5,
       type: "mc",
-      prompt: "An inverted cone contains 324 cm³ of water. The depth of water is 3/5 of the height of the vessel.",
+      prompt: "An inverted cone contains 324 cm³ of water. The depth of water is \\frac{3}{5} of the height of the vessel.",
       stem: "\\text{Find the capacity of the vessel.}",
+      figures: [{ src: FIG + "q5-vessel.png", alt: "Inverted cone partially filled with water" }],
       choices: ["540\\text{ cm}^3", "750\\text{ cm}^3", "1250\\text{ cm}^3", "1500\\text{ cm}^3"],
       answer: 3,
     },
     {
       id: 6,
-      type: "short",
-      prompt: "Refer to the figure. A hemisphere (upper part) and a cylinder (lower part), radius 4 mm, cylinder height 10 mm.",
+      type: "mc",
+      prompt: "A hemisphere (upper) and a cylinder (lower) share base radius 4 mm. The cylinder height is 10 mm.",
       stem: "\\text{Find the volume of the component (3 s.f.).}",
-      answer: "637\\text{ mm}^3",
-      accept: ["637", "637 mm^3", "637\\text{ mm}^3", "637 mm3"],
+      figures: [{ src: FIG + "q6-component.png", alt: "Hemisphere on top of a cylinder, radius 4 mm" }],
+      choices: ["288\\text{ mm}^3", "503\\text{ mm}^3", "637\\text{ mm}^3", "800\\text{ mm}^3"],
+      answer: 2,
     },
     {
       id: 7,
-      type: "short",
+      type: "mc",
       prompt: "A solid right pyramid has a square base of side 10 cm and height 12 cm.",
       stem: "\\text{Find the total surface area of the pyramid.}",
-      answer: "360\\text{ cm}^2",
-      accept: ["360", "360 cm^2", "360\\text{ cm}^2"],
+      figures: [{ src: FIG + "q7-pyramid.png", alt: "Square-based right pyramid, base 10 cm, height 12 cm" }],
+      choices: ["260\\text{ cm}^2", "300\\text{ cm}^2", "360\\text{ cm}^2", "400\\text{ cm}^2"],
+      answer: 2,
     },
     {
       id: 8,
-      type: "short",
-      prompt: "Refer to the figure. A vertical right conical vessel contains some water.",
-      parts: [
-        {
-          tag: "a",
-          prompt: "The ratio of curved surface area (vessel) to curved surface area (water) is 36 : 25.",
-          stem: "\\text{Find the ratio of the base radius of the vessel to the radius of the water surface.}",
-          answer: "6:5",
-          accept: ["6 : 5", "6/5", "6 to 5"],
-        },
-        {
-          tag: "b",
-          prompt: "The vessel contains 600 cm³ of water.",
-          stem: "\\text{Alex claims that adding 300 cm³ will make the water overflow. Do you agree?}",
-          answer: "\\text{Disagree}",
-          accept: ["disagree", "no", "not agree", "will not overflow", "no overflow"],
-        },
-      ],
+      type: "mc",
+      prompt: "A vertical conical vessel contains water. The ratio of curved surface area (vessel) to curved surface area (water) is 36 : 25.",
+      stem: "\\text{Find the ratio of the base radius of the vessel to the radius of the water surface.}",
+      figures: [{ src: FIG + "q8-vessel.png", alt: "Conical vessel with water inside" }],
+      choices: ["5:6", "6:5", "25:36", "36:25"],
+      answer: 1,
     },
-  ];
-
-  const SYMBOLS = [
-    { label: "π", insert: "\\pi" },
-    { label: "≤ frac", insert: "\\frac{}{}" },
-    { label: "cm", insert: "\\text{ cm}" },
-    { label: "+", insert: "+" },
-    { label: "−", insert: "-" },
-    { label: "=", insert: "=" },
-    { label: ":", insert: ":" },
-    { label: "(", insert: "(" },
-    { label: ")", insert: ")" },
+    {
+      id: 9,
+      type: "mc",
+      prompt: "The vessel contains 600 cm³ of water. Alex claims that adding 300 cm³ will make the water overflow.",
+      stem: "\\text{Do you agree?}",
+      figures: [{ src: FIG + "q8-vessel.png", alt: "Conical vessel with water inside" }],
+      choices: [
+        "\\text{Agree — the water will overflow}",
+        "\\text{Disagree — the water will not overflow}",
+        "\\text{Agree — total water would be }900\\text{ cm}^3",
+        "\\text{Disagree — capacity is only }600\\text{ cm}^3",
+      ],
+      answer: 1,
+    },
+    {
+      id: 10,
+      type: "mc",
+      prompt: "The vessel contains 600 cm³ of water (same conical vessel as above).",
+      stem: "\\text{Find the capacity of the vessel.}",
+      figures: [{ src: FIG + "q8-vessel.png", alt: "Conical vessel with water inside" }],
+      choices: ["900\\text{ cm}^3", "1040\\text{ cm}^3", "1250\\text{ cm}^3", "1500\\text{ cm}^3"],
+      answer: 1,
+    },
   ];
 
   function kx(el, tex, display) {
@@ -98,95 +111,8 @@
     catch (e) { el.textContent = tex; }
   }
 
-  function partKey(qid, tag) { return qid + "-" + tag; }
-
-  function normalizeTex(s) {
-    return String(s || "")
-      .replace(/\u2212/g, "-")
-      .replace(/\u2013/g, "-")
-      .replace(/\s+/g, "")
-      .replace(/\\leq/g, "\\le")
-      .replace(/\\geq/g, "\\ge")
-      .replace(/≤/g, "\\le")
-      .replace(/≥/g, "\\ge")
-      .toLowerCase();
-  }
-
-  function parseIntList(s) {
-    const t = String(s || "")
-      .replace(/\band\b/gi, ",")
-      .replace(/\u2212/g, "-")
-      .replace(/;/g, ",");
-    const nums = t.match(/-?\d+(?:\.\d+)?/g);
-    if (!nums) return null;
-    return nums.map(Number).sort((a, b) => a - b);
-  }
-
-  function intListsEqual(a, b) {
-    const pa = parseIntList(a);
-    const pb = parseIntList(b);
-    if (!pa || !pb || pa.length !== pb.length) return false;
-    return pa.every((v, i) => v === pb[i]);
-  }
-
-  function fracToDecimal(tex) {
-    const m = tex.match(/\\frac\{(-?\d+(?:\.\d+)?)\}\{(-?\d+(?:\.\d+)?)\}/);
-    if (!m) return null;
-    const den = +m[2];
-    if (!den) return null;
-    return +m[1] / den;
-  }
-
-  function ineqBound(tex) {
-    const n = normalizeTex(tex);
-    const m = n.match(/^x([<>]|\\le|\\ge|\\leq|\\geq)(.+)$/);
-    if (!m) return null;
-    let op = m[1].replace("\\leq", "\\le").replace("\\geq", "\\ge");
-    let val = m[2];
-    const dec = fracToDecimal(val);
-    if (dec != null) val = String(dec);
-    else val = val.replace(/\\frac\{(\d+)\}\{(\d+)\}/g, (_, a, b) => String(+a / +b));
-    return op + val;
-  }
-
-  function equivIneq(a, b) {
-    if (normalizeTex(a) === normalizeTex(b)) return true;
-    const ia = ineqBound(a);
-    const ib = ineqBound(b);
-    if (ia && ib && ia === ib) return true;
-    return false;
-  }
-
-  function equivCount(a, b) {
-    const na = normalizeTex(a).replace(/values?/g, "");
-    const nb = normalizeTex(b);
-    if (na === nb) return true;
-    const da = na.match(/\d+/);
-    const db = nb.match(/\d+/);
-    if (da && db && da[0] === db[0]) {
-      const list = parseIntList(a);
-      if (list && list.length === +da[0]) return true;
-    }
-    return false;
-  }
-
-  function checkPart(part, ans) {
-    if (ans == null || String(ans).trim() === "") return false;
-    const targets = [part.answer].concat(part.accept || []);
-    return targets.some((t) => {
-      if (intListsEqual(ans, t)) return true;
-      if (equivIneq(ans, t)) return true;
-      if (equivCount(ans, t)) return true;
-      return normalizeTex(ans) === normalizeTex(t);
-    });
-  }
-
   function checkQuestion(q, answers) {
-    if (q.type === "mc") return answers[q.id] === q.answer;
-    if (q.parts) {
-      return q.parts.every((p) => checkPart(p, answers[partKey(q.id, p.tag)]));
-    }
-    return checkPart({ answer: q.answer, accept: q.accept }, answers[q.id]);
+    return answers[q.id] === q.answer;
   }
 
   function initQuiz() {
@@ -198,27 +124,7 @@
     const nextBtn = document.getElementById("quiz-next");
     if (!root || !nextBtn) return;
 
-    const state = {
-      index: 0,
-      answers: {},
-      submitted: false,
-      phase: "quiz",
-      activeInputId: null,
-    };
-
-    function saveCurrentShort() {
-      const q = QUIZ[state.index];
-      if (!q || q.type !== "short") return;
-      if (q.parts) {
-        q.parts.forEach((p) => {
-          const ta = document.getElementById("quiz-input-" + partKey(q.id, p.tag));
-          if (ta) state.answers[partKey(q.id, p.tag)] = ta.value;
-        });
-      } else {
-        const ta = document.getElementById("quiz-input-" + q.id);
-        if (ta) state.answers[q.id] = ta.value;
-      }
-    }
+    const state = { index: 0, answers: {}, submitted: false, phase: "quiz" };
 
     function updateProgress() {
       if (!progressWrap) return;
@@ -249,21 +155,31 @@
     }
 
     function render() {
-      saveCurrentShort();
       root.innerHTML = "";
       updateProgress();
       updateNav();
-      if (state.phase === "review") {
-        renderReview();
-        return;
-      }
+      if (state.phase === "review") { renderReview(); return; }
       const q = QUIZ[state.index];
       if (q) root.appendChild(buildCard(q, false));
+    }
+
+    function buildFigures(figs) {
+      const wrap = document.createElement("div");
+      wrap.className = "quiz-figure" + (figs.length > 1 ? " quiz-figure-stack" : "");
+      figs.forEach((fig) => {
+        const img = document.createElement("img");
+        img.src = fig.src;
+        img.alt = fig.alt || "Figure";
+        img.loading = "lazy";
+        wrap.appendChild(img);
+      });
+      return wrap;
     }
 
     function buildCard(q, reviewMode) {
       const card = document.createElement("article");
       card.className = "quiz-card" + (reviewMode ? " quiz-card-review" : "");
+      if (q.figures && q.figures.length) card.classList.add("has-figure");
       const ok = checkQuestion(q, state.answers);
 
       const head = document.createElement("div");
@@ -286,19 +202,28 @@
       }
       card.appendChild(head);
 
+      const content = document.createElement("div");
+      content.className = "quiz-content";
       if (q.stem) {
         const stem = document.createElement("div");
         stem.className = "quiz-stem";
         kx(stem, q.stem, true);
-        card.appendChild(stem);
+        content.appendChild(stem);
       }
-
       const body = document.createElement("div");
       body.className = "quiz-body";
-      if (q.type === "mc") body.appendChild(buildMc(q, reviewMode));
-      else if (q.parts) body.appendChild(buildShortParts(q, reviewMode));
-      else body.appendChild(buildShortSingle(q, reviewMode));
-      card.appendChild(body);
+      body.appendChild(buildMc(q, reviewMode));
+      content.appendChild(body);
+
+      if (q.figures && q.figures.length) {
+        const main = document.createElement("div");
+        main.className = "quiz-main";
+        main.appendChild(content);
+        main.appendChild(buildFigures(q.figures));
+        card.appendChild(main);
+      } else {
+        card.appendChild(content);
+      }
 
       if (reviewMode && !ok) card.appendChild(buildCorrectBlock(q));
       return card;
@@ -307,40 +232,14 @@
     function buildCorrectBlock(q) {
       const block = document.createElement("div");
       block.className = "quiz-result";
-      if (q.parts) {
-        q.parts.forEach((p) => {
-          if (checkPart(p, state.answers[partKey(q.id, p.tag)])) return;
-          const row = document.createElement("div");
-          row.className = "quiz-part-result";
-          const lbl = document.createElement("span");
-          lbl.className = "quiz-part-result-lbl";
-          lbl.textContent = "(" + p.tag + ") ";
-          row.appendChild(lbl);
-          const ans = document.createElement("span");
-          ans.className = "quiz-ans-tex";
-          kx(ans, p.answer);
-          row.appendChild(ans);
-          block.appendChild(row);
-        });
-      } else if (q.type === "mc") {
-        const msg = document.createElement("span");
-        msg.className = "quiz-result-msg";
-        msg.textContent = "Correct answer: ";
-        const ans = document.createElement("span");
-        ans.className = "quiz-ans-tex";
-        kx(ans, q.choices[q.answer]);
-        msg.appendChild(ans);
-        block.appendChild(msg);
-      } else {
-        const msg = document.createElement("span");
-        msg.className = "quiz-result-msg";
-        msg.textContent = "Correct answer: ";
-        const ans = document.createElement("span");
-        ans.className = "quiz-ans-tex";
-        kx(ans, q.answer);
-        msg.appendChild(ans);
-        block.appendChild(msg);
-      }
+      const msg = document.createElement("span");
+      msg.className = "quiz-result-msg";
+      msg.textContent = "Correct answer: ";
+      const ans = document.createElement("span");
+      ans.className = "quiz-ans-tex";
+      kx(ans, q.choices[q.answer]);
+      msg.appendChild(ans);
+      block.appendChild(msg);
       return block;
     }
 
@@ -377,128 +276,6 @@
       return list;
     }
 
-    function buildSymBar() {
-      const toolbar = document.createElement("div");
-      toolbar.className = "quiz-sym-bar";
-      SYMBOLS.forEach((sym) => {
-        const btn = document.createElement("button");
-        btn.type = "button";
-        btn.className = "quiz-sym-btn";
-        btn.textContent = sym.label;
-        btn.title = sym.insert;
-        btn.addEventListener("click", () => insertIntoActive(sym.insert));
-        toolbar.appendChild(btn);
-      });
-      return toolbar;
-    }
-
-    function buildShortParts(q, reviewMode) {
-      const wrap = document.createElement("div");
-      wrap.className = "quiz-short-wrap";
-      if (!reviewMode) wrap.appendChild(buildSymBar());
-      q.parts.forEach((p) => {
-        const key = partKey(q.id, p.tag);
-        const partOk = checkPart(p, state.answers[key]);
-        const block = document.createElement("div");
-        block.className = "quiz-part";
-        const head = document.createElement("div");
-        head.className = "quiz-part-head";
-        const lbl = document.createElement("span");
-        lbl.className = "quiz-part-label";
-        lbl.textContent = "(" + p.tag + ")";
-        head.appendChild(lbl);
-        if (reviewMode) {
-          const mark = document.createElement("span");
-          mark.className = "quiz-mark quiz-part-mark " + (partOk ? "ok" : "bad");
-          mark.textContent = partOk ? "\u2713" : "\u2717";
-          head.appendChild(mark);
-        }
-        block.appendChild(head);
-        if (p.prompt) {
-          const pr = document.createElement("div");
-          pr.className = "quiz-prompt";
-          pr.textContent = p.prompt;
-          block.appendChild(pr);
-        }
-        const stem = document.createElement("div");
-        stem.className = "quiz-part-stem";
-        kx(stem, p.stem, true);
-        block.appendChild(stem);
-        if (reviewMode) {
-          const yours = document.createElement("div");
-          yours.className = "quiz-yours";
-          const yl = document.createElement("span");
-          yl.className = "quiz-yours-lbl";
-          yl.textContent = "Your answer: ";
-          yours.appendChild(yl);
-          const tex = document.createElement("span");
-          tex.className = "quiz-ans-tex";
-          kx(tex, String(state.answers[key] || "").trim() || "\\text{(blank)}");
-          yours.appendChild(tex);
-          block.appendChild(yours);
-        } else {
-          const ta = document.createElement("textarea");
-          ta.className = "quiz-short-input";
-          ta.id = "quiz-input-" + key;
-          ta.rows = 2;
-          ta.placeholder = "Answer for (" + p.tag + ")\u2026";
-          ta.value = state.answers[key] || "";
-          ta.addEventListener("focus", () => { state.activeInputId = ta.id; });
-          ta.addEventListener("input", () => {
-            state.answers[key] = ta.value;
-            updatePreview(key, ta.value);
-          });
-          block.appendChild(ta);
-          const preview = document.createElement("div");
-          preview.className = "quiz-preview";
-          preview.id = "quiz-preview-" + key;
-          block.appendChild(preview);
-          updatePreview(key, ta.value);
-        }
-        wrap.appendChild(block);
-      });
-      return wrap;
-    }
-
-    function buildShortSingle(q, reviewMode) {
-      const wrap = document.createElement("div");
-      wrap.className = "quiz-short-wrap";
-      const key = String(q.id);
-      if (!reviewMode) wrap.appendChild(buildSymBar());
-      if (reviewMode) {
-        const yours = document.createElement("div");
-        yours.className = "quiz-yours";
-        const lbl = document.createElement("span");
-        lbl.className = "quiz-yours-lbl";
-        lbl.textContent = "Your answer: ";
-        yours.appendChild(lbl);
-        const tex = document.createElement("span");
-        tex.className = "quiz-ans-tex";
-        kx(tex, String(state.answers[key] || "").trim() || "\\text{(blank)}");
-        yours.appendChild(tex);
-        wrap.appendChild(yours);
-      } else {
-        const ta = document.createElement("textarea");
-        ta.className = "quiz-short-input";
-        ta.id = "quiz-input-" + key;
-        ta.rows = 2;
-        ta.placeholder = "Type LaTeX or use buttons above\u2026";
-        ta.value = state.answers[key] || "";
-        ta.addEventListener("focus", () => { state.activeInputId = ta.id; });
-        ta.addEventListener("input", () => {
-          state.answers[key] = ta.value;
-          updatePreview(key, ta.value);
-        });
-        wrap.appendChild(ta);
-        const preview = document.createElement("div");
-        preview.className = "quiz-preview";
-        preview.id = "quiz-preview-" + key;
-        wrap.appendChild(preview);
-        updatePreview(key, ta.value);
-      }
-      return wrap;
-    }
-
     function renderReview() {
       const score = QUIZ.filter((q) => checkQuestion(q, state.answers)).length;
       const header = document.createElement("div");
@@ -510,50 +287,10 @@
       QUIZ.forEach((q) => root.appendChild(buildCard(q, true)));
     }
 
-    function insertIntoActive(text) {
-      if (state.submitted || state.phase === "review") return;
-      const id = state.activeInputId;
-      if (!id) return;
-      const ta = document.getElementById(id);
-      if (!ta) return;
-      const start = ta.selectionStart;
-      const end = ta.selectionEnd;
-      const val = ta.value;
-      let ins = text;
-      if (text === "\\frac{}{}") {
-        ta.value = val.slice(0, start) + "\\frac{}{}" + val.slice(end);
-        ta.setSelectionRange(start + 6, start + 6);
-      } else {
-        ta.value = val.slice(0, start) + ins + val.slice(end);
-        ta.setSelectionRange(start + ins.length, start + ins.length);
-      }
-      const key = id.replace("quiz-input-", "");
-      state.answers[key] = ta.value;
-      updatePreview(key, ta.value);
-      ta.focus();
-    }
-
-    function updatePreview(key, tex) {
-      const el = document.getElementById("quiz-preview-" + key);
-      if (!el) return;
-      el.innerHTML = "";
-      if (!tex || !tex.trim()) {
-        el.textContent = "Preview";
-        el.classList.add("empty");
-        return;
-      }
-      el.classList.remove("empty");
-      kx(el, tex.trim());
-    }
-
     if (backBtn) {
       backBtn.addEventListener("click", () => {
         if (state.phase === "review") return;
-        saveCurrentShort();
-        if (state.index > 0) {
-          state.index--;
-          render();
-        }
+        if (state.index > 0) { state.index--; render(); }
       });
     }
 
@@ -563,11 +300,9 @@
         state.answers = {};
         state.submitted = false;
         state.phase = "quiz";
-        state.activeInputId = null;
         render();
         return;
       }
-      saveCurrentShort();
       if (state.index >= QUIZ.length - 1) {
         state.submitted = true;
         state.phase = "review";

@@ -1,4 +1,4 @@
-/* Inequality quiz — paginated MC + short (multi-part), progress bar, submit on last → all results */
+/* Inequality quiz — paginated MC (10), progress bar, submit on last → all results */
 (function () {
   "use strict";
 
@@ -58,37 +58,53 @@
     },
     {
       id: 6,
-      type: "short",
-      parts: [
-        {
-          tag: "a",
-          stem: "\\text{Solve the inequality } \\frac{x}{4} - 2 \\le 0.8 - \\frac{x}{3}",
-          answer: "x \\le \\frac{24}{5}",
-          accept: ["x\\le\\frac{24}{5}", "x \\le 24/5", "x\\le 4.8", "x \\le 4.8"],
-        },
-        {
-          tag: "b",
-          stem: "\\text{Write down all positive integers satisfying the inequality in (a).}",
-          answer: "1,\\; 2,\\; 3,\\; 4",
-          accept: ["1,2,3,4", "1, 2, 3, 4", "1,2,3 and 4", "1, 2, 3 and 4"],
-        },
-      ],
+      type: "mc",
+      prompt: "Solve the inequality",
+      stem: "\\frac{x}{4} - 2 \\le 0.8 - \\frac{x}{3}",
+      choices: ["x > \\frac{24}{5}", "x \\le \\frac{24}{5}", "x \\le 5", "x \\ge 4.8"],
+      answer: 1,
     },
     {
       id: 7,
-      type: "short",
-      prompt: "Write down all positive integers satisfying the inequality",
-      stem: "\\frac{4x + 3}{5} < \\frac{1 - 3x}{6} + 4",
-      answer: "1,\\; 2",
-      accept: ["1,2", "1, 2", "1 and 2", "1, 2"],
+      type: "mc",
+      prompt: "Write down all positive integers satisfying",
+      stem: "x \\le \\frac{24}{5}",
+      choices: [
+        "1,\\; 2,\\; 3,\\; 4",
+        "1,\\; 2,\\; 3,\\; 4,\\; 5",
+        "1,\\; 2,\\; 3",
+        "2,\\; 3,\\; 4",
+      ],
+      answer: 0,
     },
     {
       id: 8,
-      type: "short",
-      prompt: "A non-negative number x satisfies the equation below, where k is a positive integral constant. How many possible values of k are there?",
-      stem: "\\frac{2x-k}{3} = \\frac{5x-7}{4} + \\frac{x+k}{6}",
-      answer: "3",
-      accept: ["3 values", "three", "1,2,3", "1, 2, 3"],
+      type: "mc",
+      prompt: "Write down all positive integers satisfying the inequality",
+      stem: "\\frac{4x + 3}{5} < \\frac{1 - 3x}{6} + 4",
+      choices: [
+        "1,\\; 2",
+        "1,\\; 2,\\; 3",
+        "1 \\text{ only}",
+        "2,\\; 3",
+      ],
+      answer: 0,
+    },
+    {
+      id: 9,
+      type: "mc",
+      prompt: "A non-negative number x satisfies the equation below, where k is a positive integral constant.",
+      stem: "\\frac{2x-k}{3} = \\frac{5x-7}{4} + \\frac{x+k}{6}\\text{. How many possible values of }k\\text{?}",
+      choices: ["1", "2", "3", "4"],
+      answer: 2,
+    },
+    {
+      id: 10,
+      type: "mc",
+      prompt: "Using the same equation as above, find x when k = 3.",
+      stem: "\\frac{2x-k}{3} = \\frac{5x-7}{4} + \\frac{x+k}{6}\\text{ with }k=3",
+      choices: ["x = \\frac{1}{3}", "x = -\\frac{1}{3}", "x = \\frac{7}{3}", "x = 3"],
+      answer: 0,
     },
   ];
 
@@ -111,8 +127,8 @@
     { label: ")", insert: ")" },
   ];
 
-  function kx(el, tex) {
-    try { katex.render(tex, el, { throwOnError: false, displayMode: false }); }
+  function kx(el, tex, display) {
+    try { katex.render(tex, el, { throwOnError: false, displayMode: !!display }); }
     catch (e) { el.textContent = tex; }
   }
 
@@ -304,19 +320,48 @@
       }
       card.appendChild(head);
 
+      const content = document.createElement("div");
+      content.className = "quiz-content";
       if (q.stem) {
         const stem = document.createElement("div");
         stem.className = "quiz-stem";
-        kx(stem, q.stem);
-        card.appendChild(stem);
+        kx(stem, q.stem, true);
+        content.appendChild(stem);
       }
-
+      if (q.items) {
+        const list = document.createElement("div");
+        list.className = "quiz-item-list";
+        q.items.forEach((item) => {
+          const row = document.createElement("div");
+          row.className = "quiz-item-row";
+          const tag = document.createElement("span");
+          tag.className = "quiz-item-tag";
+          tag.textContent = item.tag;
+          row.appendChild(tag);
+          const tex = document.createElement("span");
+          tex.className = "quiz-item-tex";
+          kx(tex, item.tex);
+          row.appendChild(tex);
+          list.appendChild(row);
+        });
+        content.appendChild(list);
+      }
       const body = document.createElement("div");
       body.className = "quiz-body";
       if (q.type === "mc") body.appendChild(buildMc(q, reviewMode));
       else if (q.parts) body.appendChild(buildShortParts(q, reviewMode));
       else body.appendChild(buildShortSingle(q, reviewMode));
-      card.appendChild(body);
+      content.appendChild(body);
+
+      if (q.figures && q.figures.length) {
+        const main = document.createElement("div");
+        main.className = "quiz-main";
+        main.appendChild(content);
+        main.appendChild(buildFigures(q.figures));
+        card.appendChild(main);
+      } else {
+        card.appendChild(content);
+      }
 
       if (reviewMode && !ok) card.appendChild(buildCorrectBlock(q));
       return card;
@@ -360,6 +405,19 @@
         block.appendChild(msg);
       }
       return block;
+    }
+
+    function buildFigures(figs) {
+      const wrap = document.createElement("div");
+      wrap.className = "quiz-figure" + (figs.length > 1 ? " quiz-figure-stack" : "");
+      figs.forEach((fig) => {
+        const img = document.createElement("img");
+        img.src = fig.src;
+        img.alt = fig.alt || "Figure";
+        img.loading = "lazy";
+        wrap.appendChild(img);
+      });
+      return wrap;
     }
 
     function buildMc(q, reviewMode) {

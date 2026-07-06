@@ -397,7 +397,7 @@
     .mm-map { display: flex; flex-wrap: wrap; gap: 10px 22px; margin: 10px 0; font-size: 15px; }
     .mm-map .mm-pair b { color: var(--a); }
     /* ── Quiz ── */
-    .quiz-wrap { max-width: 720px; margin: 0 auto; min-width: 0; }
+    .quiz-wrap { max-width: 860px; margin: 0 auto; min-width: 0; }
     .quiz-progress-wrap { margin-bottom: 18px; }
     .quiz-progress-wrap.done .quiz-progress-fill { background: var(--ab); }
     .quiz-progress-label { font-size: 14px; font-weight: 600; color: var(--dim); margin-bottom: 8px; text-align: center; }
@@ -454,6 +454,12 @@
     .quiz-part-stem .katex, .quiz-part-stem .katex-display { max-width: 100%; }
     .quiz-part-stem .katex-display { margin: 0; text-align: left; overflow-x: auto; }
     .quiz-part .quiz-prompt { margin-bottom: 8px; }
+    .quiz-main { display: flex; gap: 18px; align-items: flex-start; flex-wrap: wrap; min-width: 0; }
+    .quiz-content { flex: 1 1 260px; min-width: 0; }
+    .quiz-figure { flex: 0 1 200px; max-width: 220px; min-width: 140px; }
+    .quiz-figure-stack { display: flex; flex-direction: column; gap: 10px; max-width: 180px; }
+    .quiz-figure img { width: 100%; height: auto; display: block; border-radius: 10px; background: #fff; padding: 8px; border: 1px solid var(--line); }
+    .quiz-card.has-figure .quiz-stem { font-size: 20px; }
     .quiz-part-result { display: flex; align-items: center; gap: 6px; margin: 4px 0; flex-wrap: wrap; }
     .quiz-part-result-lbl { font-weight: 700; color: var(--a); font-family: "JetBrains Mono", monospace; }
   </style>

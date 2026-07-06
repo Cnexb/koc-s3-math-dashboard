@@ -1,4 +1,4 @@
-/* Percentage quiz — Pre S3 L04–06 Percentage Quiz (QUE); paginated MC + short */
+/* Percentage quiz — Pre S3 L04–06; paginated MC (10), progress bar */
 (function () {
   "use strict";
 
@@ -50,50 +50,54 @@
     },
     {
       id: 6,
-      type: "short",
+      type: "mc",
       prompt: "An antique painting increases by 25% every 5 years. Its present value is $150000.",
-      parts: [
-        {
-          tag: "a",
-          stem: "\\text{Find its value 20 years ago.}",
-          answer: "\\$61440",
-          accept: ["61440", "$61440", "\\$61440", "61440 dollars"],
-        },
-        {
-          tag: "b",
-          stem: "\\text{Find the increase in value over the past 20 years.}",
-          answer: "\\$88560",
-          accept: ["88560", "$88560", "\\$88560"],
-        },
-      ],
+      stem: "\\text{Find its value 20 years ago.}",
+      choices: ["\\$61440", "\\$614400", "\\$150000", "\\$88560"],
+      answer: 0,
     },
     {
       id: 7,
-      type: "short",
-      prompt: "David borrows $5000 at 7.8% p.a. compounded monthly.",
-      stem: "\\text{Find the amount to repay after 3 years (nearest dollar).}",
-      answer: "\\$6313",
-      accept: ["6313", "$6313", "\\$6313"],
+      type: "mc",
+      prompt: "An antique painting increases by 25% every 5 years. Its present value is $150000.",
+      stem: "\\text{Find the increase in value over the past 20 years.}",
+      choices: ["\\$61440", "\\$88560", "\\$150000", "\\$885600"],
+      answer: 1,
     },
     {
       id: 8,
-      type: "short",
+      type: "mc",
+      prompt: "David borrows $5000 at 7.8% p.a. compounded monthly.",
+      stem: "\\text{Find the amount to repay after 3 years (nearest dollar).}",
+      choices: ["\\$5800", "\\$6000", "\\$6313", "\\$6500"],
+      answer: 2,
+    },
+    {
+      id: 9,
+      type: "mc",
       prompt: "Bank X: 4% p.a. compounded half-yearly. Bank Y: 2% p.a. compounded quarterly. Both for 10 years.",
       stem: "\\text{Susan claims Bank X gives more interest. Do you agree?}",
-      answer: "\\text{Agree}",
-      accept: ["agree", "yes", "X", "bank X", "Bank X", "X gives more", "more in X"],
+      choices: [
+        "\\text{Agree — Bank X gives more interest}",
+        "\\text{Disagree — Bank Y gives more interest}",
+        "\\text{Disagree — both give the same interest}",
+        "\\text{Agree — Bank X gives less interest}",
+      ],
+      answer: 0,
     },
-  ];
-
-  const SYMBOLS = [
-    { label: "$", insert: "\\$" },
-    { label: "%", insert: "\\%" },
-    { label: "≤ frac", insert: "\\frac{}{}" },
-    { label: "+", insert: "+" },
-    { label: "−", insert: "-" },
-    { label: "=", insert: "=" },
-    { label: "(", insert: "(" },
-    { label: ")", insert: ")" },
+    {
+      id: 10,
+      type: "mc",
+      prompt: "Bank X: 4% p.a. compounded half-yearly. Bank Y: 2% p.a. compounded quarterly. Both for 10 years.",
+      stem: "\\text{Which bank gives more interest?}",
+      choices: [
+        "\\text{Bank X}",
+        "\\text{Bank Y}",
+        "\\text{Both give the same interest}",
+        "\\text{Cannot be determined}",
+      ],
+      answer: 0,
+    },
   ];
 
   function kx(el, tex, display) {
@@ -101,95 +105,8 @@
     catch (e) { el.textContent = tex; }
   }
 
-  function partKey(qid, tag) { return qid + "-" + tag; }
-
-  function normalizeTex(s) {
-    return String(s || "")
-      .replace(/\u2212/g, "-")
-      .replace(/\u2013/g, "-")
-      .replace(/\s+/g, "")
-      .replace(/\\leq/g, "\\le")
-      .replace(/\\geq/g, "\\ge")
-      .replace(/≤/g, "\\le")
-      .replace(/≥/g, "\\ge")
-      .toLowerCase();
-  }
-
-  function parseIntList(s) {
-    const t = String(s || "")
-      .replace(/\band\b/gi, ",")
-      .replace(/\u2212/g, "-")
-      .replace(/;/g, ",");
-    const nums = t.match(/-?\d+(?:\.\d+)?/g);
-    if (!nums) return null;
-    return nums.map(Number).sort((a, b) => a - b);
-  }
-
-  function intListsEqual(a, b) {
-    const pa = parseIntList(a);
-    const pb = parseIntList(b);
-    if (!pa || !pb || pa.length !== pb.length) return false;
-    return pa.every((v, i) => v === pb[i]);
-  }
-
-  function fracToDecimal(tex) {
-    const m = tex.match(/\\frac\{(-?\d+(?:\.\d+)?)\}\{(-?\d+(?:\.\d+)?)\}/);
-    if (!m) return null;
-    const den = +m[2];
-    if (!den) return null;
-    return +m[1] / den;
-  }
-
-  function ineqBound(tex) {
-    const n = normalizeTex(tex);
-    const m = n.match(/^x([<>]|\\le|\\ge|\\leq|\\geq)(.+)$/);
-    if (!m) return null;
-    let op = m[1].replace("\\leq", "\\le").replace("\\geq", "\\ge");
-    let val = m[2];
-    const dec = fracToDecimal(val);
-    if (dec != null) val = String(dec);
-    else val = val.replace(/\\frac\{(\d+)\}\{(\d+)\}/g, (_, a, b) => String(+a / +b));
-    return op + val;
-  }
-
-  function equivIneq(a, b) {
-    if (normalizeTex(a) === normalizeTex(b)) return true;
-    const ia = ineqBound(a);
-    const ib = ineqBound(b);
-    if (ia && ib && ia === ib) return true;
-    return false;
-  }
-
-  function equivCount(a, b) {
-    const na = normalizeTex(a).replace(/values?/g, "");
-    const nb = normalizeTex(b);
-    if (na === nb) return true;
-    const da = na.match(/\d+/);
-    const db = nb.match(/\d+/);
-    if (da && db && da[0] === db[0]) {
-      const list = parseIntList(a);
-      if (list && list.length === +da[0]) return true;
-    }
-    return false;
-  }
-
-  function checkPart(part, ans) {
-    if (ans == null || String(ans).trim() === "") return false;
-    const targets = [part.answer].concat(part.accept || []);
-    return targets.some((t) => {
-      if (intListsEqual(ans, t)) return true;
-      if (equivIneq(ans, t)) return true;
-      if (equivCount(ans, t)) return true;
-      return normalizeTex(ans) === normalizeTex(t);
-    });
-  }
-
   function checkQuestion(q, answers) {
-    if (q.type === "mc") return answers[q.id] === q.answer;
-    if (q.parts) {
-      return q.parts.every((p) => checkPart(p, answers[partKey(q.id, p.tag)]));
-    }
-    return checkPart({ answer: q.answer, accept: q.accept }, answers[q.id]);
+    return answers[q.id] === q.answer;
   }
 
   function initQuiz() {
@@ -201,27 +118,7 @@
     const nextBtn = document.getElementById("quiz-next");
     if (!root || !nextBtn) return;
 
-    const state = {
-      index: 0,
-      answers: {},
-      submitted: false,
-      phase: "quiz",
-      activeInputId: null,
-    };
-
-    function saveCurrentShort() {
-      const q = QUIZ[state.index];
-      if (!q || q.type !== "short") return;
-      if (q.parts) {
-        q.parts.forEach((p) => {
-          const ta = document.getElementById("quiz-input-" + partKey(q.id, p.tag));
-          if (ta) state.answers[partKey(q.id, p.tag)] = ta.value;
-        });
-      } else {
-        const ta = document.getElementById("quiz-input-" + q.id);
-        if (ta) state.answers[q.id] = ta.value;
-      }
-    }
+    const state = { index: 0, answers: {}, submitted: false, phase: "quiz" };
 
     function updateProgress() {
       if (!progressWrap) return;
@@ -252,14 +149,10 @@
     }
 
     function render() {
-      saveCurrentShort();
       root.innerHTML = "";
       updateProgress();
       updateNav();
-      if (state.phase === "review") {
-        renderReview();
-        return;
-      }
+      if (state.phase === "review") { renderReview(); return; }
       const q = QUIZ[state.index];
       if (q) root.appendChild(buildCard(q, false));
     }
@@ -289,19 +182,19 @@
       }
       card.appendChild(head);
 
+      const content = document.createElement("div");
+      content.className = "quiz-content";
       if (q.stem) {
         const stem = document.createElement("div");
         stem.className = "quiz-stem";
         kx(stem, q.stem, true);
-        card.appendChild(stem);
+        content.appendChild(stem);
       }
-
       const body = document.createElement("div");
       body.className = "quiz-body";
-      if (q.type === "mc") body.appendChild(buildMc(q, reviewMode));
-      else if (q.parts) body.appendChild(buildShortParts(q, reviewMode));
-      else body.appendChild(buildShortSingle(q, reviewMode));
-      card.appendChild(body);
+      body.appendChild(buildMc(q, reviewMode));
+      content.appendChild(body);
+      card.appendChild(content);
 
       if (reviewMode && !ok) card.appendChild(buildCorrectBlock(q));
       return card;
@@ -310,40 +203,14 @@
     function buildCorrectBlock(q) {
       const block = document.createElement("div");
       block.className = "quiz-result";
-      if (q.parts) {
-        q.parts.forEach((p) => {
-          if (checkPart(p, state.answers[partKey(q.id, p.tag)])) return;
-          const row = document.createElement("div");
-          row.className = "quiz-part-result";
-          const lbl = document.createElement("span");
-          lbl.className = "quiz-part-result-lbl";
-          lbl.textContent = "(" + p.tag + ") ";
-          row.appendChild(lbl);
-          const ans = document.createElement("span");
-          ans.className = "quiz-ans-tex";
-          kx(ans, p.answer);
-          row.appendChild(ans);
-          block.appendChild(row);
-        });
-      } else if (q.type === "mc") {
-        const msg = document.createElement("span");
-        msg.className = "quiz-result-msg";
-        msg.textContent = "Correct answer: ";
-        const ans = document.createElement("span");
-        ans.className = "quiz-ans-tex";
-        kx(ans, q.choices[q.answer]);
-        msg.appendChild(ans);
-        block.appendChild(msg);
-      } else {
-        const msg = document.createElement("span");
-        msg.className = "quiz-result-msg";
-        msg.textContent = "Correct answer: ";
-        const ans = document.createElement("span");
-        ans.className = "quiz-ans-tex";
-        kx(ans, q.answer);
-        msg.appendChild(ans);
-        block.appendChild(msg);
-      }
+      const msg = document.createElement("span");
+      msg.className = "quiz-result-msg";
+      msg.textContent = "Correct answer: ";
+      const ans = document.createElement("span");
+      ans.className = "quiz-ans-tex";
+      kx(ans, q.choices[q.answer]);
+      msg.appendChild(ans);
+      block.appendChild(msg);
       return block;
     }
 
@@ -380,128 +247,6 @@
       return list;
     }
 
-    function buildSymBar() {
-      const toolbar = document.createElement("div");
-      toolbar.className = "quiz-sym-bar";
-      SYMBOLS.forEach((sym) => {
-        const btn = document.createElement("button");
-        btn.type = "button";
-        btn.className = "quiz-sym-btn";
-        btn.textContent = sym.label;
-        btn.title = sym.insert;
-        btn.addEventListener("click", () => insertIntoActive(sym.insert));
-        toolbar.appendChild(btn);
-      });
-      return toolbar;
-    }
-
-    function buildShortParts(q, reviewMode) {
-      const wrap = document.createElement("div");
-      wrap.className = "quiz-short-wrap";
-      if (!reviewMode) wrap.appendChild(buildSymBar());
-      q.parts.forEach((p) => {
-        const key = partKey(q.id, p.tag);
-        const partOk = checkPart(p, state.answers[key]);
-        const block = document.createElement("div");
-        block.className = "quiz-part";
-        const head = document.createElement("div");
-        head.className = "quiz-part-head";
-        const lbl = document.createElement("span");
-        lbl.className = "quiz-part-label";
-        lbl.textContent = "(" + p.tag + ")";
-        head.appendChild(lbl);
-        if (reviewMode) {
-          const mark = document.createElement("span");
-          mark.className = "quiz-mark quiz-part-mark " + (partOk ? "ok" : "bad");
-          mark.textContent = partOk ? "\u2713" : "\u2717";
-          head.appendChild(mark);
-        }
-        block.appendChild(head);
-        if (p.prompt) {
-          const pr = document.createElement("div");
-          pr.className = "quiz-prompt";
-          pr.textContent = p.prompt;
-          block.appendChild(pr);
-        }
-        const stem = document.createElement("div");
-        stem.className = "quiz-part-stem";
-        kx(stem, p.stem, true);
-        block.appendChild(stem);
-        if (reviewMode) {
-          const yours = document.createElement("div");
-          yours.className = "quiz-yours";
-          const yl = document.createElement("span");
-          yl.className = "quiz-yours-lbl";
-          yl.textContent = "Your answer: ";
-          yours.appendChild(yl);
-          const tex = document.createElement("span");
-          tex.className = "quiz-ans-tex";
-          kx(tex, String(state.answers[key] || "").trim() || "\\text{(blank)}");
-          yours.appendChild(tex);
-          block.appendChild(yours);
-        } else {
-          const ta = document.createElement("textarea");
-          ta.className = "quiz-short-input";
-          ta.id = "quiz-input-" + key;
-          ta.rows = 2;
-          ta.placeholder = "Answer for (" + p.tag + ")\u2026";
-          ta.value = state.answers[key] || "";
-          ta.addEventListener("focus", () => { state.activeInputId = ta.id; });
-          ta.addEventListener("input", () => {
-            state.answers[key] = ta.value;
-            updatePreview(key, ta.value);
-          });
-          block.appendChild(ta);
-          const preview = document.createElement("div");
-          preview.className = "quiz-preview";
-          preview.id = "quiz-preview-" + key;
-          block.appendChild(preview);
-          updatePreview(key, ta.value);
-        }
-        wrap.appendChild(block);
-      });
-      return wrap;
-    }
-
-    function buildShortSingle(q, reviewMode) {
-      const wrap = document.createElement("div");
-      wrap.className = "quiz-short-wrap";
-      const key = String(q.id);
-      if (!reviewMode) wrap.appendChild(buildSymBar());
-      if (reviewMode) {
-        const yours = document.createElement("div");
-        yours.className = "quiz-yours";
-        const lbl = document.createElement("span");
-        lbl.className = "quiz-yours-lbl";
-        lbl.textContent = "Your answer: ";
-        yours.appendChild(lbl);
-        const tex = document.createElement("span");
-        tex.className = "quiz-ans-tex";
-        kx(tex, String(state.answers[key] || "").trim() || "\\text{(blank)}");
-        yours.appendChild(tex);
-        wrap.appendChild(yours);
-      } else {
-        const ta = document.createElement("textarea");
-        ta.className = "quiz-short-input";
-        ta.id = "quiz-input-" + key;
-        ta.rows = 2;
-        ta.placeholder = "Type LaTeX or use buttons above\u2026";
-        ta.value = state.answers[key] || "";
-        ta.addEventListener("focus", () => { state.activeInputId = ta.id; });
-        ta.addEventListener("input", () => {
-          state.answers[key] = ta.value;
-          updatePreview(key, ta.value);
-        });
-        wrap.appendChild(ta);
-        const preview = document.createElement("div");
-        preview.className = "quiz-preview";
-        preview.id = "quiz-preview-" + key;
-        wrap.appendChild(preview);
-        updatePreview(key, ta.value);
-      }
-      return wrap;
-    }
-
     function renderReview() {
       const score = QUIZ.filter((q) => checkQuestion(q, state.answers)).length;
       const header = document.createElement("div");
@@ -513,50 +258,10 @@
       QUIZ.forEach((q) => root.appendChild(buildCard(q, true)));
     }
 
-    function insertIntoActive(text) {
-      if (state.submitted || state.phase === "review") return;
-      const id = state.activeInputId;
-      if (!id) return;
-      const ta = document.getElementById(id);
-      if (!ta) return;
-      const start = ta.selectionStart;
-      const end = ta.selectionEnd;
-      const val = ta.value;
-      let ins = text;
-      if (text === "\\frac{}{}") {
-        ta.value = val.slice(0, start) + "\\frac{}{}" + val.slice(end);
-        ta.setSelectionRange(start + 6, start + 6);
-      } else {
-        ta.value = val.slice(0, start) + ins + val.slice(end);
-        ta.setSelectionRange(start + ins.length, start + ins.length);
-      }
-      const key = id.replace("quiz-input-", "");
-      state.answers[key] = ta.value;
-      updatePreview(key, ta.value);
-      ta.focus();
-    }
-
-    function updatePreview(key, tex) {
-      const el = document.getElementById("quiz-preview-" + key);
-      if (!el) return;
-      el.innerHTML = "";
-      if (!tex || !tex.trim()) {
-        el.textContent = "Preview";
-        el.classList.add("empty");
-        return;
-      }
-      el.classList.remove("empty");
-      kx(el, tex.trim());
-    }
-
     if (backBtn) {
       backBtn.addEventListener("click", () => {
         if (state.phase === "review") return;
-        saveCurrentShort();
-        if (state.index > 0) {
-          state.index--;
-          render();
-        }
+        if (state.index > 0) { state.index--; render(); }
       });
     }
 
@@ -566,11 +271,9 @@
         state.answers = {};
         state.submitted = false;
         state.phase = "quiz";
-        state.activeInputId = null;
         render();
         return;
       }
-      saveCurrentShort();
       if (state.index >= QUIZ.length - 1) {
         state.submitted = true;
         state.phase = "review";

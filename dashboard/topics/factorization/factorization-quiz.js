@@ -1,4 +1,4 @@
-/* Factorization quiz — paginated MC + short (incl. multi-part), progress bar, submit on last → all results */
+/* Factorization quiz — paginated MC, progress bar, submit on last → all results */
 (function () {
   "use strict";
 
@@ -95,37 +95,42 @@
     },
     {
       id: 8,
-      type: "short",
-      prompt: "Factorize",
-      parts: [
-        { tag: "a", stem: "x^2 + 8x + 7", answer: "(x+1)(x+7)" },
-        { tag: "b", stem: "y^2 - 11y - 26", answer: "(y+2)(y-13)" },
+      type: "mc",
+      prompt: "Hence, factorize",
+      stem: "x^2 - 2xy - 35y^2 - 7x + 49y",
+      choices: [
+        "(x-7y)(x+5y)",
+        "(x-7y)(x+5y+7)",
+        "(x-7y)(x+5y-7)",
+        "(x-7y-7)(x+5y)",
       ],
+      answer: 2,
     },
     {
       id: 9,
-      type: "short",
+      type: "mc",
       prompt: "Factorize",
-      parts: [
-        { tag: "a", stem: "x^2 - 2xy - 35y^2", answer: "(x-7y)(x+5y)" },
-        { tag: "b", stem: "\\text{Hence, } x^2 - 2xy - 35y^2 - 7x + 49y", answer: "(x-7y)(x+5y-7)" },
+      stem: "63xy^2 + 28xz^2 + 84xyz",
+      choices: [
+        "7(3y+2z)^2",
+        "7x(3y+2z)^2",
+        "7x(3y-2z)^2",
+        "7x(9y^2+12yz+4z^2)",
       ],
+      answer: 1,
     },
     {
       id: 10,
-      type: "short",
-      prompt: "Factorize",
-      parts: [
-        { tag: "a", stem: "240uv - 72u^2 - 200v^2", answer: "-8(3u-5v)^2", accept: ["-8(5v-3u)^2"] },
-        { tag: "b", stem: "63xy^2 + 28xz^2 + 84xyz", answer: "7x(3y+2z)^2" },
-      ],
-    },
-    {
-      id: 11,
-      type: "short",
+      type: "mc",
       prompt: "Factorize",
       stem: "a^4 - a^2 - 2a^2b^2 - 2ab + b^4 - b^2",
-      answer: "(a+b)^2(a-b-1)(a-b+1)",
+      choices: [
+        "(a+b)^2[(a-b)^2-1]",
+        "(a+b)^2(a+b-1)(a+b+1)",
+        "(a-b)^2(a+b-1)(a+b+1)",
+        "(a+b)^2(a-b-1)(a-b+1)",
+      ],
+      answer: 3,
     },
   ];
 
