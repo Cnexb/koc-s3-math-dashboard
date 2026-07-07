@@ -74,7 +74,27 @@
   let curPrompt = "", curCorrect = "";
   let qIndex = 0, score = 0, answered = 0, correctCount = 0, streak = 0;
   let soundOn = true, audioCtx = null;
-  const Y0 = 78;
+
+  function isPhoneCompact() {
+    return window.FZPhone ? window.FZPhone.isPhoneCompact() : window.innerWidth <= 767;
+  }
+
+  function gameMetrics() {
+    const phone = isPhoneCompact();
+    const promptH = phone ? 48 : 66;
+    const cannonBottom = phone ? 14 : 18;
+    const cannonH = phone ? 44 : 58;
+    const y0 = promptH + 8;
+    if (!stage) {
+      return {
+        y0, limit: phone ? 284 : 464, lanePad: phone ? 8 : 18,
+        promptH, cannonBottom, cannonH, beamH: phone ? 300 : 460,
+      };
+    }
+    const limit = stage.clientHeight - cannonBottom - cannonH - 8;
+    const beamH = Math.max(120, limit - y0 + 16);
+    return { y0, limit, lanePad: phone ? 8 : 18, promptH, cannonBottom, cannonH, beamH };
+  }
 
   function shuffle(arr) {
     const a = arr.slice();
@@ -143,23 +163,37 @@
       const inner = document.createElement("div"); el.appendChild(inner);
       kx(inner, opt.tex, null);
       enemiesEl.appendChild(el);
-      const e = { el, lane, y: Y0, correct: opt.correct, tex: opt.tex, dead: false };
+      const e = { el, lane, y: gameMetrics().y0, correct: opt.correct, tex: opt.tex, dead: false };
       el.addEventListener("click", () => { if (running && !locked) { cannonLane = lane; placeCannon(); fire(); } });
       enemies.push(e); placeEnemy(e);
     });
     placeCannon(); locked = false;
   }
   function placeEnemy(e) {
+    const m = gameMetrics();
     const w = stage.clientWidth / lanes;
-    e.el.style.width = (w - 18) + "px";
-    e.el.style.left = (laneCenter(e.lane) - (w - 18) / 2) + "px";
+    e.el.style.width = (w - m.lanePad) + "px";
+    e.el.style.left = (laneCenter(e.lane) - (w - m.lanePad) / 2) + "px";
     e.el.style.top = e.y + "px";
+    if (isPhoneCompact()) {
+      const fs = Math.max(9, Math.min(13, stage.clientWidth / 40));
+      const inner = e.el.firstElementChild;
+      if (inner) {
+        inner.style.fontSize = fs + "px";
+        const katexEl = inner.querySelector(".katex");
+        if (katexEl) katexEl.style.fontSize = "0.85em";
+      }
+    }
   }
   function placeCannon() { cannonEl.style.left = (laneCenter(cannonLane) - cannonEl.offsetWidth / 2) + "px"; }
 
   function flashLaser(lane) {
+    const m = gameMetrics();
     const beam = document.createElement("div"); beam.className = "laser-beam";
-    beam.style.left = (laneCenter(lane) - 3) + "px"; enemiesEl.appendChild(beam);
+    beam.style.left = (laneCenter(lane) - 3) + "px";
+    beam.style.height = m.beamH + "px";
+    beam.style.bottom = (m.cannonBottom + m.cannonH) + "px";
+    enemiesEl.appendChild(beam);
     setTimeout(() => beam.remove(), 140);
   }
   function boom(e, ok) {
@@ -203,7 +237,7 @@
     if (!running) return;
     const dt = Math.min(0.05, (t - lastT) / 1000 || 0); lastT = t;
     if (fireCooldown > 0) fireCooldown -= dt;
-    const limit = stage.clientHeight - 96;
+    const limit = gameMetrics().limit;
     let reached = false;
     if (!locked) {
       enemies.forEach((e) => { if (e.dead) return; e.y += speed * dt; e.el.style.top = e.y + "px"; if (e.y >= limit) reached = true; });
@@ -275,7 +309,15 @@
     else if (ev.key === "ArrowRight") { cannonLane = Math.min(lanes - 1, cannonLane + 1); placeCannon(); ev.preventDefault(); }
     else if (ev.key === " " || ev.key === "ArrowUp") { fire(); ev.preventDefault(); }
   }
-  function resize() { if (!stage) return; enemies.forEach(placeEnemy); placeCannon(); }
+  function resize() {
+    if (!stage) return;
+    const m = gameMetrics();
+    enemies.forEach((e) => {
+      if (e.y < m.y0) e.y = m.y0;
+      placeEnemy(e);
+    });
+    placeCannon();
+  }
 
   /* ── Cross Method Snake ─────────────────────────────────────────────────── */
   const SN = {
@@ -564,6 +606,19 @@
     else if (dir === "up") SN.nextDir = { x: 0, y: -1 };
     else if (dir === "down") SN.nextDir = { x: 0, y: 1 };
   }
+  function resizeSnakeBoard() {
+    if (!SN.canvas) return;
+    const wrap = SN.canvas.parentElement;
+    if (!wrap) return;
+    const size = Math.min(wrap.clientWidth - 24, window.innerHeight * 0.42, 520);
+    if (size < 100) return;
+    const px = Math.floor(size);
+    if (SN.canvas.width === px && SN.canvas.height === px) return;
+    SN.canvas.width = px;
+    SN.canvas.height = px;
+    SN.cell = SN.canvas.width / SN.cols;
+    snakeDraw();
+  }
   function mountSnake() {
     if (SN.mounted) return;
     SN.canvas = document.getElementById("snake-board");
@@ -594,6 +649,7 @@
     });
     SN.mounted = true;
     SN.cur = snakeQuestion(); snakeResetBody(); snakeFoodSpots(); snakeRenderPrompt(); snakeDraw();
+    resizeSnakeBoard();
   }
   function setFactorGame(modeName) {
     document.querySelectorAll("[data-factor-game]").forEach((b) => b.classList.toggle("active", b.dataset.factorGame === modeName));
@@ -654,7 +710,7 @@
         const blaster = document.getElementById("game-blaster");
         if (blaster && !blaster.classList.contains("hidden")) onKey(e);
       });
-      window.addEventListener("resize", resize);
+      window.addEventListener("resize", () => { resize(); resizeSnakeBoard(); });
     },
     show() {
       this.mount(); activeFlag = true;
@@ -664,6 +720,7 @@
       }
     },
     hide() { activeFlag = false; running = false; cancelAnimationFrame(rafId); SN.running = false; clearInterval(SN.loop); },
+    onPhoneLayout() { resize(); resizeSnakeBoard(); },
   };
 
   window.FactGame = Game;

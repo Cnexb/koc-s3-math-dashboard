@@ -19,7 +19,10 @@
   };
   const NS = "http://www.w3.org/2000/svg";
   const TABLET_MAX_W = 1366;
+  const PHONE_MAX_W = 767;
   const deckTouch = () => window.KOCDeckTouch;
+  let phoneCompactBound = false;
+  const phoneCompactCallbacks = [];
 
   function isTouchTabletDevice() {
     const D = deckTouch();
@@ -52,16 +55,57 @@
     window.addEventListener("orientationchange", () => setTimeout(apply, 120));
   }
 
+  function isPhoneCompact() { return window.innerWidth <= PHONE_MAX_W; }
+  function isTouchUI() { return isTabletTouch() || isPhoneCompact(); }
+
+  function initPhoneCompact(onChange) {
+    if (onChange) phoneCompactCallbacks.push(onChange);
+    function apply() {
+      document.documentElement.classList.toggle("phone-compact", isPhoneCompact());
+      phoneCompactCallbacks.forEach((cb) => cb());
+    }
+    apply();
+    if (!phoneCompactBound) {
+      phoneCompactBound = true;
+      window.addEventListener("resize", apply);
+      window.addEventListener("orientationchange", () => setTimeout(apply, 120));
+    }
+  }
+
+  function svgRoot(el) {
+    if (!el) return null;
+    if (el.ownerSVGElement) return el.ownerSVGElement;
+    if (el.tagName === "svg") return el;
+    return el.closest ? el.closest("svg") : null;
+  }
+
+  function labelScale(svg) {
+    if (!isPhoneCompact()) return 1;
+    const root = svgRoot(svg);
+    const w = root && root.getBoundingClientRect ? root.getBoundingClientRect().width : window.innerWidth - 48;
+    return Math.max(0.55, Math.min(0.85, w / 400));
+  }
+
+  function scaleInset(inset, ls) {
+    if (ls >= 1) return inset;
+    const out = {};
+    Object.keys(inset).forEach((k) => { out[k] = Math.round(inset[k] * ls); });
+    return out;
+  }
+
   // Extra inset on tablet so side labels (4x, 2y) do not overlap cell values.
-  function figInsets(compact) {
+  function figInsets(compact, svg) {
+    let inset;
     if (!isTabletTouch()) {
-      return compact
+      inset = compact
         ? { ml: 56, mr: 66, mt: 40, mb: 44, edgeX: 24, edgeTop: 20, edgeRight: 28, edgeBottom: 22 }
         : { ml: 46, mr: 24, mt: 40, mb: 24, edgeX: 24, edgeTop: 20, edgeRight: 28, edgeBottom: 22 };
+    } else {
+      inset = compact
+        ? { ml: 78, mr: 72, mt: 48, mb: 48, edgeX: 46, edgeTop: 26, edgeRight: 40, edgeBottom: 28 }
+        : { ml: 68, mr: 36, mt: 46, mb: 30, edgeX: 42, edgeTop: 24, edgeRight: 34, edgeBottom: 26 };
     }
-    return compact
-      ? { ml: 78, mr: 72, mt: 48, mb: 48, edgeX: 46, edgeTop: 26, edgeRight: 40, edgeBottom: 28 }
-      : { ml: 68, mr: 36, mt: 46, mb: 30, edgeX: 42, edgeTop: 24, edgeRight: 34, edgeBottom: 26 };
+    return scaleInset(inset, labelScale(svg));
   }
 
   // Plain SVG text for tablet — avoids WebKit foreignObject misalignment when the SVG scales.
@@ -117,12 +161,14 @@
   // LaTeX label centred at (cx, cy) inside the SVG via <foreignObject>.
   function tex(p, cx, cy, latex, color, size, w, h) {
     if (isTabletTouch()) return svgLabel(p, cx, cy, latex, color, size);
-    w = w || 170; h = h || 46;
+    const ls = labelScale(p);
+    const fs = (size || 16) * ls;
+    w = (w || 170) * ls; h = (h || 46) * ls;
     const fo = E("foreignObject", { x: cx - w / 2, y: cy - h / 2, width: w, height: h });
     fo.setAttribute("overflow", "visible");
     const div = document.createElement("div");
     div.style.cssText = "width:" + w + "px;height:" + h + "px;display:flex;align-items:center;" +
-      "justify-content:center;color:" + color + ";font-size:" + (size || 16) + "px;line-height:1;" +
+      "justify-content:center;color:" + color + ";font-size:" + fs + "px;line-height:1;" +
       "white-space:nowrap;";
     try { katex.render(latex, div, { throwOnError: false, displayMode: false }); }
     catch (e) { div.textContent = latex; }
@@ -246,7 +292,7 @@
     draw(svg, st, api) {
       // Scale the figure to fill the canvas so cells stay large & legible
       // regardless of how small a/b are; proportions still reflect a:b.
-      const inset = figInsets(false);
+      const inset = figInsets(false, svg);
       const ml = inset.ml, mr = inset.mr, mt = inset.mt, mb = inset.mb;
       const aw = 410 - ml - mr, ah = 380 - mt - mb;
       const S = Math.min(aw, ah), unit = S / (st.a + st.b);
@@ -304,7 +350,7 @@
     ],
     clamp(st) { if (st.b > st.a - 1) st.b = st.a - 1; },
     draw(svg, st, api) {
-      const inset = figInsets(true);
+      const inset = figInsets(true, svg);
       const ml = inset.ml, mr = inset.mr, mt = inset.mt, mb = inset.mb;
       const aw = 410 - ml - mr, ah = 380 - mt - mb;
       const A = Math.min(aw, ah), unit = A / st.a;
@@ -314,7 +360,7 @@
       const bg = rectSvg(svg, ox, top, A, A, C.a, 0.16, C.a, 1);
       fade(bg, anySel);
       const ab = st.a * st.b;
-      const inner = st.a - st.b;
+      const innerSqLabel = `(${tc(C.a, "a")}-${tc(C.b, "b")})^2`;
       const cells = [
         { x: ox + IN, y: top, w: B, h: A, fill: C.ab, op: 0.42,
           lx: ox + IN + B / 2, ly: top + IN / 2, lw: B, lh: IN, lt: xyCoef(ab), tc: C.ink },
@@ -323,14 +369,16 @@
         { x: ox + IN, y: top + IN, w: B, h: B, fill: C.b, op: 0.5,
           lx: ox + IN + B / 2, ly: top + IN + B / 2, lw: B, lh: B, lt: sqY(st.b), tc: C.cellB },
         { x: ox, y: top, w: IN, h: IN, fill: C.a, op: 0.55,
-          lx: ox + IN / 2, ly: top + IN / 2, lw: IN, lh: IN, lt: sqX(inner), tc: C.ink },
+          lx: ox + IN / 2, ly: top + IN / 2, lw: IN, lh: IN, lt: innerSqLabel, tc: C.ink, fitOpts: { max: 14 } },
       ];
       cells.forEach((c, i) => {
         const on = sel === i, dim = anySel && !on;
         const op = on ? Math.min(0.92, c.op + 0.28) : c.op;
         const r = rectSvg(svg, c.x, c.y, c.w, c.h, c.fill, op, on ? "#fff" : c.fill, on ? 3 : 1);
         fade(r, dim); pickable(r, i, api);
-        const f = fitTex(svg, c.lx, c.ly, c.lt, c.tc, c.lw, c.lh);
+        const f = c.fitOpts
+          ? fitTex(svg, c.lx, c.ly, c.lt, c.tc, c.lw, c.lh, c.fitOpts)
+          : fitTex(svg, c.lx, c.ly, c.lt, c.tc, c.lw, c.lh);
         fade(f, dim); pickable(f, i, api);
       });
       // Hint before any click: stripe each FULL ab strip with slanted lines
@@ -359,11 +407,9 @@
       rectSvg(svg, ox, top, A, A, "none", 0, C.ink, 2.5);
       const sc = sel != null ? cells[sel] : null;
       const tops = [
-        { cx: ox + IN / 2, s: ox, e: ox + IN, t: coefX(inner), col: C.a, fz: 15 },
         { cx: ox + IN + B / 2, s: ox + IN, e: ox + A, t: coefY(st.b), col: C.b, fz: 18 },
       ];
       const rights = [
-        { cy: top + IN / 2, s: top, e: top + IN, t: coefX(inner), col: C.a, fz: 15 },
         { cy: top + IN + B / 2, s: top + IN, e: top + A, t: coefY(st.b), col: C.b, fz: 16 },
       ];
       tops.forEach((L) => {
@@ -402,9 +448,10 @@
     clamp(st) { if (st.b > st.a - 1) st.b = st.a - 1; },
     draw(svg, st) {
       if (!st.mode) {
-        const inset = isTabletTouch()
+        let inset = isTabletTouch()
           ? { ml: 66, mr: 54, mt: 46, mb: 54, edgeX: 42, edgeTop: 24, edgeRight: 38, edgeBottom: 28 }
           : { ml: 34, mr: 48, mt: 40, mb: 52, edgeX: 24, edgeTop: 20, edgeRight: 28, edgeBottom: 22 };
+        inset = scaleInset(inset, labelScale(svg));
         const ml = inset.ml, mr = inset.mr, mt = inset.mt, mb = inset.mb;
         const aw = 450 - ml - mr, ah = 380 - mt - mb;
         const A = Math.min(aw, ah), unit = A / st.a;
@@ -421,9 +468,10 @@
         tex(svg, ox + IN + B / 2, top + A + inset.edgeBottom, coefY(st.b), C.b, 18, 60, 30);
         tex(svg, ox + A + inset.edgeRight, top + IN + B / 2, coefY(st.b), C.b, 18, 60, 30);
       } else {
-        const inset = isTabletTouch()
+        let inset = isTabletTouch()
           ? { ml: 58, mr: 52, mt: 48, mb: 40, edgeX: 40, edgeTop: 24 }
           : { ml: 42, mr: 42, mt: 44, mb: 36, edgeX: 28, edgeTop: 20 };
+        inset = scaleInset(inset, labelScale(svg));
         const ml = inset.ml, mr = inset.mr, mt = inset.mt, mb = inset.mb;
         const aw = 450 - ml - mr, ah = 380 - mt - mb;
         const unit = Math.min(aw / (st.a + st.b), ah / (st.a - st.b));
@@ -552,9 +600,24 @@
       }
     }
     toolBtns.forEach((b) => b.addEventListener("click", () => activate(b.dataset.tool)));
-    initTabletMode(() => {
+    const onLayoutChange = () => {
       if (current && toolLayout && !toolLayout.classList.contains("hidden")) redraw();
       if (window.FZ_CROSS && window.FZ_CROSS.onTabletChange) window.FZ_CROSS.onTabletChange();
+    };
+    initTabletMode(onLayoutChange);
+    initPhoneCompact(onLayoutChange);
+    initPhoneCompact(() => {
+      if (window.FactGame && window.FactGame.onPhoneLayout) window.FactGame.onPhoneLayout();
+    });
+    let phoneResizeT = null;
+    window.addEventListener("resize", () => {
+      if (!isPhoneCompact()) return;
+      const panel = document.getElementById("panel-tools");
+      if (!panel || panel.classList.contains("hidden")) return;
+      clearTimeout(phoneResizeT);
+      phoneResizeT = setTimeout(() => {
+        if (current && toolLayout && !toolLayout.classList.contains("hidden")) redraw();
+      }, 120);
     });
     activate("sum");
   }
@@ -758,7 +821,7 @@
       chip.textContent = val;
       chip.dataset.value = String(val);
       chip.dataset.kind = kind;
-      if (isTabletTouch()) {
+      if (isTouchUI()) {
         chip.draggable = false;
         chip.setAttribute("role", "button");
         chip.tabIndex = 0;
@@ -846,7 +909,7 @@
         renderSlot(slotKey);
         updateCheck();
       });
-      if (isTabletTouch()) {
+      if (isTouchUI()) {
         el.addEventListener("click", () => placeChipInSlot(slotKey));
       }
     }
@@ -883,7 +946,7 @@
         prodSumEl.classList.add("hidden");
         const hint = document.createElement("span");
         hint.className = "cross-hint";
-        hint.textContent = isTabletTouch()
+        hint.textContent = isTouchUI()
           ? "Tap all four slots to test a combination."
           : "Fill all four slots to test a combination.";
         checkEl.appendChild(hint);
@@ -930,7 +993,7 @@
       document.getElementById("cross-c2-label").textContent = wiz.C2;
       const step4Note = document.querySelector("#cross-step-4 .cross-step-note");
       if (step4Note) {
-        step4Note.textContent = isTabletTouch()
+        step4Note.textContent = isTouchUI()
           ? "Tap a number from the factor pairs, then tap a slot to place it. Check whether the cross products give the correct xy term."
           : "Drag numbers from the factor pairs into the four slots, then check whether the cross products give the correct xy term.";
       }
@@ -1008,7 +1071,7 @@
       onTabletChange() {
         const step4Note = document.querySelector("#cross-step-4 .cross-step-note");
         if (step4Note) {
-          step4Note.textContent = isTabletTouch()
+          step4Note.textContent = isTouchUI()
             ? "Tap a number from the factor pairs, then tap a slot to place it. Check whether the cross products give the correct xy term."
             : "Drag numbers from the factor pairs into the four slots, then check whether the cross products give the correct xy term.";
         }
@@ -1122,4 +1185,6 @@
     // KaTeX is deferred; ensure it is present before first render.
     (function wait() { if (window.katex) start(); else setTimeout(wait, 30); })();
   }); }
+
+  window.FZPhone = { isPhoneCompact, isTouchUI, initPhoneCompact, labelScale };
 })();
