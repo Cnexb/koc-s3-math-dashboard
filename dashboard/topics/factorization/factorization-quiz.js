@@ -686,6 +686,35 @@
       if (state.index >= QUIZ.length - 1) {
         state.submitted = true;
         state.phase = "review";
+        try {
+          QUIZ.forEach(function(q) {
+            var userAnswerIdx = state.answers[q.id];
+            var isCorrect = checkQuestion(q, state.answers);
+            var payload = {
+              type: 'uniplus:quizAnswer',
+              subject: 'MATH',
+              quizId: 'math-factorization',
+              questionId: 'fac-q' + q.id,
+              section: 'factorization',
+              difficulty: 'standard',
+              stem: q.stem || null,
+              selectedAnswer: userAnswerIdx !== undefined ? String(userAnswerIdx) : null,
+              selectedAnswerText: (q.type === 'mc' && userAnswerIdx !== undefined) ? (q.choices[userAnswerIdx] || null) : null,
+              correctAnswer: q.type === 'mc' ? String(q.answer) : (q.answer || null),
+              correctAnswerText: q.type === 'mc' ? (q.choices[q.answer] || null) : (q.answer || null),
+              isCorrect: isCorrect,
+              attemptNumber: 1,
+              msTaken: 0
+            };
+            // Send to the immediate parent (dashboard/index.html, where the tracker
+            // and session relay live). window.postMessage() alone only targets this
+            // same window and never reaches the tracker in the outer frame.
+            window.parent.postMessage(payload, '*');
+            if (window.top !== window.parent) {
+              try { window.top.postMessage(payload, '*'); } catch (_) {}
+            }
+          });
+        } catch(_) {}
         render();
         return;
       }
