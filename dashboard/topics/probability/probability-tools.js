@@ -616,6 +616,7 @@
     }));
     if (window.KOCDeckTouch) window.KOCDeckTouch.initDeckTouchNav(frame);
   }
+  function initToolNav() {
     const btns = document.querySelectorAll("[data-tool]");
     const tools = { card: document.getElementById("tool-card"), ball: document.getElementById("tool-ball") };
     btns.forEach((b) => b.addEventListener("click", () => {
