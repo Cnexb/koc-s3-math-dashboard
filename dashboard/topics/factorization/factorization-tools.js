@@ -486,8 +486,9 @@
         tex(svg, ox + W / 2, top - inset.edgeTop, "(" + coefX(st.a) + "+" + coefY(st.b) + ")", C.a, 16, 110, 30);
         const leftLblW = 118;
         const ls = labelScale(svg);
-        let lcx = ox - inset.edgeX;
+        const leftGap = 12;
         const halfW = (leftLblW * ls) / 2;
+        let lcx = ox - leftGap - halfW;
         if (lcx - halfW < 6) lcx = 6 + halfW;
         tex(svg, lcx, top + H / 2, "(" + coefX(st.a) + "-" + coefY(st.b) + ")", C.a, 14, leftLblW, 30);
       }
