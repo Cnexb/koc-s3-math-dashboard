@@ -310,7 +310,7 @@
           QUIZ.forEach(function(q) {
             var userAnswerIdx = state.answers[q.id];
             var isCorrect = userAnswerIdx === q.answer;
-            window.postMessage({
+            var payload = {
               type: 'uniplus:quizAnswer',
               subject: 'MATH',
               quizId: 'math-area-volume',
@@ -325,7 +325,16 @@
               isCorrect: isCorrect,
               attemptNumber: 1,
               msTaken: 0
-            }, '*');
+            };
+            // Send to the immediate parent (dashboard/index.html, where the tracker
+            // and session relay live). window.postMessage() alone only targets this
+            // same window and never reaches the tracker in the outer frame.
+            window.parent.postMessage(payload, '*');
+            // Also broadcast to top, in case this file is ever loaded with a
+            // different iframe depth than the current 3-level structure.
+            if (window.top !== window.parent) {
+              try { window.top.postMessage(payload, '*'); } catch (_) {}
+            }
           });
         } catch(_) {}
         render();
