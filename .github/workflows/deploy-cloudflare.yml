@@ -14,6 +14,10 @@ jobs:
     steps:
       - name: Checkout
         uses: actions/checkout@v4
+      - name: Remove large files before deploy
+        run: |
+          find dashboard/slides -name "*.mp4" -delete 2>/dev/null || true
+          find dashboard/slides -name "*.pptx" -delete 2>/dev/null || true
       - name: Deploy to Cloudflare Pages
         uses: cloudflare/wrangler-action@v3
         with:
