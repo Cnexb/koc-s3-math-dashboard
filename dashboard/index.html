@@ -410,5 +410,12 @@
       if (initial && findTopic(initial)) openTopic(initial);
     })();
   </script>
+  <script src="https://uni-education-elearning.pages.dev/tracker/uni-tracker.js?v=8" defer></script>
+<script>
+window.addEventListener('message', function(e) {
+  if (!e.data || e.data.type !== 'uniplus:session') return;
+  try { sessionStorage.setItem('uniplus_session', JSON.stringify(e.data)); } catch(_) {}
+});
+</script>
 </body>
 </html>
