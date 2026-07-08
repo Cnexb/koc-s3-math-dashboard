@@ -469,8 +469,8 @@
         tex(svg, ox + A + inset.edgeRight, top + IN + B / 2, coefY(st.b), C.b, 18, 60, 30);
       } else {
         let inset = isTabletTouch()
-          ? { ml: 58, mr: 52, mt: 48, mb: 40, edgeX: 40, edgeTop: 24 }
-          : { ml: 42, mr: 42, mt: 44, mb: 36, edgeX: 28, edgeTop: 20 };
+          ? { ml: 88, mr: 52, mt: 48, mb: 40, edgeX: 14, edgeTop: 24 }
+          : { ml: 108, mr: 42, mt: 44, mb: 36, edgeX: 14, edgeTop: 20 };
         inset = scaleInset(inset, labelScale(svg));
         const ml = inset.ml, mr = inset.mr, mt = inset.mt, mb = inset.mb;
         const aw = 450 - ml - mr, ah = 380 - mt - mb;
@@ -484,7 +484,12 @@
         rectSvg(svg, ox, top, W, H, "none", 0, C.ink, 2.5);
         fitTex(svg, ox + W / 2, top + H / 2, sqX(st.a) + "-" + sqY(st.b), C.ink, W, H);
         tex(svg, ox + W / 2, top - inset.edgeTop, "(" + coefX(st.a) + "+" + coefY(st.b) + ")", C.a, 16, 110, 30);
-        tex(svg, ox - inset.edgeX, top + H / 2, "(" + coefX(st.a) + "-" + coefY(st.b) + ")", C.a, 15, 90, 30);
+        const leftLblW = 118;
+        const ls = labelScale(svg);
+        let lcx = ox - inset.edgeX;
+        const halfW = (leftLblW * ls) / 2;
+        if (lcx - halfW < 6) lcx = 6 + halfW;
+        tex(svg, lcx, top + H / 2, "(" + coefX(st.a) + "-" + coefY(st.b) + ")", C.a, 14, leftLblW, 30);
       }
     },
     latex(st) {
