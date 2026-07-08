@@ -306,6 +306,28 @@
       if (state.index >= QUIZ.length - 1) {
         state.submitted = true;
         state.phase = "review";
+        try {
+          QUIZ.forEach(function(q) {
+            var userAnswerIdx = state.answers[q.id];
+            var isCorrect = userAnswerIdx === q.answer;
+            window.postMessage({
+              type: 'uniplus:quizAnswer',
+              subject: 'MATH',
+              quizId: 'math-area-volume',
+              questionId: 'av-q' + q.id,
+              section: 'area-volume',
+              difficulty: 'standard',
+              stem: q.stem || null,
+              selectedAnswer: userAnswerIdx !== undefined ? String(userAnswerIdx) : null,
+              selectedAnswerText: userAnswerIdx !== undefined ? (q.choices[userAnswerIdx] || null) : null,
+              correctAnswer: String(q.answer),
+              correctAnswerText: q.choices[q.answer] || null,
+              isCorrect: isCorrect,
+              attemptNumber: 1,
+              msTaken: 0
+            }, '*');
+          });
+        } catch(_) {}
         render();
         return;
       }
