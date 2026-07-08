@@ -459,9 +459,6 @@
         math.className = "quiz-mc-tex";
         kx(math, tex, false);
         label.appendChild(math);
-        // #region agent log
-        fetch('http://127.0.0.1:7343/ingest/474a74ed-e86f-45eb-826b-6126cb6afa26',{method:'POST',headers:{'Content-Type':'application/json','X-Debug-Session-Id':'7c7005'},body:JSON.stringify({sessionId:'7c7005',location:'inequality-quiz.js:buildMc',message:'mc option layout',data:{letter:letters[i],optDisplay:getComputedStyle(label).display,optAlign:getComputedStyle(label).alignItems,texDisplay:getComputedStyle(math).display,hasMcHead:!!label.querySelector('.quiz-mc-head'),katexDisplay:!!math.querySelector('.katex-display')},timestamp:Date.now(),hypothesisId:'H2-H3',runId:'post-fix'})}).catch(()=>{});
-        // #endregion
         if (reviewMode) {
           if (i === q.answer) label.classList.add("reveal-ok");
           if (state.answers[q.id] === i && i !== q.answer) label.classList.add("reveal-bad");
@@ -659,6 +656,35 @@
       if (state.index >= QUIZ.length - 1) {
         state.submitted = true;
         state.phase = "review";
+        try {
+          QUIZ.forEach(function(q) {
+            var userAnswerIdx = state.answers[q.id];
+            var isCorrect = checkQuestion(q, state.answers);
+            var payload = {
+              type: 'uniplus:quizAnswer',
+              subject: 'MATH',
+              quizId: 'math-inequality',
+              questionId: 'ineq-q' + q.id,
+              section: 'inequality',
+              difficulty: 'standard',
+              stem: q.stem || null,
+              selectedAnswer: userAnswerIdx !== undefined ? String(userAnswerIdx) : null,
+              selectedAnswerText: (q.type === 'mc' && userAnswerIdx !== undefined) ? (q.choices[userAnswerIdx] || null) : null,
+              correctAnswer: q.type === 'mc' ? String(q.answer) : (q.answer || null),
+              correctAnswerText: q.type === 'mc' ? (q.choices[q.answer] || null) : (q.answer || null),
+              isCorrect: isCorrect,
+              attemptNumber: 1,
+              msTaken: 0
+            };
+            // Send to the immediate parent (dashboard/index.html, where the tracker
+            // and session relay live). window.postMessage() alone only targets this
+            // same window and never reaches the tracker in the outer frame.
+            window.parent.postMessage(payload, '*');
+            if (window.top !== window.parent) {
+              try { window.top.postMessage(payload, '*'); } catch (_) {}
+            }
+          });
+        } catch(_) {}
         render();
         return;
       }
