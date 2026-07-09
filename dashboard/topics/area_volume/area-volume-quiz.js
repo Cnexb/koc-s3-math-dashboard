@@ -81,7 +81,6 @@
       type: "mc",
       prompt:
         VESSEL_INTRO + "\n(a) Find the ratio of the base radius of the vessel to the radius of the water surface.",
-      figures: [{ src: FIG + "q8-vessel.png", alt: "Conical vessel with water inside" }],
       choices: ["5:6", "6:5", "25:36", "36:25"],
       answer: 1,
     },
@@ -90,7 +89,6 @@
       type: "mc",
       prompt:
         VESSEL_INTRO + "\nIt is given that the vessel contains 600 cm\u00b3 of water. Find the capacity of the vessel.",
-      figures: [{ src: FIG + "q8-vessel.png", alt: "Conical vessel with water inside" }],
       choices: ["900\\text{ cm}^3", "1040\\text{ cm}^3", "1250\\text{ cm}^3", "1500\\text{ cm}^3"],
       answer: 1,
     },
@@ -99,7 +97,6 @@
       type: "mc",
       prompt:
         VESSEL_INTRO + "\nIt is given that the vessel contains 600 cm\u00b3 of water. Alex claims that if 300 cm\u00b3 of water is added into the vessel, the water will overflow. Do you agree? Explain your answer.",
-      figures: [{ src: FIG + "q8-vessel.png", alt: "Conical vessel with water inside" }],
       choices: [
         "\\text{Agree \u2014 the water will overflow}",
         "\\text{Disagree \u2014 the water will not overflow}",
