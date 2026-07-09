@@ -18,10 +18,6 @@
       type: "mc",
       prompt: "The cone and cylinder have the same volume. Cone: height 4 cm, radius 3 cm. Cylinder: radius 2 cm.",
       stem: "\\text{Find the height of the cylinder.}",
-      figures: [
-        { src: FIG + "q2-cone.png", alt: "Cone height 4 cm, radius 3 cm" },
-        { src: FIG + "q2-cylinder.png", alt: "Cylinder radius 2 cm" },
-      ],
       choices: ["2\\text{ cm}", "3\\text{ cm}", "4\\text{ cm}", "6\\text{ cm}"],
       answer: 1,
     },
@@ -77,7 +73,6 @@
       type: "mc",
       prompt: "A vertical conical vessel contains water. The ratio of curved surface area (vessel) to curved surface area (water) is 36 : 25.",
       stem: "\\text{Find the ratio of the base radius of the vessel to the radius of the water surface.}",
-      figures: [{ src: FIG + "q8-vessel.png", alt: "Conical vessel with water inside" }],
       choices: ["5:6", "6:5", "25:36", "36:25"],
       answer: 1,
     },
@@ -86,7 +81,6 @@
       type: "mc",
       prompt: "The vessel contains 600 cm³ of water. Alex claims that adding 300 cm³ will make the water overflow.",
       stem: "\\text{Do you agree?}",
-      figures: [{ src: FIG + "q8-vessel.png", alt: "Conical vessel with water inside" }],
       choices: [
         "\\text{Agree — the water will overflow}",
         "\\text{Disagree — the water will not overflow}",
@@ -100,7 +94,6 @@
       type: "mc",
       prompt: "The vessel contains 600 cm³ of water (same conical vessel as above).",
       stem: "\\text{Find the capacity of the vessel.}",
-      figures: [{ src: FIG + "q8-vessel.png", alt: "Conical vessel with water inside" }],
       choices: ["900\\text{ cm}^3", "1040\\text{ cm}^3", "1250\\text{ cm}^3", "1500\\text{ cm}^3"],
       answer: 1,
     },
@@ -189,7 +182,7 @@
       num.textContent = q.id + ".";
       head.appendChild(num);
       if (q.prompt) {
-        const prompt = document.createElement("span");
+        const prompt = document.createElement("div");
         prompt.className = "quiz-prompt";
         prompt.textContent = q.prompt;
         head.appendChild(prompt);
@@ -207,7 +200,7 @@
       if (q.stem) {
         const stem = document.createElement("div");
         stem.className = "quiz-stem";
-        kx(stem, q.stem, true);
+        kx(stem, q.stem, false);
         content.appendChild(stem);
       }
       const body = document.createElement("div");
