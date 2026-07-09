@@ -298,7 +298,6 @@
       slides: document.getElementById("panel-slides"),
       tools: document.getElementById("panel-tools"),
       game: document.getElementById("panel-game"),
-      worked: document.getElementById("panel-worked"),
       quiz: document.getElementById("panel-quiz"),
       wayground: document.getElementById("panel-wayground"),
     };

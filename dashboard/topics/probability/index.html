@@ -11,8 +11,6 @@
   <script defer src="../../shared/deck-touch-nav.js"></script>
   <script defer src="probability-tools.js?v=20260706-ipad"></script>
   <script defer src="probability-game.js"></script>
-  <script defer src="probability-worked.js"></script>
-  <script defer src="probability-worked-data.js"></script>
   <script defer src="probability-quiz.js?v=20260706"></script>
   <style>
     :root {
@@ -163,98 +161,12 @@
     .ct-modal-body table.ptab th, .ct-modal-body table.ptab td { padding: 11px 10px; }
     .ct-modal-body table.ptab + p { font-size: 18px !important; }
 
-    /* ───────────────── Worked Solutions tab ───────────────── */
-    .worked-layout { display: grid; grid-template-columns: 210px minmax(0, 1fr); gap: 16px; align-items: start; }
-    @media (max-width: 1040px) { .worked-layout { grid-template-columns: 1fr; } }
-    .q-list { background: var(--panel); border: 1px solid var(--line); border-radius: 14px; padding: 12px; max-height: 680px; overflow-y: auto; }
-    .q-list-title { margin: 2px 0 10px; font-size: 12px; text-transform: uppercase; letter-spacing: .06em; color: var(--dim); }
-    .src-group { margin-bottom: 10px; border: 1px solid var(--line); border-radius: 11px; overflow: hidden; }
-    .src-head { display: flex; align-items: center; gap: 8px; width: 100%; text-align: left; background: var(--panel2); border: 0;
-      color: var(--ink); font: inherit; font-weight: 700; font-size: 12.5px; padding: 10px 11px; cursor: pointer; }
-    .src-head:hover { background: #1d2c4d; }
-    .src-head .src-name { flex: 1; line-height: 1.25; }
-    .src-head .src-badge { font-family: "JetBrains Mono", monospace; font-size: 11px; color: #06283d; background: var(--a);
-      border-radius: 6px; padding: 1px 7px; flex: none; }
-    .src-head .src-caret { flex: none; transition: transform .18s; color: var(--dim); }
-    .src-head.collapsed .src-caret { transform: rotate(-90deg); }
-    .src-body { padding: 8px; display: grid; grid-template-columns: 1fr 1fr 1fr; gap: 6px; }
-    .src-body.hidden { display: none; }
-    .sub-head { grid-column: 1 / -1; margin: 6px 2px 0; font-size: 10.5px; text-transform: uppercase; letter-spacing: .05em; color: var(--dim); }
-    .q-row { position: relative; display: flex; align-items: center; justify-content: center; gap: 4px; background: var(--panel2); border: 1px solid var(--line);
-      color: var(--ink); font: inherit; font-size: 12.5px; font-weight: 700; font-family: "JetBrains Mono", monospace;
-      padding: 8px 5px; border-radius: 8px; cursor: pointer; }
-    .q-row:hover { border-color: var(--a); }
-    .q-row.active { background: var(--a); color: #06283d; border-color: var(--a); }
-    .q-row .dot { font-size: 10px; line-height: 1; }
-    .q-row .dot.built { color: var(--tot); }
-    .q-row.active .dot { color: #06283d; }
-    .no-sol { padding: 22px 16px; text-align: center; color: var(--dim); font-size: 13.5px; line-height: 1.6; }
-    .deck-empty { display: flex; align-items: center; justify-content: center; height: 100%; color: var(--dim); font-size: 14px; text-align: center; padding: 20px; }
-    .deck-empty.hidden { display: none; }
-    .worked-deck { position: relative; background: #000; border: 1px solid var(--line); border-radius: 14px; overflow: hidden; aspect-ratio: 16/9; }
-    .worked-deck iframe { width: 100%; height: 100%; border: 0; display: block; }
-    .worked-deck iframe.hidden { display: none; }
-    .worked-deck.big { aspect-ratio: auto; height: min(82vh, 820px); }
-    .deck-expand { position: absolute; top: 8px; right: 8px; z-index: 6; width: 34px; height: 34px; border-radius: 9px;
-      background: rgba(8,14,28,.8); border: 1px solid var(--line); color: var(--ink); font-size: 17px; line-height: 1; cursor: pointer;
-      display: flex; align-items: center; justify-content: center; transition: all .15s; }
-    .deck-expand:hover { border-color: var(--a); color: var(--a); }
-    .worked-sub { position: relative; margin-top: 12px; background: linear-gradient(180deg,#16243f,#101b30);
-      border: 1px solid var(--line); border-radius: 14px; padding: 14px 14px 10px; }
-    .worked-sub.hidden { display: none; }
-    .worked-sub .sub-label { position: absolute; top: 10px; left: 14px; font-size: 11px; text-transform: uppercase;
-      letter-spacing: .07em; font-weight: 700; color: var(--tot); background: rgba(102,187,106,.12);
-      border: 1px solid rgba(102,187,106,.3); padding: 3px 9px; border-radius: 7px; z-index: 2; }
-    #sub-svg { width: 100%; height: auto; display: block; }
-    .worked-controls { display: flex; align-items: center; gap: 12px; margin-top: 12px; }
-    .worked-controls.hidden { display: none; }
+    /* ───────────────── Probability game tab ───────────────── */
     .wbtn { background: var(--panel); border: 1px solid var(--line); color: var(--ink); font: inherit; font-weight: 600;
       padding: 9px 16px; border-radius: 9px; cursor: pointer; }
     .wbtn:hover { border-color: var(--a); }
     .wbtn.primary { background: var(--a); color: #06283d; border-color: var(--a); }
     .wbtn:disabled { opacity: .4; cursor: not-allowed; }
-    .w-progress { flex: 1; }
-    .w-progress span { font-size: 12px; color: var(--dim); }
-    .w-bar { height: 5px; background: var(--panel2); border-radius: 999px; margin-top: 5px; overflow: hidden; }
-    #w-bar-fill { height: 100%; width: 9%; background: var(--a); transition: width .25s; }
-    .solution-panel { background: var(--panel); border: 1px solid var(--line); border-radius: 14px; display: flex; flex-direction: column; max-height: 680px; }
-    .sp-head { padding: 14px 16px; border-bottom: 1px solid var(--line); background: linear-gradient(180deg,#16233d,var(--panel));
-      border-radius: 14px 14px 0 0; flex: none; }
-    .sp-head h3 { margin: 0; font-size: 17px; color: var(--a); }
-    .sp-head p { margin: 4px 0 0; font-size: 12px; color: var(--dim); }
-    .sp-q { margin-top: 10px; padding: 9px 12px; background: var(--bg); border: 1px solid var(--line);
-      border-radius: 9px; display: flex; flex-direction: column; gap: 4px; }
-    .sp-q .sp-q-row { font-size: 15px; line-height: 1.5; }
-    .sp-q .katex { color: var(--ink); }
-    .sp-q .sp-q-txt { color: #cdd6e4; }
-    .solution-scroll { padding: 12px; overflow-y: auto; display: flex; flex-direction: column; gap: 10px; }
-    .step-card { background: var(--panel2); border: 1px solid var(--line); border-radius: 11px; padding: 12px 14px; cursor: pointer; transition: all .15s; }
-    .step-card:hover { border-color: var(--a); }
-    .step-card.active { border-color: var(--a); box-shadow: inset 3px 0 0 var(--a); background: #1d2c4d; }
-    .step-card .sc-head { display: flex; align-items: center; gap: 9px; margin-bottom: 6px; }
-    .step-card .sc-idx { width: 22px; height: 22px; border-radius: 50%; background: var(--bg); color: var(--ink); font-size: 12px; font-weight: 700;
-      display: flex; align-items: center; justify-content: center; flex: none; }
-    .step-card.active .sc-idx { background: var(--a); color: #06283d; }
-    .step-card .sc-title { font-size: 13px; font-weight: 600; color: var(--ink); text-transform: uppercase; letter-spacing: .03em; }
-    .step-card .sc-body { font-size: 14px; color: #cdd6e4; line-height: 1.5; }
-    .step-card .sc-body .katex { color: var(--ink); }
-    .method-chip { display: inline-flex; align-items: center; gap: 4px; background: rgba(102,187,106,.16); color: var(--tot);
-      border: 1px solid rgba(102,187,106,.4); border-radius: 7px; padding: 2px 8px; font: inherit; font-size: 13px; font-weight: 600; cursor: pointer; vertical-align: middle; }
-    .method-chip:hover { background: rgba(102,187,106,.28); }
-    .method-chip .katex { color: inherit; font-size: .98em; }
-    .method-modal { position: fixed; inset: 0; z-index: 50; display: flex; align-items: center; justify-content: center;
-      background: rgba(3,8,20,.74); backdrop-filter: blur(3px); padding: 20px; }
-    .method-modal.hidden { display: none; }
-    .mm-card { position: relative; background: var(--panel); border: 1px solid var(--line); border-radius: 16px; padding: 24px 26px;
-      max-width: 560px; width: 100%; max-height: 88vh; overflow-y: auto; box-shadow: 0 20px 60px rgba(0,0,0,.6); }
-    .mm-close { position: absolute; top: 12px; right: 14px; background: none; border: none; color: var(--dim); font-size: 26px; cursor: pointer; line-height: 1; }
-    .mm-close:hover { color: var(--ink); }
-    .mm-card h3 { margin: 0 0 4px; color: var(--a); font-size: 20px; }
-    .mm-tag { font-size: 12px; text-transform: uppercase; letter-spacing: .06em; color: var(--tot); font-weight: 700; }
-    .mm-row { font-size: 18px; margin: 12px 0; }
-    .mm-note { font-size: 14px; color: var(--dim); line-height: 1.55; }
-
-    /* ───────────────── Probability game tab ───────────────── */
     .pg-mode { animation: pgfade .2s ease; }
     @keyframes pgfade { from { opacity: 0; transform: translateY(4px); } to { opacity: 1; transform: none; } }
     .pg-bar { display: flex; flex-wrap: wrap; gap: 14px; align-items: center; justify-content: space-between;
@@ -429,7 +341,6 @@
     <button class="tab active" data-tab="slides">Concept &amp; Formula</button>
     <button class="tab" data-tab="tools">Interactive Tool</button>
     <button class="tab" data-tab="game">Probability Game</button>
-    <button class="tab" data-tab="worked">Worked Solutions</button>
     <button class="tab" data-tab="quiz">Quiz</button>
     <button class="tab" data-tab="wayground">WayGround</button>
   </nav>
@@ -639,15 +550,7 @@
     <p class="hint">Tree Challenge: build the tree, then pick the final answer. Bag Designer: match the target chance of red. Betting Game: pick a side each round — after 3 rounds, compare the expected values.</p>
   </section>
 
-  <!-- TAB 4: worked solutions — full L10-12 PowerPoint export -->
-  <section id="panel-worked" class="panel hidden">
-    <div class="ppt-worked-wrap">
-      <iframe id="worked-ppt-frame" src="../../slides/probability/l10-12-main-deck/index.html" title="Pre S3 Maths L10-12 Probability (2025)"></iframe>
-    </div>
-    <p class="hint">Export <code>l10-12-main.mp4</code> into <code>slides/probability/l10-12-main-deck/</code>. Space = play/pause · ← rewinds 5s.</p>
-  </section>
-
-  <!-- TAB 5: quiz -->
+  <!-- TAB 4: quiz -->
   <section id="panel-quiz" class="panel hidden">
     <div class="quiz-wrap">
       <div class="quiz-progress-wrap" id="quiz-progress-wrap">
@@ -673,13 +576,5 @@
     </div>
     <p class="hint">Open the link above to join the live session.</p>
   </section>
-
-  <!-- method / formula popup modal (worked) -->
-  <div id="method-modal" class="method-modal hidden">
-    <div class="mm-card">
-      <button id="mm-close" class="mm-close" title="close">&times;</button>
-      <div id="mm-body"></div>
-    </div>
-  </div>
 </body>
 </html>

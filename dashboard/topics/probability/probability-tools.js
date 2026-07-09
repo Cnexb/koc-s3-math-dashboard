@@ -597,7 +597,6 @@
       slides: document.getElementById("panel-slides"),
       tools: document.getElementById("panel-tools"),
       game: document.getElementById("panel-game"),
-      worked: document.getElementById("panel-worked"),
       quiz: document.getElementById("panel-quiz"),
       wayground: document.getElementById("panel-wayground"),
     };
@@ -628,8 +627,6 @@
   function applyDeepLink() {
     const q = new URLSearchParams(location.search);
     const tab = q.get("tab"), tool = q.get("tool"), den = q.get("den"), num = q.get("num");
-    const wq = q.get("q");
-    if (wq && !/[#&]q=/.test(location.hash || "")) location.hash = "q=" + wq;
     if (tab) { const b = document.querySelector(`[data-tab="${tab}"]`); if (b) b.click(); }
     if (tool) { const b = document.querySelector(`[data-tool="${tool}"]`); if (b) b.click(); }
     const denSel = document.getElementById("ct-denom"), numSel = document.getElementById("ct-num");
