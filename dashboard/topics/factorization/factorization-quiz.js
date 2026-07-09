@@ -96,7 +96,7 @@
     {
       id: 8,
       type: "mc",
-      prompt: "Hence, factorize",
+      prompt: "Factorize",
       stem: "x^2 - 2xy - 35y^2 - 7x + 49y",
       choices: [
         "(x-7y)(x+5y)",
