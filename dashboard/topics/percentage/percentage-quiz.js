@@ -6,8 +6,8 @@
     {
       id: 1,
       type: "mc",
-      prompt: "A panda was originally 80 kg. Its weight first decreased by 10% due to illness, then increased by 10% after recovery.",
-      stem: "\\text{What was the change in weight compared with the original?}",
+      prompt:
+        "The original weight of a panda was 80 kg. Its weight first decreased by 10% due to illness and then increased by 10% after recovery. After recovery, what was the change in its weight as compared to the original weight?",
       choices: [
         "\\text{no change}",
         "\\text{an increase of }0.8\\text{ kg}",
@@ -19,82 +19,82 @@
     {
       id: 2,
       type: "mc",
-      prompt: "Last Christmas, 40 postcards were sold at $90 each. This Christmas, price +30% and quantity sold −15%.",
-      stem: "\\text{Find the percentage change in money to charity.}",
+      prompt:
+        "Last Christmas, an artist sold 40 postcards at the price of $90 each for charity. This Christmas, the price of each postcard increases by 30% but the number of postcards sold decreases by 15%. Find the percentage change in the amount of money to charity.",
       choices: ["-15\\%", "+15\\%", "-10.5\\%", "+10.5\\%"],
       answer: 3,
     },
     {
       id: 3,
       type: "mc",
-      prompt: "Bob deposits $50000 at 6% p.a. simple interest and $40000 at 7% p.a. simple interest for 10 years.",
-      stem: "\\text{Find the total amount he will receive.}",
+      prompt:
+        "Bob deposits 50000 in bank A at a simple interest rate of 6% p.a. and $40000 in bank B at a simple interest rate of 7% p.a. Find the total amount he will receive after 10 years.",
       choices: ["\\$148000", "\\$74000", "\\$58000", "\\$12000"],
       answer: 0,
     },
     {
       id: 4,
       type: "mc",
-      prompt: "A sum is deposited at 12% p.a. compounded yearly. The interest after 7 years is $6000.",
-      stem: "\\text{Find the principal (nearest \\$1000).}",
+      prompt:
+        "A sum of money is deposited in a bank at an interest rate of 12% p.a. compounded yearly. If the interest received after 7 years is $6000, find the principal.\n(Give the answer correct to the nearest $1000.)",
       choices: ["\\$3000", "\\$4000", "\\$5000", "\\$6000"],
       answer: 2,
     },
     {
       id: 5,
       type: "mc",
-      prompt: "Tom has allowance $140000 and pays salaries tax $15300. His net chargeable income is between $150000 and $200000.",
-      stem: "\\text{Find his annual income.}",
+      prompt:
+        "In this financial year, Tom has a total allowance of $140000 and he has to pay a salaries tax of $15300. If his net chargeable income is greater than $150000 but less than $200000, find his annual income.",
       choices: ["\\$109000", "\\$195000", "\\$249000", "\\$335000"],
       answer: 3,
     },
     {
       id: 6,
       type: "mc",
-      prompt: "An antique painting increases by 25% every 5 years. Its present value is $150000.",
-      stem: "\\text{Find its value 20 years ago.}",
+      prompt:
+        "The value of an antique oil painting increases at a steady rate of 25% every 5 years. Its present value is $150000.\nFind its value 20 years ago.",
       choices: ["\\$61440", "\\$614400", "\\$150000", "\\$88560"],
       answer: 0,
     },
     {
       id: 7,
       type: "mc",
-      prompt: "An antique painting increases by 25% every 5 years. Its present value is $150000.",
-      stem: "\\text{Find the increase in value over the past 20 years.}",
+      prompt:
+        "The value of an antique oil painting increases at a steady rate of 25% every 5 years. Its present value is $150000.\nFind the increase in its value over the past 20 years.",
       choices: ["\\$61440", "\\$88560", "\\$150000", "\\$885600"],
       answer: 1,
     },
     {
       id: 8,
       type: "mc",
-      prompt: "David borrows $5000 at 7.8% p.a. compounded monthly.",
-      stem: "\\text{Find the amount to repay after 3 years (nearest dollar).}",
+      prompt:
+        "David borrows $5000 from a bank at an interest rate of 7.8% p.a. compounded monthly. Find the amount he should repay after 3 years.\n(Give the answer correct to the nearest dollar.)",
       choices: ["\\$5800", "\\$6000", "\\$6313", "\\$6500"],
       answer: 2,
     },
     {
       id: 9,
       type: "mc",
-      prompt: "Bank X: 4% p.a. compounded half-yearly. Bank Y: 2% p.a. compounded quarterly. Both for 10 years.",
-      stem: "\\text{Susan claims Bank X gives more interest. Do you agree?}",
+      prompt:
+        "Bank X offers interest at 4% p.a. compounded half-yearly. Bank Y offers interest at 2% p.a. compounded quarterly. Susan is going to deposit a sum of money in one of the banks. What is the interest received in 10 years for Bank X?",
       choices: [
-        "\\text{Agree — Bank X gives more interest}",
-        "\\text{Disagree — Bank Y gives more interest}",
-        "\\text{Disagree — both give the same interest}",
-        "\\text{Agree — Bank X gives less interest}",
+        "P(1.02^{20}-1)",
+        "0.4P",
+        "P(1.005^{40}-1)",
+        "P(1.04^{10}-1)",
       ],
       answer: 0,
     },
     {
       id: 10,
       type: "mc",
-      prompt: "Bank X: 4% p.a. compounded half-yearly. Bank Y: 2% p.a. compounded quarterly. Both for 10 years.",
-      stem: "\\text{Which bank gives more interest?}",
+      prompt:
+        "Bank X offers interest at 4% p.a. compounded half-yearly. Bank Y offers interest at 2% p.a. compounded quarterly. Susan is going to deposit a sum of money in one of the banks. What is the interest received in 10 years for Bank Y?",
       choices: [
-        "\\text{Bank X}",
-        "\\text{Bank Y}",
-        "\\text{Both give the same interest}",
-        "\\text{Cannot be determined}",
+        "P(1.005^{40}-1)",
+        "0.2P",
+        "P(1.02^{20}-1)",
+        "P(1.005^{20}-1)",
       ],
       answer: 0,
     },
@@ -169,7 +169,7 @@
       num.textContent = q.id + ".";
       head.appendChild(num);
       if (q.prompt) {
-        const prompt = document.createElement("span");
+        const prompt = document.createElement("div");
         prompt.className = "quiz-prompt";
         prompt.textContent = q.prompt;
         head.appendChild(prompt);
@@ -187,7 +187,7 @@
       if (q.stem) {
         const stem = document.createElement("div");
         stem.className = "quiz-stem";
-        kx(stem, q.stem, true);
+        kx(stem, q.stem, false);
         content.appendChild(stem);
       }
       const body = document.createElement("div");
@@ -288,7 +288,7 @@
               questionId: 'pct-q' + q.id,
               section: 'percentages',
               difficulty: 'standard',
-              stem: q.stem || null,
+              stem: q.stem || q.prompt || null,
               selectedAnswer: userAnswerIdx !== undefined ? String(userAnswerIdx) : null,
               selectedAnswerText: userAnswerIdx !== undefined ? (q.choices[userAnswerIdx] || null) : null,
               correctAnswer: String(q.answer),
