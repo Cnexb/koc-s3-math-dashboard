@@ -11,7 +11,7 @@
   <script defer src="../../shared/deck-touch-nav.js"></script>
   <script defer src="area-volume-tools.js?v=20260706-ipad"></script>
   <script defer src="area-volume-game.js"></script>
-  <script defer src="area-volume-quiz.js?v=20260709-av"></script>
+  <script defer src="area-volume-quiz.js?v=20260709-av2"></script>
   <style>
     :root {
       --bg: #0f172a; --panel: #16213a; --panel2: #1b2945; --ink: #e5e7eb; --dim: #94a3b8;
@@ -260,7 +260,7 @@
     .quiz-card { background: var(--panel); border: 1px solid var(--line); border-radius: 14px; padding: 18px 20px; margin-bottom: 16px; min-width: 0; overflow: hidden; }
     .quiz-head { display: flex; align-items: baseline; gap: 8px; margin-bottom: 10px; flex-wrap: wrap; }
     .quiz-num { font-weight: 700; font-size: 18px; color: var(--a); font-family: "JetBrains Mono", monospace; }
-    .quiz-prompt { font-size: 16px; font-weight: 600; color: var(--dim); line-height: 1.55; flex: 1 1 100%; word-wrap: break-word; overflow-wrap: anywhere; white-space: normal; overflow: visible; }
+    .quiz-prompt { font-size: 16px; font-weight: 500; color: var(--ink); line-height: 1.55; flex: 1 1 100%; word-wrap: break-word; overflow-wrap: anywhere; white-space: pre-line; overflow: visible; }
     .quiz-stem { font-size: 18px; margin-bottom: 14px; max-width: 100%; overflow: visible; line-height: 1.55; overflow-wrap: anywhere; word-wrap: break-word; -webkit-overflow-scrolling: touch; }
     .quiz-stem .katex, .quiz-stem .katex-display { font-size: 1em; max-width: 100%; }
     .quiz-stem .katex-display { margin: 0; text-align: left; overflow: visible; }
@@ -301,7 +301,9 @@
     .quiz-content { flex: 1 1 260px; min-width: 0; }
     .quiz-figure { flex: 0 1 200px; max-width: 220px; min-width: 140px; }
     .quiz-figure-stack { display: flex; flex-direction: column; gap: 10px; max-width: 180px; }
-    .quiz-figure img { width: 100%; height: auto; display: block; border-radius: 10px; background: #fff; padding: 8px; border: 1px solid var(--line); }
+    .quiz-figure-row { display: flex; flex-direction: row; gap: 12px; align-items: flex-end; max-width: 320px; flex: 0 1 320px; }
+    .quiz-figure-row img { flex: 1 1 0; min-width: 0; }
+    .quiz-figure img { width: 100%; height: auto; display: block; border-radius: 0; background: transparent; padding: 0; border: none; }
     .quiz-card.has-figure .quiz-stem { font-size: 20px; }
     .quiz-part-result { display: flex; align-items: center; gap: 6px; margin: 4px 0; flex-wrap: wrap; }
     .quiz-part-result-lbl { font-weight: 700; color: var(--a); font-family: "JetBrains Mono", monospace; }
