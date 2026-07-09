@@ -194,32 +194,80 @@
   }
 
   function initSummarySlideshow() {
-    const slides = document.querySelectorAll("#panel-summary .summary-slide");
+    const sets = document.querySelectorAll("#summary-stage .summary-set");
+    const categoryChips = document.querySelectorAll("[data-summary-category]");
+    const styleChips = document.querySelectorAll("[data-summary-style]");
+    const bigStyleNav = document.getElementById("summary-big-style-nav");
     const prevBtn = document.getElementById("summary-prev");
     const nextBtn = document.getElementById("summary-next");
     const pageNum = document.getElementById("summary-page-num");
     const pageTotal = document.getElementById("summary-page-total");
-    if (!slides.length || !prevBtn || !nextBtn) return;
+    if (!sets.length || !prevBtn || !nextBtn) return;
 
-    if (pageTotal) pageTotal.textContent = String(slides.length);
-
+    let category = "big";
+    let bigStyle = "style-1";
     let idx = 0;
 
-    function render() {
-      slides.forEach((s, i) => s.classList.toggle("active", i === idx));
-      if (pageNum) pageNum.textContent = String(idx + 1);
-      prevBtn.disabled = idx === 0;
-      nextBtn.disabled = idx === slides.length - 1;
+    function activeSetId() {
+      return category === "big" ? bigStyle : "cards";
     }
 
-    prevBtn.addEventListener("click", () => { if (idx > 0) { idx--; render(); } });
-    nextBtn.addEventListener("click", () => { if (idx < slides.length - 1) { idx++; render(); } });
+    function activeSet() {
+      return document.querySelector('#summary-stage .summary-set[data-summary-set="' + activeSetId() + '"]');
+    }
+
+    function slides() {
+      const set = activeSet();
+      return set ? set.querySelectorAll(".summary-slide") : [];
+    }
+
+    function render() {
+      const setId = activeSetId();
+      if (bigStyleNav) bigStyleNav.classList.toggle("hidden", category !== "big");
+      sets.forEach((s) => s.classList.toggle("hidden", s.dataset.summarySet !== setId));
+      categoryChips.forEach((c) => c.classList.toggle("active", c.dataset.summaryCategory === category));
+      styleChips.forEach((c) => c.classList.toggle("active", c.dataset.summaryStyle === bigStyle));
+      const list = slides();
+      list.forEach((s, i) => s.classList.toggle("active", i === idx));
+      if (pageNum) pageNum.textContent = String(idx + 1);
+      if (pageTotal) pageTotal.textContent = String(list.length || 1);
+      prevBtn.disabled = idx === 0;
+      nextBtn.disabled = idx >= list.length - 1;
+    }
+
+    function setCategory(id) {
+      category = id;
+      idx = 0;
+      render();
+    }
+
+    function setBigStyle(id) {
+      bigStyle = id;
+      idx = 0;
+      render();
+    }
+
+    categoryChips.forEach((c) => {
+      c.addEventListener("click", () => setCategory(c.dataset.summaryCategory));
+    });
+    styleChips.forEach((c) => {
+      c.addEventListener("click", () => setBigStyle(c.dataset.summaryStyle));
+    });
+
+    prevBtn.addEventListener("click", () => {
+      if (idx > 0) { idx--; render(); }
+    });
+    nextBtn.addEventListener("click", () => {
+      const list = slides();
+      if (idx < list.length - 1) { idx++; render(); }
+    });
 
     document.addEventListener("keydown", (e) => {
       const panel = document.getElementById("panel-summary");
       if (!panel || panel.classList.contains("hidden")) return;
+      const list = slides();
       if (e.key === "ArrowLeft" && idx > 0) { idx--; render(); }
-      else if (e.key === "ArrowRight" && idx < slides.length - 1) { idx++; render(); }
+      else if (e.key === "ArrowRight" && idx < list.length - 1) { idx++; render(); }
     });
 
     render();

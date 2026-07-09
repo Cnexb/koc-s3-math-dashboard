@@ -14,7 +14,7 @@
   <script defer src="percentage-calc.js"></script>
   <script defer src="percentage-game.js"></script>
   <script defer src="percentage-bank-game.js"></script>
-  <script defer src="percentage-tools.js?v=20260706-ipad"></script>
+  <script defer src="percentage-tools.js?v=20260709d"></script>
   <script defer src="percentage-quiz.js?v=20260709-pct-q9"></script>
   <style>
     :root {
@@ -35,6 +35,9 @@
       padding: 10px 16px; cursor: pointer; border-radius: 8px 8px 0 0; font-size: 15px; }
     .tab.active { color: var(--ink); background: var(--panel); box-shadow: inset 0 -2px 0 var(--a); }
     .subnav { display: flex; flex-wrap: wrap; gap: 8px; margin-bottom: 16px; align-items: center; }
+    .subnav-nested { margin-top: -8px; margin-bottom: 16px; padding-left: 4px; }
+    .subnav-nested .chip { font-size: 13px; padding: 6px 12px; }
+    .subnav.hidden { display: none; }
     .chip { background: var(--panel); border: 1px solid var(--line); color: var(--dim);
       font: inherit; font-weight: 600; padding: 8px 14px; border-radius: 999px; cursor: pointer;
       font-size: 14px; transition: all .15s; }
@@ -425,6 +428,8 @@
       font-size: 13px; font-weight: 600; color: var(--dim);
     }
     .summary-meta b { color: var(--ink); font-family: "JetBrains Mono", monospace; }
+    .summary-set { position: absolute; inset: 0; }
+    .summary-set.hidden { display: none; }
     /* ── Quiz ── */
     .quiz-wrap { max-width: 720px; margin: 0 auto; min-width: 0; }
     .quiz-progress-wrap { margin-bottom: 18px; }
@@ -698,59 +703,83 @@
 
   <!-- TAB 4: summary sheets -->
   <section id="panel-summary" class="panel hidden">
+    <div class="subnav" id="summary-category-nav">
+      <button type="button" class="chip active" data-summary-category="big">Big Summary</button>
+      <button type="button" class="chip" data-summary-category="cards">Small Cards</button>
+    </div>
+    <div class="subnav subnav-nested" id="summary-big-style-nav">
+      <button type="button" class="chip active" data-summary-style="style-1">Style 1</button>
+      <button type="button" class="chip" data-summary-style="style-2">Style 2</button>
+    </div>
     <div class="summary-slideshow">
       <button type="button" class="summary-arrow" id="summary-prev" aria-label="Previous page">&larr;</button>
       <div class="summary-stage" id="summary-stage">
-        <figure class="summary-slide active">
-          <img src="summary/summary-1.png" alt="Percentages summary — page 1" loading="lazy"
-               onerror="this.hidden=true;this.parentElement.querySelector('.summary-placeholder').hidden=false">
-          <div class="summary-placeholder" hidden>Page 1 — drop image at <code>summary/summary-1.png</code></div>
-        </figure>
-        <figure class="summary-slide">
-          <img src="summary/summary-2.png" alt="Percentages summary — page 2" loading="lazy"
-               onerror="this.hidden=true;this.parentElement.querySelector('.summary-placeholder').hidden=false">
-          <div class="summary-placeholder" hidden>Page 2 — drop image at <code>summary/summary-2.png</code></div>
-        </figure>
-        <figure class="summary-slide">
-          <img src="summary/summary-3.png" alt="Percentages summary — page 3" loading="lazy"
-               onerror="this.hidden=true;this.parentElement.querySelector('.summary-placeholder').hidden=false">
-          <div class="summary-placeholder" hidden>Page 3 — drop image at <code>summary/summary-3.png</code></div>
-        </figure>
-        <figure class="summary-slide">
-          <img src="summary/summary-4.png" alt="Percentages summary — page 4" loading="lazy"
-               onerror="this.hidden=true;this.parentElement.querySelector('.summary-placeholder').hidden=false">
-          <div class="summary-placeholder" hidden>Page 4 — drop image at <code>summary/summary-4.png</code></div>
-        </figure>
-        <figure class="summary-slide">
-          <img src="summary/summary-5.png" alt="Percentages summary — page 5" loading="lazy"
-               onerror="this.hidden=true;this.parentElement.querySelector('.summary-placeholder').hidden=false">
-          <div class="summary-placeholder" hidden>Page 5 — drop image at <code>summary/summary-5.png</code></div>
-        </figure>
-        <figure class="summary-slide">
-          <img src="summary/summary-6.png" alt="Percentages summary — page 6" loading="lazy"
-               onerror="this.hidden=true;this.parentElement.querySelector('.summary-placeholder').hidden=false">
-          <div class="summary-placeholder" hidden>Page 6 — drop image at <code>summary/summary-6.png</code></div>
-        </figure>
-        <figure class="summary-slide">
-          <img src="summary/summary-7.png" alt="Percentages summary — page 7" loading="lazy"
-               onerror="this.hidden=true;this.parentElement.querySelector('.summary-placeholder').hidden=false">
-          <div class="summary-placeholder" hidden>Page 7 — drop image at <code>summary/summary-7.png</code></div>
-        </figure>
-        <figure class="summary-slide">
-          <img src="summary/summary-8.png" alt="Percentages summary — page 8" loading="lazy"
-               onerror="this.hidden=true;this.parentElement.querySelector('.summary-placeholder').hidden=false">
-          <div class="summary-placeholder" hidden>Page 8 — drop image at <code>summary/summary-8.png</code></div>
-        </figure>
-        <figure class="summary-slide">
-          <img src="summary/summary-9.png" alt="Percentages summary — page 9" loading="lazy"
-               onerror="this.hidden=true;this.parentElement.querySelector('.summary-placeholder').hidden=false">
-          <div class="summary-placeholder" hidden>Page 9 — drop image at <code>summary/summary-9.png</code></div>
-        </figure>
+        <div class="summary-set" data-summary-set="style-1">
+          <figure class="summary-slide active">
+            <img src="summary/big/style-1/summary-1.png?v=20260709d" alt="Percentages big summary — Style 1, page 1" loading="lazy"
+                 onerror="this.hidden=true;this.parentElement.querySelector('.summary-placeholder').hidden=false">
+            <div class="summary-placeholder" hidden>Page 1 — drop image at <code>summary/big/style-1/summary-1.png</code></div>
+          </figure>
+          <figure class="summary-slide">
+            <img src="summary/big/style-1/summary-2.png?v=20260709d" alt="Percentages big summary — Style 1, page 2" loading="lazy"
+                 onerror="this.hidden=true;this.parentElement.querySelector('.summary-placeholder').hidden=false">
+            <div class="summary-placeholder" hidden>Page 2 — drop image at <code>summary/big/style-1/summary-2.png</code></div>
+          </figure>
+        </div>
+        <div class="summary-set hidden" data-summary-set="style-2">
+          <figure class="summary-slide active">
+            <img src="summary/big/style-2/summary-1.png?v=20260709d" alt="Percentages big summary — Style 2, page 1" loading="lazy"
+                 onerror="this.hidden=true;this.parentElement.querySelector('.summary-placeholder').hidden=false">
+            <div class="summary-placeholder" hidden>Page 1 — drop image at <code>summary/big/style-2/summary-1.png</code></div>
+          </figure>
+          <figure class="summary-slide">
+            <img src="summary/big/style-2/summary-2.png?v=20260709d" alt="Percentages big summary — Style 2, page 2" loading="lazy"
+                 onerror="this.hidden=true;this.parentElement.querySelector('.summary-placeholder').hidden=false">
+            <div class="summary-placeholder" hidden>Page 2 — drop image at <code>summary/big/style-2/summary-2.png</code></div>
+          </figure>
+        </div>
+        <div class="summary-set hidden" data-summary-set="cards">
+          <figure class="summary-slide active">
+            <img src="summary/cards/summary-3.png?v=20260709d" alt="Percentages small cards — page 1" loading="lazy"
+                 onerror="this.hidden=true;this.parentElement.querySelector('.summary-placeholder').hidden=false">
+            <div class="summary-placeholder" hidden>Page 1 — drop image at <code>summary/cards/summary-3.png</code></div>
+          </figure>
+          <figure class="summary-slide">
+            <img src="summary/cards/summary-4.png?v=20260709d" alt="Percentages small cards — page 2" loading="lazy"
+                 onerror="this.hidden=true;this.parentElement.querySelector('.summary-placeholder').hidden=false">
+            <div class="summary-placeholder" hidden>Page 2 — drop image at <code>summary/cards/summary-4.png</code></div>
+          </figure>
+          <figure class="summary-slide">
+            <img src="summary/cards/summary-5.png?v=20260709d" alt="Percentages small cards — page 3" loading="lazy"
+                 onerror="this.hidden=true;this.parentElement.querySelector('.summary-placeholder').hidden=false">
+            <div class="summary-placeholder" hidden>Page 3 — drop image at <code>summary/cards/summary-5.png</code></div>
+          </figure>
+          <figure class="summary-slide">
+            <img src="summary/cards/summary-6.png?v=20260709d" alt="Percentages small cards — page 4" loading="lazy"
+                 onerror="this.hidden=true;this.parentElement.querySelector('.summary-placeholder').hidden=false">
+            <div class="summary-placeholder" hidden>Page 4 — drop image at <code>summary/cards/summary-6.png</code></div>
+          </figure>
+          <figure class="summary-slide">
+            <img src="summary/cards/summary-7.png?v=20260709d" alt="Percentages small cards — page 5" loading="lazy"
+                 onerror="this.hidden=true;this.parentElement.querySelector('.summary-placeholder').hidden=false">
+            <div class="summary-placeholder" hidden>Page 5 — drop image at <code>summary/cards/summary-7.png</code></div>
+          </figure>
+          <figure class="summary-slide">
+            <img src="summary/cards/summary-8.png?v=20260709d" alt="Percentages small cards — page 6" loading="lazy"
+                 onerror="this.hidden=true;this.parentElement.querySelector('.summary-placeholder').hidden=false">
+            <div class="summary-placeholder" hidden>Page 6 — drop image at <code>summary/cards/summary-8.png</code></div>
+          </figure>
+          <figure class="summary-slide">
+            <img src="summary/cards/summary-9.png?v=20260709d" alt="Percentages small cards — page 7" loading="lazy"
+                 onerror="this.hidden=true;this.parentElement.querySelector('.summary-placeholder').hidden=false">
+            <div class="summary-placeholder" hidden>Page 7 — drop image at <code>summary/cards/summary-9.png</code></div>
+          </figure>
+        </div>
       </div>
       <button type="button" class="summary-arrow" id="summary-next" aria-label="Next page">&rarr;</button>
     </div>
-    <p class="summary-meta">Page <b id="summary-page-num">1</b> of <b id="summary-page-total">9</b></p>
-    <p class="hint">L04–06 Percentages — lesson summary. Use &larr; &rarr; or the arrows to switch pages.</p>
+    <p class="summary-meta">Page <b id="summary-page-num">1</b> of <b id="summary-page-total">2</b></p>
+    <p class="hint">L04–06 Percentages — pick Big Summary (Style 1–2) or Small Cards, then use &larr; &rarr; or the arrows to switch pages.</p>
   </section>
 
   <!-- TAB 5: quiz -->
