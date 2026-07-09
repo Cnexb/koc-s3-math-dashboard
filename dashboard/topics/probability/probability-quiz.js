@@ -58,7 +58,7 @@
       id: 7,
       type: "mc",
       prompt:
-        "6\u03c0 is a 2-digit number, where \u03c0 is an integer from 0 to 9 inclusive. Find the probability that the 2-digit number is divisible by 5.",
+        "6\u25b2 is a 2-digit number, where \u25b2 is an integer from 0 to 9 inclusive. Find the probability that the 2-digit number is divisible by 5.",
       choices: ["\\frac{1}{10}", "\\frac{1}{5}", "\\frac{2}{5}", "\\frac{1}{2}"],
       answer: 1,
     },
