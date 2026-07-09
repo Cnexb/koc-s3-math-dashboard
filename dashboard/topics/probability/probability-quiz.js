@@ -8,32 +8,32 @@
     {
       id: 1,
       type: "mc",
-      prompt: "A letter is chosen at random from the word UNIVERSITY.",
-      stem: "P(\\text{vowel})",
+      prompt:
+        "A letter is chosen randomly from the word \u2018UNIVERSITY\u2019. Find the probability that is a vowel.",
       choices: ["\\frac{1}{5}", "\\frac{3}{10}", "\\frac{2}{5}", "\\frac{1}{2}"],
       answer: 2,
     },
     {
       id: 2,
       type: "mc",
-      prompt: "Samuel randomly chooses bus, taxi or MTR on each of two working days.",
-      stem: "P(\\text{same transport on both days})",
+      prompt:
+        "Samuel can choose to go to work by bus, taxi or MTR. Suppose he randomly chooses a mean of transport in two working days. Find the probability that Samuel chooses the same mean of transport in these two working days.",
       choices: ["\\frac{2}{3}", "\\frac{1}{3}", "\\frac{1}{4}", "\\frac{3}{5}"],
       answer: 1,
     },
     {
       id: 3,
       type: "mc",
-      prompt: "A box has 20 basketballs and 35 tennis balls. A ball is drawn at random, replaced, and this is repeated 385 times.",
-      stem: "\\text{Find the expected number of tennis balls drawn.}",
+      prompt:
+        "There are 20 basketball and 35 tennis ball in a box. Nick repeats the action of drawing a ball from the box at random and putting it back into the box. Find the expected number of times of getting a tennis ball if he repeats the action for 385 times.",
       choices: ["20", "35", "140", "245"],
       answer: 3,
     },
     {
       id: 4,
       type: "mc",
-      prompt: "Dylan spins the fortune wheel once. He wins if the pointer lands on region c, e or g.",
-      stem: "P(\\text{prize})",
+      prompt:
+        "The figure shows a circular fortune wheel in a lucky draw. Dylan turns the wheel once. If the pointer points at the region \u2018c\u2019, \u2018e\u2019 or \u2018g\u2019, a prize will be given. Find the probability that he gets a prize.",
       figures: [{ src: FIG + "q4-wheel.png", alt: "Circular fortune wheel with sectors a to g" }],
       choices: ["\\frac{1}{4}", "\\frac{1}{6}", "\\frac{1}{10}", "\\frac{1}{12}"],
       answer: 0,
@@ -41,48 +41,48 @@
     {
       id: 5,
       type: "mc",
-      prompt: "A bag contains five $1.4 stamps, five $0.2 stamps and ten $0.1 stamps.",
-      stem: "\\text{Find the expected face value of one stamp drawn at random.}",
+      prompt:
+        "A bag contains five $1.4 stamps, five $0.2 stamps and ten $0.1 stamps. A stamp is drawn at random from the bag. Find the expected face value of the stamp.",
       choices: ["\\$0.35", "\\$0.4", "\\$0.45", "\\$0.5"],
       answer: 2,
     },
     {
       id: 6,
       type: "mc",
-      prompt: "There are 24 bottles of water and x bottles of tea on a table.",
-      stem: "P(\\text{tea})=\\dfrac{3}{5}\\text{. Find }x.",
+      prompt:
+        "There are 24 bottles of water and x bottles of tea on a table. If a bottle of drink is drawn at random, the probability of drawing a bottle of tea is 3/5. Find the value of x.",
       choices: ["36", "38", "40", "42"],
       answer: 0,
     },
     {
       id: 7,
       type: "mc",
-      prompt: "6\\pi is a 2-digit number, where \\pi is an integer from 0 to 9 inclusive.",
-      stem: "P(\\text{the number is divisible by 5})",
+      prompt:
+        "6\u03c0 is a 2-digit number, where \u03c0 is an integer from 0 to 9 inclusive. Find the probability that the 2-digit number is divisible by 5.",
       choices: ["\\frac{1}{10}", "\\frac{1}{5}", "\\frac{2}{5}", "\\frac{1}{2}"],
       answer: 1,
     },
     {
       id: 8,
       type: "mc",
-      prompt: "2000 candidates sit an examination.",
-      stem: "P(\\text{female})=\\dfrac{11}{20}\\text{. Find the number of male candidates.}",
+      prompt:
+        "There are 2000 candidates in an examination. If one of the candidates is chosen randomly, the probability of choosing a female candidate is 11/20. Find the number of male candidates in the examination.",
       choices: ["800", "900", "1000", "1100"],
       answer: 1,
     },
     {
       id: 9,
       type: "mc",
-      prompt: "Two fair dice are thrown at the same time.",
-      stem: "P(\\text{sum of the two numbers} < 9)",
+      prompt:
+        "Two fair dice are thrown at the same time. By using tabulation, find the probability that the sum of the two number is less than 9.",
       choices: ["\\frac{5}{9}", "\\frac{13}{18}", "\\frac{2}{3}", "\\frac{4}{9}"],
       answer: 1,
     },
     {
       id: 10,
       type: "mc",
-      prompt: "Winnie's purse: two $2 coins, one $5 coin and one $10 coin. Two coins are taken out at random.",
-      stem: "\\text{Find the expected donation amount.}",
+      prompt:
+        "Winnie\u2019s purse contains two $2 coins, one $5 coin and one $10 coin. On a flag day, Winnie takes out two coins randomly from her purse at the same time for donation. Find the expected donation amount.",
       choices: ["\\$7", "\\$8.5", "\\$9.5", "\\$10"],
       answer: 2,
     },
@@ -171,7 +171,7 @@
       num.textContent = q.id + ".";
       head.appendChild(num);
       if (q.prompt) {
-        const prompt = document.createElement("span");
+        const prompt = document.createElement("div");
         prompt.className = "quiz-prompt";
         prompt.textContent = q.prompt;
         head.appendChild(prompt);
@@ -189,7 +189,7 @@
       if (q.stem) {
         const stem = document.createElement("div");
         stem.className = "quiz-stem";
-        kx(stem, q.stem, true);
+        kx(stem, q.stem, false);
         content.appendChild(stem);
       }
       const body = document.createElement("div");
@@ -299,7 +299,7 @@
               questionId: 'prob-q' + q.id,
               section: 'probability',
               difficulty: 'standard',
-              stem: q.stem || null,
+              stem: q.stem || q.prompt || null,
               selectedAnswer: userAnswerIdx !== undefined ? String(userAnswerIdx) : null,
               selectedAnswerText: userAnswerIdx !== undefined ? (q.choices[userAnswerIdx] || null) : null,
               correctAnswer: String(q.answer),

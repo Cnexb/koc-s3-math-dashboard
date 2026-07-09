@@ -11,7 +11,7 @@
   <script defer src="../../shared/deck-touch-nav.js"></script>
   <script defer src="probability-tools.js?v=20260706-ipad"></script>
   <script defer src="probability-game.js"></script>
-  <script defer src="probability-quiz.js?v=20260706"></script>
+  <script defer src="probability-quiz.js?v=20260709-prob"></script>
   <style>
     :root {
       --bg: #0f172a; --panel: #16213a; --panel2: #1b2945; --ink: #e5e7eb; --dim: #94a3b8;
@@ -286,19 +286,20 @@
     .quiz-card { background: var(--panel); border: 1px solid var(--line); border-radius: 14px; padding: 18px 20px; margin-bottom: 16px; min-width: 0; overflow: hidden; }
     .quiz-head { display: flex; align-items: baseline; gap: 8px; margin-bottom: 10px; flex-wrap: wrap; }
     .quiz-num { font-weight: 700; font-size: 18px; color: var(--a); font-family: "JetBrains Mono", monospace; }
-    .quiz-prompt { font-size: 16px; font-weight: 600; color: var(--dim); line-height: 1.55; flex: 1 1 100%; word-wrap: break-word; overflow-wrap: break-word; }
-    .quiz-stem { font-size: 22px; margin-bottom: 14px; max-width: 100%; overflow-x: auto; line-height: 1.5; -webkit-overflow-scrolling: touch; }
-    .quiz-stem .katex, .quiz-stem .katex-display { font-size: 1.05em; max-width: 100%; }
-    .quiz-stem .katex-display { margin: 0; text-align: left; overflow-x: auto; }
+    .quiz-prompt { font-size: 16px; font-weight: 500; color: var(--ink); line-height: 1.55; flex: 1 1 100%; word-wrap: break-word; overflow-wrap: anywhere; white-space: pre-line; overflow: visible; }
+    .quiz-stem { font-size: 16px; margin-bottom: 14px; max-width: 100%; overflow: visible; line-height: 1.55; overflow-wrap: anywhere; word-wrap: break-word; -webkit-overflow-scrolling: touch; }
+    .quiz-stem .katex, .quiz-stem .katex-display { font-size: 1em; max-width: 100%; }
+    .quiz-stem .katex-display { margin: 0; text-align: left; overflow: visible; }
     .quiz-mc { display: flex; flex-direction: column; gap: 8px; min-width: 0; }
-    .quiz-mc-opt { display: flex; align-items: flex-start; gap: 10px; padding: 10px 12px; border-radius: 10px; border: 1px solid var(--line); background: var(--panel2); cursor: pointer; transition: border-color .15s; min-width: 0; }
+    .quiz-mc-opt { display: flex; align-items: flex-start; gap: 10px; padding: 10px 12px; border-radius: 10px; border: 1px solid var(--line); background: var(--panel2); cursor: pointer; transition: border-color .15s; min-width: 0; overflow: visible; }
     .quiz-mc-opt:hover:not(.locked) { border-color: var(--a); }
     .quiz-mc-opt.locked { cursor: default; }
     .quiz-mc-opt.reveal-ok { border-color: var(--ab); background: rgba(129,199,132,.12); }
     .quiz-mc-opt.reveal-bad { border-color: #E57373; background: rgba(229,115,115,.1); }
     .quiz-mc-opt input { flex: none; accent-color: var(--a); }
     .quiz-mc-letter { font-weight: 700; color: var(--dim); min-width: 22px; font-family: "JetBrains Mono", monospace; }
-    .quiz-mc-tex { font-size: 18px; min-width: 0; flex: 1; overflow-x: auto; }
+    .quiz-mc-tex { font-size: 18px; min-width: 0; flex: 1; overflow: visible; }
+    .quiz-mc-tex .katex { max-width: 100%; white-space: normal; }
     .quiz-sym-bar { display: flex; flex-wrap: wrap; gap: 6px; margin-bottom: 10px; }
     .quiz-sym-btn { min-width: 36px; height: 34px; padding: 0 8px; border-radius: 8px; border: 1px solid var(--line); background: var(--panel2); color: var(--ink); font: inherit; font-weight: 600; cursor: pointer; }
     .quiz-sym-btn:hover:not(:disabled) { border-color: var(--a); color: var(--a); }
