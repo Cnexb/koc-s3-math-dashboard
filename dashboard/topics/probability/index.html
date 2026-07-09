@@ -14,8 +14,8 @@
   <script defer src="probability-quiz.js?v=20260709-prob-q7"></script>
   <style>
     :root {
-      --bg: #0f172a; --panel: #16213a; --panel2: #1b2945; --ink: #e5e7eb; --dim: #94a3b8;
-      --a: #4FC3F7; --fav: #FFD54F; --tot: #66BB6A; --line: #28365c; --red: #f06292;
+      --bg: #fdfbf7; --panel: #ffffff; --panel2: #f5efe6; --ink: #2c2420; --dim: #5d544f;
+      --a: #4FC3F7; --fav: #FFD54F; --tot: #66BB6A; --line: rgba(0, 0, 0, 0.08); --red: #f06292;
       --ab: #81C784;
     }
     * { box-sizing: border-box; }
@@ -331,11 +331,16 @@
     .quiz-part-result { display: flex; align-items: center; gap: 6px; margin: 4px 0; flex-wrap: wrap; }
     .quiz-part-result-lbl { font-weight: 700; color: var(--a); font-family: "JetBrains Mono", monospace; }
   </style>
+  <link rel="stylesheet" href="../../shared/chem-light-theme.css">
 </head>
 <body>
   <header>
-    <h1>Probability</h1>
-    <span class="crumb">KOC S3 Math · Summer 2026 · Probability</span>
+    <img class="topic-logo" src="../../shared/uniplus-logo.png" alt="Uni+ logo">
+    <div class="topic-headings">
+      <div class="topic-brand">Uni<span class="plus">+</span> · Mathematics</div>
+      <h1>Probability</h1>
+      <span class="crumb">KOC S3 Math · Summer 2026 · Probability</span>
+    </div>
   </header>
 
   <nav class="tabs">

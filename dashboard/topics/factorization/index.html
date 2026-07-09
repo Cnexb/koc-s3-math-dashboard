@@ -14,8 +14,8 @@
   <script defer src="factorization-quiz.js?v=20260709-q8"></script>
   <style>
     :root {
-      --bg: #0f172a; --panel: #16213a; --panel2: #1b2945; --ink: #e5e7eb; --dim: #94a3b8;
-      --a: #4FC3F7; --b: #FFD54F; --ab: #81C784; --line: #28365c;
+      --bg: #fdfbf7; --panel: #ffffff; --panel2: #f5efe6; --ink: #2c2420; --dim: #5d544f;
+      --a: #4FC3F7; --b: #FFD54F; --ab: #81C784; --line: rgba(0, 0, 0, 0.08);
     }
     * { box-sizing: border-box; }
     body {
@@ -68,9 +68,9 @@
     input[type=range] { -webkit-appearance: none; appearance: none; height: 5px; border-radius: 999px;
       background: var(--panel2); outline: none; }
     input[type=range]::-webkit-slider-thumb { -webkit-appearance: none; width: 18px; height: 18px; border-radius: 50%;
-      background: var(--a); cursor: pointer; border: 2px solid #0b1324; }
+      background: var(--a); cursor: pointer; border: 2px solid #ffffff; }
     input[type=range]::-moz-range-thumb { width: 18px; height: 18px; border-radius: 50%; background: var(--a);
-      cursor: pointer; border: 2px solid #0b1324; }
+      cursor: pointer; border: 2px solid #ffffff; }
     .tool-action { margin-top: 6px; width: 100%; background: var(--panel2); color: var(--ink); border: 1px solid var(--line);
       font: inherit; font-weight: 600; padding: 10px; border-radius: 9px; cursor: pointer; }
     .tool-action:hover { border-color: var(--a); }
@@ -560,11 +560,16 @@
     }
     html.phone-compact .pair-group { padding: 10px 12px; gap: 10px; }
   </style>
+  <link rel="stylesheet" href="../../shared/chem-light-theme.css">
 </head>
 <body>
   <header>
-    <h1>Factorization</h1>
-    <span class="crumb">KOC S3 Math · Summer 2026 · L01–02 More about Factorization</span>
+    <img class="topic-logo" src="../../shared/uniplus-logo.png" alt="Uni+ logo">
+    <div class="topic-headings">
+      <div class="topic-brand">Uni<span class="plus">+</span> · Mathematics</div>
+      <h1>Factorization</h1>
+      <span class="crumb">KOC S3 Math · Summer 2026 · L01–02 More about Factorization</span>
+    </div>
   </header>
 
   <div class="tab-row">

@@ -5,7 +5,7 @@ html, body {
   margin: 0;
 }
 body {
-  background: var(--bg, #0f172a);
+  background: var(--bg, #fdfbf7);
   overflow-x: hidden;
 }
 
@@ -27,6 +27,9 @@ body {
   aspect-ratio: 16 / 9;
   display: block;
   overflow: hidden;
+  background: #000;
+  border: 1px solid var(--line, rgba(0, 0, 0, 0.08));
+  border-radius: 12px;
 }
 #panel-slides .deck-wrap iframe {
   width: 100%;
@@ -37,6 +40,7 @@ body {
 #panel-slides .hint {
   margin: 10px 0 0;
   font-size: 13px;
+  color: var(--dim, #5d544f);
 }
 
 /* iPad / tablet: swipe + arrow nav for embedded Reveal decks (desktop unchanged) */
@@ -61,14 +65,15 @@ html.tablet-touch .deck-nav-btn {
   width: 44px;
   height: 44px;
   border-radius: 50%;
-  border: 1px solid var(--line, #28365c);
-  background: var(--panel2, #1b2945);
-  color: var(--ink, #e5e7eb);
+  border: 1px solid var(--line, rgba(0, 0, 0, 0.08));
+  background: var(--panel, #ffffff);
+  color: var(--ink, #2c2420);
   font: inherit;
   font-size: 20px;
   font-weight: 700;
   cursor: pointer;
   transition: border-color .15s, color .15s;
+  box-shadow: 0 1px 2px rgba(0, 0, 0, 0.04);
 }
 html.tablet-touch .deck-nav-btn:active {
   border-color: var(--a, #4fc3f7);
@@ -103,6 +108,7 @@ html.tablet-touch .hint-deck-tablet {
 #panel-game > .mg-done {
   margin-top: 10px;
   font-size: 13px;
+  color: var(--dim, #5d544f);
 }
 
 /* ── Worked tab only: viewport-height flex shell ── */
@@ -162,16 +168,16 @@ body:has(#panel-worked:not(.hidden)) #panel-worked {
   justify-content: center;
   text-align: center;
   padding: 32px 24px;
-  color: var(--dim, #94a3b8);
+  color: var(--dim, #5d544f);
   font-size: 15px;
   line-height: 1.55;
-  border: 1px dashed var(--line, #28365c);
+  border: 1px dashed var(--line, rgba(0, 0, 0, 0.08));
   border-radius: 14px;
-  background: var(--panel, #16213a);
+  background: var(--panel, #ffffff);
 }
 .koc-empty strong {
   display: block;
-  color: var(--ink, #e5e7eb);
+  color: var(--ink, #2c2420);
   font-size: 17px;
   margin-bottom: 8px;
 }
@@ -182,11 +188,12 @@ body:has(#panel-worked:not(.hidden)) #panel-worked {
   margin: 0 auto;
 }
 .wg-card {
-  background: var(--panel, #16213a);
-  border: 1px solid var(--line, #28365c);
+  background: var(--panel, #ffffff);
+  border: 1px solid var(--line, rgba(0, 0, 0, 0.08));
   border-radius: 16px;
   padding: 28px 32px;
   text-align: center;
+  box-shadow: var(--shadow-soft, 0 4px 24px rgba(0, 0, 0, 0.06));
 }
 .wg-title {
   margin: 0 0 8px;
@@ -196,7 +203,7 @@ body:has(#panel-worked:not(.hidden)) #panel-worked {
 }
 .wg-lead {
   margin: 0 0 24px;
-  color: var(--dim, #94a3b8);
+  color: var(--dim, #5d544f);
   font-size: 15px;
   line-height: 1.5;
 }
@@ -212,4 +219,5 @@ body:has(#panel-worked:not(.hidden)) #panel-worked {
 #panel-wayground > .hint {
   margin-top: 12px;
   text-align: center;
+  color: var(--dim, #5d544f);
 }

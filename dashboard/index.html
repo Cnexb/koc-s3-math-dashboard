@@ -3,17 +3,13 @@
 <head>
   <meta charset="utf-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>KOC S3 Math — Topic Dashboards</title>
+  <title>Uni+ Mathematics — Topic Dashboards</title>
   <link href="https://fonts.googleapis.com/css2?family=Hanken+Grotesk:wght@400;600;700&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="shared/chem-light-theme.css">
   <style>
     :root {
-      --bg: #0f172a;
-      --surface: #16213a;
-      --surface2: #1b2945;
-      --ink: #e5e7eb;
-      --dim: #94a3b8;
-      --line: #28365c;
-      --accent: #4fc3f7;
+      --surface: #ffffff;
+      --surface2: #f5efe6;
     }
     * { box-sizing: border-box; }
     html, body { height: 100%; margin: 0; }
@@ -23,25 +19,54 @@
       color: var(--ink);
     }
 
-    /* ── Gallery (Notion-style) ── */
     #gallery-view {
       min-height: 100vh;
       display: flex;
       flex-direction: column;
+      position: relative;
     }
+    #gallery-view::before {
+      content: "";
+      position: absolute;
+      top: 0;
+      left: 0;
+      width: 100%;
+      height: 55vh;
+      background:
+        radial-gradient(ellipse at top left, rgba(56, 189, 248, 0.12), transparent 70%),
+        radial-gradient(ellipse at top right, rgba(167, 139, 250, 0.1), transparent 70%);
+      pointer-events: none;
+      z-index: 0;
+    }
+    #gallery-view > * {
+      position: relative;
+      z-index: 1;
+    }
+
     .hub-header {
       padding: 28px 40px 8px;
       max-width: 1280px;
       width: 100%;
       margin: 0 auto;
+      display: flex;
+      align-items: center;
+      gap: 16px;
     }
-    .hub-header h1 {
+    .hub-logo {
+      height: 44px;
+      width: auto;
+      flex: none;
+    }
+    .hub-header-text h1 {
       margin: 0;
       font-size: 28px;
       font-weight: 700;
       letter-spacing: -0.02em;
     }
-    .hub-header p {
+    .hub-header-text h1 .plus {
+      color: var(--accent);
+    }
+    .hub-header-text p {
       margin: 8px 0 0;
       color: var(--dim);
       font-size: 15px;
@@ -80,7 +105,7 @@
     .topic-card {
       background: var(--surface);
       border: 1px solid var(--line);
-      border-radius: 14px;
+      border-radius: 16px;
       overflow: hidden;
       cursor: pointer;
       text-align: left;
@@ -91,11 +116,12 @@
       display: flex;
       flex-direction: column;
       min-height: 280px;
+      box-shadow: var(--shadow-soft);
     }
     .topic-card:hover {
       transform: translateY(-3px);
       border-color: rgba(79, 195, 247, 0.45);
-      box-shadow: 0 12px 32px rgba(0, 0, 0, 0.35);
+      box-shadow: 0 12px 32px rgba(0, 0, 0, 0.1);
     }
     .topic-card:focus-visible {
       outline: 2px solid var(--accent);
@@ -113,14 +139,14 @@
       content: "";
       position: absolute;
       inset: 0;
-      background: linear-gradient(180deg, transparent 40%, rgba(15, 23, 42, 0.55));
+      background: linear-gradient(180deg, transparent 35%, rgba(255, 255, 255, 0.35));
       pointer-events: none;
     }
     .card-icon {
       font-size: 48px;
       line-height: 1;
       opacity: 0.92;
-      filter: drop-shadow(0 4px 12px rgba(0, 0, 0, 0.25));
+      filter: drop-shadow(0 4px 12px rgba(0, 0, 0, 0.12));
       z-index: 1;
     }
     .card-body {
@@ -159,14 +185,12 @@
       color: var(--dim);
     }
 
-    /* per-topic cover gradients */
-    .cover-av { background: linear-gradient(135deg, #1a3a52 0%, #0d2840 50%, #1e4030 100%); }
-    .cover-fz { background: linear-gradient(135deg, #2a2848 0%, #1a3355 55%, #3d3520 100%); }
-    .cover-in { background: linear-gradient(135deg, #2d1f4e 0%, #1a3355 50%, #3a3520 100%); }
-    .cover-pb { background: linear-gradient(135deg, #1e3d32 0%, #1a2845 50%, #4a3820 100%); }
-    .cover-pc { background: linear-gradient(135deg, #352848 0%, #1a3355 45%, #2d4a28 100%); }
+    .cover-av { background: linear-gradient(135deg, #dbeafe 0%, #bfdbfe 50%, #a7f3d0 100%); }
+    .cover-fz { background: linear-gradient(135deg, #e9d5ff 0%, #ddd6fe 55%, #fde68a 100%); }
+    .cover-in { background: linear-gradient(135deg, #ede9fe 0%, #dbeafe 50%, #fef3c7 100%); }
+    .cover-pb { background: linear-gradient(135deg, #d1fae5 0%, #dbeafe 50%, #fde68a 100%); }
+    .cover-pc { background: linear-gradient(135deg, #f3e8ff 0%, #dbeafe 45%, #bbf7d0 100%); }
 
-    /* ── Embedded topic viewer ── */
     #viewer-view {
       display: none;
       flex-direction: column;
@@ -182,23 +206,26 @@
       align-items: center;
       gap: 14px;
       padding: 10px 16px;
-      background: var(--surface);
+      background: var(--nav-surface);
+      backdrop-filter: blur(20px) saturate(180%);
+      -webkit-backdrop-filter: blur(20px) saturate(180%);
       border-bottom: 1px solid var(--line);
     }
     .back-btn {
-      background: var(--surface2);
+      background: var(--panel);
       border: 1px solid var(--line);
       color: var(--ink);
       font: inherit;
       font-weight: 600;
       font-size: 14px;
       padding: 8px 14px;
-      border-radius: 8px;
+      border-radius: 999px;
       cursor: pointer;
       display: inline-flex;
       align-items: center;
       gap: 6px;
-      transition: border-color 0.15s, color 0.15s;
+      transition: border-color 0.15s, color 0.15s, box-shadow 0.15s;
+      box-shadow: 0 1px 2px rgba(0, 0, 0, 0.04);
     }
     .back-btn:hover { border-color: var(--accent); color: var(--accent); }
     .viewer-title-wrap {
@@ -229,7 +256,7 @@
       color: var(--dim);
       text-decoration: none;
       padding: 8px 12px;
-      border-radius: 8px;
+      border-radius: 999px;
       border: 1px solid transparent;
     }
     .open-link:hover { color: var(--accent); border-color: var(--line); }
@@ -250,8 +277,11 @@
 <body>
   <div id="gallery-view">
     <header class="hub-header">
-      <h1>KOC S3 Math</h1>
-      <p>Interactive topic dashboards — concept slides, tools, games, and KOC-format worked solutions. Click a card to open.</p>
+      <img class="hub-logo" src="shared/uniplus-logo.png" alt="Uni+ logo">
+      <div class="hub-header-text">
+        <h1>Uni<span class="plus">+</span> Mathematics</h1>
+        <p>Interactive topic dashboards — concept slides, tools, games, and KOC-format worked solutions. Click a card to open.</p>
+      </div>
     </header>
     <div class="hub-toolbar">
       <span class="view-label">Gallery</span>
