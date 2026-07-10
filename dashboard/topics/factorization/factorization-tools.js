@@ -188,22 +188,23 @@
     const maxFs = opts.max == null ? 16 : opts.max;
     const minFs = opts.min == null ? 7 : opts.min;
     // Rough rendered-length estimate: drop LaTeX markup, keep visible glyphs.
-    // Estimate rendered width in "em": glyphs ~0.55em, relation/operators wider.
     const glyphs = latex
       .replace(/\\textcolor\{#[0-9a-fA-F]+\}\{([^}]*)\}/g, "$1")
       .replace(/\\text\{([^}]*)\}/g, "$1")
       .replace(/[\\{}^]/g, "");
-    const ops = (glyphs.match(/[=+\-]/g) || []).length;
-    const em = glyphs.length * (opts.glyphEm == null ? 0.55 : opts.glyphEm) + ops * 0.45;
-    const availW = Math.max(0, cw - (opts.padX == null ? 10 : opts.padX));
-    const availH = Math.max(0, ch - (opts.padY == null ? 8 : opts.padY));
-    let fs = opts.force != null
-      ? opts.force
-      : Math.min(maxFs, availW / Math.max(em, 0.01), availH * 0.8);
-    fs = Math.max(minFs, Math.min(maxFs, fs));
+    const ops = (glyphs.match(/[=+\-()/]/g) || []).length;
+    const em = Math.max(0.01, glyphs.length * (opts.glyphEm == null ? 0.55 : opts.glyphEm) + ops * 0.35);
+    const padX = opts.padX == null ? 10 : opts.padX;
+    const padY = opts.padY == null ? 8 : opts.padY;
+    const availW = Math.max(8, cw - padX);
+    const availH = Math.max(8, ch - padY);
+    let fs = Math.min(maxFs, availW / em, availH * 0.72);
+    fs = Math.max(minFs, fs);
+    // Keep foreignObject inside the cell so labels never spill past the border.
+    const boxW = Math.max(12, Math.min(cw, availW + 2));
+    const boxH = Math.max(12, Math.min(ch, Math.max(fs * 1.85, availH * 0.9)));
     if (isTabletTouch()) return svgLabel(p, cx, cy, latex, color, fs);
-    const boxW = Math.max(cw, em * fs + 12);
-    return tex(p, cx, cy, latex, color, fs, boxW, fs * 2.2);
+    return tex(p, cx, cy, latex, color, fs, boxW, boxH);
   }
   // ── click-to-focus helpers (used by the (a+b)^2 / (a-b)^2 tools) ──
   // Make an element selectable; clicking toggles the cell highlight.
@@ -370,8 +371,6 @@
       fade(bg, anySel);
       const ab = st.a * st.b;
       const innerSqLabel = `(${tc(C.a, "a")}-${tc(C.b, "b")})^2`;
-      // Match (a-b)^2 to the large ab-strip labels (e.g. 10xy): ~20% of inner side.
-      const innerFs = Math.round(Math.min(34, Math.max(22, IN * 0.22)));
       const cells = [
         { x: ox + IN, y: top, w: B, h: A, fill: C.abFill, op: 0.5,
           lx: ox + IN + B / 2, ly: top + IN / 2, lw: B, lh: IN, lt: xyCoef(ab), tc: C.cellAB },
@@ -381,7 +380,8 @@
           lx: ox + IN + B / 2, ly: top + IN + B / 2, lw: B, lh: B, lt: sqY(st.b), tc: C.cellB },
         { x: ox, y: top, w: IN, h: IN, fill: C.aFill, op: 0.6,
           lx: ox + IN / 2, ly: top + IN / 2, lw: IN, lh: IN, lt: innerSqLabel, tc: C.cellA,
-          fitOpts: { force: innerFs, max: 34, min: 20, padX: 2, padY: 2, glyphEm: 0.4 } },
+          // Scale with cell; pad keeps (a-b)^2 inside borders at extreme a/b (e.g. 4 & 3).
+          fitOpts: { max: 24, min: 10, padX: 12, padY: 10, glyphEm: 0.52 } },
       ];
       cells.forEach((c, i) => {
         const on = sel === i, dim = anySel && !on;
@@ -390,7 +390,7 @@
         fade(r, dim); pickable(r, i, api);
         const f = c.fitOpts
           ? fitTex(svg, c.lx, c.ly, c.lt, c.tc, c.lw, c.lh, c.fitOpts)
-          : fitTex(svg, c.lx, c.ly, c.lt, c.tc, c.lw, c.lh, { max: 24, min: 12 });
+          : fitTex(svg, c.lx, c.ly, c.lt, c.tc, c.lw, c.lh, { max: 22, min: 10, padX: 8, padY: 8 });
         fade(f, dim); pickable(f, i, api);
       });
       // Hint before any click: stripe each FULL ab strip with slanted lines
@@ -403,9 +403,9 @@
         hatchFill(svg, ox + IN, top, B, A, stripe, -45, 0.55);     // right ab strip "\"
         // redraw labels so they stay crisp above the stripes (non-interactive
         // so the cells underneath stay clickable)
-        noHit(fitTex(svg, ox + IN + B / 2, top + IN / 2, xyCoef(ab), C.cellAB, B, IN, { max: 24, min: 12 }));
-        noHit(fitTex(svg, ox + IN / 2, top + IN + B / 2, xyCoef(ab), C.cellAB, IN, B, { max: 24, min: 12 }));
-        noHit(fitTex(svg, ox + IN + B / 2, top + IN + B / 2, sqY(st.b), C.cellB, B, B, { max: 24, min: 12 }));
+        noHit(fitTex(svg, ox + IN + B / 2, top + IN / 2, xyCoef(ab), C.cellAB, B, IN, { max: 22, min: 10, padX: 8, padY: 8 }));
+        noHit(fitTex(svg, ox + IN / 2, top + IN + B / 2, xyCoef(ab), C.cellAB, IN, B, { max: 22, min: 10, padX: 8, padY: 8 }));
+        noHit(fitTex(svg, ox + IN + B / 2, top + IN + B / 2, sqY(st.b), C.cellB, B, B, { max: 22, min: 10, padX: 8, padY: 8 }));
       }
       // When an ab strip is picked, reveal that it continues *through* the b²
       // corner — paint the corner in the strip colour so the full a×b extent is
