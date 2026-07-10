@@ -9,7 +9,7 @@
   <link href="https://fonts.googleapis.com/css2?family=Hanken+Grotesk:wght@400;600;700&family=JetBrains+Mono:wght@400;700&display=swap" rel="stylesheet">
   <link rel="stylesheet" href="../../shared/topic-shell.css">
   <script defer src="../../shared/deck-touch-nav.js"></script>
-  <script defer src="factorization-tools.js?v=20260710-ab2-fit"></script>
+  <script defer src="factorization-tools.js?v=20260710-ipad-tools-layout"></script>
   <script defer src="factorization-game.js?v=20260707-fz-phone"></script>
   <script defer src="factorization-quiz.js?v=20260709-q8"></script>
   <style>
@@ -66,12 +66,13 @@
     @media (max-width: 960px) {
       .tool-layout { grid-template-columns: 1fr; gap: 16px; }
     }
-    .figure-card, .control-card {
+    .figure-card, .control-stack {
       background: var(--panel); border: 1px solid var(--line); border-radius: 14px; padding: 18px;
       min-width: 0;
     }
+    .tool-sliders, .tool-meta { min-width: 0; }
     #tool-svg { width: 100%; height: auto; display: block; max-height: min(62vh, 520px); }
-    .control-card h3 { margin: 2px 0 14px; font-size: 13px; color: var(--ink); font-weight: 700;
+    .control-card h3, .tool-sliders h3 { margin: 2px 0 14px; font-size: 13px; color: var(--ink); font-weight: 700;
       text-transform: uppercase; letter-spacing: .05em; }
     .slider-row { display: grid; grid-template-columns: 32px 1fr 40px; align-items: center; gap: 12px; margin-bottom: 14px; }
     .slider-name { font-family: "JetBrains Mono", monospace; font-weight: 700; font-size: 20px; }
@@ -227,7 +228,7 @@
       }
       .cross-products { grid-template-columns: minmax(56px, 72px) 22px 44px minmax(56px, 72px) 22px; }
       .drop-slot { min-height: 48px; }
-      .control-card, .figure-card, .cross-lab { padding: 14px; }
+      .control-card, .control-stack, .figure-card, .cross-lab { padding: 14px; }
     }
     /* ── Game ── */
     .game-hud { display: flex; align-items: center; gap: 18px; max-width: 1000px; margin: 0 auto 12px; flex-wrap: wrap; }
@@ -490,9 +491,53 @@
     .quiz-part-result { display: flex; align-items: center; gap: 6px; margin: 4px 0; flex-wrap: wrap; }
     .quiz-part-result-lbl { font-weight: 700; color: var(--a); font-family: "JetBrains Mono", monospace; }
     /* ── iPad / tablet touch (standard iPad landscape; desktop unchanged) ── */
-    html.tablet-touch #panel-tools .tool-layout { grid-template-columns: 1fr; }
-    html.tablet-touch #panel-tools .figure-card { padding-bottom: 12px; }
-    html.tablet-touch #tool-svg { max-width: min(100%, 560px); margin: 0 auto; }
+    /* Identities tools: graph | equations+key ; sliders full-width below */
+    html.tablet-touch #panel-tools .tool-layout {
+      grid-template-columns: minmax(0, 1.25fr) minmax(240px, 1fr);
+      grid-template-areas:
+        "figure meta"
+        "sliders sliders";
+      gap: 14px;
+      align-items: start;
+    }
+    html.tablet-touch #panel-tools .figure-card {
+      grid-area: figure;
+      padding-bottom: 12px;
+      align-self: stretch;
+    }
+    html.tablet-touch #panel-tools .control-stack {
+      display: contents;
+      background: none;
+      border: none;
+      padding: 0;
+    }
+    html.tablet-touch #panel-tools .tool-sliders {
+      grid-area: sliders;
+      background: var(--panel);
+      border: 1px solid var(--line);
+      border-radius: 14px;
+      padding: 16px 18px;
+    }
+    html.tablet-touch #panel-tools .tool-meta {
+      grid-area: meta;
+      background: var(--panel);
+      border: 1px solid var(--line);
+      border-radius: 14px;
+      padding: 16px 18px;
+      align-self: stretch;
+    }
+    html.tablet-touch #panel-tools #tool-eq {
+      margin-top: 0;
+      padding-top: 0;
+      border-top: none;
+    }
+    html.tablet-touch #panel-tools .legend {
+      margin-top: 16px;
+      padding-top: 14px;
+    }
+    html.tablet-touch #panel-tools .eq-line { font-size: 20px; margin: 10px 0; }
+    html.tablet-touch #panel-tools .eq-line .katex { font-size: 1.06em; }
+    html.tablet-touch #tool-svg { max-width: 100%; margin: 0; max-height: min(52vh, 480px); }
     /* Cross method: keep pair bank left, cross board right on iPad */
     html.tablet-touch .cross-lab-layout {
       grid-template-columns: minmax(180px, 260px) minmax(0, 1fr);
@@ -528,7 +573,7 @@
       .tab { font-size: 13px; padding: 8px 12px; white-space: nowrap; flex-shrink: 0; }
       .panel { padding: 10px 12px 14px; }
       .chip { font-size: 13px; padding: 7px 12px; }
-      .figure-card, .control-card, .cross-lab { padding: 14px; }
+      .figure-card, .control-card, .control-stack, .cross-lab { padding: 14px; }
       input[type=range]::-webkit-slider-thumb { width: 22px; height: 22px; }
       input[type=range]::-moz-range-thumb { width: 22px; height: 22px; }
       #cross-step-2 h3, #cross-step-3 h3 { font-size: clamp(18px, 4.5vw, 24px); }
@@ -641,15 +686,19 @@
       <div class="figure-card">
         <svg id="tool-svg" viewBox="0 0 400 380" role="img" aria-label="interactive area model"></svg>
       </div>
-      <div class="control-card">
-        <h3>Drag the variables</h3>
-        <div id="tool-controls"></div>
-        <div id="tool-eq"></div>
-        <div class="legend">
-          <p class="legend-title">Colour key</p>
-          <div class="lg-item"><i class="sw" style="background:var(--a-fill)"></i><span class="lg-sym" data-tex="a"></span><em>variable</em></div>
-          <div class="lg-item"><i class="sw" style="background:var(--b-fill)"></i><span class="lg-sym" data-tex="b"></span><em>constant number</em></div>
-          <div class="lg-item"><i class="sw" style="background:var(--ab-fill)"></i><span class="lg-sym" data-tex="ab"></span><em>product / middle term</em></div>
+      <div class="control-stack">
+        <div class="tool-sliders">
+          <h3>Drag the variables</h3>
+          <div id="tool-controls"></div>
+        </div>
+        <div class="tool-meta">
+          <div id="tool-eq"></div>
+          <div class="legend">
+            <p class="legend-title">Colour key</p>
+            <div class="lg-item"><i class="sw" style="background:var(--a-fill)"></i><span class="lg-sym" data-tex="a"></span><em>variable</em></div>
+            <div class="lg-item"><i class="sw" style="background:var(--b-fill)"></i><span class="lg-sym" data-tex="b"></span><em>constant number</em></div>
+            <div class="lg-item"><i class="sw" style="background:var(--ab-fill)"></i><span class="lg-sym" data-tex="ab"></span><em>product / middle term</em></div>
+          </div>
         </div>
       </div>
     </div>

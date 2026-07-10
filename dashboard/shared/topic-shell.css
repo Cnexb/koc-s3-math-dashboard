@@ -101,7 +101,8 @@ html.tablet-touch .hint-deck-tablet {
   align-items: stretch;
 }
 #panel-tools .figure-card,
-#panel-tools .control-card {
+#panel-tools .control-card,
+#panel-tools .control-stack {
   min-height: 0;
 }
 #panel-game > .hint,
