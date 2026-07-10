@@ -6,16 +6,20 @@
 (function () {
   "use strict";
 
+  // Light-theme palette: bright fills for cells, darker inks for labels/equations.
   const C = {
-    a: "#4FC3F7",   // a / x
-    b: "#FFD54F",   // b / added constant
-    ab: "#81C784",  // ab / middle-term cells
-    rm: "#E57373",  // removed / minus
-    ink: "#e5e7eb",
-    dim: "#94a3b8",
-    cellA: "#06283d",  // dark text on blue
-    cellAB: "#11321d", // dark text on green
-    cellB: "#3a2f06",  // dark text on amber
+    a: "#0277BD",      // a / x — text on white
+    b: "#9A7209",      // b — text on white (was pale #FFD54F)
+    ab: "#2E7D32",     // ab / middle — text on white
+    aFill: "#4FC3F7",  // cell / swatch fill
+    bFill: "#FFD54F",
+    abFill: "#81C784",
+    rm: "#C62828",     // removed / minus (darker for light bg)
+    ink: "#2c2420",
+    dim: "#5d544f",
+    cellA: "#06283d",  // dark text on blue fill
+    cellAB: "#11321d", // dark text on green fill
+    cellB: "#3a2f06",  // dark text on amber fill
   };
   const NS = "http://www.w3.org/2000/svg";
   const TABLET_MAX_W = 1366;
@@ -300,17 +304,17 @@
       const ox = ml + (aw - S) / 2, top = mt + (ah - S) / 2;
       const sel = api ? api.sel : null;
       const cells = [
-        { x: ox, y: top, w: A, h: A, fill: C.a, op: 0.5, lt: sqX(st.a), tc: C.cellA },
-        { x: ox + A, y: top, w: B, h: A, fill: C.ab, op: 0.5, lt: xyCoef(st.a * st.b), tc: C.cellAB },
-        { x: ox, y: top + A, w: A, h: B, fill: C.ab, op: 0.5, lt: xyCoef(st.a * st.b), tc: C.cellAB },
-        { x: ox + A, y: top + A, w: B, h: B, fill: C.b, op: 0.6, lt: sqY(st.b), tc: C.cellB },
+        { x: ox, y: top, w: A, h: A, fill: C.aFill, op: 0.55, lt: sqX(st.a), tc: C.cellA },
+        { x: ox + A, y: top, w: B, h: A, fill: C.abFill, op: 0.55, lt: xyCoef(st.a * st.b), tc: C.cellAB },
+        { x: ox, y: top + A, w: A, h: B, fill: C.abFill, op: 0.55, lt: xyCoef(st.a * st.b), tc: C.cellAB },
+        { x: ox + A, y: top + A, w: B, h: B, fill: C.bFill, op: 0.65, lt: sqY(st.b), tc: C.cellB },
       ];
       cells.forEach((c, i) => {
         const on = sel === i, dim = sel != null && !on;
-        const op = on ? Math.min(0.92, c.op + 0.28) : c.op;
-        const r = rectSvg(svg, c.x, c.y, c.w, c.h, c.fill, op, on ? "#fff" : c.fill, on ? 3 : 1.5);
+        const op = on ? Math.min(0.95, c.op + 0.28) : c.op;
+        const r = rectSvg(svg, c.x, c.y, c.w, c.h, c.fill, op, on ? C.ink : c.fill, on ? 3 : 1.5);
         fade(r, dim); pickable(r, i, api);
-        const f = fitTex(svg, c.x + c.w / 2, c.y + c.h / 2, c.lt, c.tc, c.w, c.h);
+        const f = fitTex(svg, c.x + c.w / 2, c.y + c.h / 2, c.lt, c.tc, c.w, c.h, { max: 22, min: 10 });
         fade(f, dim); pickable(f, i, api);
       });
       rectSvg(svg, ox, top, S, S, "none", 0, C.ink, 2.5);
@@ -324,10 +328,10 @@
         { cy: top + A + B / 2, s: top + A, e: top + A + B, t: coefY(st.b), col: C.b },
       ];
       tops.forEach((L) => {
-        fade(tex(svg, L.cx, top - inset.edgeTop, L.t, L.col, 18, 60, 30), sc && !span(sc.x, sc.x + sc.w, L.s, L.e));
+        fade(tex(svg, L.cx, top - inset.edgeTop, L.t, L.col, 20, 70, 34), sc && !span(sc.x, sc.x + sc.w, L.s, L.e));
       });
       lefts.forEach((L) => {
-        fade(tex(svg, ox - inset.edgeX, L.cy, L.t, L.col, 18, 40, 30), sc && !span(sc.y, sc.y + sc.h, L.s, L.e));
+        fade(tex(svg, ox - inset.edgeX, L.cy, L.t, L.col, 20, 48, 34), sc && !span(sc.y, sc.y + sc.h, L.s, L.e));
       });
     },
     latex(st) {
@@ -357,28 +361,28 @@
       const B = st.b * unit, IN = A - B;
       const ox = ml + (aw - A) / 2, top = mt + (ah - A) / 2;
       const sel = api ? api.sel : null, anySel = sel != null;
-      const bg = rectSvg(svg, ox, top, A, A, C.a, 0.16, C.a, 1);
+      const bg = rectSvg(svg, ox, top, A, A, C.aFill, 0.2, C.aFill, 1);
       fade(bg, anySel);
       const ab = st.a * st.b;
       const innerSqLabel = `(${tc(C.a, "a")}-${tc(C.b, "b")})^2`;
       const cells = [
-        { x: ox + IN, y: top, w: B, h: A, fill: C.ab, op: 0.42,
-          lx: ox + IN + B / 2, ly: top + IN / 2, lw: B, lh: IN, lt: xyCoef(ab), tc: C.ink },
-        { x: ox, y: top + IN, w: A, h: B, fill: C.ab, op: 0.42,
-          lx: ox + IN / 2, ly: top + IN + B / 2, lw: IN, lh: B, lt: xyCoef(ab), tc: C.ink },
-        { x: ox + IN, y: top + IN, w: B, h: B, fill: C.b, op: 0.5,
+        { x: ox + IN, y: top, w: B, h: A, fill: C.abFill, op: 0.5,
+          lx: ox + IN + B / 2, ly: top + IN / 2, lw: B, lh: IN, lt: xyCoef(ab), tc: C.cellAB },
+        { x: ox, y: top + IN, w: A, h: B, fill: C.abFill, op: 0.5,
+          lx: ox + IN / 2, ly: top + IN + B / 2, lw: IN, lh: B, lt: xyCoef(ab), tc: C.cellAB },
+        { x: ox + IN, y: top + IN, w: B, h: B, fill: C.bFill, op: 0.55,
           lx: ox + IN + B / 2, ly: top + IN + B / 2, lw: B, lh: B, lt: sqY(st.b), tc: C.cellB },
-        { x: ox, y: top, w: IN, h: IN, fill: C.a, op: 0.55,
-          lx: ox + IN / 2, ly: top + IN / 2, lw: IN, lh: IN, lt: innerSqLabel, tc: C.ink, fitOpts: { max: 14 } },
+        { x: ox, y: top, w: IN, h: IN, fill: C.aFill, op: 0.6,
+          lx: ox + IN / 2, ly: top + IN / 2, lw: IN, lh: IN, lt: innerSqLabel, tc: C.cellA, fitOpts: { max: 18, min: 11 } },
       ];
       cells.forEach((c, i) => {
         const on = sel === i, dim = anySel && !on;
-        const op = on ? Math.min(0.92, c.op + 0.28) : c.op;
-        const r = rectSvg(svg, c.x, c.y, c.w, c.h, c.fill, op, on ? "#fff" : c.fill, on ? 3 : 1);
+        const op = on ? Math.min(0.95, c.op + 0.28) : c.op;
+        const r = rectSvg(svg, c.x, c.y, c.w, c.h, c.fill, op, on ? C.ink : c.fill, on ? 3 : 1);
         fade(r, dim); pickable(r, i, api);
         const f = c.fitOpts
           ? fitTex(svg, c.lx, c.ly, c.lt, c.tc, c.lw, c.lh, c.fitOpts)
-          : fitTex(svg, c.lx, c.ly, c.lt, c.tc, c.lw, c.lh);
+          : fitTex(svg, c.lx, c.ly, c.lt, c.tc, c.lw, c.lh, { max: 20, min: 10 });
         fade(f, dim); pickable(f, i, api);
       });
       // Hint before any click: stripe each FULL ab strip with slanted lines
@@ -386,45 +390,45 @@
       // the b² corner, so the corner shows a cross-hatch — making it obvious
       // each ab strip is the whole a×b band and the corner is shared by both.
       if (sel == null) {
-        const stripe = "#dcedc8";
-        hatchFill(svg, ox, top + IN, A, B, stripe, 45, 0.85);      // bottom ab strip "/"
-        hatchFill(svg, ox + IN, top, B, A, stripe, -45, 0.85);     // right ab strip "\"
+        const stripe = "#558B2F";
+        hatchFill(svg, ox, top + IN, A, B, stripe, 45, 0.55);      // bottom ab strip "/"
+        hatchFill(svg, ox + IN, top, B, A, stripe, -45, 0.55);     // right ab strip "\"
         // redraw labels so they stay crisp above the stripes (non-interactive
         // so the cells underneath stay clickable)
-        noHit(fitTex(svg, ox + IN + B / 2, top + IN / 2, xyCoef(ab), C.ink, B, IN));
-        noHit(fitTex(svg, ox + IN / 2, top + IN + B / 2, xyCoef(ab), C.ink, IN, B));
-        noHit(fitTex(svg, ox + IN + B / 2, top + IN + B / 2, sqY(st.b), C.cellB, B, B));
+        noHit(fitTex(svg, ox + IN + B / 2, top + IN / 2, xyCoef(ab), C.cellAB, B, IN, { max: 20, min: 10 }));
+        noHit(fitTex(svg, ox + IN / 2, top + IN + B / 2, xyCoef(ab), C.cellAB, IN, B, { max: 20, min: 10 }));
+        noHit(fitTex(svg, ox + IN + B / 2, top + IN + B / 2, sqY(st.b), C.cellB, B, B, { max: 20, min: 10 }));
       }
       // When an ab strip is picked, reveal that it continues *through* the b²
       // corner — paint the corner in the strip colour so the full a×b extent is
       // visible, then hatch it to flag the corner as the shared (double-counted)
       // piece. This corrects the static look where ab seems to be only one cell.
       if (sel === 0 || sel === 1) {
-        rectSvg(svg, ox + IN, top + IN, B, B, C.ab, Math.min(0.92, 0.42 + 0.28)).style.pointerEvents = "none";
+        rectSvg(svg, ox + IN, top + IN, B, B, C.abFill, Math.min(0.95, 0.5 + 0.28)).style.pointerEvents = "none";
         hatchOverlay(svg, ox + IN, top + IN, B, B, C.rm);
         noHit(fitTex(svg, ox + IN + B / 2, top + IN + B / 2, "\\text{shared}", C.rm, B, B, { max: 12 }));
       }
       rectSvg(svg, ox, top, A, A, "none", 0, C.ink, 2.5);
       const sc = sel != null ? cells[sel] : null;
       const tops = [
-        { cx: ox + IN + B / 2, s: ox + IN, e: ox + A, t: coefY(st.b), col: C.b, fz: 18 },
+        { cx: ox + IN + B / 2, s: ox + IN, e: ox + A, t: coefY(st.b), col: C.b, fz: 20 },
       ];
       const rights = [
-        { cy: top + IN + B / 2, s: top + IN, e: top + A, t: coefY(st.b), col: C.b, fz: 16 },
+        { cy: top + IN + B / 2, s: top + IN, e: top + A, t: coefY(st.b), col: C.b, fz: 18 },
       ];
       tops.forEach((L) => {
-        fade(tex(svg, L.cx, top - inset.edgeTop, L.t, L.col, L.fz, 60, 30), sc && !span(sc.x, sc.x + sc.w, L.s, L.e));
+        fade(tex(svg, L.cx, top - inset.edgeTop, L.t, L.col, L.fz, 70, 34), sc && !span(sc.x, sc.x + sc.w, L.s, L.e));
       });
       rights.forEach((L) => {
-        fade(tex(svg, ox + A + inset.edgeRight, L.cy, L.t, L.col, L.fz, 60, 30), sc && !span(sc.y, sc.y + sc.h, L.s, L.e));
+        fade(tex(svg, ox + A + inset.edgeRight, L.cy, L.t, L.col, L.fz, 70, 34), sc && !span(sc.y, sc.y + sc.h, L.s, L.e));
       });
       // total side length a = (a-b) + b, shown on the otherwise-empty left &
       // bottom sides; lit when the selected piece spans that whole side (i.e.
       // makes clear each ab strip is a full a×b rectangle).
       const fullV = sc && sc.y <= top + 0.5 && sc.y + sc.h >= top + A - 0.5;
       const fullH = sc && sc.x <= ox + 0.5 && sc.x + sc.w >= ox + A - 0.5;
-      fade(tex(svg, ox - inset.edgeX, top + A / 2, coefX(st.a), C.a, 18, 44, 30), sc && !fullV);
-      fade(tex(svg, ox + A / 2, top + A + inset.edgeBottom, coefX(st.a), C.a, 18, 60, 30), sc && !fullH);
+      fade(tex(svg, ox - inset.edgeX, top + A / 2, coefX(st.a), C.a, 20, 48, 34), sc && !fullV);
+      fade(tex(svg, ox + A / 2, top + A + inset.edgeBottom, coefX(st.a), C.a, 20, 70, 34), sc && !fullH);
     },
     latex(st) {
       const a = st.a, b = st.b;
@@ -457,16 +461,16 @@
         const A = Math.min(aw, ah), unit = A / st.a;
         const B = st.b * unit, IN = A - B;
         const ox = ml + (aw - A) / 2, top = mt + (ah - A) / 2;
-        rectSvg(svg, ox, top, A, IN, C.a, 0.5, C.a, 1);
-        rectSvg(svg, ox, top + IN, IN, B, C.a, 0.5, C.a, 1);
-        rectSvg(svg, ox + IN, top + IN, B, B, C.b, 0.25, C.rm, 2, "4 3");
+        rectSvg(svg, ox, top, A, IN, C.aFill, 0.55, C.aFill, 1);
+        rectSvg(svg, ox, top + IN, IN, B, C.aFill, 0.55, C.aFill, 1);
+        rectSvg(svg, ox + IN, top + IN, B, B, C.bFill, 0.35, C.rm, 2, "4 3");
         rectSvg(svg, ox, top, A, A, "none", 0, C.ink, 2.5);
-        fitTex(svg, ox + A / 2, top + IN / 2, sqX(st.a) + "-" + sqY(st.b), C.ink, A, IN);
-        fitTex(svg, ox + IN + B / 2, top + IN + B / 2, sqY(st.b), C.rm, B, B);
-        tex(svg, ox + A / 2, top - inset.edgeTop, coefX(st.a), C.a, 18, 60, 30);
-        tex(svg, ox - inset.edgeX, top + A / 2, coefX(st.a), C.a, 18, 40, 30);
-        tex(svg, ox + IN + B / 2, top + A + inset.edgeBottom, coefY(st.b), C.b, 18, 60, 30);
-        tex(svg, ox + A + inset.edgeRight, top + IN + B / 2, coefY(st.b), C.b, 18, 60, 30);
+        fitTex(svg, ox + A / 2, top + IN / 2, sqX(st.a) + "-" + sqY(st.b), C.cellA, A, IN, { max: 22, min: 11 });
+        fitTex(svg, ox + IN + B / 2, top + IN + B / 2, sqY(st.b), C.rm, B, B, { max: 18, min: 10 });
+        tex(svg, ox + A / 2, top - inset.edgeTop, coefX(st.a), C.a, 20, 70, 34);
+        tex(svg, ox - inset.edgeX, top + A / 2, coefX(st.a), C.a, 20, 48, 34);
+        tex(svg, ox + IN + B / 2, top + A + inset.edgeBottom, coefY(st.b), C.b, 20, 70, 34);
+        tex(svg, ox + A + inset.edgeRight, top + IN + B / 2, coefY(st.b), C.b, 20, 70, 34);
       } else {
         let inset = isTabletTouch()
           ? { ml: 88, mr: 52, mt: 48, mb: 40, edgeX: 14, edgeTop: 24 }
@@ -478,19 +482,19 @@
         const A = st.a * unit, B = st.b * unit, IN = A - B;
         const W = A + B, H = IN;
         const ox = ml + (aw - W) / 2, top = mt + (ah - H) / 2;
-        rectSvg(svg, ox, top, A, H, C.a, 0.5, C.a, 1);
-        rectSvg(svg, ox + A, top, B, H, C.a, 0.5, C.a, 1);
+        rectSvg(svg, ox, top, A, H, C.aFill, 0.55, C.aFill, 1);
+        rectSvg(svg, ox + A, top, B, H, C.aFill, 0.55, C.aFill, 1);
         lineSvg(svg, ox + A, top, ox + A, top + H, C.ink, 1, "3 3");
         rectSvg(svg, ox, top, W, H, "none", 0, C.ink, 2.5);
-        fitTex(svg, ox + W / 2, top + H / 2, sqX(st.a) + "-" + sqY(st.b), C.ink, W, H);
-        tex(svg, ox + W / 2, top - inset.edgeTop, "(" + coefX(st.a) + "+" + coefY(st.b) + ")", C.a, 16, 110, 30);
+        fitTex(svg, ox + W / 2, top + H / 2, sqX(st.a) + "-" + sqY(st.b), C.cellA, W, H, { max: 22, min: 11 });
+        tex(svg, ox + W / 2, top - inset.edgeTop, "(" + coefX(st.a) + "+" + coefY(st.b) + ")", C.a, 18, 120, 34);
         const leftLblW = 118;
         const ls = labelScale(svg);
         const leftGap = 12;
         const halfW = (leftLblW * ls) / 2;
         let lcx = ox - leftGap - halfW;
         if (lcx - halfW < 6) lcx = 6 + halfW;
-        tex(svg, lcx, top + H / 2, "(" + coefX(st.a) + "-" + coefY(st.b) + ")", C.a, 14, leftLblW, 30);
+        tex(svg, lcx, top + H / 2, "(" + coefX(st.a) + "-" + coefY(st.b) + ")", C.a, 16, leftLblW, 34);
       }
     },
     latex(st) {
