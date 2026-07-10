@@ -1,0 +1,4 @@
+# Concept slide assets (especially .mp4) live on GitHub Pages.
+# Cloudflare deploys strip mp4s for size; proxy /slides/* from GH so
+# e-learning (uni-s3-math.pages.dev) serves the same videos.
+/slides/*  https://unipluseducationact-ctrl.github.io/koc-s3-math-dashboard/dashboard/slides/:splat  200
