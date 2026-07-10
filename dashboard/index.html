@@ -211,6 +211,14 @@
       -webkit-backdrop-filter: blur(20px) saturate(180%);
       border-bottom: 1px solid var(--line);
     }
+    /* iPad: free vertical space — All topics moves into the topic tab row */
+    html.tablet-touch #viewer-view.active .viewer-bar {
+      display: none;
+    }
+    html.tablet-touch #viewer-view.active #topic-frame {
+      flex: 1;
+      min-height: 0;
+    }
     .back-btn {
       background: var(--panel);
       border: 1px solid var(--line);
@@ -305,12 +313,31 @@
     (function () {
       "use strict";
 
+      var TABLET_MAX_W = 1366;
+      function isTouchTabletDevice() {
+        if (navigator.maxTouchPoints < 1) return false;
+        var w = window.innerWidth;
+        if (w < 768 || w > TABLET_MAX_W) return false;
+        var ua = navigator.userAgent || "";
+        if (/iPad/i.test(ua)) return true;
+        if (navigator.platform === "MacIntel" && navigator.maxTouchPoints > 1) return true;
+        if (window.matchMedia("(pointer: coarse)").matches) return true;
+        if (window.matchMedia("(hover: none)").matches) return true;
+        return false;
+      }
+      function applyTabletClass() {
+        document.documentElement.classList.toggle("tablet-touch", isTouchTabletDevice());
+      }
+      applyTabletClass();
+      window.addEventListener("resize", applyTabletClass);
+      window.addEventListener("orientationchange", function () { setTimeout(applyTabletClass, 120); });
+
       var TOPICS = [
         {
           id: "area_volume",
           title: "Area & Volume",
           desc: "2D areas and 3D solids — formulas, interactive tool, and builder game.",
-          path: "topics/area_volume/index.html",
+          path: "topics/area_volume/index.html?v=20260710-ipad-embed-back",
           cover: "cover-av",
           icon: "\u{1F4D0}",
           tags: ["L07\u201309", "Slides", "Tools", "Game"],
@@ -320,7 +347,7 @@
           title: "Factorization",
           subtitle: "KOC S3 Math · Summer 2026 · L01–02 More about Factorization",
           desc: "Identities, cross method, grouping — geometry proofs, slider lab, and Factor Blaster game.",
-          path: "topics/factorization/index.html?v=20260710-snake-start",
+          path: "topics/factorization/index.html?v=20260710-ipad-embed-back",
           cover: "cover-fz",
           icon: "\u{1F9EE}",
           tags: ["L01\u201302", "Identities", "Cross method", "Game"],
@@ -330,7 +357,7 @@
           title: "Inequality",
           subtitle: "KOC S3 Math · Summer 2026 · L03 Inequality",
           desc: "Signs, number lines, and solving — sign-flip lab, match-up & Sign Flip Doors games, summary, and quiz.",
-          path: "topics/inequality/index.html?v=20260706-quiz2",
+          path: "topics/inequality/index.html?v=20260710-ipad-embed-back",
           cover: "cover-in",
           icon: "\u{2264}",
           tags: ["L03", "Number line", "Games", "Summary"],
@@ -339,7 +366,7 @@
           id: "probability",
           title: "Probability",
           desc: "Formula, tree diagrams, tabulation — card tool and probability games.",
-          path: "topics/probability/index.html",
+          path: "topics/probability/index.html?v=20260710-ipad-embed-back",
           cover: "cover-pb",
           icon: "\u{1F3B4}",
           tags: ["L10\u201312", "Tree", "Cards", "Game"],
@@ -348,7 +375,7 @@
           id: "percentage",
           title: "Percentages",
           desc: "Change factor, interest, tax — interest explorer, RPG games, lesson summary.",
-          path: "topics/percentage/index.html?v=20260709e",
+          path: "topics/percentage/index.html?v=20260710-ipad-embed-back",
           cover: "cover-pc",
           icon: "\u{0025}",
           tags: ["L04\u201306", "Interest", "Game", "Worked"],
@@ -427,6 +454,10 @@
       TOPICS.forEach(function (t) { grid.appendChild(buildCard(t)); });
 
       backBtn.addEventListener("click", closeViewer);
+      window.addEventListener("message", function (e) {
+        if (!e.data || e.data.type !== "uniplus:back-to-gallery") return;
+        if (viewerView.classList.contains("active")) closeViewer();
+      });
       window.addEventListener("keydown", function (e) {
         if (e.key === "Escape" && viewerView.classList.contains("active")) closeViewer();
       });

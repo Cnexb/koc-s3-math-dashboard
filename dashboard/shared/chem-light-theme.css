@@ -121,6 +121,61 @@ html.in-embed .tab-row {
 .tab-row .tabs {
   padding: 0;
   border-bottom: none;
+  flex: 1;
+  min-width: 0;
+}
+
+/* iPad embed: All topics sits on the right of the tab row (hub viewer-bar hidden) */
+.embed-back-btn {
+  display: none;
+}
+html.tablet-touch.in-embed .tab-row {
+  display: flex;
+  align-items: center;
+  gap: 10px 12px;
+  flex-wrap: nowrap;
+  padding: 6px 16px 0;
+}
+html.tablet-touch.in-embed .tab-row .tabs {
+  flex-wrap: nowrap;
+  overflow-x: auto;
+  -webkit-overflow-scrolling: touch;
+  scrollbar-width: none;
+}
+html.tablet-touch.in-embed .tab-row .tabs::-webkit-scrollbar {
+  display: none;
+}
+html.tablet-touch.in-embed .tab {
+  padding: 8px 12px;
+  font-size: 14px;
+  white-space: nowrap;
+}
+html.tablet-touch.in-embed .embed-back-btn {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  flex: none;
+  margin-left: auto;
+  background: var(--panel, #fff);
+  border: 1px solid var(--line, rgba(0, 0, 0, 0.08));
+  color: var(--ink, #2c2420);
+  font: inherit;
+  font-weight: 600;
+  font-size: 14px;
+  padding: 8px 14px;
+  border-radius: 999px;
+  cursor: pointer;
+  box-shadow: 0 1px 2px rgba(0, 0, 0, 0.04);
+  white-space: nowrap;
+  touch-action: manipulation;
+}
+html.tablet-touch.in-embed .embed-back-btn:active {
+  border-color: var(--a, #0277BD);
+  color: var(--a, #0277BD);
+}
+html.tablet-touch.in-embed .panel {
+  padding-top: 10px;
+  padding-bottom: 12px;
 }
 
 /* ── Subnav chips ── */
