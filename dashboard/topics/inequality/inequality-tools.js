@@ -7,7 +7,8 @@
 (function () {
   "use strict";
 
-  const ACC = "#5FB7F0", AXIS = "#33425f", ZERO = "#9fb0c9", CARD_BG = "#0e1830";
+  /* Light-theme number line (matches Interactive Tools flashcard surfaces) */
+  const ACC = "#0277BD", AXIS = "#9AA3AD", ZERO = "#5d544f", CARD_BG = "#ffffff";
 
   const SIGNS = [
     { op: ">", label: ">" },
