@@ -328,12 +328,20 @@
     .snake-mode { background: none; border: 0; color: var(--dim); font: inherit; font-weight: 800; padding: 9px 14px; cursor: pointer; }
     .snake-mode.active { background: var(--ab); color: #06283d; }
     .snake-btn {
-      margin-left: auto; background: var(--a-fill); color: #06283d; border: 0; font: inherit;
+      background: var(--a-fill); color: #06283d; border: 0; font: inherit;
       font-weight: 800; padding: 10px 18px; border-radius: 999px; cursor: pointer;
+      width: 100%; text-align: center;
     }
     .snake-btn:hover { filter: brightness(1.06); }
     .snake-play { display: grid; grid-template-columns: minmax(0, 1fr) 180px; gap: 16px; align-items: center; }
-    @media (max-width: 840px) { .snake-play { grid-template-columns: 1fr; } .snake-pad { margin: 0 auto; } }
+    .snake-controls {
+      display: flex; flex-direction: column; align-items: stretch; gap: 12px;
+      justify-content: center;
+    }
+    @media (max-width: 840px) {
+      .snake-play { grid-template-columns: 1fr; }
+      .snake-controls { margin: 0 auto; width: min(100%, 220px); }
+    }
     .snake-board-wrap { background: #07101f; border: 1px solid var(--line); border-radius: 16px; padding: 12px; }
     #snake-board {
       width: min(100%, 760px); aspect-ratio: 1 / 1; max-height: 78vh; display: block; margin: 0 auto;
@@ -610,9 +618,9 @@
       .snake-how summary { cursor: pointer; font-size: 17px; font-weight: 700; color: var(--ab); }
       .snake-how summary::-webkit-details-marker { display: none; }
       .snake-hud { gap: 10px; }
-      .snake-hud .snake-btn { margin-left: 0; width: 100%; text-align: center; }
       .snake-prompt { font-size: clamp(14px, 4vw, 18px); padding: 10px 12px; min-height: 48px; }
       .snake-pad { grid-template-columns: repeat(3, 64px); grid-template-rows: repeat(3, 64px); }
+      .snake-controls { width: min(100%, 240px); }
       .quiz-wrap { min-width: 0; width: 100%; }
       .quiz-stem .katex, .quiz-stem .katex-display { max-width: 100%; overflow-wrap: anywhere; }
       .quiz-nav-btn { min-height: 44px; }
@@ -880,18 +888,20 @@
           <button class="snake-mode" data-snake-mode="advanced" type="button">Advanced</button>
         </div>
         <span id="sn-msg" class="snake-msg"></span>
-        <button id="sn-start" class="snake-btn" type="button">Start Snake</button>
       </div>
       <div id="sn-prompt" class="snake-prompt"></div>
       <div class="snake-play">
         <div class="snake-board-wrap">
           <canvas id="snake-board" width="520" height="520"></canvas>
         </div>
-        <div class="snake-pad" aria-label="Snake direction controls">
-          <button class="up" data-snake-dir="up" type="button" aria-label="up">&#8593;</button>
-          <button class="left" data-snake-dir="left" type="button" aria-label="left">&#8592;</button>
-          <button class="right" data-snake-dir="right" type="button" aria-label="right">&#8594;</button>
-          <button class="down" data-snake-dir="down" type="button" aria-label="down">&#8595;</button>
+        <div class="snake-controls">
+          <button id="sn-start" class="snake-btn" type="button">Start Snake</button>
+          <div class="snake-pad" aria-label="Snake direction controls">
+            <button class="up" data-snake-dir="up" type="button" aria-label="up">&#8593;</button>
+            <button class="left" data-snake-dir="left" type="button" aria-label="left">&#8592;</button>
+            <button class="right" data-snake-dir="right" type="button" aria-label="right">&#8594;</button>
+            <button class="down" data-snake-dir="down" type="button" aria-label="down">&#8595;</button>
+          </div>
         </div>
       </div>
       <p class="hint">Controls: Arrow keys / WASD · Mobile: use the direction pad · Click <b>Start Snake</b> to begin</p>
