@@ -189,7 +189,10 @@
     const minFs = opts.min == null ? 7 : opts.min;
     // Rough rendered-length estimate: drop LaTeX markup, keep visible glyphs.
     // Estimate rendered width in "em": glyphs ~0.55em, relation/operators wider.
-    const glyphs = latex.replace(/[\\{}^]/g, "");
+    const glyphs = latex
+      .replace(/\\textcolor\{#[0-9a-fA-F]+\}\{([^}]*)\}/g, "$1")
+      .replace(/\\text\{([^}]*)\}/g, "$1")
+      .replace(/[\\{}^]/g, "");
     const ops = (glyphs.match(/[=+\-]/g) || []).length;
     const em = glyphs.length * 0.55 + ops * 0.45;
     const availW = Math.max(0, cw - (opts.padX == null ? 10 : opts.padX));
@@ -373,7 +376,8 @@
         { x: ox + IN, y: top + IN, w: B, h: B, fill: C.bFill, op: 0.55,
           lx: ox + IN + B / 2, ly: top + IN + B / 2, lw: B, lh: B, lt: sqY(st.b), tc: C.cellB },
         { x: ox, y: top, w: IN, h: IN, fill: C.aFill, op: 0.6,
-          lx: ox + IN / 2, ly: top + IN / 2, lw: IN, lh: IN, lt: innerSqLabel, tc: C.cellA, fitOpts: { max: 18, min: 11 } },
+          lx: ox + IN / 2, ly: top + IN / 2, lw: IN, lh: IN, lt: innerSqLabel, tc: C.cellA,
+          fitOpts: { max: 26, min: 14, padX: 4, padY: 4 } },
       ];
       cells.forEach((c, i) => {
         const on = sel === i, dim = anySel && !on;
