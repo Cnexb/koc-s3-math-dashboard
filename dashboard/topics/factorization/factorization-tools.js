@@ -194,14 +194,16 @@
       .replace(/\\text\{([^}]*)\}/g, "$1")
       .replace(/[\\{}^]/g, "");
     const ops = (glyphs.match(/[=+\-]/g) || []).length;
-    const em = glyphs.length * 0.55 + ops * 0.45;
+    const em = glyphs.length * (opts.glyphEm == null ? 0.55 : opts.glyphEm) + ops * 0.45;
     const availW = Math.max(0, cw - (opts.padX == null ? 10 : opts.padX));
     const availH = Math.max(0, ch - (opts.padY == null ? 8 : opts.padY));
-    let fs = Math.min(maxFs, availW / em, availH * 0.8);
-    fs = Math.max(minFs, fs);
+    let fs = opts.force != null
+      ? opts.force
+      : Math.min(maxFs, availW / Math.max(em, 0.01), availH * 0.8);
+    fs = Math.max(minFs, Math.min(maxFs, fs));
     if (isTabletTouch()) return svgLabel(p, cx, cy, latex, color, fs);
     const boxW = Math.max(cw, em * fs + 12);
-    return tex(p, cx, cy, latex, color, fs, boxW, fs * 1.9);
+    return tex(p, cx, cy, latex, color, fs, boxW, fs * 2.2);
   }
   // ── click-to-focus helpers (used by the (a+b)^2 / (a-b)^2 tools) ──
   // Make an element selectable; clicking toggles the cell highlight.
@@ -368,6 +370,8 @@
       fade(bg, anySel);
       const ab = st.a * st.b;
       const innerSqLabel = `(${tc(C.a, "a")}-${tc(C.b, "b")})^2`;
+      // Match (a-b)^2 to the large ab-strip labels (e.g. 10xy): ~20% of inner side.
+      const innerFs = Math.round(Math.min(34, Math.max(22, IN * 0.22)));
       const cells = [
         { x: ox + IN, y: top, w: B, h: A, fill: C.abFill, op: 0.5,
           lx: ox + IN + B / 2, ly: top + IN / 2, lw: B, lh: IN, lt: xyCoef(ab), tc: C.cellAB },
@@ -377,7 +381,7 @@
           lx: ox + IN + B / 2, ly: top + IN + B / 2, lw: B, lh: B, lt: sqY(st.b), tc: C.cellB },
         { x: ox, y: top, w: IN, h: IN, fill: C.aFill, op: 0.6,
           lx: ox + IN / 2, ly: top + IN / 2, lw: IN, lh: IN, lt: innerSqLabel, tc: C.cellA,
-          fitOpts: { max: 26, min: 14, padX: 4, padY: 4 } },
+          fitOpts: { force: innerFs, max: 34, min: 20, padX: 2, padY: 2, glyphEm: 0.4 } },
       ];
       cells.forEach((c, i) => {
         const on = sel === i, dim = anySel && !on;
@@ -386,7 +390,7 @@
         fade(r, dim); pickable(r, i, api);
         const f = c.fitOpts
           ? fitTex(svg, c.lx, c.ly, c.lt, c.tc, c.lw, c.lh, c.fitOpts)
-          : fitTex(svg, c.lx, c.ly, c.lt, c.tc, c.lw, c.lh, { max: 20, min: 10 });
+          : fitTex(svg, c.lx, c.ly, c.lt, c.tc, c.lw, c.lh, { max: 24, min: 12 });
         fade(f, dim); pickable(f, i, api);
       });
       // Hint before any click: stripe each FULL ab strip with slanted lines
@@ -399,9 +403,9 @@
         hatchFill(svg, ox + IN, top, B, A, stripe, -45, 0.55);     // right ab strip "\"
         // redraw labels so they stay crisp above the stripes (non-interactive
         // so the cells underneath stay clickable)
-        noHit(fitTex(svg, ox + IN + B / 2, top + IN / 2, xyCoef(ab), C.cellAB, B, IN, { max: 20, min: 10 }));
-        noHit(fitTex(svg, ox + IN / 2, top + IN + B / 2, xyCoef(ab), C.cellAB, IN, B, { max: 20, min: 10 }));
-        noHit(fitTex(svg, ox + IN + B / 2, top + IN + B / 2, sqY(st.b), C.cellB, B, B, { max: 20, min: 10 }));
+        noHit(fitTex(svg, ox + IN + B / 2, top + IN / 2, xyCoef(ab), C.cellAB, B, IN, { max: 24, min: 12 }));
+        noHit(fitTex(svg, ox + IN / 2, top + IN + B / 2, xyCoef(ab), C.cellAB, IN, B, { max: 24, min: 12 }));
+        noHit(fitTex(svg, ox + IN + B / 2, top + IN + B / 2, sqY(st.b), C.cellB, B, B, { max: 24, min: 12 }));
       }
       // When an ab strip is picked, reveal that it continues *through* the b²
       // corner — paint the corner in the strip colour so the full a×b extent is
