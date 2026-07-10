@@ -1,4 +1,5 @@
-# Concept slide assets (especially .mp4) live on GitHub Pages.
-# Cloudflare deploys strip mp4s for size; proxy /slides/* from GH so
-# e-learning (uni-s3-math.pages.dev) serves the same videos.
-/slides/*  https://unipluseducationact-ctrl.github.io/koc-s3-math-dashboard/dashboard/slides/:splat  200
+# CF deploys strip slide mp4s. External 200 rewrites are not supported on Pages;
+# use 302 so missing /slides/*.mp4 requests land on GitHub Pages.
+# Primary fix is shared/video-cdn.js (rewrites Reveal data-background-video).
+/slides/:a/:b/index_assets/:file  https://unipluseducationact-ctrl.github.io/koc-s3-math-dashboard/dashboard/slides/:a/:b/index_assets/:file  302
+/slides/:a/:b/:c/index_assets/:file  https://unipluseducationact-ctrl.github.io/koc-s3-math-dashboard/dashboard/slides/:a/:b/:c/index_assets/:file  302

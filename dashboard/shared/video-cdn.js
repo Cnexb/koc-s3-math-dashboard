@@ -1,15 +1,15 @@
 /**
- * On Cloudflare Pages, slide .mp4 files are not deployed.
- * Rewrite Reveal background-video URLs to GitHub Pages before init.
- * Also used as a client-side fallback if edge redirects are unavailable.
+ * On Cloudflare Pages, slide .mp4 files are not deployed (~800MB stripped).
+ * Rewrite Reveal background-video URLs to GitHub Pages before Reveal.init.
  */
 (function () {
   "use strict";
 
   var GH =
     "https://unipluseducationact-ctrl.github.io/koc-s3-math-dashboard/dashboard";
-  var onPagesDev = /\.pages\.dev$/i.test(location.hostname);
-  if (!onPagesDev) return;
+  // Only rewrite when not already on GitHub Pages (local / CF / custom domain).
+  if (/github\.io$/i.test(location.hostname)) return;
+  if (location.protocol === "file:") return;
 
   var rewritten = 0;
   document.querySelectorAll("[data-background-video]").forEach(function (el) {
@@ -21,12 +21,10 @@
   });
 
   document.querySelectorAll("video source[src], video[src]").forEach(function (el) {
-    var attr = el.hasAttribute("src") ? "src" : null;
-    if (!attr) return;
-    var v = el.getAttribute(attr);
+    var v = el.getAttribute("src");
     if (!v || /^https?:\/\//i.test(v)) return;
     var absPath = new URL(v, location.href).pathname;
-    el.setAttribute(attr, GH + absPath);
+    el.setAttribute("src", GH + absPath);
     rewritten += 1;
   });
 
@@ -42,7 +40,7 @@
       runId: "post-fix",
       hypothesisId: "A",
       location: "shared/video-cdn.js",
-      message: "rewrote slide video URLs for pages.dev",
+      message: "rewrote slide video URLs off GitHub Pages host",
       data: {
         host: location.hostname,
         path: location.pathname,
