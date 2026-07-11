@@ -12,7 +12,7 @@
   <script defer src="../../shared/phone-compact.js?v=20260711-phone"></script>
   <script defer src="../../shared/embed-nav.js?v=20260710-deck-16x9"></script>
   <script defer src="factorization-tools.js?v=20260711-phone-tools"></script>
-  <script defer src="factorization-game.js?v=20260711-blaster-phone4"></script>
+  <script defer src="factorization-game.js?v=20260711-snake-phone2"></script>
   <script defer src="factorization-quiz.js?v=20260709-q8"></script>
   <style>
     :root {
@@ -783,11 +783,6 @@
       .snake-how summary::-webkit-details-marker { display: none; }
       .snake-hud { gap: 10px; }
       .snake-prompt { font-size: clamp(14px, 4vw, 18px); padding: 10px 12px; min-height: 48px; }
-      .snake-pad { grid-template-columns: repeat(3, 64px); grid-template-rows: repeat(3, 64px); }
-      .snake-controls {
-        width: min(100%, 240px);
-        flex-direction: column-reverse;
-      }
       .quiz-wrap { min-width: 0; width: 100%; }
       .quiz-stem .katex, .quiz-stem .katex-display { max-width: 100%; overflow-wrap: anywhere; }
       .quiz-nav-btn { min-height: 44px; }
@@ -807,6 +802,85 @@
       border-color: var(--a); background: rgba(79,195,247,.1);
     }
     html.phone-compact .pair-group { padding: 10px 12px; gap: 10px; }
+
+    /* Cross Method Snake — phone only (desktop & iPad unchanged) */
+    html.phone-compact #snake-game { margin-bottom: 0; }
+    html.phone-compact #snake-game .snake-how {
+      margin-bottom: 8px;
+      padding: 10px 12px;
+    }
+    html.phone-compact #snake-game .snake-how summary {
+      font-size: 15px;
+    }
+    html.phone-compact #snake-game .snake-hud {
+      gap: 6px;
+      margin-bottom: 8px;
+    }
+    html.phone-compact #snake-game .snake-stat {
+      padding: 6px 10px;
+      font-size: 12px;
+    }
+    html.phone-compact #snake-game .snake-stat b { font-size: 13px; }
+    html.phone-compact #snake-game .snake-modes {
+      flex: 1 1 100%;
+      width: 100%;
+      min-width: 0;
+    }
+    html.phone-compact #snake-game .snake-mode {
+      flex: 1;
+      padding: 11px 14px;
+      font-size: 15px;
+      min-height: 44px;
+      text-align: center;
+    }
+    html.phone-compact #snake-game .snake-msg {
+      flex: 1 1 100%;
+      font-size: 12px;
+      margin-left: 0;
+    }
+    html.phone-compact #snake-game .snake-prompt {
+      font-size: clamp(15px, 4.2vw, 18px);
+      padding: 8px 10px;
+      min-height: 40px;
+      margin-bottom: 8px;
+    }
+    html.phone-compact #snake-game .snake-play {
+      gap: 8px;
+    }
+    html.phone-compact #snake-game .snake-board-wrap {
+      padding: 8px;
+      border-radius: 12px;
+    }
+    html.phone-compact #snake-game #snake-board {
+      max-height: min(36vh, 300px);
+      width: min(100%, min(36vh, 300px));
+    }
+    html.phone-compact #snake-game .snake-controls {
+      width: min(100%, 168px);
+      gap: 8px;
+      flex-direction: column-reverse;
+      margin: 0 auto;
+    }
+    html.phone-compact #snake-game .snake-btn {
+      padding: 9px 14px;
+      font-size: 14px;
+      min-height: 40px;
+    }
+    html.phone-compact #snake-game .snake-pad {
+      grid-template-columns: repeat(3, 44px);
+      grid-template-rows: repeat(3, 44px);
+      gap: 5px;
+      padding: 8px;
+      border-radius: 12px;
+    }
+    html.phone-compact #snake-game .snake-pad button {
+      font-size: 17px;
+      border-radius: 10px;
+      box-shadow: 0 4px 10px rgba(0, 0, 0, .2);
+      min-height: 0;
+      touch-action: manipulation;
+    }
+    html.phone-compact #snake-game > .hint { display: none; }
 
     /* Factor Blaster — phone identities: expanded prompt, 3 falling factorized options */
     #game-stage.game-stage--phone-identity {

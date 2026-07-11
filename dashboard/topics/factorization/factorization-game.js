@@ -485,6 +485,11 @@
     for (let i = 0; i < len; i++) SN.snake.push({ x: 8 - i, y: 10 });
     SN.dir = { x: 1, y: 0 }; SN.nextDir = { x: 1, y: 0 };
   }
+  function snakeFoodDims(item) {
+    if (!isPhoneCompact()) return item;
+    if (item.type === "gcf") return item;
+    return Object.assign({}, item, { w: 6, h: 2 });
+  }
   function snakeFoodSpots() {
     const spots = [];
     const blocked = (x, y, w, h) => {
@@ -509,11 +514,12 @@
       });
     }
     items.forEach((item) => {
-      const w = item.w, h = item.h;
+      const sized = snakeFoodDims(item);
+      const w = sized.w, h = sized.h;
       let x = 1, y = 1, guard = 0;
       do { x = (Math.random() * (SN.cols - w - 1) + 1) | 0; y = (Math.random() * (SN.rows - h - 1) + 1) | 0; guard++; }
       while (blocked(x, y, w, h) && guard < 300);
-      spots.push(Object.assign({ x, y }, item));
+      spots.push(Object.assign({ x, y }, sized));
     });
     SN.foods = spots;
   }
@@ -635,17 +641,21 @@
     snakeDraw();
   }
   function snakeDrawFoodText(ctx, text, bx, by, bw, bh) {
-    const base = Math.min(16, Math.floor(bh * 0.52));
+    const phone = isPhoneCompact();
+    const base = phone
+      ? Math.min(22, Math.floor(bh * 0.72))
+      : Math.min(16, Math.floor(bh * 0.52));
     let size = base;
     ctx.fillStyle = "#0f172a";
     ctx.textAlign = "center";
     ctx.textBaseline = "middle";
-    const maxW = bw - 6;
+    const maxW = bw - (phone ? 4 : 6);
+    const minSize = phone ? 11 : 8;
     do {
       ctx.font = "900 " + size + "px JetBrains Mono, monospace";
-      if (ctx.measureText(text).width <= maxW || size <= 8) break;
+      if (ctx.measureText(text).width <= maxW || size <= minSize) break;
       size--;
-    } while (size > 8);
+    } while (size > minSize);
     ctx.fillText(text, bx + bw / 2, by + bh / 2);
   }
   function snakeDraw() {
@@ -697,7 +707,23 @@
     if (!SN.canvas) return;
     const wrap = SN.canvas.parentElement;
     if (!wrap) return;
-    const size = Math.min(wrap.clientWidth - 24, window.innerHeight * 0.42, 520);
+    let size;
+    if (isPhoneCompact()) {
+      const game = document.getElementById("snake-game");
+      let budgetH = window.innerHeight * 0.34;
+      if (game && !game.classList.contains("hidden")) {
+        const play = game.querySelector(".snake-play");
+        const controls = game.querySelector(".snake-controls");
+        if (play && controls) {
+          const top = play.getBoundingClientRect().top;
+          const ctrlH = controls.getBoundingClientRect().height;
+          budgetH = window.innerHeight - top - ctrlH - 12;
+        }
+      }
+      size = Math.min(wrap.clientWidth - 16, budgetH, 340);
+    } else {
+      size = Math.min(wrap.clientWidth - 24, window.innerHeight * 0.42, 520);
+    }
     if (size < 100) return;
     const px = Math.floor(size);
     if (SN.canvas.width === px && SN.canvas.height === px) return;
