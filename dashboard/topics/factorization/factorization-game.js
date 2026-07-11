@@ -492,15 +492,21 @@
     if (!isPhoneCompact()) return item;
     const text = snakeFoodText(item);
     const cell = SN.cell || Math.max(14, (SN.canvas && SN.canvas.width ? SN.canvas.width / SN.cols : 18));
-    const sidePad = Math.max(16, cell * 0.42);
-    const estCharW = cell * 0.5;
+    const fontScale = 2;
+    const sidePad = Math.max(18, cell * 0.42);
+    const estCharW = cell * 0.5 * fontScale;
+    const estLineH = cell * 1.05 * fontScale;
     const needPx = text.length * estCharW + sidePad * 2 + cell * 0.6;
     const needCols = Math.ceil(needPx / cell) + 1;
+    const needRows = Math.ceil((estLineH + sidePad) / cell) + 1;
     if (item.type === "gcf") {
-      return Object.assign({}, item, { w: Math.max(3, Math.min(5, needCols)), h: 2 });
+      return Object.assign({}, item, {
+        w: Math.max(3, Math.min(6, needCols)),
+        h: Math.max(2, Math.min(3, needRows)),
+      });
     }
-    const w = Math.max(8, Math.min(13, needCols));
-    const h = text.length > 10 ? 3 : 3;
+    const w = Math.max(9, Math.min(14, needCols));
+    const h = Math.max(4, Math.min(5, needRows));
     return Object.assign({}, item, { w, h });
   }
   function snakeFoodSpots() {
@@ -658,9 +664,9 @@
     const phone = isPhoneCompact();
     const padX = opts.padX == null ? (phone ? Math.max(18, Math.round(bw * 0.14)) : 6) : opts.padX;
     const padY = opts.padY == null ? (phone ? Math.max(12, Math.round(bh * 0.18)) : 4) : opts.padY;
-    const minSize = phone ? 11 : 8;
-    const startSize = phone ? 20 : 16;
-    let size = Math.min(startSize, Math.floor((bh - padY * 2) * (phone ? 0.82 : 0.52)));
+    const minSize = phone ? 22 : 8;
+    const startSize = phone ? 40 : 16;
+    let size = Math.min(startSize, Math.floor((bh - padY * 2) * (phone ? 0.88 : 0.52)));
     const maxW = bw - padX * 2;
     const maxH = bh - padY * 2;
     do {
