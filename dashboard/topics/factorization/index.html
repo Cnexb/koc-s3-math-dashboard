@@ -11,7 +11,7 @@
   <script defer src="../../shared/deck-touch-nav.js"></script>
   <script defer src="../../shared/phone-compact.js?v=20260711-phone"></script>
   <script defer src="../../shared/embed-nav.js?v=20260710-deck-16x9"></script>
-  <script defer src="factorization-tools.js?v=20260710-ipad-tools-layout"></script>
+  <script defer src="factorization-tools.js?v=20260711-phone-tools"></script>
   <script defer src="factorization-game.js?v=20260711-blaster-phone4"></script>
   <script defer src="factorization-quiz.js?v=20260709-q8"></script>
   <style>
@@ -548,6 +548,57 @@
     html.tablet-touch #panel-tools .eq-line { font-size: 20px; margin: 10px 0; }
     html.tablet-touch #panel-tools .eq-line .katex { font-size: 1.06em; }
     html.tablet-touch #tool-svg { max-width: 100%; margin: 0; max-height: min(52vh, 480px); }
+    /* ── iPhone only — identities tools label sizing (desktop & iPad unchanged) ── */
+    html.phone-compact #panel-tools .figure-card {
+      padding: 12px 10px 14px;
+    }
+    html.phone-compact #tool-svg {
+      width: 100%;
+      max-height: min(46vh, 400px);
+    }
+    html.phone-compact #panel-tools .eq-line {
+      font-size: clamp(15px, 4.2vw, 20px);
+      margin: 8px 0;
+      line-height: 1.45;
+    }
+    html.phone-compact #panel-tools .eq-line .katex {
+      font-size: 1em;
+    }
+    html.phone-compact #panel-tools .legend {
+      margin-top: 14px;
+      padding-top: 12px;
+    }
+    html.phone-compact #panel-tools .legend .lg-item {
+      font-size: 14px;
+      margin: 6px 0;
+    }
+    html.phone-compact #panel-tools .legend .lg-item em {
+      font-size: 13px;
+    }
+    html.phone-compact #panel-tools .legend .lg-sym .katex {
+      font-size: 1.05em;
+    }
+    html.phone-compact #panel-tools .slider-name .katex {
+      font-size: 1.15em;
+    }
+    html.phone-compact #panel-tools .slider-val {
+      font-size: 15px;
+    }
+    html.phone-compact #panel-tools .control-card h3,
+    html.phone-compact #panel-tools .tool-sliders h3 {
+      font-size: 12px;
+      margin-bottom: 10px;
+    }
+    /* Cross method: phone-only label sizing */
+    html.phone-compact .cross-equation .katex {
+      font-size: clamp(1em, 4.5vw, 1.2em);
+    }
+    html.phone-compact .cross-var {
+      font-size: clamp(16px, 4.5vw, 18px);
+    }
+    html.phone-compact .cross-bank-section h4 {
+      font-size: 12px;
+    }
     /* Cross method: keep pair bank left, cross board right on iPad */
     html.tablet-touch .cross-lab-layout {
       grid-template-columns: minmax(180px, 260px) minmax(0, 1fr);

@@ -90,6 +90,16 @@
     return Math.max(0.55, Math.min(0.85, w / 400));
   }
 
+  function phoneTexSize(base, svg) {
+    const root = svgRoot(svg);
+    const vbW = root && root.viewBox && root.viewBox.baseVal ? root.viewBox.baseVal.width : 410;
+    const renderW = root && root.getBoundingClientRect ? root.getBoundingClientRect().width : vbW;
+    const targetScreenPx = 15;
+    const screenPx = base * (renderW / vbW);
+    if (screenPx >= targetScreenPx) return base;
+    return Math.ceil(base * (targetScreenPx / Math.max(1, screenPx)));
+  }
+
   function scaleInset(inset, ls) {
     if (ls >= 1) return inset;
     const out = {};
@@ -99,6 +109,11 @@
 
   // Extra inset on tablet so side labels (4x, 2y) do not overlap cell values.
   function figInsets(compact, svg) {
+    if (isPhoneCompact()) {
+      return compact
+        ? { ml: 78, mr: 68, mt: 46, mb: 50, edgeX: 38, edgeTop: 24, edgeRight: 38, edgeBottom: 28 }
+        : { ml: 64, mr: 64, mt: 44, mb: 42, edgeX: 34, edgeTop: 22, edgeRight: 36, edgeBottom: 26 };
+    }
     let inset;
     if (!isTabletTouch()) {
       inset = compact
@@ -164,7 +179,11 @@
   }
   // LaTeX label centred at (cx, cy) inside the SVG via <foreignObject>.
   function tex(p, cx, cy, latex, color, size, w, h) {
-    if (isTabletTouch()) return svgLabel(p, cx, cy, latex, color, size);
+    if (isTabletTouch() || isPhoneCompact()) {
+      const base = size || 16;
+      const fs = isPhoneCompact() ? phoneTexSize(base, p) : base;
+      return svgLabel(p, cx, cy, latex, color, fs);
+    }
     const ls = labelScale(p);
     const fs = (size || 16) * ls;
     w = (w || 170) * ls; h = (h || 46) * ls;
@@ -203,7 +222,11 @@
     // Keep foreignObject inside the cell so labels never spill past the border.
     const boxW = Math.max(12, Math.min(cw, availW + 2));
     const boxH = Math.max(12, Math.min(ch, Math.max(fs * 1.85, availH * 0.9)));
-    if (isTabletTouch()) return svgLabel(p, cx, cy, latex, color, fs);
+    if (isTabletTouch() || isPhoneCompact()) {
+      let fsOut = fs;
+      if (isPhoneCompact()) fsOut = Math.max(fs, phoneTexSize(Math.max(minFs, 11), p));
+      return svgLabel(p, cx, cy, latex, color, fsOut);
+    }
     return tex(p, cx, cy, latex, color, fs, boxW, boxH);
   }
   // ── click-to-focus helpers (used by the (a+b)^2 / (a-b)^2 tools) ──
@@ -460,10 +483,15 @@
     clamp(st) { if (st.b > st.a - 1) st.b = st.a - 1; },
     draw(svg, st) {
       if (!st.mode) {
-        let inset = isTabletTouch()
-          ? { ml: 66, mr: 54, mt: 46, mb: 54, edgeX: 42, edgeTop: 24, edgeRight: 38, edgeBottom: 28 }
-          : { ml: 34, mr: 48, mt: 40, mb: 52, edgeX: 24, edgeTop: 20, edgeRight: 28, edgeBottom: 22 };
-        inset = scaleInset(inset, labelScale(svg));
+        let inset;
+        if (isPhoneCompact()) {
+          inset = { ml: 58, mr: 56, mt: 44, mb: 56, edgeX: 32, edgeTop: 22, edgeRight: 34, edgeBottom: 26 };
+        } else if (isTabletTouch()) {
+          inset = { ml: 66, mr: 54, mt: 46, mb: 54, edgeX: 42, edgeTop: 24, edgeRight: 38, edgeBottom: 28 };
+        } else {
+          inset = { ml: 34, mr: 48, mt: 40, mb: 52, edgeX: 24, edgeTop: 20, edgeRight: 28, edgeBottom: 22 };
+        }
+        if (!isPhoneCompact()) inset = scaleInset(inset, labelScale(svg));
         const ml = inset.ml, mr = inset.mr, mt = inset.mt, mb = inset.mb;
         const aw = 450 - ml - mr, ah = 380 - mt - mb;
         const A = Math.min(aw, ah), unit = A / st.a;
@@ -480,10 +508,15 @@
         tex(svg, ox + IN + B / 2, top + A + inset.edgeBottom, coefY(st.b), C.b, 20, 70, 34);
         tex(svg, ox + A + inset.edgeRight, top + IN + B / 2, coefY(st.b), C.b, 20, 70, 34);
       } else {
-        let inset = isTabletTouch()
-          ? { ml: 88, mr: 52, mt: 48, mb: 40, edgeX: 14, edgeTop: 24 }
-          : { ml: 108, mr: 42, mt: 44, mb: 36, edgeX: 14, edgeTop: 20 };
-        inset = scaleInset(inset, labelScale(svg));
+        let inset;
+        if (isPhoneCompact()) {
+          inset = { ml: 96, mr: 48, mt: 46, mb: 40, edgeX: 16, edgeTop: 22 };
+        } else if (isTabletTouch()) {
+          inset = { ml: 88, mr: 52, mt: 48, mb: 40, edgeX: 14, edgeTop: 24 };
+        } else {
+          inset = { ml: 108, mr: 42, mt: 44, mb: 36, edgeX: 14, edgeTop: 20 };
+        }
+        if (!isPhoneCompact()) inset = scaleInset(inset, labelScale(svg));
         const ml = inset.ml, mr = inset.mr, mt = inset.mt, mb = inset.mb;
         const aw = 450 - ml - mr, ah = 380 - mt - mb;
         const unit = Math.min(aw / (st.a + st.b), ah / (st.a - st.b));
