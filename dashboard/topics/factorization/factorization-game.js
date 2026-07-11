@@ -480,36 +480,144 @@
     return { prompt: trinomial(p, q), correct, opts: shuffle([correct].concat(shuffle(distractors).slice(0, 3))) };
   }
   function snakeResetBody() {
+    snakeApplyGrid();
     const len = 3 + Math.max(0, SN.level - 1);
     SN.snake = [];
-    for (let i = 0; i < len; i++) SN.snake.push({ x: 8 - i, y: 10 });
+    const midY = Math.floor(SN.rows / 2);
+    const startX = Math.floor(SN.cols / 2) - 2;
+    for (let i = 0; i < len; i++) SN.snake.push({ x: startX - i, y: midY });
     SN.dir = { x: 1, y: 0 }; SN.nextDir = { x: 1, y: 0 };
+  }
+  function snakeApplyGrid() {
+    if (isPhoneCompact()) {
+      SN.cols = 20;
+      SN.rows = 20;
+    } else {
+      SN.cols = 24;
+      SN.rows = 24;
+    }
   }
   function snakeFoodText(item) {
     return item.type === "gcf" ? String(item.value) : plainExpr(item.tex);
   }
+  function snakeFoodLines(item) {
+    const text = snakeFoodText(item);
+    if (!isPhoneCompact() || item.type === "gcf") return [text];
+    const idx = text.indexOf(")(");
+    if (item._forceSplit && idx >= 0) return [text.slice(0, idx + 1), text.slice(idx + 1)];
+    if (text.length <= 10 || idx < 0) return [text];
+    return [text.slice(0, idx + 1), text.slice(idx + 1)];
+  }
+  function snakeMeasureLines(ctx, lines, fontSize) {
+    let maxTw = 0;
+    let totalH = 0;
+    const lineH = fontSize * 1.12;
+    const lineGap = fontSize * 0.14;
+    lines.forEach((line, i) => {
+      maxTw = Math.max(maxTw, ctx.measureText(line).width);
+      totalH += lineH;
+      if (i < lines.length - 1) totalH += lineGap;
+    });
+    return { maxTw, totalH, lineH, lineGap };
+  }
+  function snakeMeasureFoodBox(ctx, item, cell, slotMaxW, slotMaxH) {
+    let lines = snakeFoodLines(item);
+    const padX = Math.max(10, cell * 0.35);
+    const padY = Math.max(8, cell * 0.22);
+    let fontSize = Math.max(13, Math.min(17, cell * 1.0));
+    const minFont = 11;
+    const gap = 1;
+
+    function measureAt(fs, useLines) {
+      ctx.font = "900 " + fs + "px JetBrains Mono, monospace";
+      const lm = snakeMeasureLines(ctx, useLines, fs);
+      const boxW = lm.maxTw + padX * 2;
+      const boxH = lm.totalH + padY * 2;
+      const w = Math.ceil(boxW / cell) + gap;
+      const h = Math.ceil(boxH / cell) + gap;
+      return { fontSize: fs, padX, padY, boxW, boxH, w, h, lines: useLines, lineGap: lm.lineGap, lineH: lm.lineH };
+    }
+
+    for (let fs = fontSize; fs >= minFont; fs--) {
+      let m = measureAt(fs, lines);
+      if (slotMaxW && (m.w > slotMaxW || m.h > slotMaxH)) {
+        if (lines.length === 1 && snakeFoodText(item).length > 10 && item.type !== "gcf") {
+          lines = snakeFoodLines(Object.assign({}, item, { _forceSplit: true }));
+          if (lines.length > 1) {
+            m = measureAt(fs, lines);
+          }
+        }
+      }
+      if (!slotMaxW || (m.w <= slotMaxW && m.h <= slotMaxH)) return m;
+    }
+
+    lines = snakeFoodLines(item);
+    if (lines.length === 1 && item.type !== "gcf") {
+      const text = snakeFoodText(item);
+      const idx = text.indexOf(")(");
+      if (idx >= 0) lines = [text.slice(0, idx + 1), text.slice(idx + 1)];
+    }
+    return measureAt(minFont, lines);
+  }
+  function snakePhoneSlotAnchors(count) {
+    const pad = 1;
+    const cols = SN.cols;
+    const rows = SN.rows;
+    const hw = Math.floor((cols - pad * 2) / 2);
+    const hh = Math.floor((rows - pad * 2) / 2);
+    const quads = [
+      { x: pad, y: pad, maxW: hw - 1, maxH: hh - 1 },
+      { x: pad + hw, y: pad, maxW: cols - pad - hw - 1, maxH: hh - 1 },
+      { x: pad, y: pad + hh, maxW: hw - 1, maxH: rows - pad - hh - 1 },
+      { x: pad + hw, y: pad + hh, maxW: cols - pad - hw - 1, maxH: rows - pad - hh - 1 },
+    ];
+    if (count <= 4) return shuffle(quads).slice(0, count);
+    const thirds = Math.floor((cols - pad * 2) / 3);
+    const anchors = [];
+    for (let row = 0; row < 2; row++) {
+      for (let col = 0; col < 3; col++) {
+        anchors.push({
+          x: pad + col * thirds,
+          y: pad + row * hh,
+          maxW: thirds - 1,
+          maxH: hh - 1,
+        });
+      }
+    }
+    return shuffle(anchors).slice(0, count);
+  }
   function snakeFoodDims(item) {
     if (!isPhoneCompact()) return item;
-    const text = snakeFoodText(item);
+    const ctx = SN.ctx || (SN.canvas && SN.canvas.getContext("2d"));
     const cell = SN.cell || Math.max(14, (SN.canvas && SN.canvas.width ? SN.canvas.width / SN.cols : 18));
-    const fontScale = 2;
-    const sidePad = Math.max(18, cell * 0.42);
-    const estCharW = cell * 0.5 * fontScale;
-    const estLineH = cell * 1.05 * fontScale;
-    const needPx = text.length * estCharW + sidePad * 2 + cell * 0.6;
-    const needCols = Math.ceil(needPx / cell) + 1;
-    const needRows = Math.ceil((estLineH + sidePad) / cell) + 1;
-    if (item.type === "gcf") {
-      return Object.assign({}, item, {
-        w: Math.max(3, Math.min(6, needCols)),
-        h: Math.max(2, Math.min(3, needRows)),
-      });
-    }
-    const w = Math.max(9, Math.min(14, needCols));
-    const h = Math.max(4, Math.min(5, needRows));
-    return Object.assign({}, item, { w, h });
+    if (!ctx) return item;
+    const m = snakeMeasureFoodBox(ctx, item, cell);
+    return Object.assign({}, item, { w: m.w, h: m.h, metrics: m });
+  }
+  function snakePlacePhoneFoods(items) {
+    const ctx = SN.ctx;
+    const cell = SN.cell;
+    if (!ctx || !cell) return [];
+    const slots = snakePhoneSlotAnchors(items.length);
+    const spots = [];
+    const blocked = (x, y, w, h) => {
+      if (SN.snake.some((p) => p.x >= x - 1 && p.x < x + w + 1 && p.y >= y - 1 && p.y < y + h + 1)) return true;
+      return spots.some((s) => x < s.x + s.w + 1 && x + w + 1 > s.x && y < s.y + s.h + 1 && y + h + 1 > s.y);
+    };
+    items.forEach((item, i) => {
+      const slot = slots[i];
+      if (!slot) return;
+      const m = snakeMeasureFoodBox(ctx, item, cell, slot.maxW, slot.maxH);
+      if (m.w > slot.maxW || m.h > slot.maxH) return;
+      const x = slot.x + Math.max(0, Math.floor((slot.maxW - m.w) / 2));
+      const y = slot.y + Math.max(0, Math.floor((slot.maxH - m.h) / 2));
+      if (blocked(x, y, m.w, m.h)) return;
+      spots.push(Object.assign({}, item, { x, y, w: m.w, h: m.h, metrics: m }));
+    });
+    return spots;
   }
   function snakeFoodSpots() {
+    snakeApplyGrid();
     const spots = [];
     const blocked = (x, y, w, h) => {
       if (SN.snake.some((p) => p.x >= x - 1 && p.x < x + w + 1 && p.y >= y - 1 && p.y < y + h + 1)) return true;
@@ -532,13 +640,22 @@
         items.push({ type: "factor", tex, correct, w: 5, h: 2 });
       });
     }
+    if (isPhoneCompact() && SN.ctx) {
+      SN.foods = snakePlacePhoneFoods(items);
+      return;
+    }
     items.forEach((item) => {
       const sized = snakeFoodDims(item);
       const w = sized.w, h = sized.h;
       let x = 1, y = 1, guard = 0;
-      do { x = (Math.random() * (SN.cols - w - 1) + 1) | 0; y = (Math.random() * (SN.rows - h - 1) + 1) | 0; guard++; }
-      while (blocked(x, y, w, h) && guard < 300);
-      spots.push(Object.assign({ x, y }, sized));
+      let placed = false;
+      do {
+        x = (Math.random() * (SN.cols - w - 1) + 1) | 0;
+        y = (Math.random() * (SN.rows - h - 1) + 1) | 0;
+        guard++;
+        if (!blocked(x, y, w, h)) placed = true;
+      } while (!placed && guard < 300);
+      if (placed) spots.push(Object.assign({ x, y }, sized));
     });
     SN.foods = spots;
   }
@@ -659,14 +776,11 @@
     else SN.snake.pop();
     snakeDraw();
   }
-  function snakeDrawFoodText(ctx, text, bx, by, bw, bh, opts) {
-    opts = opts || {};
-    const phone = isPhoneCompact();
-    const padX = opts.padX == null ? (phone ? Math.max(18, Math.round(bw * 0.14)) : 6) : opts.padX;
-    const padY = opts.padY == null ? (phone ? Math.max(12, Math.round(bh * 0.18)) : 4) : opts.padY;
-    const minSize = phone ? 22 : 8;
-    const startSize = phone ? 40 : 16;
-    let size = Math.min(startSize, Math.floor((bh - padY * 2) * (phone ? 0.88 : 0.52)));
+  function snakeDrawFoodText(ctx, text, bx, by, bw, bh) {
+    const padX = 6;
+    const padY = 4;
+    const minSize = 8;
+    let size = Math.min(16, Math.floor((bh - padY * 2) * 0.52));
     const maxW = bw - padX * 2;
     const maxH = bh - padY * 2;
     do {
@@ -677,13 +791,46 @@
       size--;
     } while (size > minSize);
     ctx.font = "900 " + size + "px JetBrains Mono, monospace";
-    const tw = ctx.measureText(text).width;
-    const th = size * 1.12;
-    const boxW = Math.min(bw - 4, tw + padX * 2);
-    const boxH = Math.min(bh - 4, th + padY * 2);
-    const rx = bx + (bw - boxW) / 2;
-    const ry = by + (bh - boxH) / 2;
-    return { size, boxW, boxH, rx, ry, tw, th, padX, padY };
+    return { size };
+  }
+  function snakeDrawFoodItem(ctx, f, x, y, bw, bh) {
+    const phone = isPhoneCompact();
+    const radius = f.type === "gcf" ? 5 : 8;
+    if (phone && f.metrics) {
+      const m = f.metrics;
+      const bx = x + (bw - m.boxW) / 2;
+      const by = y + (bh - m.boxH) / 2;
+      ctx.fillStyle = f.type === "gcf" ? "#fde68a" : "#cbd5e1";
+      ctx.strokeStyle = "#0f172a";
+      ctx.lineWidth = 1.5;
+      roundRect(ctx, bx, by, m.boxW, m.boxH, radius, true, true);
+      ctx.fillStyle = "#0f172a";
+      ctx.textAlign = "center";
+      ctx.textBaseline = "middle";
+      ctx.font = "900 " + m.fontSize + "px JetBrains Mono, monospace";
+      if (m.lines.length === 1) {
+        ctx.fillText(m.lines[0], bx + m.boxW / 2, by + m.boxH / 2);
+      } else {
+        let ly = by + m.padY + m.lineH / 2;
+        m.lines.forEach((line, i) => {
+          ctx.fillText(line, bx + m.boxW / 2, ly);
+          if (i < m.lines.length - 1) ly += m.lineH + m.lineGap;
+        });
+      }
+      return;
+    }
+    const text = snakeFoodText(f);
+    const metrics = snakeDrawFoodText(ctx, text, x, y, bw, bh);
+    ctx.fillStyle = f.type === "gcf" ? "#fde68a" : "#cbd5e1";
+    ctx.strokeStyle = "#0f172a";
+    ctx.lineWidth = 2;
+    const pad = f.type === "gcf" ? 2 : 3;
+    roundRect(ctx, x + pad, y + pad, bw - pad * 2, bh - pad * 2, radius, true, true);
+    ctx.fillStyle = "#0f172a";
+    ctx.textAlign = "center";
+    ctx.textBaseline = "middle";
+    ctx.font = "900 " + metrics.size + "px JetBrains Mono, monospace";
+    ctx.fillText(text, x + bw / 2, y + bh / 2);
   }
   function snakeDraw() {
     if (!SN.ctx) return;
@@ -697,26 +844,7 @@
     SN.foods.forEach((f) => {
       const x = f.x * SN.cell, y = f.y * SN.cell;
       const bw = SN.cell * f.w, bh = SN.cell * f.h;
-      const text = snakeFoodText(f);
-      const phone = isPhoneCompact();
-      const metrics = snakeDrawFoodText(ctx, text, x, y, bw, bh);
-      const radius = f.type === "gcf" ? 5 : 8;
-      ctx.fillStyle = f.type === "gcf" ? "#fde68a" : "#cbd5e1";
-      ctx.strokeStyle = "#0f172a";
-      ctx.lineWidth = phone ? 1.5 : 2;
-      if (phone) {
-        roundRect(ctx, metrics.rx, metrics.ry, metrics.boxW, metrics.boxH, radius, true, true);
-      } else {
-        const pad = f.type === "gcf" ? 2 : 3;
-        roundRect(ctx, x + pad, y + pad, bw - pad * 2, bh - pad * 2, radius, true, true);
-      }
-      ctx.fillStyle = "#0f172a";
-      ctx.textAlign = "center";
-      ctx.textBaseline = "middle";
-      ctx.font = "900 " + metrics.size + "px JetBrains Mono, monospace";
-      const cx = phone ? metrics.rx + metrics.boxW / 2 : x + bw / 2;
-      const cy = phone ? metrics.ry + metrics.boxH / 2 : y + bh / 2;
-      ctx.fillText(text, cx, cy);
+      snakeDrawFoodItem(ctx, f, x, y, bw, bh);
     });
     SN.snake.forEach((p, i) => {
       ctx.fillStyle = i === 0 ? "#fb923c" : "#fde047";
@@ -776,10 +904,15 @@
     }
     if (size < 100) return;
     const px = Math.floor(size);
-    if (SN.canvas.width === px && SN.canvas.height === px) return;
+    const sizeChanged = SN.canvas.width !== px || SN.canvas.height !== px;
+    const prevCols = SN.cols;
+    const prevRows = SN.rows;
+    snakeApplyGrid();
+    const gridChanged = prevCols !== SN.cols || prevRows !== SN.rows;
     SN.canvas.width = px;
     SN.canvas.height = px;
     SN.cell = SN.canvas.width / SN.cols;
+    if (isPhoneCompact() && SN.cur && (sizeChanged || gridChanged || !SN.foods.length)) snakeFoodSpots();
     snakeDraw();
   }
   function mountSnake() {
