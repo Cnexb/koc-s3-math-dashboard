@@ -487,8 +487,8 @@
   }
   function snakeFoodDims(item) {
     if (!isPhoneCompact()) return item;
-    if (item.type === "gcf") return item;
-    return Object.assign({}, item, { w: 6, h: 2 });
+    if (item.type === "gcf") return Object.assign({}, item, { w: 3, h: 2 });
+    return Object.assign({}, item, { w: 7, h: 3 });
   }
   function snakeFoodSpots() {
     const spots = [];
@@ -643,14 +643,14 @@
   function snakeDrawFoodText(ctx, text, bx, by, bw, bh) {
     const phone = isPhoneCompact();
     const base = phone
-      ? Math.min(22, Math.floor(bh * 0.72))
+      ? Math.min(28, Math.floor(bh * 0.8))
       : Math.min(16, Math.floor(bh * 0.52));
     let size = base;
     ctx.fillStyle = "#0f172a";
     ctx.textAlign = "center";
     ctx.textBaseline = "middle";
     const maxW = bw - (phone ? 4 : 6);
-    const minSize = phone ? 11 : 8;
+    const minSize = phone ? 13 : 8;
     do {
       ctx.font = "900 " + size + "px JetBrains Mono, monospace";
       if (ctx.measureText(text).width <= maxW || size <= minSize) break;
@@ -710,17 +710,24 @@
     let size;
     if (isPhoneCompact()) {
       const game = document.getElementById("snake-game");
-      let budgetH = window.innerHeight * 0.34;
       if (game && !game.classList.contains("hidden")) {
-        const play = game.querySelector(".snake-play");
+        const boardWrap = game.querySelector(".snake-board-wrap");
         const controls = game.querySelector(".snake-controls");
-        if (play && controls) {
-          const top = play.getBoundingClientRect().top;
-          const ctrlH = controls.getBoundingClientRect().height;
-          budgetH = window.innerHeight - top - ctrlH - 12;
+        const stats = game.querySelector(".snake-hud-stats");
+        const msg = game.querySelector(".snake-msg");
+        if (boardWrap && controls) {
+          const top = boardWrap.getBoundingClientRect().top;
+          let bottom = controls.offsetHeight + 6;
+          if (stats) bottom += stats.offsetHeight + 4;
+          if (msg && msg.textContent.trim()) bottom += msg.offsetHeight + 2;
+          const budgetH = window.innerHeight - top - bottom - 6;
+          size = Math.min(wrap.clientWidth - 12, budgetH, 420);
+        } else {
+          size = Math.min(wrap.clientWidth - 12, window.innerHeight * 0.4, 380);
         }
+      } else {
+        size = Math.min(wrap.clientWidth - 12, window.innerHeight * 0.4, 380);
       }
-      size = Math.min(wrap.clientWidth - 16, budgetH, 340);
     } else {
       size = Math.min(wrap.clientWidth - 24, window.innerHeight * 0.42, 520);
     }
@@ -771,7 +778,16 @@
     if (snake) snake.classList.toggle("hidden", modeName !== "snake");
     running = false; cancelAnimationFrame(rafId);
     if (modeName !== "snake") { SN.running = false; clearInterval(SN.loop); }
-    if (modeName === "snake") { mountSnake(); snakeDraw(); }
+    if (modeName === "snake") {
+      mountSnake();
+      snakeDraw();
+      if (isPhoneCompact()) {
+        requestAnimationFrame(() => {
+          resizeSnakeBoard();
+          requestAnimationFrame(resizeSnakeBoard);
+        });
+      }
+    }
   }
 
   const Game = {

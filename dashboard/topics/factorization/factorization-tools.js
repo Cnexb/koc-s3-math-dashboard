@@ -1222,6 +1222,58 @@
     render();
   }
 
+  function initSummaryPhoneZoom() {
+    const panel = document.getElementById("panel-summary");
+    const overlay = document.getElementById("summary-zoom-overlay");
+    if (!panel || !overlay) return;
+
+    const zoomImg = overlay.querySelector(".summary-zoom-img");
+    const closeBtn = overlay.querySelector(".summary-zoom-close");
+    if (!zoomImg || !closeBtn) return;
+
+    function openZoom(img) {
+      if (!isPhoneCompact() || !img || img.hidden) return;
+      const src = img.currentSrc || img.src;
+      if (!src) return;
+      zoomImg.src = src;
+      zoomImg.alt = img.alt || "Summary page";
+      overlay.classList.remove("hidden");
+      document.body.style.overflow = "hidden";
+    }
+
+    function closeZoom() {
+      overlay.classList.add("hidden");
+      zoomImg.removeAttribute("src");
+      zoomImg.alt = "";
+      document.body.style.overflow = "";
+    }
+
+    panel.addEventListener("click", (e) => {
+      if (!isPhoneCompact()) return;
+      const img = e.target.closest(".summary-slide.active img");
+      if (!img || img.hidden) return;
+      e.preventDefault();
+      openZoom(img);
+    });
+
+    closeBtn.addEventListener("click", (e) => {
+      e.stopPropagation();
+      closeZoom();
+    });
+
+    overlay.addEventListener("click", (e) => {
+      if (e.target === overlay) closeZoom();
+    });
+
+    document.addEventListener("keydown", (e) => {
+      if (e.key === "Escape" && !overlay.classList.contains("hidden")) closeZoom();
+    });
+
+    initPhoneCompact(() => {
+      if (!isPhoneCompact()) closeZoom();
+    });
+  }
+
   function start() {
     if (deckTouch()) deckTouch().initTabletClass();
     renderTexAttrs();
@@ -1230,6 +1282,7 @@
     initTools();
     initCrossLab();
     initSummarySlideshow();
+    initSummaryPhoneZoom();
   }
   if (window.katex) { window.addEventListener("DOMContentLoaded", start); }
   else { window.addEventListener("DOMContentLoaded", () => {

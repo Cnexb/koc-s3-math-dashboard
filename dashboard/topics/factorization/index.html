@@ -11,8 +11,8 @@
   <script defer src="../../shared/deck-touch-nav.js"></script>
   <script defer src="../../shared/phone-compact.js?v=20260711-phone"></script>
   <script defer src="../../shared/embed-nav.js?v=20260710-deck-16x9"></script>
-  <script defer src="factorization-tools.js?v=20260711-phone-tools"></script>
-  <script defer src="factorization-game.js?v=20260711-snake-phone2"></script>
+  <script defer src="factorization-tools.js?v=20260711-summary-zoom"></script>
+  <script defer src="factorization-game.js?v=20260711-snake-phone3"></script>
   <script defer src="factorization-quiz.js?v=20260709-q8"></script>
   <style>
     :root {
@@ -409,6 +409,53 @@
     .summary-meta b { color: var(--ink); font-family: "JetBrains Mono", monospace; }
     .summary-set { position: absolute; inset: 0; }
     .summary-set.hidden { display: none; }
+    /* Phone-only summary image zoom (desktop & iPad unchanged) */
+    .summary-zoom-overlay { display: none; }
+    .summary-zoom-overlay.hidden { display: none; }
+    html.phone-compact #panel-summary .summary-slide.active img:not([hidden]) {
+      cursor: zoom-in;
+      touch-action: manipulation;
+    }
+    html.phone-compact .summary-zoom-overlay:not(.hidden) {
+      position: fixed;
+      inset: 0;
+      z-index: 1200;
+      background: rgba(0, 0, 0, 0.94);
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      padding: max(12px, env(safe-area-inset-top)) max(12px, env(safe-area-inset-right))
+        max(12px, env(safe-area-inset-bottom)) max(12px, env(safe-area-inset-left));
+    }
+    html.phone-compact .summary-zoom-overlay.hidden { display: none; }
+    html.phone-compact .summary-zoom-img {
+      max-width: 100%;
+      max-height: 100%;
+      width: auto;
+      height: auto;
+      object-fit: contain;
+      display: block;
+      border-radius: 6px;
+      box-shadow: 0 8px 32px rgba(0, 0, 0, 0.45);
+    }
+    html.phone-compact .summary-zoom-close {
+      position: absolute;
+      top: max(10px, env(safe-area-inset-top));
+      right: max(10px, env(safe-area-inset-right));
+      width: 44px;
+      height: 44px;
+      border: 1px solid rgba(255, 255, 255, 0.35);
+      border-radius: 50%;
+      background: rgba(255, 255, 255, 0.12);
+      color: #fff;
+      font-size: 28px;
+      line-height: 1;
+      cursor: pointer;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      touch-action: manipulation;
+    }
     /* ── Quiz ── */
     .quiz-wrap { max-width: 720px; margin: 0 auto; }
     .quiz-progress-wrap { margin-bottom: 18px; }
@@ -804,67 +851,80 @@
     html.phone-compact .pair-group { padding: 10px 12px; gap: 10px; }
 
     /* Cross Method Snake — phone only (desktop & iPad unchanged) */
-    html.phone-compact #snake-game { margin-bottom: 0; }
-    html.phone-compact #snake-game .snake-how {
-      margin-bottom: 8px;
-      padding: 10px 12px;
+    html.phone-compact #panel-game:has(#snake-game:not(.hidden)) {
+      padding-top: 6px;
+      padding-bottom: 6px;
     }
-    html.phone-compact #snake-game .snake-how summary {
-      font-size: 15px;
+    html.phone-compact #panel-game:has(#snake-game:not(.hidden)) .subnav {
+      margin-bottom: 6px;
+    }
+    html.phone-compact #snake-game {
+      display: flex;
+      flex-direction: column;
+      gap: 0;
+      margin-bottom: 0;
     }
     html.phone-compact #snake-game .snake-hud {
-      gap: 6px;
-      margin-bottom: 8px;
+      display: contents;
     }
-    html.phone-compact #snake-game .snake-stat {
+    html.phone-compact #snake-game .snake-how {
+      order: 0;
+      margin-bottom: 4px;
       padding: 6px 10px;
-      font-size: 12px;
     }
-    html.phone-compact #snake-game .snake-stat b { font-size: 13px; }
+    html.phone-compact #snake-game .snake-how summary {
+      font-size: 14px;
+      margin-bottom: 0;
+    }
     html.phone-compact #snake-game .snake-modes {
-      flex: 1 1 100%;
+      order: 1;
+      flex: none;
       width: 100%;
       min-width: 0;
+      margin: 0;
     }
     html.phone-compact #snake-game .snake-mode {
       flex: 1;
-      padding: 11px 14px;
-      font-size: 15px;
-      min-height: 44px;
+      padding: 5px 10px;
+      font-size: 13px;
+      min-height: 0;
+      line-height: 1.2;
       text-align: center;
     }
-    html.phone-compact #snake-game .snake-msg {
-      flex: 1 1 100%;
-      font-size: 12px;
-      margin-left: 0;
-    }
     html.phone-compact #snake-game .snake-prompt {
+      order: 2;
       font-size: clamp(15px, 4.2vw, 18px);
-      padding: 8px 10px;
-      min-height: 40px;
-      margin-bottom: 8px;
+      padding: 6px 8px;
+      min-height: 30px;
+      margin: 0 0 4px;
+      border-radius: 10px;
     }
     html.phone-compact #snake-game .snake-play {
-      gap: 8px;
+      order: 3;
+      gap: 4px;
     }
     html.phone-compact #snake-game .snake-board-wrap {
-      padding: 8px;
+      padding: 6px;
       border-radius: 12px;
     }
     html.phone-compact #snake-game #snake-board {
-      max-height: min(36vh, 300px);
-      width: min(100%, min(36vh, 300px));
+      width: 100%;
+      height: auto;
+      max-height: none;
+      aspect-ratio: 1 / 1;
+      display: block;
+      margin: 0 auto;
     }
     html.phone-compact #snake-game .snake-controls {
       width: min(100%, 168px);
-      gap: 8px;
+      gap: 6px;
       flex-direction: column-reverse;
       margin: 0 auto;
     }
     html.phone-compact #snake-game .snake-btn {
-      padding: 9px 14px;
-      font-size: 14px;
-      min-height: 40px;
+      padding: 8px 12px;
+      font-size: 13px;
+      min-height: 36px;
     }
     html.phone-compact #snake-game .snake-pad {
       grid-template-columns: repeat(3, 44px);
@@ -879,6 +939,28 @@
       box-shadow: 0 4px 10px rgba(0, 0, 0, .2);
       min-height: 0;
       touch-action: manipulation;
+    }
+    html.phone-compact #snake-game .snake-hud-stats {
+      order: 4;
+      display: flex;
+      flex-wrap: wrap;
+      justify-content: center;
+      gap: 6px;
+      margin: 4px 0 0;
+    }
+    html.phone-compact #snake-game .snake-stat {
+      padding: 5px 9px;
+      font-size: 11px;
+    }
+    html.phone-compact #snake-game .snake-stat b { font-size: 12px; }
+    html.phone-compact #snake-game .snake-msg {
+      order: 5;
+      flex: none;
+      width: 100%;
+      text-align: center;
+      font-size: 11px;
+      min-height: 14px;
+      margin: 2px 0 0;
     }
     html.phone-compact #snake-game > .hint { display: none; }
 
@@ -1176,9 +1258,11 @@
         <p><b>Normal:</b> eat the correct factor pair in one step. <b>Advanced:</b> first eat the common factor, then eat both correct linear factors.</p>
       </details>
       <div class="snake-hud">
-        <div class="snake-stat">Level <b id="sn-level">1</b>/5</div>
-        <div class="snake-stat">Lives <b id="sn-lives">3</b></div>
-        <div class="snake-stat">Score <b id="sn-score">0</b></div>
+        <div class="snake-hud-stats">
+          <div class="snake-stat">Level <b id="sn-level">1</b>/5</div>
+          <div class="snake-stat">Lives <b id="sn-lives">3</b></div>
+          <div class="snake-stat">Score <b id="sn-score">0</b></div>
+        </div>
         <div class="snake-modes" aria-label="Snake mode">
           <button class="snake-mode active" data-snake-mode="normal" type="button">Normal</button>
           <button class="snake-mode" data-snake-mode="advanced" type="button">Advanced</button>
@@ -1255,6 +1339,10 @@
     </div>
     <p class="summary-meta">Page <b id="summary-page-num">1</b> of <b id="summary-page-total">2</b></p>
     <p class="hint">L01–02 More about Factorization — pick a style, then use &larr; &rarr; or the arrows to switch pages.</p>
+    <div id="summary-zoom-overlay" class="summary-zoom-overlay hidden" role="dialog" aria-modal="true" aria-label="Zoomed summary image">
+      <button type="button" class="summary-zoom-close" aria-label="Close">&times;</button>
+      <img class="summary-zoom-img" alt="">
+    </div>
   </section>
 
   <!-- TAB 5: quiz -->
