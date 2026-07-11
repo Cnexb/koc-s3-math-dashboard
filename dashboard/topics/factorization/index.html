@@ -279,7 +279,7 @@
     .ov-card.hidden { display: none; }
     .ov-card h2 { font-size: 30px; margin: 0 0 14px; color: var(--a); letter-spacing: .02em; }
     .ov-card p { color: var(--dim); margin: 8px 0; }
-    .ov-keys b { color: var(--ink); }
+    .ov-keys-phone { display: none; }
     .ov-row { display: flex; align-items: center; justify-content: center; gap: 10px; margin: 12px 0; flex-wrap: wrap; }
     .ov-row.ov-center { gap: 14px; }
     .ov-label { color: var(--ink); font-weight: 600; min-width: 76px; text-align: right; }
@@ -603,6 +603,9 @@
       .cross-pair-bank { max-height: 40vh; }
       .cross-num { width: 56px; font-size: 16px; padding: 8px 6px; }
       #game-stage { height: min(50vh, 380px); border-radius: 12px; }
+      #game-stage:has(.game-overlay:not(.hidden)) {
+        height: min(72vh, 520px);
+      }
       #game-prompt { font-size: clamp(14px, 3.5vw, 20px); height: 48px; }
       #game-stage:not(.game-stage--phone-identity) .enemy {
         min-height: 36px; font-size: 11px; padding: 3px 5px; border-radius: 10px;
@@ -611,11 +614,119 @@
       #game-cannon { width: 44px; height: 44px; bottom: 14px; }
       .laser-beam { width: 5px; }
       .boom { height: 36px; border-radius: 10px; }
-      .game-countdown { font-size: 72px; }
-      .game-hud { gap: 10px; }
-      .hud-speed { width: 100%; margin-left: 0; }
-      .ov-card h2 { font-size: 22px; }
-      .ov-keys { display: none; }
+      .game-countdown { font-size: clamp(64px, 22vw, 96px); }
+      .game-hud { gap: 8px 10px; padding: 0 2px; }
+      .hud-item { font-size: 12px; }
+      .hud-item b { font-size: 16px; margin-left: 4px; }
+      .hud-speed { width: 100%; margin-left: 0; font-size: 12px; }
+      .hud-speed input { flex: 1; min-width: 0; }
+      .hud-toggle { width: 40px; height: 36px; font-size: 16px; }
+      #game-stage .game-overlay {
+        align-items: flex-start;
+        overflow-y: auto;
+        -webkit-overflow-scrolling: touch;
+        padding: 10px 8px 14px;
+      }
+      #game-stage .ov-card {
+        width: 100%;
+        max-width: none;
+        padding: 16px 14px 18px;
+        margin: auto 0;
+        background: var(--panel);
+        border: 1px solid var(--line);
+        border-radius: 14px;
+        box-shadow: 0 8px 28px rgba(0, 0, 0, .28);
+        text-align: left;
+      }
+      #game-stage .ov-card h2 {
+        font-size: 22px;
+        margin: 0 0 12px;
+        text-align: center;
+      }
+      #game-stage #ov-setup > .ov-row:nth-child(2) {
+        flex-direction: column;
+        align-items: stretch;
+        gap: 8px;
+        margin: 0 0 10px;
+      }
+      #game-stage #ov-setup > .ov-row:nth-child(2) .ov-label {
+        min-width: 0;
+        text-align: left;
+        font-size: 12px;
+        text-transform: uppercase;
+        letter-spacing: .04em;
+        color: var(--dim);
+      }
+      #game-stage #ov-setup > .ov-row:nth-child(2) .modebtn {
+        flex: 1 1 calc(50% - 4px);
+        min-width: 0;
+        padding: 10px 12px;
+        font-size: 13px;
+        min-height: 44px;
+        text-align: center;
+      }
+      #game-stage #ov-setup > .ov-row:nth-child(4),
+      #game-stage #ov-setup > .ov-row:nth-child(5) {
+        display: grid;
+        grid-template-columns: 82px 1fr 30px;
+        gap: 8px;
+        align-items: center;
+        margin: 8px 0;
+      }
+      #game-stage #ov-setup > .ov-row:nth-child(4) .ov-label,
+      #game-stage #ov-setup > .ov-row:nth-child(5) .ov-label {
+        min-width: 0;
+        text-align: left;
+        font-size: 13px;
+      }
+      #game-stage #ov-setup > .ov-row:nth-child(4) input,
+      #game-stage #ov-setup > .ov-row:nth-child(5) input {
+        width: 100%;
+        min-width: 0;
+      }
+      #game-stage .ov-note {
+        font-size: 13px;
+        line-height: 1.45;
+        margin: 0 0 10px;
+        text-align: center;
+      }
+      #game-stage .ov-keys {
+        display: block;
+        font-size: 12px;
+        line-height: 1.45;
+        text-align: center;
+        margin: 8px 0 4px;
+        color: var(--dim);
+      }
+      #game-stage .ov-keys-desktop { display: none; }
+      #game-stage .ov-keys-phone { display: block; }
+      #game-stage .play-btn {
+        display: block;
+        width: 100%;
+        margin-top: 10px;
+        font-size: 16px;
+        padding: 14px 18px;
+        min-height: 48px;
+        text-align: center;
+      }
+      #game-stage #ov-summary .ov-row.ov-center {
+        flex-direction: column;
+        align-items: stretch;
+        gap: 10px;
+      }
+      #game-stage #ov-summary .play-btn.ghost {
+        width: 100%;
+      }
+      #game-stage .sum-list {
+        max-height: 36vh;
+        font-size: 13px;
+      }
+      #game-stage .sum-row {
+        flex-wrap: wrap;
+        font-size: 13px;
+        gap: 6px;
+      }
+      #game-stage .sum-q { min-width: 72px; }
       .modebtn { padding: 6px 10px; font-size: 12px; }
       .snake-how summary { cursor: pointer; font-size: 17px; font-weight: 700; color: var(--ab); }
       .snake-how summary::-webkit-details-marker { display: none; }
@@ -912,7 +1023,8 @@
             <input id="ov-speed" type="range" min="1" max="10" value="2">
             <b id="ov-speed-val">2</b>
           </div>
-          <p class="ov-keys"><b>&larr; &rarr;</b> move &nbsp;·&nbsp; <b>Space / &uarr;</b> shoot &nbsp;·&nbsp; or <b>click</b> an answer</p>
+          <p class="ov-keys ov-keys-desktop"><b>&larr; &rarr;</b> move &nbsp;·&nbsp; <b>Space / &uarr;</b> shoot &nbsp;·&nbsp; or <b>click</b> an answer</p>
+          <p class="ov-keys ov-keys-phone">Tap an answer, or move the cannon and tap to shoot.</p>
           <button id="g-start" class="play-btn">&#9654; Start</button>
         </div>
         <div class="ov-card hidden" id="ov-summary">

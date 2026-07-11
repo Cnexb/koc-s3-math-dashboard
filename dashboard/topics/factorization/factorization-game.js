@@ -85,7 +85,7 @@
     return isPhoneCompact() && isIdentityMode();
   }
   function phoneFallSpeed() {
-    return isPhoneCompact() ? speed * 0.38 : speed;
+    return isPhoneCompact() ? speed * 0.52 : speed;
   }
 
   function gameMetrics() {
