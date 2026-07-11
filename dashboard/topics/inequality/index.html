@@ -7,9 +7,10 @@
   <link href="https://fonts.googleapis.com/css2?family=Hanken+Grotesk:wght@400;600;700&family=JetBrains+Mono:wght@400;700&display=swap" rel="stylesheet">
   <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/katex@0.16.11/dist/katex.min.css" crossorigin="anonymous">
   <script defer src="https://cdn.jsdelivr.net/npm/katex@0.16.11/dist/katex.min.js" crossorigin="anonymous"></script>
-  <link rel="stylesheet" href="../../shared/topic-shell.css?v=20260710-deck-16x9">
+  <link rel="stylesheet" href="../../shared/topic-shell.css?v=20260711-phone">
   <link rel="stylesheet" href="sign-flip-doors.css?v=20260706-quiz2">
   <script defer src="../../shared/deck-touch-nav.js"></script>
+  <script defer src="../../shared/phone-compact.js?v=20260711-phone"></script>
   <script defer src="../../shared/embed-nav.js?v=20260710-deck-16x9"></script>
   <script defer src="inequality-tools.js?v=20260710-tools-light"></script>
   <script defer src="inequality-game.js?v=20260706-quiz2"></script>
@@ -199,6 +200,25 @@
       border-radius: 14px; color: var(--dim); font-size: 15px; line-height: 1.5;
     }
     .sf-done b { color: var(--ab); }
+
+    /* iPhone: compact sign-flip flashcards (desktop & iPad unchanged) */
+    html.phone-compact .sf-wrap { max-width: 100%; }
+    html.phone-compact .sf-card {
+      padding: 16px 14px;
+      gap: 12px;
+      border-radius: 14px;
+      box-shadow: 0 2px 16px rgba(0, 0, 0, .06);
+    }
+    html.phone-compact .sf-prompt { font-size: 15px; }
+    html.phone-compact .sf-stem-row { padding: 20px 12px; min-height: 72px; }
+    html.phone-compact .sf-stem .katex { font-size: 1.55em; }
+    html.phone-compact .sf-build { padding: 16px 12px; }
+    html.phone-compact .sf-build-x,
+    html.phone-compact .sf-build-val { font-size: 24px; }
+    html.phone-compact .sf-sign-slot { min-width: 48px; min-height: 44px; font-size: 24px; }
+    html.phone-compact .sf-drag-chip { min-width: 44px; height: 44px; font-size: 20px; }
+    html.phone-compact .sf-right { padding: 12px; }
+    html.phone-compact .sf-nl-board { min-height: 110px; }
 
     /* ───────── match-up game ───────── */
     .mg-hud { display: flex; align-items: center; gap: 22px; max-width: 920px; margin: 0 auto 12px; flex-wrap: wrap; }
