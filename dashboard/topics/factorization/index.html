@@ -12,7 +12,7 @@
   <script defer src="../../shared/phone-compact.js?v=20260711-phone"></script>
   <script defer src="../../shared/embed-nav.js?v=20260710-deck-16x9"></script>
   <script defer src="factorization-tools.js?v=20260710-ipad-tools-layout"></script>
-  <script defer src="factorization-game.js?v=20260711-blaster-phone3"></script>
+  <script defer src="factorization-game.js?v=20260711-blaster-phone4"></script>
   <script defer src="factorization-quiz.js?v=20260709-q8"></script>
   <style>
     :root {
@@ -733,7 +733,10 @@
       .snake-hud { gap: 10px; }
       .snake-prompt { font-size: clamp(14px, 4vw, 18px); padding: 10px 12px; min-height: 48px; }
       .snake-pad { grid-template-columns: repeat(3, 64px); grid-template-rows: repeat(3, 64px); }
-      .snake-controls { width: min(100%, 240px); }
+      .snake-controls {
+        width: min(100%, 240px);
+        flex-direction: column-reverse;
+      }
       .quiz-wrap { min-width: 0; width: 100%; }
       .quiz-stem .katex, .quiz-stem .katex-display { max-width: 100%; overflow-wrap: anywhere; }
       .quiz-nav-btn { min-height: 44px; }
