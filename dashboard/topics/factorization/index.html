@@ -12,7 +12,7 @@
   <script defer src="../../shared/phone-compact.js?v=20260711-phone"></script>
   <script defer src="../../shared/embed-nav.js?v=20260710-deck-16x9"></script>
   <script defer src="factorization-tools.js?v=20260710-ipad-tools-layout"></script>
-  <script defer src="factorization-game.js?v=20260711-blaster-phone"></script>
+  <script defer src="factorization-game.js?v=20260711-blaster-phone2"></script>
   <script defer src="factorization-quiz.js?v=20260709-q8"></script>
   <style>
     :root {
@@ -604,10 +604,10 @@
       .cross-num { width: 56px; font-size: 16px; padding: 8px 6px; }
       #game-stage { height: min(50vh, 380px); border-radius: 12px; }
       #game-prompt { font-size: clamp(14px, 3.5vw, 20px); height: 48px; }
-      .enemy {
+      #game-stage:not(.game-stage--phone-identity) .enemy {
         min-height: 36px; font-size: 11px; padding: 3px 5px; border-radius: 10px;
       }
-      .enemy .katex { font-size: 0.85em; }
+      #game-stage:not(.game-stage--phone-identity) .enemy .katex { font-size: 0.85em; }
       #game-cannon { width: 44px; height: 44px; bottom: 14px; }
       .laser-beam { width: 5px; }
       .boom { height: 36px; border-radius: 10px; }
@@ -643,11 +643,11 @@
     }
     html.phone-compact .pair-group { padding: 10px 12px; gap: 10px; }
 
-    /* Factor Blaster — phone identities (Expand / Factorize): 3 large bottom options */
-    html.phone-compact #game-stage.game-stage--phone-identity {
+    /* Factor Blaster — phone identities: expanded prompt + 3 fixed factorized options */
+    #game-stage.game-stage--phone-identity {
       height: min(62vh, 420px);
     }
-    html.phone-compact #game-stage.game-stage--phone-identity #game-prompt {
+    #game-stage.game-stage--phone-identity #game-prompt {
       height: auto;
       min-height: 52px;
       max-height: 32%;
@@ -655,35 +655,35 @@
       padding: 10px 12px;
       line-height: 1.2;
     }
-    html.phone-compact #game-stage.game-stage--phone-identity #game-prompt .katex {
+    #game-stage.game-stage--phone-identity #game-prompt .katex {
       font-size: 1em;
     }
-    html.phone-compact #game-stage.game-stage--phone-identity .enemy.enemy-dock {
+    #game-stage.game-stage--phone-identity .enemy.enemy-dock {
+      top: auto !important;
       min-height: 72px;
       max-height: 92px;
       padding: 10px 6px;
       border-radius: 14px;
       border-width: 2px;
-      top: auto !important;
       box-shadow: 0 8px 20px rgba(0, 0, 0, .42), inset 0 0 12px rgba(255, 255, 255, .35);
     }
-    html.phone-compact #game-stage.game-stage--phone-identity .enemy.enemy-dock > div {
+    #game-stage.game-stage--phone-identity .enemy.enemy-dock > div {
       width: 100%;
       overflow: hidden;
       display: flex;
       align-items: center;
       justify-content: center;
     }
-    html.phone-compact #game-stage.game-stage--phone-identity .enemy.enemy-dock .katex {
+    #game-stage.game-stage--phone-identity .enemy.enemy-dock .katex {
       font-size: 1em !important;
       max-width: 100%;
     }
-    html.phone-compact #game-stage.game-stage--phone-identity #game-cannon {
+    #game-stage.game-stage--phone-identity #game-cannon {
       width: 48px;
       height: 48px;
       bottom: 10px;
     }
-    html.phone-compact #game-stage.game-stage--phone-identity .laser-beam {
+    #game-stage.game-stage--phone-identity .laser-beam {
       width: 6px;
     }
   </style>

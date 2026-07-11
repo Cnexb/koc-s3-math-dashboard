@@ -80,10 +80,13 @@
     return window.FZPhone ? window.FZPhone.isPhoneCompact() : window.innerWidth <= 767;
   }
   function isIdentityMode() {
-    return mode === "expand" || mode === "factorize";
+    return mode === "expand" || mode === "factorize" || mode === "identify";
   }
   function usePhoneIdentityDock() {
     return isPhoneCompact() && isIdentityMode();
+  }
+  function phoneFallSpeed() {
+    return isPhoneCompact() ? speed * 0.38 : speed;
   }
 
   function gameMetrics() {
@@ -141,6 +144,8 @@
 
   function specExpand(b) { return { promptTex: b.p, correctTex: b.c, pool: [b.c].concat(b.d) }; }
   function specFactorize(b) { return { promptTex: b.c, correctTex: b.p, pool: [b.p].concat(b.fd) }; }
+  /** Phone identities: always expanded prompt + factorized answer options. */
+  function specPhoneIdentity(b) { return { promptTex: b.c, correctTex: b.p, pool: [b.p].concat(b.fd) }; }
 
   function basisFor(m) {
     if (m === "cross") return CROSS_BANK.map(specFactorize);
@@ -148,7 +153,7 @@
     return BANK.map(specExpand);
   }
   function buildRoundQueue() {
-    const basis = basisFor(mode);
+    const basis = usePhoneIdentityDock() ? BANK.map(specPhoneIdentity) : basisFor(mode);
     const out = []; let pool = [];
     while (out.length < numQ) { if (pool.length === 0) pool = shuffle(basis); out.push(pool.pop()); }
     return out;
@@ -204,7 +209,7 @@
     e.el.style.left = (laneCenter(e.lane) - boxW / 2) + "px";
     const inner = e.el.firstElementChild;
     if (e.dock) {
-      e.el.style.top = "auto";
+      e.el.style.removeProperty("top");
       e.el.style.bottom = (m.cannonBottom + m.cannonH + 6) + "px";
       if (inner) {
         const px = Math.max(16, Math.min(28, boxW / 5.2));
@@ -285,9 +290,11 @@
         timeLeft -= dt;
         if (timeLeft <= 0) reached = true;
       } else {
+        const fall = phoneFallSpeed();
         enemies.forEach((e) => {
           if (e.dead || e.dock) return;
-          e.y += speed * dt;
+          e.y += fall * dt;
+          e.el.style.removeProperty("bottom");
           e.el.style.top = e.y + "px";
           if (e.y >= limit) reached = true;
         });
@@ -357,8 +364,9 @@
     cross: "Cross method: factorise the quadratic by shooting the correct pair of factors (4 answers). Includes leading coefficient \u2260 1.",
   };
   const PHONE_MODE_NOTES = {
-    expand: "Expand: pick the correct expansion — 3 large answers on phone.",
-    factorize: "Factorize: pick the correct factorization — 3 large answers on phone.",
+    expand: "Phone: expanded form at top — pick the matching factorization (3 answers).",
+    factorize: "Phone: expanded form at top — pick the matching factorization (3 answers).",
+    identify: "Phone: expanded form at top — pick the matching factorization (3 answers).",
   };
   function refreshModeNote() {
     const el = document.getElementById("ov-mode-note");
@@ -380,7 +388,7 @@
     if (!stage) return;
     const m = gameMetrics();
     enemies.forEach((e) => {
-      if (e.y < m.y0) e.y = m.y0;
+      if (!e.dock && e.y < m.y0) e.y = m.y0;
       placeEnemy(e);
     });
     placeCannon();
