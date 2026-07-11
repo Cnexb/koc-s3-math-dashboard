@@ -12,7 +12,7 @@
   <script defer src="../../shared/phone-compact.js?v=20260711-phone"></script>
   <script defer src="../../shared/embed-nav.js?v=20260710-deck-16x9"></script>
   <script defer src="factorization-tools.js?v=20260711-summary-zoom"></script>
-  <script defer src="factorization-game.js?v=20260711-snake-phone3"></script>
+  <script defer src="factorization-game.js?v=20260711-snake-phone4"></script>
   <script defer src="factorization-quiz.js?v=20260709-q8"></script>
   <style>
     :root {
@@ -856,7 +856,7 @@
       padding-bottom: 6px;
     }
     html.phone-compact #panel-game:has(#snake-game:not(.hidden)) .subnav {
-      margin-bottom: 6px;
+      margin-bottom: 4px;
     }
     html.phone-compact #snake-game {
       display: flex;
@@ -868,31 +868,10 @@
       display: contents;
     }
     html.phone-compact #snake-game .snake-how {
-      order: 0;
-      margin-bottom: 4px;
-      padding: 6px 10px;
-    }
-    html.phone-compact #snake-game .snake-how summary {
-      font-size: 14px;
-      margin-bottom: 0;
-    }
-    html.phone-compact #snake-game .snake-modes {
-      order: 1;
-      flex: none;
-      width: 100%;
-      min-width: 0;
-      margin: 0;
-    }
-    html.phone-compact #snake-game .snake-mode {
-      flex: 1;
-      padding: 5px 10px;
-      font-size: 13px;
-      min-height: 0;
-      line-height: 1.2;
-      text-align: center;
+      display: none;
     }
     html.phone-compact #snake-game .snake-prompt {
-      order: 2;
+      order: 1;
       font-size: clamp(15px, 4.2vw, 18px);
       padding: 6px 8px;
       min-height: 30px;
@@ -900,7 +879,7 @@
       border-radius: 10px;
     }
     html.phone-compact #snake-game .snake-play {
-      order: 3;
+      order: 2;
       gap: 4px;
     }
     html.phone-compact #snake-game .snake-board-wrap {
@@ -947,6 +926,21 @@
       justify-content: center;
       gap: 6px;
       margin: 4px 0 0;
+    }
+    html.phone-compact #snake-game .snake-modes {
+      order: 3;
+      flex: none;
+      width: 100%;
+      min-width: 0;
+      margin: 4px 0 0;
+    }
+    html.phone-compact #snake-game .snake-mode {
+      flex: 1;
+      padding: 5px 10px;
+      font-size: 13px;
+      min-height: 0;
+      line-height: 1.2;
+      text-align: center;
     }
     html.phone-compact #snake-game .snake-stat {
       padding: 5px 9px;
