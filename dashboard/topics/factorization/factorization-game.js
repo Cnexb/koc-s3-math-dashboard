@@ -492,14 +492,15 @@
     if (!isPhoneCompact()) return item;
     const text = snakeFoodText(item);
     const cell = SN.cell || Math.max(14, (SN.canvas && SN.canvas.width ? SN.canvas.width / SN.cols : 18));
-    const estCharW = cell * 0.52;
-    const needPx = text.length * estCharW + cell * 0.8;
-    const needCols = Math.ceil(needPx / cell);
+    const sidePad = Math.max(16, cell * 0.42);
+    const estCharW = cell * 0.5;
+    const needPx = text.length * estCharW + sidePad * 2 + cell * 0.6;
+    const needCols = Math.ceil(needPx / cell) + 1;
     if (item.type === "gcf") {
-      return Object.assign({}, item, { w: Math.max(2, Math.min(4, needCols)), h: 2 });
+      return Object.assign({}, item, { w: Math.max(3, Math.min(5, needCols)), h: 2 });
     }
-    const w = Math.max(6, Math.min(12, needCols));
-    const h = text.length > 11 ? 3 : 2;
+    const w = Math.max(8, Math.min(13, needCols));
+    const h = text.length > 10 ? 3 : 3;
     return Object.assign({}, item, { w, h });
   }
   function snakeFoodSpots() {
@@ -655,11 +656,11 @@
   function snakeDrawFoodText(ctx, text, bx, by, bw, bh, opts) {
     opts = opts || {};
     const phone = isPhoneCompact();
-    const padX = opts.padX == null ? (phone ? 10 : 6) : opts.padX;
-    const padY = opts.padY == null ? (phone ? 8 : 4) : opts.padY;
+    const padX = opts.padX == null ? (phone ? Math.max(18, Math.round(bw * 0.14)) : 6) : opts.padX;
+    const padY = opts.padY == null ? (phone ? Math.max(12, Math.round(bh * 0.18)) : 4) : opts.padY;
     const minSize = phone ? 11 : 8;
-    const startSize = phone ? 22 : 16;
-    let size = Math.min(startSize, Math.floor(bh * (phone ? 0.75 : 0.52)));
+    const startSize = phone ? 20 : 16;
+    let size = Math.min(startSize, Math.floor((bh - padY * 2) * (phone ? 0.82 : 0.52)));
     const maxW = bw - padX * 2;
     const maxH = bh - padY * 2;
     do {
@@ -672,11 +673,11 @@
     ctx.font = "900 " + size + "px JetBrains Mono, monospace";
     const tw = ctx.measureText(text).width;
     const th = size * 1.12;
-    const boxW = Math.min(bw - 2, tw + padX * 2);
-    const boxH = Math.min(bh - 2, th + padY * 2);
+    const boxW = Math.min(bw - 4, tw + padX * 2);
+    const boxH = Math.min(bh - 4, th + padY * 2);
     const rx = bx + (bw - boxW) / 2;
     const ry = by + (bh - boxH) / 2;
-    return { size, boxW, boxH, rx, ry, tw, th };
+    return { size, boxW, boxH, rx, ry, tw, th, padX, padY };
   }
   function snakeDraw() {
     if (!SN.ctx) return;
