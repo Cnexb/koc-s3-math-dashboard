@@ -12,7 +12,7 @@
   <script defer src="../../shared/phone-compact.js?v=20260711-phone"></script>
   <script defer src="../../shared/embed-nav.js?v=20260710-deck-16x9"></script>
   <script defer src="factorization-tools.js?v=20260710-ipad-tools-layout"></script>
-  <script defer src="factorization-game.js?v=20260711-blaster-phone2"></script>
+  <script defer src="factorization-game.js?v=20260711-blaster-phone3"></script>
   <script defer src="factorization-quiz.js?v=20260709-q8"></script>
   <style>
     :root {
@@ -643,14 +643,14 @@
     }
     html.phone-compact .pair-group { padding: 10px 12px; gap: 10px; }
 
-    /* Factor Blaster — phone identities: expanded prompt + 3 fixed factorized options */
+    /* Factor Blaster — phone identities: expanded prompt, 3 falling factorized options */
     #game-stage.game-stage--phone-identity {
-      height: min(62vh, 420px);
+      height: min(64vh, 440px);
     }
     #game-stage.game-stage--phone-identity #game-prompt {
       height: auto;
       min-height: 52px;
-      max-height: 32%;
+      max-height: 28%;
       font-size: clamp(17px, 4.8vw, 26px);
       padding: 10px 12px;
       line-height: 1.2;
@@ -658,24 +658,34 @@
     #game-stage.game-stage--phone-identity #game-prompt .katex {
       font-size: 1em;
     }
-    #game-stage.game-stage--phone-identity .enemy.enemy-dock {
-      top: auto !important;
-      min-height: 72px;
-      max-height: 92px;
-      padding: 10px 6px;
-      border-radius: 14px;
-      border-width: 2px;
-      box-shadow: 0 8px 20px rgba(0, 0, 0, .42), inset 0 0 12px rgba(255, 255, 255, .35);
+    #game-stage.game-stage--phone-identity .enemy {
+      min-height: 46px;
+      padding: 6px 4px;
+      border-radius: 12px;
     }
-    #game-stage.game-stage--phone-identity .enemy.enemy-dock > div {
+    #game-stage.game-stage--phone-identity .enemy.enemy-split {
+      min-height: 64px;
+      padding: 8px 4px;
+    }
+    #game-stage.game-stage--phone-identity .enemy .enemy-tex-split {
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      justify-content: center;
+      gap: 2px;
       width: 100%;
-      overflow: hidden;
+    }
+    #game-stage.game-stage--phone-identity .enemy .enemy-tex-line {
       display: flex;
       align-items: center;
       justify-content: center;
+      width: 100%;
+      line-height: 1.05;
     }
-    #game-stage.game-stage--phone-identity .enemy.enemy-dock .katex {
+    #game-stage.game-stage--phone-identity .enemy .enemy-tex-line .katex {
       font-size: 1em !important;
+    }
+    #game-stage.game-stage--phone-identity .enemy .katex {
       max-width: 100%;
     }
     #game-stage.game-stage--phone-identity #game-cannon {

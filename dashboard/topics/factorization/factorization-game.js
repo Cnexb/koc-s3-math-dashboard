@@ -74,7 +74,6 @@
   let curPrompt = "", curCorrect = "";
   let qIndex = 0, score = 0, answered = 0, correctCount = 0, streak = 0;
   let soundOn = true, audioCtx = null;
-  let timeLeft = 0;
 
   function isPhoneCompact() {
     return window.FZPhone ? window.FZPhone.isPhoneCompact() : window.innerWidth <= 767;
@@ -82,7 +81,7 @@
   function isIdentityMode() {
     return mode === "expand" || mode === "factorize" || mode === "identify";
   }
-  function usePhoneIdentityDock() {
+  function usePhoneIdentityMode() {
     return isPhoneCompact() && isIdentityMode();
   }
   function phoneFallSpeed() {
@@ -91,7 +90,11 @@
 
   function gameMetrics() {
     const phone = isPhoneCompact();
-    const promptH = phone ? 48 : 66;
+    const phoneIdentity = phone && stage && stage.classList.contains("game-stage--phone-identity");
+    let promptH = phone ? 48 : 66;
+    if (phoneIdentity && promptEl) {
+      promptH = Math.max(promptH, promptEl.offsetHeight || promptH);
+    }
     const cannonBottom = phone ? 14 : 18;
     const cannonH = phone ? 44 : 58;
     const y0 = promptH + 8;
@@ -115,6 +118,27 @@
     try { katex.render(tex, el, { throwOnError: false, displayMode: false }); }
     catch (e) { el.textContent = tex; }
     if (color) el.style.color = color;
+  }
+  /** Split adjacent factors like (x+5)(x-5) for two-line phone display. */
+  function splitDualFactors(tex) {
+    const m = String(tex).match(/^(\([^)]+\))(\([^)]+\))$/);
+    return m ? [m[1], m[2]] : null;
+  }
+  function renderOptionTex(el, tex) {
+    el.className = "enemy-tex";
+    el.innerHTML = "";
+    const parts = splitDualFactors(tex);
+    if (!parts) {
+      kx(el, tex, null);
+      return;
+    }
+    el.className = "enemy-tex enemy-tex-split";
+    parts.forEach((part) => {
+      const row = document.createElement("div");
+      row.className = "enemy-tex-line";
+      kx(row, part, null);
+      el.appendChild(row);
+    });
   }
   function speedFromSlider(v) { return 12 * v + 6; }
 
@@ -153,7 +177,7 @@
     return BANK.map(specExpand);
   }
   function buildRoundQueue() {
-    const basis = usePhoneIdentityDock() ? BANK.map(specPhoneIdentity) : basisFor(mode);
+    const basis = usePhoneIdentityMode() ? BANK.map(specPhoneIdentity) : basisFor(mode);
     const out = []; let pool = [];
     while (out.length < numQ) { if (pool.length === 0) pool = shuffle(basis); out.push(pool.pop()); }
     return out;
@@ -161,7 +185,7 @@
 
   function buildOptions(cur) {
     const pool = cur.pool;
-    if (usePhoneIdentityDock()) {
+    if (usePhoneIdentityMode()) {
       const wrong = pool.filter((t) => t !== cur.correctTex);
       const picks = shuffle(wrong).slice(0, 2);
       return shuffle([
@@ -177,9 +201,9 @@
     if (qIndex >= numQ) { endRound(); return; }
     const cur = roundQueue[qIndex];
     curPrompt = cur.promptTex; curCorrect = cur.correctTex;
-    const dock = usePhoneIdentityDock();
-    if (stage) stage.classList.toggle("game-stage--phone-identity", dock);
-    lanes = dock ? 3 : cur.pool.length;
+    const phoneIdentity = usePhoneIdentityMode();
+    if (stage) stage.classList.toggle("game-stage--phone-identity", phoneIdentity);
+    lanes = phoneIdentity ? 3 : cur.pool.length;
     kx(promptEl, cur.promptTex, C.ink);
     elQnum.textContent = (qIndex + 1) + "/" + numQ;
     cannonLane = Math.min(cannonLane, lanes - 1);
@@ -187,18 +211,18 @@
     const m = gameMetrics();
     opts.forEach((opt, lane) => {
       const el = document.createElement("div");
-      el.className = "enemy" + (dock ? " enemy-dock" : "");
-      const inner = document.createElement("div"); el.appendChild(inner);
-      kx(inner, opt.tex, null);
+      el.className = "enemy";
+      const inner = document.createElement("div");
+      el.appendChild(inner);
+      renderOptionTex(inner, opt.tex);
+      if (inner.classList.contains("enemy-tex-split")) el.classList.add("enemy-split");
       enemiesEl.appendChild(el);
       const e = {
-        el, lane, y: m.y0, correct: opt.correct, tex: opt.tex, dead: false, dock,
+        el, lane, y: m.y0, correct: opt.correct, tex: opt.tex, dead: false,
       };
       el.addEventListener("click", () => { if (running && !locked) { cannonLane = lane; placeCannon(); fire(); } });
       enemies.push(e); placeEnemy(e);
     });
-    if (dock) timeLeft = Math.max(14, 30 - speed * 0.5);
-    else timeLeft = 0;
     placeCannon(); locked = false;
   }
   function placeEnemy(e) {
@@ -207,28 +231,22 @@
     const boxW = w - m.lanePad;
     e.el.style.width = boxW + "px";
     e.el.style.left = (laneCenter(e.lane) - boxW / 2) + "px";
+    e.el.style.removeProperty("bottom");
+    e.el.style.top = e.y + "px";
     const inner = e.el.firstElementChild;
-    if (e.dock) {
-      e.el.style.removeProperty("top");
-      e.el.style.bottom = (m.cannonBottom + m.cannonH + 6) + "px";
-      if (inner) {
-        const px = Math.max(16, Math.min(28, boxW / 5.2));
-        inner.style.fontSize = px + "px";
-        inner.style.lineHeight = "1.12";
-        inner.style.width = "100%";
-        inner.style.textAlign = "center";
-        const katexEl = inner.querySelector(".katex");
-        if (katexEl) katexEl.style.fontSize = "1em";
-      }
-    } else {
-      e.el.style.bottom = "auto";
-      e.el.style.top = e.y + "px";
-      if (isPhoneCompact() && inner) {
-        const fs = Math.max(9, Math.min(13, stage.clientWidth / 40));
-        inner.style.fontSize = fs + "px";
-        const katexEl = inner.querySelector(".katex");
-        if (katexEl) katexEl.style.fontSize = "0.85em";
-      }
+    if (inner && usePhoneIdentityMode()) {
+      const split = inner.classList.contains("enemy-tex-split");
+      const px = Math.max(13, Math.min(split ? 19 : 24, boxW / (split ? 6.8 : 5.4)));
+      inner.style.fontSize = px + "px";
+      inner.style.lineHeight = split ? "1.08" : "1.12";
+      inner.style.width = "100%";
+      inner.style.textAlign = "center";
+      inner.querySelectorAll(".katex").forEach((k) => { k.style.fontSize = "1em"; });
+    } else if (isPhoneCompact() && inner) {
+      const fs = Math.max(9, Math.min(13, stage.clientWidth / 40));
+      inner.style.fontSize = fs + "px";
+      const katexEl = inner.querySelector(".katex");
+      if (katexEl) katexEl.style.fontSize = "0.85em";
     }
   }
   function placeCannon() { cannonEl.style.left = (laneCenter(cannonLane) - cannonEl.offsetWidth / 2) + "px"; }
@@ -286,19 +304,13 @@
     const limit = gameMetrics().limit;
     let reached = false;
     if (!locked) {
-      if (usePhoneIdentityDock()) {
-        timeLeft -= dt;
-        if (timeLeft <= 0) reached = true;
-      } else {
-        const fall = phoneFallSpeed();
-        enemies.forEach((e) => {
-          if (e.dead || e.dock) return;
-          e.y += fall * dt;
-          e.el.style.removeProperty("bottom");
-          e.el.style.top = e.y + "px";
-          if (e.y >= limit) reached = true;
-        });
-      }
+      const fall = phoneFallSpeed();
+      enemies.forEach((e) => {
+        if (e.dead) return;
+        e.y += fall * dt;
+        e.el.style.top = e.y + "px";
+        if (e.y >= limit) reached = true;
+      });
       if (reached) miss();
     }
     rafId = requestAnimationFrame(loop);
@@ -319,7 +331,7 @@
     ensureAudio(); if (audioCtx && audioCtx.state === "suspended") audioCtx.resume();
     roundQueue = buildRoundQueue();
     results = []; qIndex = 0; score = 0; answered = 0; correctCount = 0; streak = 0;
-    lanes = roundQueue[0] ? (usePhoneIdentityDock() ? 3 : roundQueue[0].pool.length) : 4;
+    lanes = roundQueue[0] ? (usePhoneIdentityMode() ? 3 : roundQueue[0].pool.length) : 4;
     cannonLane = Math.floor(lanes / 2);
     overlayEl.classList.add("hidden");
     updateHud(); spawnQuestion(); // first question shown (static) during countdown
@@ -388,7 +400,7 @@
     if (!stage) return;
     const m = gameMetrics();
     enemies.forEach((e) => {
-      if (!e.dock && e.y < m.y0) e.y = m.y0;
+      if (e.y < m.y0) e.y = m.y0;
       placeEnemy(e);
     });
     placeCannon();
@@ -793,7 +805,7 @@
     hide() { activeFlag = false; running = false; cancelAnimationFrame(rafId); SN.running = false; clearInterval(SN.loop); },
     onPhoneLayout() {
       refreshModeNote();
-      if (stage && inRound) stage.classList.toggle("game-stage--phone-identity", usePhoneIdentityDock());
+      if (stage && inRound) stage.classList.toggle("game-stage--phone-identity", usePhoneIdentityMode());
       resize();
       resizeSnakeBoard();
     },
