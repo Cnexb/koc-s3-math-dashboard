@@ -74,9 +74,16 @@
   let curPrompt = "", curCorrect = "";
   let qIndex = 0, score = 0, answered = 0, correctCount = 0, streak = 0;
   let soundOn = true, audioCtx = null;
+  let timeLeft = 0;
 
   function isPhoneCompact() {
     return window.FZPhone ? window.FZPhone.isPhoneCompact() : window.innerWidth <= 767;
+  }
+  function isIdentityMode() {
+    return mode === "expand" || mode === "factorize";
+  }
+  function usePhoneIdentityDock() {
+    return isPhoneCompact() && isIdentityMode();
   }
 
   function gameMetrics() {
@@ -147,38 +154,72 @@
     return out;
   }
 
+  function buildOptions(cur) {
+    const pool = cur.pool;
+    if (usePhoneIdentityDock()) {
+      const wrong = pool.filter((t) => t !== cur.correctTex);
+      const picks = shuffle(wrong).slice(0, 2);
+      return shuffle([
+        { tex: cur.correctTex, correct: true },
+        ...picks.map((tex) => ({ tex, correct: false })),
+      ]);
+    }
+    return shuffle(pool.map((t) => ({ tex: t, correct: t === cur.correctTex })));
+  }
+
   function spawnQuestion() {
     enemies.forEach((e) => e.el.remove()); enemies = [];
     if (qIndex >= numQ) { endRound(); return; }
     const cur = roundQueue[qIndex];
     curPrompt = cur.promptTex; curCorrect = cur.correctTex;
-    lanes = cur.pool.length;
+    const dock = usePhoneIdentityDock();
+    if (stage) stage.classList.toggle("game-stage--phone-identity", dock);
+    lanes = dock ? 3 : cur.pool.length;
     kx(promptEl, cur.promptTex, C.ink);
     elQnum.textContent = (qIndex + 1) + "/" + numQ;
     cannonLane = Math.min(cannonLane, lanes - 1);
-    const opts = shuffle(cur.pool.map((t) => ({ tex: t, correct: t === cur.correctTex })));
+    const opts = buildOptions(cur);
+    const m = gameMetrics();
     opts.forEach((opt, lane) => {
       const el = document.createElement("div");
-      el.className = "enemy";
+      el.className = "enemy" + (dock ? " enemy-dock" : "");
       const inner = document.createElement("div"); el.appendChild(inner);
       kx(inner, opt.tex, null);
       enemiesEl.appendChild(el);
-      const e = { el, lane, y: gameMetrics().y0, correct: opt.correct, tex: opt.tex, dead: false };
+      const e = {
+        el, lane, y: m.y0, correct: opt.correct, tex: opt.tex, dead: false, dock,
+      };
       el.addEventListener("click", () => { if (running && !locked) { cannonLane = lane; placeCannon(); fire(); } });
       enemies.push(e); placeEnemy(e);
     });
+    if (dock) timeLeft = Math.max(14, 30 - speed * 0.5);
+    else timeLeft = 0;
     placeCannon(); locked = false;
   }
   function placeEnemy(e) {
     const m = gameMetrics();
     const w = stage.clientWidth / lanes;
-    e.el.style.width = (w - m.lanePad) + "px";
-    e.el.style.left = (laneCenter(e.lane) - (w - m.lanePad) / 2) + "px";
-    e.el.style.top = e.y + "px";
-    if (isPhoneCompact()) {
-      const fs = Math.max(9, Math.min(13, stage.clientWidth / 40));
-      const inner = e.el.firstElementChild;
+    const boxW = w - m.lanePad;
+    e.el.style.width = boxW + "px";
+    e.el.style.left = (laneCenter(e.lane) - boxW / 2) + "px";
+    const inner = e.el.firstElementChild;
+    if (e.dock) {
+      e.el.style.top = "auto";
+      e.el.style.bottom = (m.cannonBottom + m.cannonH + 6) + "px";
       if (inner) {
+        const px = Math.max(16, Math.min(28, boxW / 5.2));
+        inner.style.fontSize = px + "px";
+        inner.style.lineHeight = "1.12";
+        inner.style.width = "100%";
+        inner.style.textAlign = "center";
+        const katexEl = inner.querySelector(".katex");
+        if (katexEl) katexEl.style.fontSize = "1em";
+      }
+    } else {
+      e.el.style.bottom = "auto";
+      e.el.style.top = e.y + "px";
+      if (isPhoneCompact() && inner) {
+        const fs = Math.max(9, Math.min(13, stage.clientWidth / 40));
         inner.style.fontSize = fs + "px";
         const katexEl = inner.querySelector(".katex");
         if (katexEl) katexEl.style.fontSize = "0.85em";
@@ -240,7 +281,17 @@
     const limit = gameMetrics().limit;
     let reached = false;
     if (!locked) {
-      enemies.forEach((e) => { if (e.dead) return; e.y += speed * dt; e.el.style.top = e.y + "px"; if (e.y >= limit) reached = true; });
+      if (usePhoneIdentityDock()) {
+        timeLeft -= dt;
+        if (timeLeft <= 0) reached = true;
+      } else {
+        enemies.forEach((e) => {
+          if (e.dead || e.dock) return;
+          e.y += speed * dt;
+          e.el.style.top = e.y + "px";
+          if (e.y >= limit) reached = true;
+        });
+      }
       if (reached) miss();
     }
     rafId = requestAnimationFrame(loop);
@@ -261,7 +312,7 @@
     ensureAudio(); if (audioCtx && audioCtx.state === "suspended") audioCtx.resume();
     roundQueue = buildRoundQueue();
     results = []; qIndex = 0; score = 0; answered = 0; correctCount = 0; streak = 0;
-    lanes = roundQueue[0] ? roundQueue[0].pool.length : 4;
+    lanes = roundQueue[0] ? (usePhoneIdentityDock() ? 3 : roundQueue[0].pool.length) : 4;
     cannonLane = Math.floor(lanes / 2);
     overlayEl.classList.add("hidden");
     updateHud(); spawnQuestion(); // first question shown (static) during countdown
@@ -299,6 +350,22 @@
     summaryEl.classList.remove("hidden"); setupEl.classList.add("hidden"); overlayEl.classList.remove("hidden");
   }
   function showSetup() { summaryEl.classList.add("hidden"); setupEl.classList.remove("hidden"); overlayEl.classList.remove("hidden"); }
+
+  const MODE_NOTES = {
+    expand: "Expand: match the factored form to its expansion (4 answers).",
+    factorize: "Factorize: match the expanded form back to its factorization (4 answers).",
+    cross: "Cross method: factorise the quadratic by shooting the correct pair of factors (4 answers). Includes leading coefficient \u2260 1.",
+  };
+  const PHONE_MODE_NOTES = {
+    expand: "Expand: pick the correct expansion — 3 large answers on phone.",
+    factorize: "Factorize: pick the correct factorization — 3 large answers on phone.",
+  };
+  function refreshModeNote() {
+    const el = document.getElementById("ov-mode-note");
+    if (!el) return;
+    if (isPhoneCompact() && PHONE_MODE_NOTES[mode]) el.textContent = PHONE_MODE_NOTES[mode];
+    else el.textContent = MODE_NOTES[mode] || MODE_NOTES.expand;
+  }
 
   function onKey(ev) {
     if (!running) {
@@ -681,16 +748,12 @@
       const sBtn = document.getElementById("g-sound");
       sBtn.addEventListener("click", () => { soundOn = !soundOn; sBtn.textContent = soundOn ? "\uD83D\uDD0A" : "\uD83D\uDD07"; });
 
-      const notes = {
-        expand: "Expand: match the factored form to its expansion (4 answers).",
-        factorize: "Factorize: match the expanded form back to its factorization (4 answers).",
-        cross: "Cross method: factorise the quadratic by shooting the correct pair of factors (4 answers). Includes leading coefficient \u2260 1.",
-      };
       document.querySelectorAll(".modebtn").forEach((b) => b.addEventListener("click", () => {
         document.querySelectorAll(".modebtn").forEach((x) => x.classList.toggle("active", x === b));
         mode = b.dataset.mode;
-        document.getElementById("ov-mode-note").textContent = notes[mode];
+        refreshModeNote();
       }));
+      refreshModeNote();
 
       const countInp = document.getElementById("ov-count"), countVal = document.getElementById("ov-count-val");
       countInp.addEventListener("input", () => { numQ = +countInp.value; countVal.textContent = numQ; });
@@ -720,7 +783,12 @@
       }
     },
     hide() { activeFlag = false; running = false; cancelAnimationFrame(rafId); SN.running = false; clearInterval(SN.loop); },
-    onPhoneLayout() { resize(); resizeSnakeBoard(); },
+    onPhoneLayout() {
+      refreshModeNote();
+      if (stage && inRound) stage.classList.toggle("game-stage--phone-identity", usePhoneIdentityDock());
+      resize();
+      resizeSnakeBoard();
+    },
   };
 
   window.FactGame = Game;

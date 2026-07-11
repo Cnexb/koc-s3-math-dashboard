@@ -12,7 +12,7 @@
   <script defer src="../../shared/phone-compact.js?v=20260711-phone"></script>
   <script defer src="../../shared/embed-nav.js?v=20260710-deck-16x9"></script>
   <script defer src="factorization-tools.js?v=20260710-ipad-tools-layout"></script>
-  <script defer src="factorization-game.js?v=20260707-fz-phone"></script>
+  <script defer src="factorization-game.js?v=20260711-blaster-phone"></script>
   <script defer src="factorization-quiz.js?v=20260709-q8"></script>
   <style>
     :root {
@@ -642,6 +642,50 @@
       border-color: var(--a); background: rgba(79,195,247,.1);
     }
     html.phone-compact .pair-group { padding: 10px 12px; gap: 10px; }
+
+    /* Factor Blaster — phone identities (Expand / Factorize): 3 large bottom options */
+    html.phone-compact #game-stage.game-stage--phone-identity {
+      height: min(62vh, 420px);
+    }
+    html.phone-compact #game-stage.game-stage--phone-identity #game-prompt {
+      height: auto;
+      min-height: 52px;
+      max-height: 32%;
+      font-size: clamp(17px, 4.8vw, 26px);
+      padding: 10px 12px;
+      line-height: 1.2;
+    }
+    html.phone-compact #game-stage.game-stage--phone-identity #game-prompt .katex {
+      font-size: 1em;
+    }
+    html.phone-compact #game-stage.game-stage--phone-identity .enemy.enemy-dock {
+      min-height: 72px;
+      max-height: 92px;
+      padding: 10px 6px;
+      border-radius: 14px;
+      border-width: 2px;
+      top: auto !important;
+      box-shadow: 0 8px 20px rgba(0, 0, 0, .42), inset 0 0 12px rgba(255, 255, 255, .35);
+    }
+    html.phone-compact #game-stage.game-stage--phone-identity .enemy.enemy-dock > div {
+      width: 100%;
+      overflow: hidden;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+    }
+    html.phone-compact #game-stage.game-stage--phone-identity .enemy.enemy-dock .katex {
+      font-size: 1em !important;
+      max-width: 100%;
+    }
+    html.phone-compact #game-stage.game-stage--phone-identity #game-cannon {
+      width: 48px;
+      height: 48px;
+      bottom: 10px;
+    }
+    html.phone-compact #game-stage.game-stage--phone-identity .laser-beam {
+      width: 6px;
+    }
   </style>
   <link rel="stylesheet" href="../../shared/chem-light-theme.css?v=20260710-deck-16x9">
 </head>
