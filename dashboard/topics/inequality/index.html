@@ -251,7 +251,14 @@
     .mc-back::after { content: "\003C  \2265"; font-family: "JetBrains Mono", monospace; font-size: 26px; font-weight: 800;
       color: var(--a); opacity: .35; letter-spacing: 4px; }
     .mc-front { transform: rotateY(180deg); background: #0e1830; }
-    .mcard.matched .mc-front { background: rgba(102,187,106,.14); box-shadow: 0 0 0 2px var(--gt) inset; }
+    .mcard.matched .mc-front {
+      background: #0e1830;
+      border-color: var(--gt);
+      box-shadow:
+        inset 0 0 28px rgba(102,187,106,.22),
+        inset 0 0 0 2px rgba(102,187,106,.7),
+        0 0 16px rgba(102,187,106,.32);
+    }
     .mcard.bad .mc-front { background: rgba(239,83,80,.13); box-shadow: 0 0 0 2px var(--red) inset; }
     .mc-front .mc-note { font-size: 30px; color: #fff; }
     .mc-front .mc-note .katex { color: #fff; }
