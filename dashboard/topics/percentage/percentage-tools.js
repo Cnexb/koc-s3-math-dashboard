@@ -38,7 +38,7 @@
     const YBASE = 256, TOPPAD = 46, RY = 7;
 
     function drawCoin(g, cx, cy, rx, fill, stroke, glow) {
-      if (glow) g.appendChild(E("ellipse", { cx, cy, rx: rx + 2, ry: RY + 2, fill: "none", stroke: "#ffffff", "stroke-width": 2, opacity: 0.9 }));
+      if (glow) g.appendChild(E("ellipse", { cx, cy, rx: rx + 2, ry: RY + 2, fill: "none", stroke: GOLD, "stroke-width": 2, opacity: 0.95 }));
       g.appendChild(E("ellipse", { cx, cy, rx, ry: RY, fill, stroke, "stroke-width": 1.4 }));
       g.appendChild(E("ellipse", { cx: cx - rx * 0.28, cy: cy - 1.5, rx: rx * 0.42, ry: RY * 0.32, fill: "#ffffff", opacity: 0.35 }));
     }
