@@ -266,7 +266,21 @@
       z-index: 0;
     }
     .mcard.matched .mc-front > * { position: relative; z-index: 1; }
-    .mcard.bad .mc-front { background: rgba(239,83,80,.13); box-shadow: 0 0 0 2px var(--red) inset; }
+    .mcard.bad .mc-front {
+      background: #0e1830;
+      border: 2px solid var(--red);
+      box-shadow: 0 0 20px rgba(239,83,80,.42);
+    }
+    .mcard.bad .mc-front::before {
+      content: "";
+      position: absolute;
+      inset: 0;
+      border-radius: inherit;
+      background: rgba(239,83,80,.38);
+      pointer-events: none;
+      z-index: 0;
+    }
+    .mcard.bad .mc-front > * { position: relative; z-index: 1; }
     .mc-front .mc-note { font-size: 30px; color: #fff; }
     .mc-front .mc-note .katex { color: #fff; }
     .mc-front svg { width: 90%; height: auto; display: block; }
