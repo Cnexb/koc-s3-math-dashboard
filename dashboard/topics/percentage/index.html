@@ -97,7 +97,7 @@
     .fcard .eq { font-size: 18px; margin: 10px 0; }
     .fcard .note { font-size: 13px; color: var(--dim); line-height: 1.55; margin-top: 8px; }
     .it-diff { grid-column: 1 / -1; background: linear-gradient(180deg,#16243f,#101b30); border: 1px solid var(--line);
-      border-radius: 14px; padding: 14px 18px; text-align: center; font-size: 15.5px; }
+      border-radius: 14px; padding: 14px 18px; text-align: center; font-size: 15.5px; color: #fff; }
     .it-diff b { color: var(--up); font-family: "JetBrains Mono", monospace; }
     .it-diff .sm { color: var(--a); font-family: "JetBrains Mono", monospace; }
 
@@ -376,7 +376,22 @@
       box-shadow: 2px 2px 0 #306230;
       transition: transform 0.06s, background 0.06s;
     }
-    .pg-calc-key:hover { background: #b5d43a; }
+    .pg-calc-key:hover,
+    .pg-calc-key.op:hover {
+      background: #b5d43a;
+      color: #0f380f;
+      box-shadow: inset 0 0 0 2px #0f380f, 2px 2px 0 #306230;
+    }
+    .pg-calc-key.fn:hover {
+      background: #aebd9d;
+      color: #0f380f;
+      box-shadow: inset 0 0 0 2px #0f380f, 2px 2px 0 #306230;
+    }
+    .pg-calc-key.eq:hover {
+      background: #0f380f;
+      color: #d8f06a;
+      box-shadow: inset 0 0 0 2px #9bbc0f, 2px 2px 0 #306230;
+    }
     .pg-calc-key:active { transform: translate(1px, 1px); box-shadow: 1px 1px 0 #306230; }
     .pg-calc-key.wide { grid-column: span 2; }
     .pg-calc-key.op { background: #8bac0f; }
