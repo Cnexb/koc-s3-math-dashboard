@@ -116,7 +116,7 @@
       polySvg(svg, [[cx - s / 2, base], [cx + s / 2, base], [cx, base - h]], pal.fill, 0.45, pal.stroke, 2);
     } else if (fam === "circle") {
       const r = s / 2;
-      circleSvg(svg, cx, base - r, r, pal.fill, 0.45, pal.stroke, 2);
+      circleSvg(svg, cx, base - r, r, pal.fill, 0.45, pal.lab, 2);
     }
   }
 
