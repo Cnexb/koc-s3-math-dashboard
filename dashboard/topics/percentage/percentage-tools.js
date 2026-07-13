@@ -21,6 +21,7 @@
 
   const NS = "http://www.w3.org/2000/svg";
   const GOLD = "#FFD54F", GOLD_S = "#caa12f", GREEN = "#66BB6A", GREEN_S = "#3d8b40";
+  const GLOW_RING = "#EF5350";
 
   function E(tag, attrs) { const e = document.createElementNS(NS, tag); for (const k in attrs) e.setAttribute(k, attrs[k]); return e; }
   function clear(n) { while (n && n.firstChild) n.removeChild(n.firstChild); }
@@ -38,7 +39,7 @@
     const YBASE = 256, TOPPAD = 46, RY = 7;
 
     function drawCoin(g, cx, cy, rx, fill, stroke, glow) {
-      if (glow) g.appendChild(E("ellipse", { cx, cy, rx: rx + 2, ry: RY + 2, fill: "none", stroke: GOLD, "stroke-width": 2, opacity: 0.95 }));
+      if (glow) g.appendChild(E("ellipse", { cx, cy, rx: rx + 2, ry: RY + 2, fill: "none", stroke: GLOW_RING, "stroke-width": 2, opacity: 0.95 }));
       g.appendChild(E("ellipse", { cx, cy, rx, ry: RY, fill, stroke, "stroke-width": 1.4 }));
       g.appendChild(E("ellipse", { cx: cx - rx * 0.28, cy: cy - 1.5, rx: rx * 0.42, ry: RY * 0.32, fill: "#ffffff", opacity: 0.35 }));
     }
