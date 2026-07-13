@@ -144,8 +144,7 @@
       const r = s / 2, cy = base - r;
       const contour = pal.lab === C.a ? "#7ec8ea" : "#e8c45a";
       circleSvg(svg, cx, cy, r, pal.fill, 0.4, pal.lab, 2);
-      halfEllipseSvg(svg, cx, cy, r, r * 0.30, false, contour, 1.5, "5 4");
-      halfEllipseSvg(svg, cx, cy, r, r * 0.30, true, contour, 1.6);
+      ellipseSvg(svg, cx, cy, r, r * 0.30, contour, 1.5, "5 4");
     }
   }
 
