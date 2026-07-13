@@ -142,11 +142,10 @@
       lineSvg(svg, apex[0], apex[1], FR[0], FR[1], pal.stroke, 2);
     } else if (fam === "sphere") {
       const r = s / 2, cy = base - r;
-      const contourDark = "#5c6b82";
+      const contour = pal.lab === C.a ? "#7ec8ea" : "#e8c45a";
       circleSvg(svg, cx, cy, r, pal.fill, 0.4, pal.lab, 2);
-      halfEllipseSvg(svg, cx, cy, r, r * 0.30, false, contourDark, 1.6, "5 4");
-      halfEllipseSvg(svg, cx, cy, r, r * 0.30, true, pal.lab, 1.8);
-      lineSvg(svg, cx, cy - r * 0.92, cx, cy + r * 0.92, contourDark, 1.6, "5 4");
+      halfEllipseSvg(svg, cx, cy, r, r * 0.30, false, contour, 1.5, "5 4");
+      halfEllipseSvg(svg, cx, cy, r, r * 0.30, true, contour, 1.6);
     }
   }
 
