@@ -110,10 +110,10 @@
   function draw2D(svg, fam, cx, base, L, pal) {
     const s = L * UNIT;
     if (fam === "square") {
-      rectSvg(svg, cx - s / 2, base - s, s, s, pal.fill, 0.45, pal.stroke, 2);
+      rectSvg(svg, cx - s / 2, base - s, s, s, pal.fill, 0.45, pal.lab, 2);
     } else if (fam === "triangle") {
       const h = s * 0.866;
-      polySvg(svg, [[cx - s / 2, base], [cx + s / 2, base], [cx, base - h]], pal.fill, 0.45, pal.stroke, 2);
+      polySvg(svg, [[cx - s / 2, base], [cx + s / 2, base], [cx, base - h]], pal.fill, 0.45, pal.lab, 2);
     } else if (fam === "circle") {
       const r = s / 2;
       circleSvg(svg, cx, base - r, r, pal.fill, 0.45, pal.lab, 2);
@@ -127,19 +127,19 @@
       const A = [cx - s / 2, base], B = [cx + s / 2, base];
       const Cc = [cx + s / 2, base - s], D = [cx - s / 2, base - s];
       const Ct = [Cc[0] + ox, Cc[1] - oy], Dt = [D[0] + ox, D[1] - oy], Bt = [B[0] + ox, B[1] - oy];
-      polySvg(svg, [D, Cc, Ct, Dt], pal.fill, 0.6, pal.stroke, 2);    // top = base face
-      polySvg(svg, [B, Cc, Ct, Bt], pal.fill, 0.30, pal.stroke, 2);   // right
-      polySvg(svg, [A, B, Cc, D], pal.fill, 0.5, pal.stroke, 2);      // front
+      polySvg(svg, [D, Cc, Ct, Dt], pal.fill, 0.6, pal.lab, 2);    // top = base face
+      polySvg(svg, [B, Cc, Ct, Bt], pal.fill, 0.30, pal.lab, 2);   // right
+      polySvg(svg, [A, B, Cc, D], pal.fill, 0.5, pal.lab, 2);      // front
     } else if (fam === "pyramid") {        // triangular base, oblique
       const ox = s * 0.16, oy = s * 0.42, hp = s * 1.0;
       const FL = [cx - s / 2, base], FR = [cx + s / 2, base];
       const Bk = [(FL[0] + FR[0]) / 2 + ox, base - oy];
       const gx = (FL[0] + FR[0] + Bk[0]) / 3, gy = (FL[1] + FR[1] + Bk[1]) / 3;
       const apex = [gx, gy - hp];
-      polySvg(svg, [FL, FR, Bk], pal.fill, 0.55, pal.stroke, 2);      // base triangle
+      polySvg(svg, [FL, FR, Bk], pal.fill, 0.55, pal.lab, 2);      // base triangle
       lineSvg(svg, apex[0], apex[1], Bk[0], Bk[1], pal.stroke, 1.5, "5 4");
-      lineSvg(svg, apex[0], apex[1], FL[0], FL[1], pal.stroke, 2);
-      lineSvg(svg, apex[0], apex[1], FR[0], FR[1], pal.stroke, 2);
+      lineSvg(svg, apex[0], apex[1], FL[0], FL[1], pal.lab, 2);
+      lineSvg(svg, apex[0], apex[1], FR[0], FR[1], pal.lab, 2);
     } else if (fam === "sphere") {
       const r = s / 2, cy = base - r;
       const contour = pal.lab === C.a ? "#7ec8ea" : "#e8c45a";
