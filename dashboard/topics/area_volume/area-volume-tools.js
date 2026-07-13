@@ -65,6 +65,12 @@
     if (dash) a["stroke-dasharray"] = dash;
     p.appendChild(E("ellipse", a));
   }
+  function halfEllipseSvg(p, cx, cy, rx, ry, lower, stroke, sw, dash) {
+    const d = `M ${cx - rx} ${cy} A ${rx} ${ry} 0 0 ${lower ? 1 : 0} ${cx + rx} ${cy}`;
+    const a = { d, fill: "none", stroke, "stroke-width": sw || 1.5 };
+    if (dash) a["stroke-dasharray"] = dash;
+    p.appendChild(E("path", a));
+  }
   function tex(p, cx, cy, latex, color, size, w, h) {
     w = w || 110; h = h || 30;
     const fo = E("foreignObject", { x: cx - w / 2, y: cy - h / 2, width: w, height: h });
@@ -136,8 +142,11 @@
       lineSvg(svg, apex[0], apex[1], FR[0], FR[1], pal.stroke, 2);
     } else if (fam === "sphere") {
       const r = s / 2, cy = base - r;
-      circleSvg(svg, cx, cy, r, pal.fill, 0.4, pal.stroke, 2);
-      ellipseSvg(svg, cx, cy, r, r * 0.30, pal.stroke, 1.4);
+      const contourDark = "#5c6b82";
+      circleSvg(svg, cx, cy, r, pal.fill, 0.4, pal.lab, 2);
+      halfEllipseSvg(svg, cx, cy, r, r * 0.30, false, contourDark, 1.6, "5 4");
+      halfEllipseSvg(svg, cx, cy, r, r * 0.30, true, pal.lab, 1.8);
+      lineSvg(svg, cx, cy - r * 0.92, cx, cy + r * 0.92, contourDark, 1.6, "5 4");
     }
   }
 
