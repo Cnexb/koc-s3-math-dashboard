@@ -210,7 +210,39 @@
       box-shadow: 3px 3px 0 #306230;
       transition: background 0.1s, color 0.1s, box-shadow 0.1s, transform 0.08s;
     }
-    .pg-opt:hover { background: #a5c451; }
+    .pg-opt:hover {
+      background: #0f380f;
+      color: #9bbc0f;
+      box-shadow: inset 0 0 0 2px #8bac0f, 3px 3px 0 #306230;
+      transform: translate(-1px, -1px);
+    }
+    .pg-opt:hover .pg-opt-key {
+      background: #306230;
+      border-color: #9bbc0f;
+      color: #9bbc0f;
+    }
+    .pg-opt:hover .pg-opt-hint { opacity: 0.85; }
+    .pg-opt:hover .pg-opt-cursor {
+      opacity: 1;
+      border-left-color: #9bbc0f;
+      animation: pgcursor 0.55s step-end infinite;
+    }
+    .pg-opt-list:hover .pg-opt.sel:not(:hover) {
+      background: #8bac0f;
+      color: #0f380f;
+      box-shadow: 3px 3px 0 #306230;
+      transform: none;
+    }
+    .pg-opt-list:hover .pg-opt.sel:not(:hover) .pg-opt-key {
+      background: rgba(155, 188, 15, 0.25);
+      border-color: currentColor;
+      color: inherit;
+    }
+    .pg-opt-list:hover .pg-opt.sel:not(:hover) .pg-opt-hint { opacity: 0.65; }
+    .pg-opt-list:hover .pg-opt.sel:not(:hover) .pg-opt-cursor {
+      opacity: 0;
+      animation: none;
+    }
     .pg-opt:active { transform: translate(2px, 2px); box-shadow: 1px 1px 0 #306230; }
     .pg-opt.sel {
       background: #0f380f;
