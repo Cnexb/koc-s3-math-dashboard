@@ -30,6 +30,7 @@
     }
     header h1 { font-size: 22px; margin: 0; font-weight: 700; }
     header .crumb { color: var(--dim); font-size: 13px; }
+    html.in-embed header { display: none; }
     .tabs { display: flex; gap: 6px; padding: 14px 28px 0; }
     .tab {
       background: none; border: none; color: var(--dim); font: inherit; font-weight: 600;
@@ -322,6 +323,7 @@
     </div>
   </header>
 
+  <div class="tab-row">
   <nav class="tabs">
     <button class="tab active" data-tab="slides">Concept &amp; Formula</button>
     <button class="tab" data-tab="tools">Interactive Tool</button>
@@ -329,6 +331,7 @@
     <button class="tab" data-tab="quiz">Quiz</button>
     <button class="tab" data-tab="wayground">WayGround</button>
   </nav>
+  </div>
 
   <!-- TAB 1: slide decks -->
   <section id="panel-slides" class="panel">
