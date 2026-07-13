@@ -12,7 +12,7 @@
     const ids = cfg.ids;
     let els = {};
     let sceneId = "title";
-    let sel = 0;
+    let sel = -1;
     let phase = "idle";
     let score = 0;
     let mathTotal = 0;
@@ -105,9 +105,9 @@
       sc.choices.forEach((c, i) => {
         const btn = document.createElement("button");
         btn.type = "button";
-        btn.className = "pg-opt" + (i === sel ? " sel" : "");
+        btn.className = "pg-opt" + (sel >= 0 && i === sel ? " sel" : "");
         btn.setAttribute("role", "option");
-        btn.setAttribute("aria-selected", i === sel ? "true" : "false");
+        btn.setAttribute("aria-selected", sel >= 0 && i === sel ? "true" : "false");
 
         const key = document.createElement("span");
         key.className = "pg-opt-key";
@@ -153,7 +153,7 @@
 
     function showScene(id) {
       sceneId = id;
-      sel = 0;
+      sel = -1;
       setHud();
       const sc = scene();
       if (!sc) return;
@@ -226,7 +226,8 @@
     function moveSel(d) {
       const sc = scene();
       if (!sc || !sc.choices || phase !== "choose") return;
-      sel = (sel + d + sc.choices.length) % sc.choices.length;
+      if (sel < 0) sel = 0;
+      else sel = (sel + d + sc.choices.length) % sc.choices.length;
       beep(440, 0.04);
       renderChoices(sc);
     }
@@ -244,7 +245,11 @@
       if (phase === "choose") {
         if (e.key === "ArrowUp") { e.preventDefault(); moveSel(-1); }
         else if (e.key === "ArrowDown") { e.preventDefault(); moveSel(1); }
-        else if (e.key === "Enter" || e.key === " ") { e.preventDefault(); pickChoice(); }
+        else if (e.key === "Enter" || e.key === " ") {
+          e.preventDefault();
+          if (sel < 0) sel = 0;
+          pickChoice();
+        }
         return;
       }
       if (phase === "lines" || phase === "lines_done" || phase === "feedback" ||
