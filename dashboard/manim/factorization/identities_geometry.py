@@ -1,77 +1,62 @@
-"""Geometric (area-model) proofs of the three factorization identities.
+"""Algebraic (expansion) proofs of the three factorization identities.
 
 Scenes (each a Manim-Slides deck)
 ---------------------------------
-  PerfectSquareSum     (a+b)^2 = a^2 + 2ab + b^2   — square dissection
-  PerfectSquareDiff    (a-b)^2 = a^2 - 2ab + b^2   — over-subtraction model
-  DifferenceOfSquares  a^2 - b^2 = (a+b)(a-b)      — L-shape (gnomon) rearrange
+  PerfectSquareSum     (a+b)^2 = a^2 + 2ab + b^2   — expand (a+b)(a+b)
+  PerfectSquareDiff    (a-b)^2 = a^2 - 2ab + b^2   — expand (a-b)(a-b)
+  DifferenceOfSquares  a^2 - b^2 = (a+b)(a-b)      — expand (a+b)(a-b)
 
 Consistent symbol <-> colour mapping lives in ``shared/styles.py``:
   a -> blue   b -> amber   ab -> green   removed -> red.
 
-Visual side lengths are proportional to a and b (a drawn longer than b) so the
-drawn areas genuinely correspond to the quantities.
+These scenes replace the earlier geometric (area-model) proofs. Scene class
+names are unchanged so ``render.ps1`` still targets the same decks.
 """
 from __future__ import annotations
 
 import sys
 from pathlib import Path
 
-import numpy as np
 from manim import *
 from manim_slides import Slide
 
 sys.path.insert(0, str(Path(__file__).resolve().parents[1]))
 from shared.styles import (  # noqa: E402
-    AREA_FONT,
     BG,
     COL_A,
     COL_AB,
     COL_B,
     COL_REMOVE,
-    FILL_OPACITY,
     INK,
-    LABEL_FONT,
-    STROKE,
-    THIN_STROKE,
 )
 
-# Visual lengths (manim units). a is drawn longer than b.
-A_LEN = 3.1
-B_LEN = 1.7
-
-TCM = {"a": COL_A, "b": COL_B}  # tex_to_color_map: a always blue, b always amber
+TCM = {"a": COL_A, "b": COL_B}
 
 
-# ── small helpers ────────────────────────────────────────────────────────────
-def filled_rect(bl, w, h, color, opacity=FILL_OPACITY, stroke=THIN_STROKE):
-    """Axis-aligned rectangle with bottom-left corner at ``bl``."""
-    r = Rectangle(
-        width=w,
-        height=h,
-        stroke_color=color,
-        stroke_width=stroke,
-        fill_color=color,
-        fill_opacity=opacity,
+def dist_arrows(L1, L2, R1, R2):
+    """Four FOIL-style curved arrows: each left term → each right term.
+
+    Order returned: First (L1→R1), Outer (L1→R2), Inner (L2→R1), Last (L2→R2).
+    """
+    tip = 0.18
+    sw = 3.0
+    first = CurvedArrow(
+        L1.get_top() + 0.06 * UP, R1.get_top() + 0.06 * UP,
+        color=COL_A, stroke_width=sw, tip_length=tip, angle=-TAU / 5,
     )
-    r.move_to(np.array(bl, dtype=float) + np.array([w / 2.0, h / 2.0, 0.0]))
-    return r
-
-
-def dim_brace(p_start, p_end, direction, tex, color, buff=0.12):
-    """A brace spanning p_start->p_end with a coloured LaTeX label at its tip."""
-    line = Line(np.array(p_start, dtype=float), np.array(p_end, dtype=float))
-    br = Brace(line, direction=direction, buff=buff, color=INK)
-    lab = br.get_tex(tex)
-    lab.set_color(color)
-    lab.scale(0.85)
-    return VGroup(br, lab)
-
-
-def area_label(tex, color, center, scale=1.0):
-    m = MathTex(tex, color=color).scale(scale)
-    m.move_to(np.array(center, dtype=float))
-    return m
+    outer = CurvedArrow(
+        L1.get_top() + 0.06 * UP, R2.get_top() + 0.06 * UP,
+        color=COL_AB, stroke_width=sw, tip_length=tip, angle=-TAU / 3.2,
+    )
+    inner = CurvedArrow(
+        L2.get_bottom() + 0.06 * DOWN, R1.get_bottom() + 0.06 * DOWN,
+        color=COL_AB, stroke_width=sw, tip_length=tip, angle=TAU / 3.2,
+    )
+    last = CurvedArrow(
+        L2.get_bottom() + 0.06 * DOWN, R2.get_bottom() + 0.06 * DOWN,
+        color=COL_B, stroke_width=sw, tip_length=tip, angle=TAU / 5,
+    )
+    return VGroup(first, outer, inner, last)
 
 
 class _FactorScene(Slide):
@@ -85,6 +70,15 @@ class _FactorScene(Slide):
         title.to_edge(UP, buff=0.45)
         return title
 
+    def play_dist_arrows(self, L1, L2, R1, R2, note):
+        """Animate distributive-law arrows, then pause for next_slide."""
+        arrows = dist_arrows(L1, L2, R1, R2)
+        note.next_to(VGroup(L1, L2, R1, R2), DOWN, buff=0.85)
+        self.play(Create(arrows[0]), Create(arrows[1]))   # from first left term
+        self.play(Create(arrows[2]), Create(arrows[3]))   # from second left term
+        self.play(FadeIn(note, shift=0.12 * UP))
+        return arrows
+
 
 # ══════════════════════════════════════════════════════════════════════════════
 # 1)  (a+b)^2 = a^2 + 2ab + b^2
@@ -93,94 +87,115 @@ class PerfectSquareSum(_FactorScene):
     title_tex = r"(a+b)^2 = a^2 + 2ab + b^2"
 
     def construct(self):
-        a, b = A_LEN, B_LEN
-        s = a + b
         title = self.setup_scene()
-        bl = np.array([-5.8, -2.7, 0.0])  # bottom-left of the big square
 
-        # Regions (origin bottom-left, x right, y up)
-        a2 = filled_rect(bl, a, a, COL_A)
-        ab_r = filled_rect(bl + np.array([a, 0, 0]), b, a, COL_AB)
-        ab_t = filled_rect(bl + np.array([0, a, 0]), a, b, COL_AB)
-        b2 = filled_rect(bl + np.array([a, a, 0]), b, b, COL_B)
+        line0 = MathTex(r"(a+b)^2", tex_to_color_map=TCM).scale(1.15)
+        # Split product so FOIL arrows can target each factor
+        line1 = MathTex(
+            r"(a+b)^2", "=",
+            "(", "a", "+", "b", ")",
+            "(", "a", "+", "b", ")",
+            tex_to_color_map=TCM,
+        ).scale(1.05)
+        # indices: 0=(a+b)^2  1==  2=(  3=a  4=+  5=b  6=)  7=(  8=a  9=+  10=b  11=)
+        line2 = MathTex(
+            r"(a+b)^2", "=",
+            r"a\cdot a", "+", r"a\cdot b", "+", r"b\cdot a", "+", r"b\cdot b",
+            tex_to_color_map=TCM,
+        ).scale(0.95)
+        line3 = MathTex(
+            r"(a+b)^2", "=",
+            r"a^2", "+", r"ab", "+", r"ba", "+", r"b^2",
+            tex_to_color_map=TCM,
+        ).scale(1.0)
+        line4 = MathTex(
+            r"(a+b)^2", "=",
+            r"a^2", "+", r"2ab", "+", r"b^2",
+            tex_to_color_map=TCM,
+        ).scale(1.1)
 
-        outline = Square(side_length=s, stroke_color=INK, stroke_width=STROKE)
-        outline.move_to(bl + np.array([s / 2, s / 2, 0]))
+        line2[2].set_color(COL_A)
+        line2[4].set_color(COL_AB)
+        line2[6].set_color(COL_AB)
+        line2[8].set_color(COL_B)
+        line3[2].set_color(COL_A)
+        line3[4].set_color(COL_AB)
+        line3[6].set_color(COL_AB)
+        line3[8].set_color(COL_B)
+        line4[2].set_color(COL_A)
+        line4[4].set_color(COL_AB)
+        line4[6].set_color(COL_B)
 
-        # Side braces: bottom = a then b, left = a then b
-        br_a_bot = dim_brace(bl, bl + np.array([a, 0, 0]), DOWN, "a", COL_A)
-        br_b_bot = dim_brace(bl + np.array([a, 0, 0]), bl + np.array([s, 0, 0]), DOWN, "b", COL_B)
-        br_a_left = dim_brace(bl + np.array([0, a, 0]), bl, LEFT, "a", COL_A)
-        br_b_left = dim_brace(bl + np.array([0, s, 0]), bl + np.array([0, a, 0]), LEFT, "b", COL_B)
+        note_arrows = MathTex(
+            r"\text{distributive law: each term }\times\text{ each term}",
+            color=INK,
+        ).scale(0.52)
+        note_arrows.set_opacity(0.8)
+        note_dist = MathTex(
+            r"\text{write out the four products}",
+            color=INK,
+        ).scale(0.55)
+        note_dist.set_opacity(0.75)
+        note_combine = MathTex(
+            r"\text{combine like terms: } ab + ba = 2ab",
+            color=COL_AB,
+        ).scale(0.55)
 
-        # Interior labels
-        lab_a2 = area_label("a^2", COL_A, bl + np.array([a / 2, a / 2, 0]), 1.1)
-        lab_ab_r = area_label("ab", COL_AB, bl + np.array([a + b / 2, a / 2, 0]), 0.85)
-        lab_ab_t = area_label("ab", COL_AB, bl + np.array([a / 2, a + b / 2, 0]), 0.85)
-        lab_b2 = area_label("b^2", COL_B, bl + np.array([a + b / 2, a + b / 2, 0]), 0.85)
-
-        # Right-side building equation (single MathTex => baselines align perfectly)
-        eq = MathTex("(a+b)^2", "=", "a^2", "+", "2ab", "+", "b^2").scale(0.95)
-        eq.move_to(np.array([3.35, 0.3, 0]))
-        eq[0][1].set_color(COL_A)   # a in (a+b)^2
-        eq[0][3].set_color(COL_B)   # b in (a+b)^2
-        eq[2].set_color(COL_A)      # a^2
-        eq[4].set_color(COL_AB)     # 2ab
-        eq[6].set_color(COL_B)      # b^2
-        lhs = VGroup(eq[0], eq[1])
-        t_a2, p1, t_2ab, p2, t_b2 = eq[2], eq[3], eq[4], eq[5], eq[6]
-
-        # ── STEP: title ──────────────────────────────────────────────────────
+        # ── STEP: title ──
         self.play(Write(title))
-        self.wait(0.3)
+        self.wait(0.25)
         self.next_slide()
 
-        # ── STEP: square outline + side = a + b ──────────────────────────────
-        self.play(Create(outline))
-        self.play(
-            GrowFromCenter(br_a_bot), GrowFromCenter(br_b_bot),
-            GrowFromCenter(br_a_left), GrowFromCenter(br_b_left),
+        # ── STEP: rewrite as product ──
+        line0.move_to(ORIGIN)
+        self.play(FadeIn(line0, shift=0.2 * UP))
+        self.next_slide()
+
+        line1.move_to(ORIGIN)
+        self.play(TransformMatchingTex(line0, line1))
+        self.next_slide()
+
+        # ── STEP: distributive-law arrows ──
+        arrows = self.play_dist_arrows(
+            line1[3], line1[5], line1[8], line1[10], note_arrows,
         )
-        self.play(FadeIn(lhs, shift=0.3 * UP))
         self.next_slide()
 
-        # ── STEP: cut into four regions ──────────────────────────────────────
-        vline = Line(bl + np.array([a, 0, 0]), bl + np.array([a, s, 0]), color=INK, stroke_width=THIN_STROKE)
-        hline = Line(bl + np.array([0, a, 0]), bl + np.array([s, a, 0]), color=INK, stroke_width=THIN_STROKE)
-        self.play(Create(vline), Create(hline))
+        # ── STEP: write the four products ──
+        line2.move_to(ORIGIN)
+        note_dist.next_to(line2, DOWN, buff=0.55)
+        self.play(
+            FadeOut(arrows), FadeOut(note_arrows),
+            TransformMatchingTex(line1, line2),
+            FadeIn(note_dist, shift=0.15 * UP),
+        )
         self.next_slide()
 
-        # ── STEP: a^2 ────────────────────────────────────────────────────────
-        self.play(FadeIn(a2), Write(lab_a2))
-        self.play(FadeIn(t_a2, shift=0.2 * UP))
+        # ── STEP: simplify products ──
+        line3.move_to(ORIGIN)
+        self.play(FadeOut(note_dist), TransformMatchingTex(line2, line3))
         self.next_slide()
 
-        # ── STEP: 2ab ────────────────────────────────────────────────────────
-        self.play(FadeIn(ab_r), FadeIn(ab_t), Write(lab_ab_r), Write(lab_ab_t))
-        self.play(FadeIn(p1), FadeIn(t_2ab, shift=0.2 * UP))
-        self.next_slide()
-
-        # ── STEP: b^2 ────────────────────────────────────────────────────────
-        self.play(FadeIn(b2), Write(lab_b2))
-        self.play(FadeIn(p2), FadeIn(t_b2, shift=0.2 * UP))
-        self.next_slide()
-
-        # ── STEP: conclude ───────────────────────────────────────────────────
-        box = SurroundingRectangle(eq, color=COL_AB, buff=0.25)
+        # ── STEP: combine like terms → identity ──
+        line4.move_to(ORIGIN)
+        note_combine.next_to(line4, DOWN, buff=0.55)
+        self.play(TransformMatchingTex(line3, line4), FadeIn(note_combine, shift=0.15 * UP))
+        box = SurroundingRectangle(line4, color=COL_AB, buff=0.28)
         self.play(Create(box))
-        self.wait(0.4)
+        self.wait(0.35)
         self.next_slide()
 
-        # ── STEP: numeric instance a=3, b=2 ──────────────────────────────────
-        sub = MathTex("a = ", "3", r",\quad b = ", "2").scale(0.8)
+        # ── STEP: numeric check a=3, b=2 ──
+        self.play(FadeOut(note_combine))
+        sub = MathTex("a = ", "3", r",\quad b = ", "2").scale(0.85)
         sub[0].set_color(COL_A)
         sub[1].set_color(COL_A)
         sub[2].set_color(COL_B)
         sub[3].set_color(COL_B)
         line_a = MathTex(
             r"(", "3", "+", "2", ")^2", "=", "3^2", "+", "2(3)(2)", "+", "2^2",
-        ).scale(0.72)
-        line_b = MathTex("=", "9", "+", "12", "+", "4", "=", "25").scale(0.72)
+        ).scale(0.78)
+        line_b = MathTex("=", "9", "+", "12", "+", "4", "=", "25").scale(0.78)
         line_a[1].set_color(COL_A)
         line_a[3].set_color(COL_B)
         line_a[6].set_color(COL_A)
@@ -190,121 +205,131 @@ class PerfectSquareSum(_FactorScene):
         line_b[3].set_color(COL_AB)
         line_b[5].set_color(COL_B)
         numeric = VGroup(sub, line_a, line_b).arrange(DOWN, buff=0.32, aligned_edge=LEFT)
-        numeric.next_to(box, DOWN, buff=0.6)
-        self.play(FadeIn(sub, shift=0.3 * UP))
+        numeric.next_to(box, DOWN, buff=0.55)
+        self.play(FadeIn(sub, shift=0.25 * UP))
         self.play(FadeIn(line_a, shift=0.2 * UP))
         self.play(FadeIn(line_b, shift=0.2 * UP))
-        self.wait(0.5)
+        self.wait(0.4)
         self.next_slide()
 
 
 # ══════════════════════════════════════════════════════════════════════════════
-# 2)  (a-b)^2 = a^2 - 2ab + b^2   (over-subtraction / inclusion-exclusion)
+# 2)  (a-b)^2 = a^2 - 2ab + b^2
 # ══════════════════════════════════════════════════════════════════════════════
 class PerfectSquareDiff(_FactorScene):
     title_tex = r"(a-b)^2 = a^2 - 2ab + b^2"
 
     def construct(self):
-        a = 4.2          # full square side = a
-        b = 1.7          # strip width = b
-        inner = a - b    # inner square side
         title = self.setup_scene()
-        bl = np.array([-5.9, -2.8, 0.0])
 
-        # base square (area a^2)
-        base = filled_rect(bl, a, a, COL_A, opacity=0.18)
-        outline = Square(side_length=a, stroke_color=INK, stroke_width=STROKE)
-        outline.move_to(bl + np.array([a / 2, a / 2, 0]))
+        line0 = MathTex(r"(a-b)^2", tex_to_color_map=TCM).scale(1.15)
+        line1 = MathTex(
+            r"(a-b)^2", "=",
+            "(", "a", "-", "b", ")",
+            "(", "a", "-", "b", ")",
+            tex_to_color_map=TCM,
+        ).scale(1.05)
+        line2 = MathTex(
+            r"(a-b)^2", "=",
+            r"a\cdot a", "+", r"a\cdot(-b)", "+", r"(-b)\cdot a", "+", r"(-b)\cdot(-b)",
+            tex_to_color_map=TCM,
+        ).scale(0.82)
+        line3 = MathTex(
+            r"(a-b)^2", "=",
+            r"a^2", "-", r"ab", "-", r"ba", "+", r"b^2",
+            tex_to_color_map=TCM,
+        ).scale(1.0)
+        line4 = MathTex(
+            r"(a-b)^2", "=",
+            r"a^2", "-", r"2ab", "+", r"b^2",
+            tex_to_color_map=TCM,
+        ).scale(1.1)
 
-        # side braces showing a, and the a-b / b split on bottom + right
-        br_a_top = dim_brace(bl + np.array([0, a, 0]), bl + np.array([a, a, 0]), UP, "a", COL_A)
-        br_ab_bot = dim_brace(bl, bl + np.array([inner, 0, 0]), DOWN, "a-b", COL_A)
-        br_b_bot = dim_brace(bl + np.array([inner, 0, 0]), bl + np.array([a, 0, 0]), DOWN, "b", COL_B)
-        # right side splits into the tall red rectangle (height a-b) and the corner (height b)
-        br_ab_right = dim_brace(bl + np.array([a, a, 0]), bl + np.array([a, b, 0]), RIGHT, "a-b", COL_A)
-        br_b_right = dim_brace(bl + np.array([a, b, 0]), bl + np.array([a, 0, 0]), RIGHT, "b", COL_B)
+        line2[2].set_color(COL_A)
+        line2[4].set_color(COL_AB)
+        line2[6].set_color(COL_AB)
+        line2[8].set_color(COL_B)
+        line3[2].set_color(COL_A)
+        line3[3].set_color(COL_REMOVE)
+        line3[4].set_color(COL_AB)
+        line3[5].set_color(COL_REMOVE)
+        line3[6].set_color(COL_AB)
+        line3[8].set_color(COL_B)
+        line4[2].set_color(COL_A)
+        line4[3].set_color(COL_REMOVE)
+        line4[4].set_color(COL_AB)
+        line4[6].set_color(COL_B)
 
-        # the two ab strips (right + bottom) and the shared b^2 corner
-        strip_r = filled_rect(bl + np.array([inner, 0, 0]), b, a, COL_AB, opacity=0.55)
-        strip_b = filled_rect(bl, a, b, COL_AB, opacity=0.55)
-        corner = filled_rect(bl + np.array([inner, 0, 0]), b, b, COL_B, opacity=0.9)
-        inner_sq = filled_rect(bl + np.array([0, b, 0]), inner, inner, COL_A, opacity=0.85)
-
-        lab_ab_r = area_label("ab", INK, bl + np.array([inner + b / 2, (b + a) / 2, 0]), 0.8)
-        lab_ab_b = area_label("ab", INK, bl + np.array([inner / 2, b / 2, 0]), 0.8)
-        lab_b2 = area_label("b^2", BG, bl + np.array([inner + b / 2, b / 2, 0]), 0.7)
-        lab_inner = area_label("(a-b)^2", INK, bl + np.array([inner / 2, b + inner / 2, 0]), 0.78)
-
-        # right-side building equation (single MathTex => baselines align perfectly)
-        eq = MathTex("(a-b)^2", "=", "a^2", "-", "2ab", "+", "b^2").scale(0.92)
-        eq.move_to(np.array([3.4, 1.8, 0]))
-        eq[0][1].set_color(COL_A)
-        eq[0][3].set_color(COL_B)
-        eq[2].set_color(COL_A)       # a^2
-        eq[3].set_color(COL_REMOVE)  # -
-        eq[4].set_color(COL_AB)      # 2ab
-        eq[6].set_color(COL_B)       # b^2
-        lhs = VGroup(eq[0], eq[1])
-        t_a2, m1, t_2ab, p1, t_b2 = eq[2], eq[3], eq[4], eq[5], eq[6]
-        # intermediate "ab" (after one strip) that morphs into "2ab" (after two)
-        t_ab = MathTex("ab", color=COL_AB)
-        t_ab.scale_to_fit_height(t_2ab.height).move_to(t_2ab)
-
-        note = Text("the corner is removed twice", font_size=24, color=COL_REMOVE)
-        note.next_to(eq, DOWN, buff=0.7)
+        note_arrows = MathTex(
+            r"\text{distributive law: each term }\times\text{ each term}",
+            color=INK,
+        ).scale(0.52)
+        note_arrows.set_opacity(0.8)
+        note_dist = MathTex(
+            r"\text{distribute, watching the minus signs}",
+            color=INK,
+        ).scale(0.55)
+        note_dist.set_opacity(0.75)
+        note_combine = MathTex(
+            r"\text{combine like terms: } -ab - ba = -2ab",
+            color=COL_AB,
+        ).scale(0.55)
 
         # ── STEP: title ──
         self.play(Write(title))
-        self.wait(0.2)
+        self.wait(0.25)
         self.next_slide()
 
-        # ── STEP: square of side a, area a^2 ──
-        self.play(Create(outline), FadeIn(base))
-        self.play(GrowFromCenter(br_a_top))
-        self.play(FadeIn(lhs, shift=0.3 * UP), FadeIn(t_a2, shift=0.2 * UP))
+        # ── STEP: rewrite as product ──
+        line0.move_to(ORIGIN)
+        self.play(FadeIn(line0, shift=0.2 * UP))
         self.next_slide()
 
-        # ── STEP: split side into (a-b) and b ──
-        self.play(
-            GrowFromCenter(br_ab_bot), GrowFromCenter(br_b_bot),
-            GrowFromCenter(br_ab_right), GrowFromCenter(br_b_right),
+        line1.move_to(ORIGIN)
+        self.play(TransformMatchingTex(line0, line1))
+        self.next_slide()
+
+        # ── STEP: distributive-law arrows ──
+        arrows = self.play_dist_arrows(
+            line1[3], line1[5], line1[8], line1[10], note_arrows,
         )
         self.next_slide()
 
-        # ── STEP: remove right strip (- ab) ──
-        self.play(FadeIn(strip_r), Write(lab_ab_r))
-        self.play(strip_r.animate.set_fill(COL_REMOVE, opacity=0.5).set_stroke(COL_REMOVE))
-        self.play(FadeIn(m1), FadeIn(t_ab, shift=0.2 * UP))
+        # ── STEP: write the four products ──
+        line2.move_to(ORIGIN)
+        note_dist.next_to(line2, DOWN, buff=0.55)
+        self.play(
+            FadeOut(arrows), FadeOut(note_arrows),
+            TransformMatchingTex(line1, line2),
+            FadeIn(note_dist, shift=0.15 * UP),
+        )
         self.next_slide()
 
-        # ── STEP: remove bottom strip (- ab) -> -2ab, corner removed twice ──
-        self.play(FadeIn(strip_b), Write(lab_ab_b))
-        self.play(strip_b.animate.set_fill(COL_REMOVE, opacity=0.5).set_stroke(COL_REMOVE))
-        self.play(ReplacementTransform(t_ab, t_2ab))
-        self.play(Indicate(corner, color=COL_REMOVE, scale_factor=1.15), FadeIn(corner))
-        self.play(FadeIn(note))
+        # ── STEP: simplify products / signs ──
+        line3.move_to(ORIGIN)
+        self.play(FadeOut(note_dist), TransformMatchingTex(line2, line3))
         self.next_slide()
 
-        # ── STEP: add the corner b^2 back ──
-        self.play(corner.animate.set_fill(COL_B, opacity=0.85).set_stroke(COL_B), Write(lab_b2))
-        self.play(FadeIn(p1), FadeIn(t_b2, shift=0.2 * UP), FadeOut(note))
-        self.next_slide()
-
-        # ── STEP: remaining inner square = (a-b)^2 ──
-        self.play(FadeIn(inner_sq), Write(lab_inner))
-        box = SurroundingRectangle(eq, color=COL_A, buff=0.25)
+        # ── STEP: combine → identity ──
+        line4.move_to(ORIGIN)
+        note_combine.next_to(line4, DOWN, buff=0.55)
+        self.play(TransformMatchingTex(line3, line4), FadeIn(note_combine, shift=0.15 * UP))
+        box = SurroundingRectangle(line4, color=COL_A, buff=0.28)
         self.play(Create(box))
-        self.wait(0.5)
+        self.wait(0.35)
         self.next_slide()
 
-        # ── STEP: numeric instance a=5, b=2 ──────────────────────────────────
-        sub = MathTex("a = ", "5", r",\quad b = ", "2").scale(0.78)
+        # ── STEP: numeric check a=5, b=2 ──
+        self.play(FadeOut(note_combine))
+        sub = MathTex("a = ", "5", r",\quad b = ", "2").scale(0.85)
         sub[0].set_color(COL_A)
         sub[1].set_color(COL_A)
         sub[2].set_color(COL_B)
         sub[3].set_color(COL_B)
-        line_a = MathTex("(", "5", "-", "2", ")^2", "=", "5^2", "-", "2(5)(2)", "+", "2^2").scale(0.7)
-        line_b = MathTex("=", "25", "-", "20", "+", "4", "=", "9").scale(0.7)
+        line_a = MathTex(
+            "(", "5", "-", "2", ")^2", "=", "5^2", "-", "2(5)(2)", "+", "2^2",
+        ).scale(0.78)
+        line_b = MathTex("=", "25", "-", "20", "+", "4", "=", "9").scale(0.78)
         line_a[1].set_color(COL_A)
         line_a[3].set_color(COL_B)
         line_a[6].set_color(COL_A)
@@ -317,117 +342,148 @@ class PerfectSquareDiff(_FactorScene):
         line_b[5].set_color(COL_B)
         numeric = VGroup(sub, line_a, line_b).arrange(DOWN, buff=0.3, aligned_edge=LEFT)
         numeric.next_to(box, DOWN, buff=0.55)
-        self.play(FadeIn(sub, shift=0.3 * UP))
+        self.play(FadeIn(sub, shift=0.25 * UP))
         self.play(FadeIn(line_a, shift=0.2 * UP))
         self.play(FadeIn(line_b, shift=0.2 * UP))
-        self.wait(0.5)
+        self.wait(0.4)
         self.next_slide()
 
 
 # ══════════════════════════════════════════════════════════════════════════════
-# 3)  a^2 - b^2 = (a+b)(a-b)   (L-shape / gnomon rearrangement)
+# 3)  a^2 - b^2 = (a+b)(a-b)
 # ══════════════════════════════════════════════════════════════════════════════
 class DifferenceOfSquares(_FactorScene):
     title_tex = r"a^2 - b^2 = (a+b)(a-b)"
 
     def construct(self):
-        a = 4.0
-        b = 1.6
-        inner = a - b
         title = self.setup_scene()
-        bl = np.array([-5.0, -2.6, 0.0])
 
-        big = filled_rect(bl, a, a, COL_A, opacity=0.40)
-        big_outline = Square(side_length=a, stroke_color=INK, stroke_width=STROKE)
-        big_outline.move_to(bl + np.array([a / 2, a / 2, 0]))
+        # Product split for FOIL arrows
+        line0 = MathTex(
+            "(", "a", "+", "b", ")",
+            "(", "a", "-", "b", ")",
+            tex_to_color_map=TCM,
+        ).scale(1.15)
+        # indices: 0=( 1=a 2=+ 3=b 4=) 5=( 6=a 7=- 8=b 9=)
+        line1 = MathTex(
+            r"(a+b)(a-b)", "=",
+            r"a(a-b)", "+", r"b(a-b)",
+            tex_to_color_map=TCM,
+        ).scale(1.0)
+        line2 = MathTex(
+            r"(a+b)(a-b)", "=",
+            r"a^2", "-", r"ab", "+", r"ba", "-", r"b^2",
+            tex_to_color_map=TCM,
+        ).scale(1.0)
+        line3 = MathTex(
+            r"(a+b)(a-b)", "=",
+            r"a^2", "-", r"ab", "+", r"ab", "-", r"b^2",
+            tex_to_color_map=TCM,
+        ).scale(1.0)
+        line4 = MathTex(
+            r"(a+b)(a-b)", "=",
+            r"a^2", "-", r"b^2",
+            tex_to_color_map=TCM,
+        ).scale(1.1)
+        line5 = MathTex(
+            r"a^2", "-", r"b^2", "=",
+            r"(a+b)(a-b)",
+            tex_to_color_map=TCM,
+        ).scale(1.15)
 
-        br_a_top = dim_brace(bl + np.array([0, a, 0]), bl + np.array([a, a, 0]), UP, "a", COL_A)
-        br_a_left = dim_brace(bl + np.array([0, a, 0]), bl, LEFT, "a", COL_A)
-        br_b_bot = dim_brace(bl + np.array([inner, 0, 0]), bl + np.array([a, 0, 0]), DOWN, "b", COL_B)
-        br_b_right = dim_brace(bl + np.array([a, b, 0]), bl + np.array([a, 0, 0]), RIGHT, "b", COL_B)
-        br_b = VGroup(br_b_bot, br_b_right)
+        line1[2].set_color(COL_A)
+        line1[4].set_color(COL_B)
+        line2[2].set_color(COL_A)
+        line2[3].set_color(COL_REMOVE)
+        line2[4].set_color(COL_AB)
+        line2[6].set_color(COL_AB)
+        line2[7].set_color(COL_REMOVE)
+        line2[8].set_color(COL_B)
+        line3[2].set_color(COL_A)
+        line3[3].set_color(COL_REMOVE)
+        line3[4].set_color(COL_AB)
+        line3[6].set_color(COL_AB)
+        line3[7].set_color(COL_REMOVE)
+        line3[8].set_color(COL_B)
+        line4[2].set_color(COL_A)
+        line4[3].set_color(COL_REMOVE)
+        line4[4].set_color(COL_B)
+        line5[0].set_color(COL_A)
+        line5[1].set_color(COL_REMOVE)
+        line5[2].set_color(COL_B)
 
-        # b^2 corner to remove (bottom-right)
-        corner = filled_rect(bl + np.array([inner, 0, 0]), b, b, COL_B, opacity=0.85)
-        lab_corner = area_label("b^2", COL_B, bl + np.array([inner + b / 2, b / 2, 0]), 0.75)
-
-        # The two pieces of the L-shape
-        top_piece = filled_rect(bl + np.array([0, b, 0]), a, inner, COL_A, opacity=0.55)
-        bot_piece = filled_rect(bl, inner, b, COL_A, opacity=0.55)
-
-        lab_l = area_label("a^2 - b^2", COL_A, bl + np.array([inner / 2, b + inner / 2, 0]), 0.8)
-
-        # right-side equation (single MathTex => baselines align perfectly)
-        eq = MathTex("a^2", "-", "b^2", "=", "(a+b)(a-b)").scale(0.95)
-        eq.move_to(np.array([3.6, 2.0, 0]))
-        eq[0].set_color(COL_A)       # a^2
-        eq[1].set_color(COL_REMOVE)  # -
-        eq[2].set_color(COL_B)       # b^2
-        eq[4][1].set_color(COL_A)    # a in (a+b)
-        eq[4][3].set_color(COL_B)    # b in (a+b)
-        eq[4][6].set_color(COL_A)    # a in (a-b)
-        eq[4][8].set_color(COL_B)    # b in (a-b)
-        lhs = VGroup(eq[0], eq[1], eq[2], eq[3])
-        rhs = eq[4]
+        note_arrows = MathTex(
+            r"\text{distributive law: each term }\times\text{ each term}",
+            color=INK,
+        ).scale(0.52)
+        note_arrows.set_opacity(0.8)
+        note_dist = MathTex(
+            r"\text{expand the product}",
+            color=INK,
+        ).scale(0.55)
+        note_dist.set_opacity(0.75)
+        note_cancel = MathTex(
+            r"\text{middle terms cancel: } -ab + ab = 0",
+            color=COL_AB,
+        ).scale(0.55)
 
         # ── STEP: title ──
         self.play(Write(title))
-        self.wait(0.2)
+        self.wait(0.25)
         self.next_slide()
 
-        # ── STEP: square a^2 ──
-        self.play(Create(big_outline), FadeIn(big))
-        self.play(GrowFromCenter(br_a_top), GrowFromCenter(br_a_left))
-        self.play(FadeIn(lhs, shift=0.3 * UP))
+        # ── STEP: start from RHS product ──
+        line0.move_to(ORIGIN)
+        self.play(FadeIn(line0, shift=0.2 * UP))
         self.next_slide()
 
-        # ── STEP: remove b^2 corner -> L-shape ──
-        self.play(FadeIn(corner), Write(lab_corner), GrowFromCenter(br_b))
-        self.play(corner.animate.set_fill(COL_B, opacity=0.85).set_stroke(COL_B))
-        self.remove(big)
-        self.add(top_piece, bot_piece)
-        self.play(FadeOut(corner), FadeOut(lab_corner), FadeOut(br_b), Write(lab_l))
+        # ── STEP: distributive-law arrows ──
+        arrows = self.play_dist_arrows(
+            line0[1], line0[3], line0[6], line0[8], note_arrows,
+        )
         self.next_slide()
 
-        # ── STEP: cut the L into two rectangles ──
-        cut = Line(bl + np.array([inner, 0, 0]), bl + np.array([inner, b, 0]), color=INK, stroke_width=THIN_STROKE)
-        self.play(Create(cut))
+        # ── STEP: distribute ──
+        line1.move_to(ORIGIN)
+        note_dist.next_to(line1, DOWN, buff=0.55)
         self.play(
-            top_piece.animate.set_stroke(INK, width=STROKE),
-            bot_piece.animate.set_stroke(INK, width=STROKE),
+            FadeOut(arrows), FadeOut(note_arrows),
+            ReplacementTransform(line0, line1),
+            FadeIn(note_dist, shift=0.15 * UP),
         )
         self.next_slide()
 
-        # ── STEP: rotate + slide the bottom piece to the right ──
-        self.play(FadeOut(lab_l), FadeOut(cut), FadeOut(br_a_top), FadeOut(br_a_left), FadeOut(big_outline))
-        self.play(
-            bot_piece.animate.rotate(-PI / 2).next_to(top_piece, RIGHT, buff=0.0, aligned_edge=DOWN)
-        )
+        # ── STEP: fully expand ──
+        line2.move_to(ORIGIN)
+        self.play(FadeOut(note_dist), TransformMatchingTex(line1, line2))
         self.next_slide()
 
-        # ── STEP: label the new rectangle (a+b) x (a-b) ──
-        rect_group = VGroup(top_piece, bot_piece)
-        new_outline = SurroundingRectangle(rect_group, color=INK, buff=0.0, stroke_width=STROKE)
-        br_w = dim_brace(
-            rect_group.get_corner(DOWN + LEFT), rect_group.get_corner(DOWN + RIGHT), DOWN, "a+b", INK
-        )
-        br_h = dim_brace(
-            rect_group.get_corner(UP + LEFT), rect_group.get_corner(DOWN + LEFT), LEFT, "a-b", INK
-        )
-        self.play(Create(new_outline), GrowFromCenter(br_w), GrowFromCenter(br_h))
-        self.play(FadeIn(rhs, shift=0.2 * UP))
-        box = SurroundingRectangle(eq, color=COL_A, buff=0.25)
+        # ── STEP: ba = ab ──
+        line3.move_to(ORIGIN)
+        self.play(TransformMatchingTex(line2, line3))
+        self.next_slide()
+
+        # ── STEP: cancel middle terms ──
+        line4.move_to(ORIGIN)
+        note_cancel.next_to(line4, DOWN, buff=0.55)
+        self.play(TransformMatchingTex(line3, line4), FadeIn(note_cancel, shift=0.15 * UP))
+        self.next_slide()
+
+        # ── STEP: rewrite as factorization identity ──
+        line5.move_to(ORIGIN)
+        self.play(FadeOut(note_cancel), TransformMatchingTex(line4, line5))
+        box = SurroundingRectangle(line5, color=COL_A, buff=0.28)
         self.play(Create(box))
-        self.wait(0.5)
+        self.wait(0.35)
         self.next_slide()
 
-        # ── STEP: numeric instance a=5, b=2 ──────────────────────────────────
-        sub = MathTex("a = ", "5", r",\quad b = ", "2").scale(0.78)
+        # ── STEP: numeric check a=5, b=2 ──
+        sub = MathTex("a = ", "5", r",\quad b = ", "2").scale(0.85)
         sub[0].set_color(COL_A)
         sub[1].set_color(COL_A)
         sub[2].set_color(COL_B)
         sub[3].set_color(COL_B)
-        line_a = MathTex("5^2", "-", "2^2", "=", "(5+2)(5-2)").scale(0.7)
+        line_a = MathTex("5^2", "-", "2^2", "=", "(5+2)(5-2)").scale(0.78)
         line_a[0].set_color(COL_A)
         line_a[1].set_color(COL_REMOVE)
         line_a[2].set_color(COL_B)
@@ -435,14 +491,14 @@ class DifferenceOfSquares(_FactorScene):
         line_a[4][3].set_color(COL_B)
         line_a[4][6].set_color(COL_A)
         line_a[4][8].set_color(COL_B)
-        line_b = MathTex("=", "25", "-", "4", "=", "(7)(3)", "=", "21").scale(0.7)
+        line_b = MathTex("=", "25", "-", "4", "=", "(7)(3)", "=", "21").scale(0.78)
         line_b[1].set_color(COL_A)
         line_b[2].set_color(COL_REMOVE)
         line_b[3].set_color(COL_B)
         numeric = VGroup(sub, line_a, line_b).arrange(DOWN, buff=0.3, aligned_edge=LEFT)
         numeric.next_to(box, DOWN, buff=0.55)
-        self.play(FadeIn(sub, shift=0.3 * UP))
+        self.play(FadeIn(sub, shift=0.25 * UP))
         self.play(FadeIn(line_a, shift=0.2 * UP))
         self.play(FadeIn(line_b, shift=0.2 * UP))
-        self.wait(0.5)
+        self.wait(0.4)
         self.next_slide()
