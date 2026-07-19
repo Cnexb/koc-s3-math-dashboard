@@ -71,8 +71,51 @@
     if (dash) a["stroke-dasharray"] = dash;
     p.appendChild(E("path", a));
   }
+  // iPad / phone: WebKit mispositions foreignObject content when the SVG is
+  // scaled by its viewBox, so labels drift away from their anchors. On touch
+  // devices render plain SVG <text> instead (desktop keeps KaTeX).
+  function isTouchUI() {
+    const de = document.documentElement;
+    return de.classList.contains("tablet-touch") || de.classList.contains("phone-compact") ||
+      window.innerWidth <= 767;
+  }
+  const TEX_SUB = { 0: "\u2080", 1: "\u2081", 2: "\u2082", 3: "\u2083", 4: "\u2084" };
+  function latexToPlain(latex) {
+    let s = latex;
+    for (let i = 0; i < 4; i++) {
+      s = s
+        .replace(/\\d?frac\{([^{}]*)\}\{([^{}]*)\}/g, "$1/$2")
+        .replace(/\\text\{([^{}]*)\}/g, "$1")
+        .replace(/\\textcolor\{[^{}]*\}\{([^{}]*)\}/g, "$1");
+    }
+    return s
+      .replace(/\\rightarrow/g, "\u2192")
+      .replace(/\\approx/g, "\u2248")
+      .replace(/\\times/g, "\u00D7")
+      .replace(/\\quad|\\qquad|\\[,;:! ]/g, " ")
+      .replace(/\^\{?2\}?/g, "\u00B2")
+      .replace(/\^\{?3\}?/g, "\u00B3")
+      .replace(/_\{?(\d)\}?/g, (m, d) => TEX_SUB[d] || d)
+      .replace(/[{}\\]/g, "")
+      .replace(/\s+/g, " ")
+      .trim();
+  }
   function tex(p, cx, cy, latex, color, size, w, h) {
     w = w || 110; h = h || 30;
+    if (isTouchUI()) {
+      const str = latexToPlain(latex);
+      let fs = size || 15;
+      const est = str.length * fs * 0.62;
+      if (est > w) fs = Math.max(8, Math.floor(w / (str.length * 0.62)));
+      const t = E("text", {
+        x: cx, y: cy, fill: color, "font-size": fs,
+        "text-anchor": "middle", "dominant-baseline": "middle",
+        "font-family": "JetBrains Mono, monospace", "font-weight": "600",
+      });
+      t.textContent = str;
+      p.appendChild(t);
+      return;
+    }
     const fo = E("foreignObject", { x: cx - w / 2, y: cy - h / 2, width: w, height: h });
     fo.setAttribute("overflow", "visible");
     const div = document.createElement("div");
