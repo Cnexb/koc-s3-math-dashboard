@@ -136,6 +136,10 @@
           sel = i;
           pickChoice();
         });
+        // touch devices have no hover — mirror it while the finger holds the button
+        btn.addEventListener("pointerdown", () => btn.classList.add("hold"));
+        ["pointerup", "pointercancel", "pointerleave"].forEach((t) =>
+          btn.addEventListener(t, () => btn.classList.remove("hold")));
         list.appendChild(btn);
       });
 

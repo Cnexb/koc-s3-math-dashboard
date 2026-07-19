@@ -12,7 +12,7 @@
   <script defer src="../../shared/deck-touch-nav.js"></script>
   <script defer src="../../shared/phone-compact.js?v=20260711-phone"></script>
   <script defer src="../../shared/embed-nav.js?v=20260710-deck-16x9"></script>
-  <script defer src="percentage-game-engine.js"></script>
+  <script defer src="percentage-game-engine.js?v=20260719-hold"></script>
   <script defer src="percentage-calc.js"></script>
   <script defer src="percentage-game.js"></script>
   <script defer src="percentage-bank-game.js"></script>
@@ -244,6 +244,26 @@
       animation: none;
     }
     .pg-opt:active { transform: translate(2px, 2px); box-shadow: 1px 1px 0 #306230; }
+    /* iPad / touch: while a finger holds the button, show the desktop hover look */
+    @media (pointer: coarse) {
+      .pg-opt.hold {
+        background: #0f380f;
+        color: #9bbc0f;
+        box-shadow: inset 0 0 0 2px #8bac0f, 3px 3px 0 #306230;
+        transform: translate(-1px, -1px);
+      }
+      .pg-opt.hold .pg-opt-key {
+        background: #306230;
+        border-color: #9bbc0f;
+        color: #9bbc0f;
+      }
+      .pg-opt.hold .pg-opt-hint { opacity: 0.85; }
+      .pg-opt.hold .pg-opt-cursor {
+        opacity: 1;
+        border-left-color: #9bbc0f;
+        animation: pgcursor 0.55s step-end infinite;
+      }
+    }
     .pg-opt.sel {
       background: #0f380f;
       color: #9bbc0f;
