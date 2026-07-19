@@ -183,46 +183,6 @@ body:has(#panel-worked:not(.hidden)) #panel-worked {
   margin-bottom: 8px;
 }
 
-/* ── WayGround live quiz join ── */
-.wg-wrap {
-  max-width: 720px;
-  margin: 0 auto;
-}
-.wg-card {
-  background: var(--panel, #ffffff);
-  border: 1px solid var(--line, rgba(0, 0, 0, 0.08));
-  border-radius: 16px;
-  padding: 28px 32px;
-  text-align: center;
-  box-shadow: var(--shadow-soft, 0 4px 24px rgba(0, 0, 0, 0.06));
-}
-.wg-title {
-  margin: 0 0 8px;
-  font-size: 26px;
-  font-weight: 700;
-  color: var(--a, #4fc3f7);
-}
-.wg-lead {
-  margin: 0 0 24px;
-  color: var(--dim, #5d544f);
-  font-size: 15px;
-  line-height: 1.5;
-}
-.wg-link {
-  display: inline-block;
-  font-size: 28px;
-  font-weight: 700;
-  color: var(--a, #4fc3f7);
-  text-decoration: none;
-  font-family: "JetBrains Mono", monospace;
-}
-.wg-link:hover { text-decoration: underline; }
-#panel-wayground > .hint {
-  margin-top: 12px;
-  text-align: center;
-  color: var(--dim, #5d544f);
-}
-
 /* ── iPad embed: keep shell compact; Concept deck stays classic 16:9 (width-sized) ── */
 html.tablet-touch.in-embed .panel:not(.hidden) {
   padding-top: 8px;
@@ -286,20 +246,6 @@ html.phone-compact #panel-slides .deck-wrap {
 html.phone-compact #panel-slides .hint {
   margin-top: 8px;
   font-size: 12px;
-}
-html.phone-compact .wg-card {
-  padding: 20px 16px;
-  border-radius: 14px;
-}
-html.phone-compact .wg-title {
-  font-size: 22px;
-}
-html.phone-compact .wg-lead {
-  font-size: 14px;
-  margin-bottom: 18px;
-}
-html.phone-compact .wg-link {
-  font-size: 22px;
 }
 html.phone-compact .quiz-nav-btn,
 html.phone-compact .sf-check-btn,
