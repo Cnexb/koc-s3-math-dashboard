@@ -43,20 +43,11 @@
   }
   function anchorFO(fo, div, w, h) {
     if (!isTouchUI() || !isAppleWebKit()) return;
+    // position:fixed re-anchors the content to the foreignObject box; Safari
+    // already applies the viewBox scale itself, so no extra transform needed.
     div.style.position = "fixed";
     div.style.width = w + "px";
     div.style.height = h + "px";
-    requestAnimationFrame(() => {
-      const svg = fo.ownerSVGElement;
-      if (!svg || !svg.viewBox || !svg.viewBox.baseVal || !svg.viewBox.baseVal.width) return;
-      const rect = svg.getBoundingClientRect();
-      if (!rect.width) return;
-      const k = rect.width / svg.viewBox.baseVal.width;
-      if (Math.abs(k - 1) > 0.02) {
-        div.style.transform = "scale(" + k + ")";
-        div.style.transformOrigin = "0 0";
-      }
-    });
   }
   function gcd(a, b) { a = Math.abs(a); b = Math.abs(b); while (b) { const t = a % b; a = b; b = t; } return a || 1; }
   function fr(n, d) { if (d < 0) { n = -n; d = -d; } const g = gcd(n, d) || 1; return { n: n / g, d: d / g }; }

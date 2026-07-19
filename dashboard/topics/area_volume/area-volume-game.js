@@ -77,20 +77,11 @@
   }
   function anchorFO(fo, div, w, h) {
     if (!isTouchUI() || !isAppleWebKit()) return;
+    // position:fixed re-anchors the content to the foreignObject box; Safari
+    // already applies the viewBox scale itself, so no extra transform needed.
     div.style.position = "fixed";
     div.style.width = w + "px";
     div.style.height = h + "px";
-    requestAnimationFrame(() => {
-      const svg = fo.ownerSVGElement;
-      if (!svg || !svg.viewBox || !svg.viewBox.baseVal || !svg.viewBox.baseVal.width) return;
-      const rect = svg.getBoundingClientRect();
-      if (!rect.width) return;
-      const k = rect.width / svg.viewBox.baseVal.width;
-      if (Math.abs(k - 1) > 0.02) {
-        div.style.transform = "scale(" + k + ")";
-        div.style.transformOrigin = "0 0";
-      }
-    });
   }
   // LaTeX label centred at local (x,y) inside an svg group. Dimension labels get a dark
   // pill background so they stay readable on top of any shape colour.

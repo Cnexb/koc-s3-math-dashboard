@@ -79,28 +79,21 @@
   }
   function anchorFO(fo, div, w, h) {
     if (!isTouchUI() || !isAppleWebKit()) return;
+    // position:fixed re-anchors the content to the foreignObject box; Safari
+    // already applies the viewBox scale itself, so no extra transform needed.
     div.style.position = "fixed";
     div.style.width = w + "px";
     div.style.height = h + "px";
-    requestAnimationFrame(() => {
-      const svg = fo.ownerSVGElement;
-      if (!svg || !svg.viewBox || !svg.viewBox.baseVal || !svg.viewBox.baseVal.width) return;
-      const rect = svg.getBoundingClientRect();
-      if (!rect.width) return;
-      const k = rect.width / svg.viewBox.baseVal.width;
-      if (Math.abs(k - 1) > 0.02) {
-        div.style.transform = "scale(" + k + ")";
-        div.style.transformOrigin = "0 0";
-      }
-    });
   }
   function texSvg(p, cx, cy, latex, color, size, w, h) {
     w = w || 120; h = h || 28;
+    let fs = size || 14;
+    if (isTouchUI()) fs = Math.round(fs * 1.3);   // iPad: labels read too small
     const fo = E("foreignObject", { x: cx - w / 2, y: cy - h / 2, width: w, height: h });
     fo.setAttribute("overflow", "visible");
     const div = document.createElement("div");
     div.style.cssText = "width:" + w + "px;height:" + h + "px;display:flex;align-items:center;" +
-      "justify-content:center;color:" + color + ";font-size:" + (size || 14) + "px;line-height:1;";
+      "justify-content:center;color:" + color + ";font-size:" + fs + "px;line-height:1;";
     km(div, latex);
     fo.appendChild(div); p.appendChild(fo);
     anchorFO(fo, div, w, h);
