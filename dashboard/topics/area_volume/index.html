@@ -7,12 +7,12 @@
   <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/katex@0.16.11/dist/katex.min.css" crossorigin="anonymous">
   <script defer src="https://cdn.jsdelivr.net/npm/katex@0.16.11/dist/katex.min.js" crossorigin="anonymous"></script>
   <link href="https://fonts.googleapis.com/css2?family=Hanken+Grotesk:wght@400;600;700&family=JetBrains+Mono:wght@400;700&display=swap" rel="stylesheet">
-  <link rel="stylesheet" href="../../shared/topic-shell.css?v=20260711-phone">
+  <link rel="stylesheet" href="../../shared/topic-shell.css?v=20260719-ipad">
   <script defer src="../../shared/deck-touch-nav.js"></script>
   <script defer src="../../shared/phone-compact.js?v=20260711-phone"></script>
   <script defer src="../../shared/embed-nav.js?v=20260710-deck-16x9"></script>
   <script defer src="area-volume-tools.js?v=20260719-svgtext"></script>
-  <script defer src="area-volume-game.js"></script>
+  <script defer src="area-volume-game.js?v=20260719-ipad"></script>
   <script defer src="area-volume-quiz.js?v=20260709-av3"></script>
   <style>
     :root {
@@ -115,7 +115,8 @@
       text-transform: uppercase; letter-spacing: .05em; }
     .pal-item { display: flex; align-items: center; gap: 10px; width: 100%; background: var(--panel2);
       border: 1px solid var(--line); border-radius: 11px; padding: 9px 11px; margin-bottom: 9px;
-      cursor: grab; transition: all .15s; color: var(--ink); font: inherit; font-weight: 600; font-size: 14px; }
+      cursor: grab; transition: all .15s; color: var(--ink); font: inherit; font-weight: 600; font-size: 14px;
+      touch-action: none; /* iPad: otherwise Safari steals the drag for scrolling */ }
     .pal-item:hover { border-color: var(--a); transform: translateY(-1px); }
     .pal-item:active { cursor: grabbing; }
     .pal-item svg { width: 34px; height: 34px; flex: none; }
@@ -163,7 +164,7 @@
       box-shadow: 0 2px 8px rgba(0,0,0,.3); transition: transform .12s, box-shadow .12s; touch-action: none; }
     .tray-chip:hover { transform: translateY(-2px); box-shadow: 0 6px 14px rgba(79,195,247,.3); }
     .tray-chip.dragging { opacity: .35; }
-    .tray-chip .katex { color: #fff; }
+    .tray-chip .katex, .tray-chip .katex * { color: #fff !important; }
     .tray-done { color: var(--ab); font-weight: 700; font-size: 15px; padding: 4px 2px; }
 
     /* selected-shape controls */

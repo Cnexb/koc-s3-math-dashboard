@@ -21,6 +21,7 @@
 
     #gallery-view {
       min-height: 100vh;
+      min-height: 100dvh;
       display: flex;
       flex-direction: column;
       position: relative;
@@ -195,7 +196,10 @@
     #viewer-view {
       display: none;
       flex-direction: column;
+      /* dvh tracks the real visible viewport on iPad Safari (100vh includes the
+         collapsed toolbar area, so the iframe bottom became unreachable) */
       height: 100vh;
+      height: 100dvh;
       overflow: hidden;
     }
     #viewer-view.active { display: flex; }

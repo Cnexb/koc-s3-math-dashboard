@@ -8,6 +8,13 @@ body {
   background: var(--bg, #fdfbf7);
   overflow-x: hidden;
 }
+/* iPad embed: stop the rubber-band bounce from chaining into the hub page,
+   which left the topic page stuck once it over-scrolled past the bottom. */
+html.tablet-touch.in-embed,
+html.tablet-touch.in-embed body {
+  overscroll-behavior-y: none;
+  -webkit-overflow-scrolling: touch;
+}
 
 .panel {
   padding: 12px 24px 16px;

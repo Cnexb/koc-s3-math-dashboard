@@ -78,6 +78,12 @@
   function isPhoneCompact() {
     return window.FZPhone ? window.FZPhone.isPhoneCompact() : window.innerWidth <= 767;
   }
+  function isTabletTouch() {
+    if (isPhoneCompact()) return false;
+    const de = document.documentElement;
+    if (de.classList.contains("tablet-touch")) return true;
+    return !!(window.matchMedia && window.matchMedia("(pointer: coarse)").matches);
+  }
   function isIdentityMode() {
     return mode === "expand" || mode === "factorize" || mode === "identify";
   }
@@ -898,6 +904,19 @@
         }
       } else {
         size = Math.min(wrap.clientWidth - 12, window.innerHeight * 0.4, 380);
+      }
+    } else if (isTabletTouch()) {
+      // iPad: the stylesheet box (width:min(100%,760px) + max-height:78vh) goes
+      // non-square in landscape while the canvas buffer stays square, so WebKit
+      // stretches the drawing. Force the CSS box to the exact square buffer size.
+      size = Math.min(wrap.clientWidth - 24, window.innerHeight * 0.62, 640);
+      if (size >= 100) {
+        const cssPx = Math.floor(size);
+        SN.canvas.style.width = cssPx + "px";
+        SN.canvas.style.height = cssPx + "px";
+        SN.canvas.style.maxWidth = "100%";
+        SN.canvas.style.maxHeight = "none";
+        SN.canvas.style.aspectRatio = "1 / 1";
       }
     } else {
       size = Math.min(wrap.clientWidth - 24, window.innerHeight * 0.42, 520);

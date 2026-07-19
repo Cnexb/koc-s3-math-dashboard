@@ -59,10 +59,60 @@
   function renderTexAttrs(root) {
     (root || document).querySelectorAll("[data-tex]").forEach((el) => kx(el, el.getAttribute("data-tex")));
   }
+  // iPad / phone: WebKit mishandles foreignObject content inside viewBox-scaled
+  // SVGs (labels drift or fail to paint). On touch devices render plain SVG
+  // <text> in white on the dark pill instead; desktop keeps KaTeX.
+  function isTouchUI() {
+    const de = document.documentElement;
+    return de.classList.contains("tablet-touch") || de.classList.contains("phone-compact") ||
+      window.innerWidth <= 767 ||
+      (window.matchMedia && window.matchMedia("(pointer: coarse)").matches);
+  }
+  const TEX_SUB = { 0: "\u2080", 1: "\u2081", 2: "\u2082", 3: "\u2083", 4: "\u2084" };
+  function latexToPlain(latex) {
+    let s = String(latex);
+    for (let i = 0; i < 4; i++) {
+      s = s
+        .replace(/\\[dt]?frac\{([^{}]*)\}\{([^{}]*)\}/g, "$1/$2")
+        .replace(/\\tfrac(\d)(\d)/g, "$1/$2")
+        .replace(/\\text\{([^{}]*)\}/g, "$1")
+        .replace(/\\textcolor\{[^{}]*\}\{([^{}]*)\}/g, "$1");
+    }
+    return s
+      .replace(/\\pi/g, "\u03C0")
+      .replace(/\\times/g, "\u00D7")
+      .replace(/\\quad|\\qquad|\\[,;:! ]/g, " ")
+      .replace(/\^\{?2\}?/g, "\u00B2")
+      .replace(/\^\{?3\}?/g, "\u00B3")
+      .replace(/_\{?(\d)\}?/g, (m, d) => TEX_SUB[d] || d)
+      .replace(/[{}\\]/g, "")
+      .replace(/\s+/g, " ")
+      .trim();
+  }
   // LaTeX label centred at local (x,y) inside an svg group. Dimension labels get a dark
   // pill background so they stay readable on top of any shape colour.
   function texAt(parent, x, y, latex, color, size, w, h) {
     w = w || 92; h = h || 26;
+    if (isTouchUI()) {
+      const str = latexToPlain(latex);
+      let fs = size || 14;
+      const maxTextW = w - 14;
+      if (str.length * fs * 0.62 > maxTextW) fs = Math.max(8, Math.floor(maxTextW / (str.length * 0.62)));
+      const bw = Math.min(w, str.length * fs * 0.62 + 14);
+      const bh = fs + 10;
+      parent.appendChild(E("rect", {
+        x: x - bw / 2, y: y - bh / 2, width: bw, height: bh, rx: 7,
+        fill: "rgba(7,13,28,.82)", stroke: "rgba(255,255,255,.14)", "stroke-width": 1,
+      }));
+      const t = E("text", {
+        x, y, fill: "#ffffff", "font-size": fs,
+        "text-anchor": "middle", "dominant-baseline": "middle",
+        "font-family": "JetBrains Mono, monospace", "font-weight": "600",
+      });
+      t.textContent = str;
+      parent.appendChild(t);
+      return;
+    }
     const fo = E("foreignObject", { x: x - w / 2, y: y - h / 2, width: w, height: h });
     fo.setAttribute("overflow", "visible");
     const div = document.createElement("div");
@@ -572,14 +622,20 @@
       const node = els.canvas.querySelector('.shape-g[data-id="' + s.id + '"]');
       if (node) node.setAttribute("transform", shapeTransform(s));
     }
-    function up() {
+    function cleanup() {
       window.removeEventListener("pointermove", move);
       window.removeEventListener("pointerup", up);
+      window.removeEventListener("pointercancel", cancel);
       if (g) g.classList.remove("dragging");
+    }
+    function up() {
+      cleanup();
       if (!moved) openFormula(s);   // a click (not a drag) opens the formula popup
     }
+    function cancel() { cleanup(); }
     window.addEventListener("pointermove", move);
     window.addEventListener("pointerup", up);
+    window.addEventListener("pointercancel", cancel);
   }
 
   // shared ghost-drag helper. onDrop(ev, moved) decides what to do.
@@ -588,19 +644,30 @@
     let moved = false;
     ghostEl.style.left = startX + "px"; ghostEl.style.top = startY + "px";
     document.body.appendChild(ghostEl);
+    function cleanup() {
+      window.removeEventListener("pointermove", move);
+      window.removeEventListener("pointerup", up);
+      window.removeEventListener("pointercancel", cancel);
+      ghostEl.remove();
+    }
     function move(ev) {
       if (Math.abs(ev.clientX - startX) > 4 || Math.abs(ev.clientY - startY) > 4) moved = true;
       ghostEl.style.left = ev.clientX + "px"; ghostEl.style.top = ev.clientY + "px";
       if (onMove) onMove(ev);
     }
     function up(ev) {
-      window.removeEventListener("pointermove", move);
-      window.removeEventListener("pointerup", up);
-      ghostEl.remove();
+      cleanup();
       onDrop(ev, moved);
+    }
+    // iOS Safari fires pointercancel when it steals the touch for scrolling;
+    // without this the ghost stays stuck on screen and the drop never lands.
+    function cancel(ev) {
+      cleanup();
+      onDrop(ev, true);
     }
     window.addEventListener("pointermove", move);
     window.addEventListener("pointerup", up);
+    window.addEventListener("pointercancel", cancel);
   }
 
   // drag a new shape from the palette onto the canvas
