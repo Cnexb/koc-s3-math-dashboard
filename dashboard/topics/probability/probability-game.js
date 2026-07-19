@@ -25,6 +25,39 @@
   function E(tag, attrs) { const e = document.createElementNS(NS, tag); for (const k in attrs) e.setAttribute(k, attrs[k]); return e; }
   function clear(n) { while (n && n.firstChild) n.removeChild(n.firstChild); }
   function km(el, latex) { try { window.katex.render(latex, el, { throwOnError: false, displayMode: false }); } catch (e) { el.textContent = latex; } }
+  // iPad / phone: WebKit (bug 23113) paints foreignObject content without the
+  // svg's viewBox transform, so the dropped fractions drift to the top-left.
+  // Workaround: position:fixed re-anchors the content to the foreignObject box,
+  // and scale(k) matches the on-screen scale. Desktop is untouched.
+  function isTouchUI() {
+    const de = document.documentElement;
+    return de.classList.contains("tablet-touch") || de.classList.contains("phone-compact") ||
+      window.innerWidth <= 767 ||
+      (window.matchMedia && window.matchMedia("(pointer: coarse)").matches);
+  }
+  function isAppleWebKit() {
+    const ua = navigator.userAgent;
+    if (/iPad|iPhone|iPod/.test(ua)) return true;
+    if (navigator.platform === "MacIntel" && navigator.maxTouchPoints > 1) return true; // iPadOS desktop UA
+    return /AppleWebKit/.test(ua) && !/Chrome|CriOS|Edg|Android/.test(ua);
+  }
+  function anchorFO(fo, div, w, h) {
+    if (!isTouchUI() || !isAppleWebKit()) return;
+    div.style.position = "fixed";
+    div.style.width = w + "px";
+    div.style.height = h + "px";
+    requestAnimationFrame(() => {
+      const svg = fo.ownerSVGElement;
+      if (!svg || !svg.viewBox || !svg.viewBox.baseVal || !svg.viewBox.baseVal.width) return;
+      const rect = svg.getBoundingClientRect();
+      if (!rect.width) return;
+      const k = rect.width / svg.viewBox.baseVal.width;
+      if (Math.abs(k - 1) > 0.02) {
+        div.style.transform = "scale(" + k + ")";
+        div.style.transformOrigin = "0 0";
+      }
+    });
+  }
   function gcd(a, b) { a = Math.abs(a); b = Math.abs(b); while (b) { const t = a % b; a = b; b = t; } return a || 1; }
   function fr(n, d) { if (d < 0) { n = -n; d = -d; } const g = gcd(n, d) || 1; return { n: n / g, d: d / g }; }
   function fmul(a, b) { return fr(a.n * b.n, a.d * b.d); }
@@ -50,11 +83,18 @@
       ghost.style.left = ev.clientX + "px"; ghost.style.top = ev.clientY + "px";
       if (onMove) onMove(ev, moved);
     }
-    function up(ev) {
-      window.removeEventListener("pointermove", mv); window.removeEventListener("pointerup", up);
-      ghost.remove(); onDrop(ev, moved);
+    function cleanup() {
+      window.removeEventListener("pointermove", mv);
+      window.removeEventListener("pointerup", up);
+      window.removeEventListener("pointercancel", cn);
+      ghost.remove();
     }
+    function up(ev) { cleanup(); onDrop(ev, moved); }
+    // iOS Safari fires pointercancel when it steals the touch for scrolling;
+    // without this the ghost stays stuck on screen and the drop never lands.
+    function cn(ev) { cleanup(); onDrop(ev, true); }
     window.addEventListener("pointermove", mv); window.addEventListener("pointerup", up);
+    window.addEventListener("pointercancel", cn);
   }
   function slotUnder(ev) { const el = document.elementFromPoint(ev.clientX, ev.clientY); return el && el.closest ? el.closest(".pg-slot") : null; }
 
@@ -170,6 +210,7 @@
       if (tg.checked && v) div.classList.add(feq(v, fr(tg.exp[s.i].n, tg.exp[s.i].d)) ? "ok" : "bad");
       div.addEventListener("click", () => onSlotClick(s.i, div));
       fo.appendChild(div); svg.appendChild(fo);
+      anchorFO(fo, div, w, h);
     });
   }
   function onSlotClick(idx, div) {

@@ -59,60 +59,43 @@
   function renderTexAttrs(root) {
     (root || document).querySelectorAll("[data-tex]").forEach((el) => kx(el, el.getAttribute("data-tex")));
   }
-  // iPad / phone: WebKit mishandles foreignObject content inside viewBox-scaled
-  // SVGs (labels drift or fail to paint). On touch devices render plain SVG
-  // <text> in white on the dark pill instead; desktop keeps KaTeX.
+  // iPad / phone: WebKit (bug 23113) paints foreignObject content without the
+  // svg's viewBox transform, so KaTeX labels drift to the top-left or vanish.
+  // Workaround: position:fixed re-anchors the content to the foreignObject box,
+  // and scale(k) matches the on-screen scale. Desktop is untouched.
   function isTouchUI() {
     const de = document.documentElement;
     return de.classList.contains("tablet-touch") || de.classList.contains("phone-compact") ||
       window.innerWidth <= 767 ||
       (window.matchMedia && window.matchMedia("(pointer: coarse)").matches);
   }
-  const TEX_SUB = { 0: "\u2080", 1: "\u2081", 2: "\u2082", 3: "\u2083", 4: "\u2084" };
-  function latexToPlain(latex) {
-    let s = String(latex);
-    for (let i = 0; i < 4; i++) {
-      s = s
-        .replace(/\\[dt]?frac\{([^{}]*)\}\{([^{}]*)\}/g, "$1/$2")
-        .replace(/\\tfrac(\d)(\d)/g, "$1/$2")
-        .replace(/\\text\{([^{}]*)\}/g, "$1")
-        .replace(/\\textcolor\{[^{}]*\}\{([^{}]*)\}/g, "$1");
-    }
-    return s
-      .replace(/\\pi/g, "\u03C0")
-      .replace(/\\times/g, "\u00D7")
-      .replace(/\\quad|\\qquad|\\[,;:! ]/g, " ")
-      .replace(/\^\{?2\}?/g, "\u00B2")
-      .replace(/\^\{?3\}?/g, "\u00B3")
-      .replace(/_\{?(\d)\}?/g, (m, d) => TEX_SUB[d] || d)
-      .replace(/[{}\\]/g, "")
-      .replace(/\s+/g, " ")
-      .trim();
+  function isAppleWebKit() {
+    const ua = navigator.userAgent;
+    if (/iPad|iPhone|iPod/.test(ua)) return true;
+    if (navigator.platform === "MacIntel" && navigator.maxTouchPoints > 1) return true; // iPadOS desktop UA
+    return /AppleWebKit/.test(ua) && !/Chrome|CriOS|Edg|Android/.test(ua);
+  }
+  function anchorFO(fo, div, w, h) {
+    if (!isTouchUI() || !isAppleWebKit()) return;
+    div.style.position = "fixed";
+    div.style.width = w + "px";
+    div.style.height = h + "px";
+    requestAnimationFrame(() => {
+      const svg = fo.ownerSVGElement;
+      if (!svg || !svg.viewBox || !svg.viewBox.baseVal || !svg.viewBox.baseVal.width) return;
+      const rect = svg.getBoundingClientRect();
+      if (!rect.width) return;
+      const k = rect.width / svg.viewBox.baseVal.width;
+      if (Math.abs(k - 1) > 0.02) {
+        div.style.transform = "scale(" + k + ")";
+        div.style.transformOrigin = "0 0";
+      }
+    });
   }
   // LaTeX label centred at local (x,y) inside an svg group. Dimension labels get a dark
   // pill background so they stay readable on top of any shape colour.
   function texAt(parent, x, y, latex, color, size, w, h) {
     w = w || 92; h = h || 26;
-    if (isTouchUI()) {
-      const str = latexToPlain(latex);
-      let fs = size || 14;
-      const maxTextW = w - 14;
-      if (str.length * fs * 0.62 > maxTextW) fs = Math.max(8, Math.floor(maxTextW / (str.length * 0.62)));
-      const bw = Math.min(w, str.length * fs * 0.62 + 14);
-      const bh = fs + 10;
-      parent.appendChild(E("rect", {
-        x: x - bw / 2, y: y - bh / 2, width: bw, height: bh, rx: 7,
-        fill: "rgba(7,13,28,.82)", stroke: "rgba(255,255,255,.14)", "stroke-width": 1,
-      }));
-      const t = E("text", {
-        x, y, fill: "#ffffff", "font-size": fs,
-        "text-anchor": "middle", "dominant-baseline": "middle",
-        "font-family": "JetBrains Mono, monospace", "font-weight": "600",
-      });
-      t.textContent = str;
-      parent.appendChild(t);
-      return;
-    }
     const fo = E("foreignObject", { x: x - w / 2, y: y - h / 2, width: w, height: h });
     fo.setAttribute("overflow", "visible");
     const div = document.createElement("div");
@@ -124,6 +107,7 @@
     div.appendChild(pill);
     fo.appendChild(div);
     parent.appendChild(fo);
+    anchorFO(fo, div, w, h);
   }
 
   const r1 = (x) => Math.round(x * 10) / 10;
