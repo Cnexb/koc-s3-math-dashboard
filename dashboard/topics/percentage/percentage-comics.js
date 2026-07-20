@@ -13,18 +13,18 @@
         {
           id: "c1q1",
           prompt:
-            "A jacket is marked HK$320. The shop offers 20% off, then another 10% off the discounted price. Kai thinks that is 30% off in total, so he pays 70% of HK$320 = HK$224. What is the correct final price?",
-          choices: ["HK$224", "HK$230.40", "HK$256", "HK$288"],
-          answer: 1,
+            "A jacket is marked HK$320. The shop offers 20% off, then another 10% off the discounted price. What is the final price?",
+          choices: ["HK$224", "HK$256", "HK$288", "HK$230.40"],
+          answer: 3,
           explain:
-            "Do not add 20% and 10%. Apply successive change factors: 320 × 80% × 90% = HK$230.40.",
+            "Apply successive change factors: 320 × 80% × 90% = HK$230.40 (not 30% off the original).",
         },
         {
           id: "c1q2",
           prompt:
             "An item costs HK$500 before any discount. After 15% off, then 10% off the discounted price, what single discount on the original HK$500 gives the same final price? (1 d.p.)",
-          choices: ["20.0%", "23.5%", "25.0%", "24.0%"],
-          answer: 1,
+          choices: ["25.0%", "24.0%", "23.5%", "20.0%"],
+          answer: 2,
           explain:
             "0.85 × 0.90 = 0.765, so the buyer pays 76.5% of the original — equivalent to 23.5% off, not 25%.",
         },
@@ -39,20 +39,20 @@
         {
           id: "c2q1",
           prompt:
-            "A pin badge has cost price HK$12 and marked price HK$30. After 40% off the marked price, what is the selling price?",
-          choices: ["HK$12", "HK$18", "HK$24", "HK$30"],
-          answer: 1,
+            "A pin badge has marked price HK$30. After 40% off the marked price, what is the selling price?",
+          choices: ["HK$12", "HK$24", "HK$30", "HK$18"],
+          answer: 3,
           explain:
             "Discount is taken from the marked price: 30 × 60% = HK$18.",
         },
         {
           id: "c2q2",
           prompt:
-            "The badge costs HK$12 and sells for HK$18. What is the profit percentage based on cost price?",
-          choices: ["33⅓%", "50%", "25%", "150%"],
-          answer: 1,
+            "A pin badge costs HK$12 and sells for HK$20. What is the profit percentage based on cost price?",
+          choices: ["40%", "50%", "66⅔%", "167%"],
+          answer: 2,
           explain:
-            "Profit = 18 − 12 = HK$6. Profit % = 6 ÷ 12 × 100% = 50%. Percent profit uses cost as the base.",
+            "Profit = 20 − 12 = HK$8. Profit % = 8 ÷ 12 × 100% = 66⅔%. The base is the cost price.",
         },
       ],
     },
@@ -66,8 +66,8 @@
           id: "c3q1",
           prompt:
             "Principal HK$8,000 at 5% p.a. simple interest for 4 years. What is the final amount?",
-          choices: ["HK$9,200", "HK$9,600", "HK$9,648", "HK$10,000"],
-          answer: 1,
+          choices: ["HK$9,200", "HK$9,648", "HK$8,400", "HK$9,600"],
+          answer: 3,
           explain:
             "I = P × r × t = 8000 × 5% × 4 = HK$1,600. Final amount = 8000 + 1600 = HK$9,600.",
         },
@@ -75,8 +75,8 @@
           id: "c3q2",
           prompt:
             "HK$2,000 is invested at 6% p.a. simple interest. How much interest is earned in year 2 alone?",
-          choices: ["HK$120", "HK$127.20", "HK$212", "HK$240"],
-          answer: 0,
+          choices: ["HK$127.20", "HK$240", "HK$120", "HK$212"],
+          answer: 2,
           explain:
             "Each year earns the same interest on the original principal: 2000 × 6% = HK$120.",
         },
@@ -95,10 +95,10 @@
           choices: [
             "HK$10,500.00",
             "HK$11,000.00",
-            "HK$11,025.00",
             "HK$11,576.25",
+            "HK$11,025.00",
           ],
-          answer: 2,
+          answer: 3,
           explain:
             "Year 1: 10000 × 1.05 = 10500. Year 2: 10500 × 1.05 = HK$11,025.00.",
         },
@@ -109,10 +109,10 @@
           choices: [
             "Simple interest",
             "Compounded annually",
-            "Compounded monthly",
             "All three are equal",
+            "Compounded monthly",
           ],
-          answer: 2,
+          answer: 3,
           explain:
             "Compound interest grows the balance; more frequent compounding earns interest on interest sooner, so monthly is greatest.",
         },
@@ -130,11 +130,11 @@
             "Mei has HK$6,000 in savings and Jo has HK$4,000. Mei’s amount is 50% more than Jo’s. The HK$2,000 difference is 50% of:",
           choices: [
             "Mei’s HK$6,000",
-            "Jo’s HK$4,000",
             "their total HK$10,000",
             "HK$5,000",
+            "Jo’s HK$4,000",
           ],
-          answer: 1,
+          answer: 3,
           explain:
             "“50% more than Jo’s” uses Jo’s savings as the base: 4000 × 50% = 2000.",
         },
@@ -142,8 +142,8 @@
           id: "c5q2",
           prompt:
             "If P is 20% more than Q, then Q is how much less than P (to the nearest whole percent)?",
-          choices: ["20% less", "17% less", "25% less", "80% less"],
-          answer: 1,
+          choices: ["20% less", "25% less", "17% less", "80% less"],
+          answer: 2,
           explain:
             "If Q = 100, then P = 120. The same gap is 20 ÷ 120 × 100% ≈ 17% less than P — the base is the amount after “than”.",
         },
@@ -158,6 +158,23 @@
     if (!panel || !subnav || !stage) return;
 
     const state = { index: 0, answers: {} };
+    const chipButtons = [];
+
+    function isChapterComplete(comic) {
+      return comic.checks.every(function (q) {
+        return Object.prototype.hasOwnProperty.call(state.answers, q.id);
+      });
+    }
+
+    function goToChapter(index) {
+      if (index < 0 || index >= COMICS.length) return;
+      state.index = index;
+      chipButtons.forEach(function (chip, j) {
+        chip.classList.toggle("active", j === index);
+      });
+      render();
+      stage.scrollIntoView({ behavior: "smooth", block: "start" });
+    }
 
     COMICS.forEach(function (comic, i) {
       const btn = document.createElement("button");
@@ -166,13 +183,10 @@
       btn.dataset.comic = comic.id;
       btn.textContent = comic.title;
       btn.addEventListener("click", function () {
-        state.index = i;
-        subnav.querySelectorAll(".chip").forEach(function (c) {
-          c.classList.toggle("active", c === btn);
-        });
-        render();
+        goToChapter(i);
       });
       subnav.appendChild(btn);
+      chipButtons.push(btn);
     });
 
     function render() {
@@ -212,6 +226,22 @@
         checkWrap.appendChild(buildCheckCard(comic, q, qi));
       });
       article.appendChild(checkWrap);
+
+      if (isChapterComplete(comic) && state.index < COMICS.length - 1) {
+        const nav = document.createElement("div");
+        nav.className = "comic-chapter-nav";
+        const nextComic = COMICS[state.index + 1];
+        const nextBtn = document.createElement("button");
+        nextBtn.type = "button";
+        nextBtn.className = "quiz-nav-btn primary comic-chapter-next";
+        nextBtn.textContent = "Next chapter: " + nextComic.title + " \u2192";
+        nextBtn.addEventListener("click", function () {
+          goToChapter(state.index + 1);
+        });
+        nav.appendChild(nextBtn);
+        article.appendChild(nav);
+      }
+
       stage.appendChild(article);
     }
 
