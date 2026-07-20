@@ -64,7 +64,7 @@
   // iPad / phone: WebKit (bug 23113) paints foreignObject content without the
   // svg's viewBox transform, so KaTeX labels drift to the top-left or vanish.
   // Workaround: position:fixed re-anchors the content to the foreignObject box,
-  // and scale(k) matches the on-screen scale. Desktop is untouched.
+  // with percentage sizes so flex centring still works. Desktop is untouched.
   function isTouchUI() {
     const de = document.documentElement;
     return de.classList.contains("tablet-touch") || de.classList.contains("phone-compact") ||
@@ -79,24 +79,68 @@
   }
   function anchorFO(fo, div, w, h) {
     if (!isTouchUI() || !isAppleWebKit()) return;
-    // position:fixed re-anchors the content to the foreignObject box; Safari
-    // already applies the viewBox scale itself, so no extra transform needed.
-    div.style.position = "fixed";
-    div.style.width = w + "px";
-    div.style.height = h + "px";
+    // position:fixed re-anchors to the foreignObject box (WebKit bug 23113).
+    // Pixel width/height are ignored (shrink-wrap), so centre with left/top 50%
+    // + translate(-50%,-50%). Rewrite cssText in one shot — piecemeal style
+    // updates are unreliable inside a foreignObject on WebKit.
+    const color = div.dataset.color || div.style.color || "#e8eefc";
+    const fs = parseFloat(div.dataset.basefs || div.style.fontSize) || 14;
+    const latex = div.dataset.latex || "";
+    const svg = fo.ownerSVGElement;
+    const paint = (s) => {
+      div.style.cssText = "position:fixed;left:50%;top:52%;transform:translate(-50%,-50%);" +
+        "white-space:nowrap;display:flex;align-items:center;justify-content:center;" +
+        "color:" + color + ";font-size:" + (fs * s) + "px;line-height:1;";
+      if (latex) km(div, latex);
+    };
+    const apply = () => {
+      const vb = svg && svg.viewBox && svg.viewBox.baseVal;
+      const cw = svg ? svg.getBoundingClientRect().width : 0;
+      if (!vb || !vb.width || !cw) { paint(1); return false; }
+      paint(cw / vb.width);
+      return true;
+    };
+    if (!apply() && typeof ResizeObserver !== "undefined" && svg) {
+      const ro = new ResizeObserver(() => { if (apply()) ro.disconnect(); });
+      ro.observe(svg);
+    }
+  }
+  // Labels are measured off-screen so a long label can be shrunk to fit its pill
+  // (measurement is in viewBox units; the scale above then matches the screen).
+  let measureBox = null;
+  function fitFontSize(latex, fs, maxW) {
+    if (!measureBox) {
+      measureBox = document.createElement("div");
+      measureBox.style.cssText = "position:absolute;left:-9999px;top:0;visibility:hidden;white-space:nowrap;line-height:1;";
+      document.body.appendChild(measureBox);
+    }
+    measureBox.style.fontSize = fs + "px";
+    km(measureBox, latex);
+    const mw = measureBox.getBoundingClientRect().width;
+    measureBox.textContent = "";
+    if (mw > maxW && mw > 0) fs = Math.max(9, Math.floor(fs * (maxW / mw) * 0.97));
+    return fs;
   }
   function texSvg(p, cx, cy, latex, color, size, w, h) {
     w = w || 120; h = h || 28;
     let fs = size || 14;
-    if (isTouchUI()) fs = Math.round(fs * 1.3);   // iPad: labels read too small
+    if (isTouchUI()) fs = fitFontSize(latex, fs, w);
     const fo = E("foreignObject", { x: cx - w / 2, y: cy - h / 2, width: w, height: h });
     fo.setAttribute("overflow", "visible");
     const div = document.createElement("div");
-    div.style.cssText = "width:" + w + "px;height:" + h + "px;display:flex;align-items:center;" +
-      "justify-content:center;color:" + color + ";font-size:" + fs + "px;line-height:1;";
-    km(div, latex);
-    fo.appendChild(div); p.appendChild(fo);
-    anchorFO(fo, div, w, h);
+    div.dataset.latex = latex;
+    div.dataset.color = color;
+    div.dataset.basefs = String(fs);
+    if (isTouchUI() && isAppleWebKit()) {
+      // styles + KaTeX applied inside anchorFO once the svg scale is known
+      fo.appendChild(div); p.appendChild(fo);
+      anchorFO(fo, div, w, h);
+    } else {
+      div.style.cssText = "width:" + w + "px;height:" + h + "px;display:flex;align-items:center;" +
+        "justify-content:center;color:" + color + ";font-size:" + fs + "px;line-height:1;";
+      km(div, latex);
+      fo.appendChild(div); p.appendChild(fo);
+    }
   }
   const tc = (c, s) => `\\textcolor{${c}}{${s}}`;
   function gcd(a, b) { a = Math.abs(a); b = Math.abs(b); while (b) { [a, b] = [b, a % b]; } return a || 1; }

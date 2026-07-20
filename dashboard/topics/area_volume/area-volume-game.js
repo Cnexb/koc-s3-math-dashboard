@@ -62,7 +62,7 @@
   // iPad / phone: WebKit (bug 23113) paints foreignObject content without the
   // svg's viewBox transform, so KaTeX labels drift to the top-left or vanish.
   // Workaround: position:fixed re-anchors the content to the foreignObject box,
-  // and scale(k) matches the on-screen scale. Desktop is untouched.
+  // with percentage sizes so flex centring still works. Desktop is untouched.
   function isTouchUI() {
     const de = document.documentElement;
     return de.classList.contains("tablet-touch") || de.classList.contains("phone-compact") ||
@@ -77,11 +77,35 @@
   }
   function anchorFO(fo, div, w, h) {
     if (!isTouchUI() || !isAppleWebKit()) return;
-    // position:fixed re-anchors the content to the foreignObject box; Safari
-    // already applies the viewBox scale itself, so no extra transform needed.
-    div.style.position = "fixed";
-    div.style.width = w + "px";
-    div.style.height = h + "px";
+    // position:fixed re-anchors to the foreignObject box (WebKit bug 23113).
+    // Pixel width/height are ignored (shrink-wrap), so centre with left/top 50%
+    // + translate(-50%,-50%). Rewrite cssText in one shot — piecemeal style
+    // updates are unreliable inside a foreignObject on WebKit.
+    // Dimension labels keep their pill <span>; scale its font to match the svg.
+    const pill = div.querySelector("span");
+    const target = pill || div;
+    const color = target.style.color || "#ffffff";
+    const fs = parseFloat(target.style.fontSize) || 14;
+    const pillExtra = pill
+      ? "background:rgba(7,13,28,.82);border:1px solid rgba(255,255,255,.14);border-radius:7px;padding:3px 7px;"
+      : "";
+    const svg = fo.ownerSVGElement;
+    const paint = (s) => {
+      div.style.cssText = "position:fixed;left:50%;top:50%;transform:translate(-50%,-50%);" +
+        "white-space:nowrap;display:flex;align-items:center;justify-content:center;";
+      target.style.cssText = "color:" + color + ";font-size:" + (fs * s) + "px;line-height:1;white-space:nowrap;" + pillExtra;
+    };
+    const apply = () => {
+      const vb = svg && svg.viewBox && svg.viewBox.baseVal;
+      const cw = svg ? svg.getBoundingClientRect().width : 0;
+      if (!vb || !vb.width || !cw) { paint(1); return false; }
+      paint(cw / vb.width);
+      return true;
+    };
+    if (!apply() && typeof ResizeObserver !== "undefined" && svg) {
+      const ro = new ResizeObserver(() => { if (apply()) ro.disconnect(); });
+      ro.observe(svg);
+    }
   }
   // LaTeX label centred at local (x,y) inside an svg group. Dimension labels get a dark
   // pill background so they stay readable on top of any shape colour.

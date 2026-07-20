@@ -74,7 +74,7 @@
   // iPad / phone: WebKit (bug 23113) paints foreignObject content without the
   // svg's viewBox transform, so KaTeX labels drift to the top-left or vanish.
   // Workaround: position:fixed re-anchors the content to the foreignObject box,
-  // and scale(k) matches the on-screen scale. Desktop is untouched.
+  // with percentage sizes so flex centring still works. Desktop is untouched.
   function isTouchUI() {
     const de = document.documentElement;
     return de.classList.contains("tablet-touch") || de.classList.contains("phone-compact") ||
@@ -89,11 +89,29 @@
   }
   function anchorFO(fo, div, w, h) {
     if (!isTouchUI() || !isAppleWebKit()) return;
-    // position:fixed re-anchors the content to the foreignObject box; Safari
-    // already applies the viewBox scale itself, so no extra transform needed.
-    div.style.position = "fixed";
-    div.style.width = w + "px";
-    div.style.height = h + "px";
+    // position:fixed re-anchors to the foreignObject box (WebKit bug 23113).
+    // Pixel width/height are ignored (shrink-wrap), so centre with left/top 50%
+    // + translate(-50%,-50%). Rewrite cssText in one shot — piecemeal style
+    // updates are unreliable inside a foreignObject on WebKit.
+    const color = div.style.color || "#e8eefc";
+    const fs = parseFloat(div.style.fontSize) || 14;
+    const svg = fo.ownerSVGElement;
+    const paint = (s) => {
+      div.style.cssText = "position:fixed;left:50%;top:50%;transform:translate(-50%,-50%);" +
+        "white-space:nowrap;display:flex;align-items:center;justify-content:center;" +
+        "color:" + color + ";font-size:" + (fs * s) + "px;line-height:1;";
+    };
+    const apply = () => {
+      const vb = svg && svg.viewBox && svg.viewBox.baseVal;
+      const cw = svg ? svg.getBoundingClientRect().width : 0;
+      if (!vb || !vb.width || !cw) { paint(1); return false; }
+      paint(cw / vb.width);
+      return true;
+    };
+    if (!apply() && typeof ResizeObserver !== "undefined" && svg) {
+      const ro = new ResizeObserver(() => { if (apply()) ro.disconnect(); });
+      ro.observe(svg);
+    }
   }
   function tex(p, cx, cy, latex, color, size, w, h) {
     w = w || 110; h = h || 30;

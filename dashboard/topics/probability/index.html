@@ -11,8 +11,8 @@
   <script defer src="../../shared/deck-touch-nav.js"></script>
   <script defer src="../../shared/phone-compact.js?v=20260711-phone"></script>
   <script defer src="../../shared/embed-nav.js?v=20260710-deck-16x9"></script>
-  <script defer src="probability-tools.js?v=20260719-center"></script>
-  <script defer src="probability-game.js?v=20260719-center"></script>
+  <script defer src="probability-tools.js?v=20260719-fo2"></script>
+  <script defer src="probability-game.js?v=20260719-fo2"></script>
   <script defer src="probability-quiz.js?v=20260709-prob-q7"></script>
   <style>
     :root {
@@ -198,16 +198,19 @@
       background: var(--panel2); border: 1px solid var(--a); color: var(--ink); border-radius: 10px; padding: 8px 12px;
       font-size: 15px; box-shadow: 0 10px 26px rgba(0,0,0,.5); }
     .drag-ghost .katex { color: var(--ink); }
-    /* tree branch slots (rendered inside SVG via foreignObject) */
+    /* tree branch slots (rendered inside SVG via foreignObject; fill comes from
+       an opaque SVG <rect> drawn behind the FO — WebKit often skips CSS backgrounds
+       inside foreignObject, which made filled light-blue slots look transparent) */
     .pg-slot { width: 100%; height: 100%; display: flex; align-items: center; justify-content: center;
-      background: rgba(15,23,42,.85); border: 1.5px dashed var(--line); border-radius: 9px; color: var(--dim);
+      background: transparent; border: none; border-radius: 9px; color: var(--dim);
       font-size: 14px; cursor: pointer; transition: all .15s; }
     .pg-slot .katex { color: var(--ink); }
     .pg-slot.empty::after { content: "?"; color: var(--dim); font-weight: 700; }
-    .pg-slot.filled { border-style: solid; border-color: var(--a); background: #ddf1fc; }
-    .pg-slot.hover { border-color: var(--fav); background: rgba(255,213,79,.14); }
-    .pg-slot.ok { border-color: var(--tot); background: rgba(102,187,106,.16); }
-    .pg-slot.bad { border-color: var(--red); background: rgba(240,98,146,.16); animation: pgshake .35s; }
+    .pg-slot.filled { color: #0b1324; }
+    .pg-slot.filled .katex { color: #0b1324; }
+    .pg-slot.hover { background: rgba(255,213,79,.22); }
+    .pg-slot.ok { }
+    .pg-slot.bad { animation: pgshake .35s; }
     @keyframes pgshake { 0%,100% { transform: translateX(0); } 25% { transform: translateX(-3px); } 75% { transform: translateX(3px); } }
     .pg-actions { display: flex; align-items: center; gap: 12px; flex-wrap: wrap; }
     .pg-feedback { font-size: 14px; font-weight: 600; }

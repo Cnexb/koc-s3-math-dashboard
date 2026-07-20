@@ -28,7 +28,7 @@
   // iPad / phone: WebKit (bug 23113) paints foreignObject content without the
   // svg's viewBox transform, so the dropped fractions drift to the top-left.
   // Workaround: position:fixed re-anchors the content to the foreignObject box,
-  // and scale(k) matches the on-screen scale. Desktop is untouched.
+  // with percentage sizes so flex centring still works. Desktop is untouched.
   function isTouchUI() {
     const de = document.documentElement;
     return de.classList.contains("tablet-touch") || de.classList.contains("phone-compact") ||
@@ -43,11 +43,34 @@
   }
   function anchorFO(fo, div, w, h) {
     if (!isTouchUI() || !isAppleWebKit()) return;
-    // position:fixed re-anchors the content to the foreignObject box; Safari
-    // already applies the viewBox scale itself, so no extra transform needed.
-    div.style.position = "fixed";
-    div.style.width = w + "px";
-    div.style.height = h + "px";
+    // position:fixed re-anchors to the foreignObject box (WebKit bug 23113).
+    // Pixel width/height are ignored (shrink-wrap), so centre with left/top 50%
+    // + translate(-50%,-50%). Rewrite cssText in one shot — piecemeal style
+    // updates are unreliable inside a foreignObject on WebKit.
+    const cls = div.className;
+    const color = /\bfilled\b/.test(cls) ? "#0b1324"
+      : (div.style.color || window.getComputedStyle(div).color || "#e8eefc");
+    const fs = parseFloat(div.style.fontSize) || parseFloat(window.getComputedStyle(div).fontSize) || 14;
+    div.dataset.basefs = String(fs);
+    const svg = fo.ownerSVGElement;
+    const paint = (s) => {
+      div.style.cssText = "position:fixed;left:50%;top:55%;transform:translate(-50%,-50%);" +
+        "white-space:nowrap;display:flex;align-items:center;justify-content:center;" +
+        "background:transparent;border:none;color:" + color + ";font-size:" + (fs * s) + "px;line-height:1;";
+      div.className = cls; // keep .pg-slot / .filled / .empty for ::after and katex colour
+      if (div.dataset.latex) km(div, div.dataset.latex);
+    };
+    const apply = () => {
+      const vb = svg && svg.viewBox && svg.viewBox.baseVal;
+      const cw = svg ? svg.getBoundingClientRect().width : 0;
+      if (!vb || !vb.width || !cw) { paint(1); return false; }
+      paint(cw / vb.width);
+      return true;
+    };
+    if (!apply() && typeof ResizeObserver !== "undefined" && svg) {
+      const ro = new ResizeObserver(() => { if (apply()) ro.disconnect(); });
+      ro.observe(svg);
+    }
   }
   function gcd(a, b) { a = Math.abs(a); b = Math.abs(b); while (b) { const t = a % b; a = b; b = t; } return a || 1; }
   function fr(n, d) { if (d < 0) { n = -n; d = -d; } const g = gcd(n, d) || 1; return { n: n / g, d: d / g }; }
@@ -178,30 +201,81 @@
   function branch(svg, from, to) {
     svg.appendChild(E("line", { x1: from[0], y1: from[1], x2: to[0], y2: to[1], stroke: C.line, "stroke-width": 2 }));
   }
+  // Draw a branch as two segments that stop at a slot box, so the line can never
+  // show "through" the slot (WebKit foreignObject compositing punches a hole
+  // through sibling SVG fills back to earlier strokes).
+  function branchViaSlot(svg, from, to, slot) {
+    const sx = slot.p[0];
+    const sy = slot.p[1];
+    const hw = 40; // half-gap: wider than the 30px slot half-width so stubs never peek under the FO
+    const dx = to[0] - from[0];
+    const dy = to[1] - from[1];
+    const len = Math.hypot(dx, dy) || 1;
+    const ux = dx / len;
+    const uy = dy / len;
+    const tMid = (sx - from[0]) * ux + (sy - from[1]) * uy;
+    const half = hw / Math.max(Math.abs(ux), 0.25);
+    const t0 = Math.max(0, tMid - half);
+    const t1 = Math.min(len, tMid + half);
+    svg.appendChild(E("line", { x1: from[0], y1: from[1], x2: from[0] + ux * t0, y2: from[1] + uy * t0, stroke: C.line, "stroke-width": 2 }));
+    svg.appendChild(E("line", { x1: from[0] + ux * t1, y1: from[1] + uy * t1, x2: to[0], y2: to[1], stroke: C.line, "stroke-width": 2 }));
+  }
   function renderTree() {
     const svg = els.tgTree; clear(svg);
     const O = tg.otherCol, oL = O;   // letter for other colour = its key (G/B)
-    branch(svg, ROOT, N1.R); branch(svg, ROOT, N1.O);
-    branch(svg, N1.R, N2.RR); branch(svg, N1.R, N2.RO);
-    branch(svg, N1.O, N2.OR); branch(svg, N1.O, N2.OO);
+    // slot 0 on ROOT→N1.R, 1 on ROOT→N1.O, 2..5 on the four second-level branches
+    branchViaSlot(svg, ROOT, N1.R, SLOTS[0]);
+    branchViaSlot(svg, ROOT, N1.O, SLOTS[1]);
+    branchViaSlot(svg, N1.R, N2.RR, SLOTS[2]);
+    branchViaSlot(svg, N1.R, N2.RO, SLOTS[3]);
+    branchViaSlot(svg, N1.O, N2.OR, SLOTS[4]);
+    branchViaSlot(svg, N1.O, N2.OO, SLOTS[5]);
     svg.appendChild(E("circle", { cx: ROOT[0], cy: ROOT[1], r: 7, fill: C.dim }));
     node(svg, N1.R, "R", "R"); node(svg, N1.O, O, oL);
     leafLabel(svg, N2.RR, "R , R", "R"); leafLabel(svg, N2.RO, "R , " + oL, O);
     leafLabel(svg, N2.OR, oL + " , R", "R"); leafLabel(svg, N2.OO, oL + " , " + oL, O);
-    // slots as foreignObject overlays so they scale with the svg
+    // slots: opaque SVG rect behind a transparent foreignObject overlay
+    // (WebKit often fails to paint CSS backgrounds inside foreignObject)
     SLOTS.forEach((s) => {
       const w = 60, h = 30;
+      const v = tg.assigned[s.i];
+      let fill = "#0f172a", stroke = C.line, dash = "4 3";
+      if (v) { fill = "#b3e5fc"; stroke = C.a; dash = ""; }
+      if (tg.checked && v) {
+        const ok = feq(v, fr(tg.exp[s.i].n, tg.exp[s.i].d));
+        fill = ok ? "#c8e6c9" : "#f8bbd0";
+        stroke = ok ? C.tot : C.red;
+        dash = "";
+      }
+      // page-coloured eraser first: WebKit foreignObject can punch a hole through
+      // sibling fills back to earlier strokes; a cream rect under the blue one
+      // means any punch-through shows the card colour, not the branch line.
+      svg.appendChild(E("rect", {
+        x: s.p[0] - w / 2 - 1, y: s.p[1] - h / 2 - 1, width: w + 2, height: h + 2, rx: 10,
+        fill: "#fdfbf7",
+      }));
+      const rect = E("rect", {
+        x: s.p[0] - w / 2, y: s.p[1] - h / 2, width: w, height: h, rx: 9,
+        fill, stroke, "stroke-width": 1.5,
+      });
+      if (dash) rect.setAttribute("stroke-dasharray", dash);
+      svg.appendChild(rect);
+
       const fo = E("foreignObject", { x: s.p[0] - w / 2, y: s.p[1] - h / 2, width: w, height: h });
       const div = document.createElement("div");
       div.className = "pg-slot";
       div.dataset.idx = s.i;
-      const v = tg.assigned[s.i];
-      if (v) { km(div, fracTex(v)); div.classList.add("filled"); }
+      if (v) { div.dataset.latex = fracTex(v); div.classList.add("filled"); }
       else { div.classList.add("empty"); }
       if (tg.checked && v) div.classList.add(feq(v, fr(tg.exp[s.i].n, tg.exp[s.i].d)) ? "ok" : "bad");
       div.addEventListener("click", () => onSlotClick(s.i, div));
       fo.appendChild(div); svg.appendChild(fo);
-      anchorFO(fo, div, w, h);
+      if (isTouchUI() && isAppleWebKit()) {
+        anchorFO(fo, div, w, h); // styles + KaTeX applied inside
+      } else {
+        if (v) km(div, fracTex(v));
+        anchorFO(fo, div, w, h);
+      }
     });
   }
   function onSlotClick(idx, div) {
