@@ -13,25 +13,20 @@
         {
           id: "c1q1",
           prompt:
-            "A calculator costs HK$240. After 15% off, then another 10% off the discounted price, what is the final price?",
-          choices: [
-            "HK$180",
-            "HK$183.60",
-            "HK$204",
-            "HK$216",
-          ],
+            "A jacket is marked HK$320. The shop offers 20% off, then another 10% off the discounted price. Kai thinks that is 30% off in total, so he pays 70% of HK$320 = HK$224. What is the correct final price?",
+          choices: ["HK$224", "HK$230.40", "HK$256", "HK$288"],
           answer: 1,
           explain:
-            "Successive discounts: 240 × 85% × 90% = 204 × 0.9 = HK$183.60. Not 15% + 10% = 25% off.",
+            "Do not add 20% and 10%. Apply successive change factors: 320 × 80% × 90% = HK$230.40.",
         },
         {
           id: "c1q2",
           prompt:
-            "True or false: a 15% discount followed by a 10% discount is the same as a single 25% discount.",
-          choices: ["True", "False"],
+            "An item costs HK$500 before any discount. After 15% off, then 10% off the discounted price, what single discount on the original HK$500 gives the same final price? (1 d.p.)",
+          choices: ["20.0%", "23.5%", "25.0%", "24.0%"],
           answer: 1,
           explain:
-            "False. The second 10% is taken from the reduced price, so the overall discount is less than 25%.",
+            "0.85 × 0.90 = 0.765, so the buyer pays 76.5% of the original — equivalent to 23.5% off, not 25%.",
         },
       ],
     },
@@ -44,20 +39,20 @@
         {
           id: "c2q1",
           prompt:
-            "A bookmark has cost price HK$20 and marked price HK$40. After 25% off the marked price, what is the selling price?",
-          choices: ["HK$10", "HK$20", "HK$30", "HK$40"],
-          answer: 2,
+            "A pin badge has cost price HK$12 and marked price HK$30. After 40% off the marked price, what is the selling price?",
+          choices: ["HK$12", "HK$18", "HK$24", "HK$30"],
+          answer: 1,
           explain:
-            "Discount = 40 × 25% = HK$10. Selling price = marked − discount = 40 − 10 = HK$30.",
+            "Discount is taken from the marked price: 30 × 60% = HK$18.",
         },
         {
           id: "c2q2",
           prompt:
-            "With cost HK$20 and selling price HK$30, what is the profit percentage (based on cost)?",
-          choices: ["25%", "33⅓%", "50%", "150%"],
-          answer: 2,
+            "The badge costs HK$12 and sells for HK$18. What is the profit percentage based on cost price?",
+          choices: ["33⅓%", "50%", "25%", "150%"],
+          answer: 1,
           explain:
-            "Profit = 30 − 20 = HK$10. Profit % = 10 ÷ 20 × 100% = 50%. The base is the cost price.",
+            "Profit = 18 − 12 = HK$6. Profit % = 6 ÷ 12 × 100% = 50%. Percent profit uses cost as the base.",
         },
       ],
     },
@@ -70,25 +65,20 @@
         {
           id: "c3q1",
           prompt:
-            "Principal HK$5,000 at 4% p.a. simple interest for 3 years. What is the final amount?",
-          choices: ["HK$5,200", "HK$5,600", "HK$5,624.32", "HK$6,000"],
+            "Principal HK$8,000 at 5% p.a. simple interest for 4 years. What is the final amount?",
+          choices: ["HK$9,200", "HK$9,600", "HK$9,648", "HK$10,000"],
           answer: 1,
           explain:
-            "I = P × r × t = 5000 × 4% × 3 = HK$600. Final amount = 5000 + 600 = HK$5,600.",
+            "I = P × r × t = 8000 × 5% × 4 = HK$1,600. Final amount = 8000 + 1600 = HK$9,600.",
         },
         {
           id: "c3q2",
           prompt:
-            "With simple interest, interest each year is calculated on:",
-          choices: [
-            "the original principal only",
-            "the growing balance",
-            "the previous year’s interest only",
-            "the final amount",
-          ],
+            "HK$2,000 is invested at 6% p.a. simple interest. How much interest is earned in year 2 alone?",
+          choices: ["HK$120", "HK$127.20", "HK$212", "HK$240"],
           answer: 0,
           explain:
-            "Simple interest always uses the original principal, so each year earns the same interest.",
+            "Each year earns the same interest on the original principal: 2000 × 6% = HK$120.",
         },
       ],
     },
@@ -101,25 +91,30 @@
         {
           id: "c4q1",
           prompt:
-            "HK$5,000 at 4% p.a. compounded annually for 3 years. End-of-year-2 balance is:",
-          choices: ["HK$5,200.00", "HK$5,408.00", "HK$5,600.00", "HK$5,624.32"],
-          answer: 1,
+            "HK$10,000 at 5% p.a. compounded annually. What is the balance at the end of year 2?",
+          choices: [
+            "HK$10,500.00",
+            "HK$11,000.00",
+            "HK$11,025.00",
+            "HK$11,576.25",
+          ],
+          answer: 2,
           explain:
-            "Year 1: 5000 × 1.04 = 5200. Year 2: 5200 × 1.04 = HK$5,408.00.",
+            "Year 1: 10000 × 1.05 = 10500. Year 2: 10500 × 1.05 = HK$11,025.00.",
         },
         {
           id: "c4q2",
           prompt:
-            "Same principal, rate and term. Which gives the most money?",
+            "HK$5,000 at 4% p.a. for 3 years. Which method gives the greatest final amount?",
           choices: [
             "Simple interest",
             "Compounded annually",
             "Compounded monthly",
-            "They are all equal",
+            "All three are equal",
           ],
           answer: 2,
           explain:
-            "More frequent compounding lets interest earn interest sooner. Monthly (≈ HK$5,636.36) beats annual and simple.",
+            "Compound interest grows the balance; more frequent compounding earns interest on interest sooner, so monthly is greatest.",
         },
       ],
     },
@@ -132,25 +127,25 @@
         {
           id: "c5q1",
           prompt:
-            "Ava has HK$7,500. Ben has HK$5,000. Ava’s savings are 50% more than Ben’s. The difference HK$2,500 is 50% of:",
+            "Mei has HK$6,000 in savings and Jo has HK$4,000. Mei’s amount is 50% more than Jo’s. The HK$2,000 difference is 50% of:",
           choices: [
-            "Ava’s HK$7,500",
-            "Ben’s HK$5,000",
-            "their total HK$12,500",
-            "HK$10,000",
+            "Mei’s HK$6,000",
+            "Jo’s HK$4,000",
+            "their total HK$10,000",
+            "HK$5,000",
           ],
           answer: 1,
           explain:
-            "“50% more than Ben’s” makes Ben’s amount the base: 5000 × 50% = 2500.",
+            "“50% more than Jo’s” uses Jo’s savings as the base: 4000 × 50% = 2000.",
         },
         {
           id: "c5q2",
           prompt:
-            "If A is 50% more than B, then B is how much less than A?",
-          choices: ["50% less", "33⅓% less", "25% less", "150% less"],
+            "If P is 20% more than Q, then Q is how much less than P (to the nearest whole percent)?",
+          choices: ["20% less", "17% less", "25% less", "80% less"],
           answer: 1,
           explain:
-            "Same difference, but now A is the base: 2500 ÷ 7500 × 100% = 33⅓%. The amount after “than” is the base.",
+            "If Q = 100, then P = 120. The same gap is 20 ÷ 120 × 100% ≈ 17% less than P — the base is the amount after “than”.",
         },
       ],
     },
