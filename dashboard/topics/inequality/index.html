@@ -7,15 +7,15 @@
   <link href="https://fonts.googleapis.com/css2?family=Hanken+Grotesk:wght@400;600;700&family=JetBrains+Mono:wght@400;700&display=swap" rel="stylesheet">
   <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/katex@0.16.11/dist/katex.min.css" crossorigin="anonymous">
   <script defer src="https://cdn.jsdelivr.net/npm/katex@0.16.11/dist/katex.min.js" crossorigin="anonymous"></script>
-  <link rel="stylesheet" href="../../shared/topic-shell.css?v=20260725-quiz-bar">
+  <link rel="stylesheet" href="../../shared/topic-shell.css?v=20260725-fixes2">
   <link rel="stylesheet" href="sign-flip-doors.css?v=20260706-quiz2">
-  <script defer src="../../shared/deck-touch-nav.js"></script>
+  <script defer src="../../shared/deck-touch-nav.js?v=20260725-fixes2"></script>
   <script defer src="../../shared/phone-compact.js?v=20260711-phone"></script>
   <script defer src="../../shared/embed-nav.js?v=20260710-deck-16x9"></script>
-  <script defer src="inequality-tools.js?v=20260710-tools-light"></script>
+  <script defer src="inequality-tools.js?v=20260725-fixes2"></script>
   <script defer src="inequality-game.js?v=20260706-quiz2"></script>
   <script defer src="sign-flip-doors.js?v=20260706-quiz2"></script>
-  <script defer src="inequality-quiz.js?v=20260725-quiz-bar"></script>
+  <script defer src="inequality-quiz.js?v=20260725-fixes2"></script>
   <style>
     :root {
       --bg: #fdfbf7; --panel: #ffffff; --panel2: #f5efe6; --ink: #2c2420; --dim: #5d544f;
@@ -130,6 +130,7 @@
       display: flex; flex-wrap: wrap; align-items: center; justify-content: center; gap: 8px;
     }
     .sf-drag-chip {
+      touch-action: none;
       display: inline-flex; align-items: center; justify-content: center; min-width: 46px; height: 44px;
       padding: 0 12px; border-radius: 10px; font-family: "JetBrains Mono", monospace; font-weight: 700;
       font-size: 22px; cursor: grab; user-select: none; border: 1px solid var(--line);
@@ -465,6 +466,7 @@
     </div>
     <p class="hint hint-deck-desktop">Use → / Space to advance, ← to go back. Each slide builds the idea step by step.</p>
     <p class="hint hint-deck-tablet">Swipe left for next slide, right for previous — or use the arrows. Each slide builds the idea step by step.</p>
+    <p class="hint hint-deck-phone">Tap the ← and → buttons to move between slides. Each slide builds the idea step by step.</p>
   </section>
 
   <!-- TAB 2: sign-flip lab -->

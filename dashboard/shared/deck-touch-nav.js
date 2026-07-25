@@ -17,6 +17,11 @@
     return false;
   }
 
+  function isDeckNavDevice() {
+    const de = document.documentElement;
+    return de.classList.contains("tablet-touch") || de.classList.contains("phone-compact");
+  }
+
   function isTabletTouch() {
     return document.documentElement.classList.contains("tablet-touch");
   }
@@ -102,23 +107,25 @@
     const SWIPE_MIN = 48;
 
     function step(dir) {
-      if (!isTabletTouch()) return;
+      if (!isDeckNavDevice()) return;
       deckStep(frame, dir);
     }
 
     function focusFrame() {
-      if (!isTabletTouch()) return;
+      if (!isDeckNavDevice()) return;
       try { frame.focus(); } catch (e) {}
     }
 
-    if (isTouchTabletDevice()) frame.setAttribute("tabindex", "-1");
+    if (isTouchTabletDevice() || document.documentElement.classList.contains("phone-compact")) {
+      frame.setAttribute("tabindex", "-1");
+    }
 
     let startX = 0;
     let startY = 0;
     let tracking = false;
 
     wrap.addEventListener("touchstart", (e) => {
-      if (!isTabletTouch() || e.touches.length !== 1) return;
+      if (!isDeckNavDevice() || e.touches.length !== 1) return;
       startX = e.touches[0].clientX;
       startY = e.touches[0].clientY;
       tracking = true;
@@ -126,7 +133,7 @@
     }, { passive: true });
 
     wrap.addEventListener("touchend", (e) => {
-      if (!tracking || !isTabletTouch()) {
+      if (!tracking || !isDeckNavDevice()) {
         tracking = false;
         return;
       }
@@ -143,7 +150,7 @@
     }, { passive: false });
 
     wrap.addEventListener("pointerdown", (e) => {
-      if (!isTabletTouch() || e.pointerType !== "touch") return;
+      if (!isDeckNavDevice() || e.pointerType !== "touch") return;
       focusFrame();
     });
 
@@ -156,6 +163,7 @@
   window.KOCDeckTouch = {
     isTouchTabletDevice,
     isTabletTouch,
+    isDeckNavDevice,
     initTabletClass,
     initTabletMode,
     initDeckTouchNav,

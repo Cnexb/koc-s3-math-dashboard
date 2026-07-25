@@ -308,9 +308,8 @@
         const score = QUIZ.filter((q) => checkQuestion(q, state.answers)).length;
         const okShare = total ? score / total : 0;
         const badShare = total ? (total - score) / total : 0;
-        const accuracyPct = total ? Math.round(okShare * 100) : 0;
         if (progressFill) {
-          progressFill.style.width = score === 0 ? "100%" : accuracyPct + "%";
+          progressFill.style.width = "100%";
           progressFill.style.background = "transparent";
         }
         if (progressOk) progressOk.style.width = Math.round(okShare * 100) + "%";

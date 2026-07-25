@@ -128,9 +128,36 @@
     el.addEventListener("click", () => {
       chips.forEach((c) => c.classList.toggle("selected", c === el));
     });
+
+    let pointerDrag = false;
+    el.addEventListener("pointerdown", (e) => {
+      if (e.pointerType === "mouse") return;
+      pointerDrag = true;
+      chips.forEach((c) => c.classList.toggle("selected", c === el));
+      try { el.setPointerCapture(e.pointerId); } catch (err) { /* ignore */ }
+    });
+    el.addEventListener("pointerup", (e) => {
+      if (!pointerDrag || e.pointerType === "mouse") return;
+      pointerDrag = false;
+      try { el.releasePointerCapture(e.pointerId); } catch (err) { /* ignore */ }
+      const hit = document.elementFromPoint(e.clientX, e.clientY);
+      if (!hit) return;
+      const slot = hit.closest("[data-drop-accept]");
+      if (slot && typeof slot._acceptDrop === "function" && slot._acceptDrop(payload)) {
+        chips.forEach((c) => c.classList.remove("selected"));
+      }
+    });
+    el.addEventListener("pointercancel", () => { pointerDrag = false; });
   }
 
   function wireDropSlot(slot, acceptPrefix, onDrop) {
+    slot.dataset.dropAccept = acceptPrefix;
+    function accept(payload) {
+      if (!payload || !payload.startsWith(acceptPrefix)) return false;
+      onDrop(payload.slice(acceptPrefix.length));
+      return true;
+    }
+    slot._acceptDrop = accept;
     slot.addEventListener("dragover", (e) => {
       e.preventDefault();
       e.dataTransfer.dropEffect = "copy";
@@ -145,9 +172,7 @@
     });
     slot.addEventListener("click", () => {
       const sel = document.querySelector(".sf-drag-chip.selected");
-      if (sel && sel.dataset.payload.startsWith(acceptPrefix)) {
-        onDrop(sel.dataset.payload.slice(acceptPrefix.length));
-      }
+      if (sel) accept(sel.dataset.payload);
     });
   }
 

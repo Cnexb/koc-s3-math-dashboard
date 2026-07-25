@@ -50,7 +50,7 @@
       id: 6,
       type: "mc",
       prompt:
-        "There are 24 bottles of water and x bottles of tea on a table. If a bottle of drink is drawn at random, the probability of drawing a bottle of tea is 3/5. Find the value of x.",
+        "There are 24 bottles of water and x bottles of tea on a table. If a bottle of drink is drawn at random, the probability of drawing a bottle of tea is \\frac{3}{5}. Find the value of x.",
       choices: ["36", "38", "40", "42"],
       answer: 0,
     },
@@ -66,7 +66,7 @@
       id: 8,
       type: "mc",
       prompt:
-        "There are 2000 candidates in an examination. If one of the candidates is chosen randomly, the probability of choosing a female candidate is 11/20. Find the number of male candidates in the examination.",
+        "There are 2000 candidates in an examination. If one of the candidates is chosen randomly, the probability of choosing a female candidate is \\frac{11}{20}. Find the number of male candidates in the examination.",
       choices: ["800", "900", "1000", "1100"],
       answer: 1,
     },
@@ -119,9 +119,8 @@
         const score = QUIZ.filter((q) => checkQuestion(q, state.answers)).length;
         const okShare = total ? score / total : 0;
         const badShare = total ? (total - score) / total : 0;
-        const accuracyPct = total ? Math.round(okShare * 100) : 0;
         if (progressFill) {
-          progressFill.style.width = score === 0 ? "100%" : accuracyPct + "%";
+          progressFill.style.width = "100%";
           progressFill.style.background = "transparent";
         }
         if (progressOk) progressOk.style.width = Math.round(okShare * 100) + "%";
@@ -190,7 +189,8 @@
       if (q.prompt) {
         const prompt = document.createElement("div");
         prompt.className = "quiz-prompt";
-        prompt.textContent = q.prompt;
+        if (/\\frac|[\\$]|\\text/.test(q.prompt)) kx(prompt, q.prompt, false);
+        else prompt.textContent = q.prompt;
         head.appendChild(prompt);
       }
       if (reviewMode) {

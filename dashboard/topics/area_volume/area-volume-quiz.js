@@ -88,8 +88,8 @@
       id: 9,
       type: "mc",
       prompt:
-        VESSEL_INTRO + "\nIt is given that the vessel contains 600 cm\u00b3 of water. Find the capacity of the vessel.",
-      choices: ["900\\text{ cm}^3", "1040\\text{ cm}^3", "1250\\text{ cm}^3", "1500\\text{ cm}^3"],
+        "The base radius of a cone is 7 cm and its slant height is 25 cm. Find the curved surface area of the cone.",
+      choices: ["150\\pi\\text{ cm}^2", "175\\pi\\text{ cm}^2", "200\\pi\\text{ cm}^2", "175\\text{ cm}^2"],
       answer: 1,
     },
     {
@@ -138,9 +138,8 @@
         const score = QUIZ.filter((q) => checkQuestion(q, state.answers)).length;
         const okShare = total ? score / total : 0;
         const badShare = total ? (total - score) / total : 0;
-        const accuracyPct = total ? Math.round(okShare * 100) : 0;
         if (progressFill) {
-          progressFill.style.width = score === 0 ? "100%" : accuracyPct + "%";
+          progressFill.style.width = "100%";
           progressFill.style.background = "transparent";
         }
         if (progressOk) progressOk.style.width = Math.round(okShare * 100) + "%";

@@ -56,15 +56,18 @@ html.tablet-touch.in-embed body {
   margin: 0 auto;
 }
 .deck-nav-btn,
-.hint-deck-tablet {
+.hint-deck-tablet,
+.hint-deck-phone {
   display: none;
 }
-html.tablet-touch .deck-slideshow {
+html.tablet-touch .deck-slideshow,
+html.phone-compact .deck-slideshow {
   display: flex;
   align-items: center;
   gap: 10px;
 }
-html.tablet-touch .deck-nav-btn {
+html.tablet-touch .deck-nav-btn,
+html.phone-compact .deck-nav-btn {
   display: flex;
   flex: none;
   align-items: center;
@@ -82,19 +85,28 @@ html.tablet-touch .deck-nav-btn {
   transition: border-color .15s, color .15s;
   box-shadow: 0 1px 2px rgba(0, 0, 0, 0.04);
 }
-html.tablet-touch .deck-nav-btn:active {
+html.tablet-touch .deck-nav-btn:active,
+html.phone-compact .deck-nav-btn:active {
   border-color: var(--a, #4fc3f7);
   color: var(--a, #4fc3f7);
 }
-html.tablet-touch #panel-slides .deck-wrap {
+html.tablet-touch #panel-slides .deck-wrap,
+html.phone-compact #panel-slides .deck-wrap {
   flex: 1;
   min-width: 0;
   touch-action: pan-y pinch-zoom;
 }
-html.tablet-touch .hint-deck-desktop {
+html.tablet-touch .hint-deck-desktop,
+html.phone-compact .hint-deck-desktop {
   display: none;
 }
 html.tablet-touch .hint-deck-tablet {
+  display: block;
+}
+html.phone-compact .hint-deck-tablet {
+  display: none;
+}
+html.phone-compact .hint-deck-phone {
   display: block;
 }
 
@@ -261,7 +273,7 @@ html.phone-compact .mg-btn {
   min-height: 44px;
 }
 
-/* Quiz results bar — green (correct) + red (incorrect); green length = accuracy */
+/* Quiz results bar — green (correct) + red (incorrect); full width filled by score */
 .quiz-progress-fill {
   display: flex;
   flex-direction: row;
@@ -272,6 +284,7 @@ html.phone-compact .mg-btn {
   display: none;
 }
 .quiz-progress-wrap.done .quiz-progress-fill {
+  width: 100% !important;
   background: transparent !important;
 }
 .quiz-progress-ok {

@@ -60,9 +60,9 @@
       id: 7,
       type: "mc",
       prompt:
-        "The value of an antique oil painting increases at a steady rate of 25% every 5 years. Its present value is $150000.\nFind the increase in its value over the past 20 years.",
-      choices: ["\\$61440", "\\$88560", "\\$150000", "\\$885600"],
-      answer: 1,
+        "A retailer buys goods for $480 and wants a profit of 25% on the selling price. Find the selling price.",
+      choices: ["\\$600", "\\$520", "\\$640", "\\$720"],
+      answer: 2,
     },
     {
       id: 8,
@@ -131,9 +131,8 @@
         const score = QUIZ.filter((q) => checkQuestion(q, state.answers)).length;
         const okShare = total ? score / total : 0;
         const badShare = total ? (total - score) / total : 0;
-        const accuracyPct = total ? Math.round(okShare * 100) : 0;
         if (progressFill) {
-          progressFill.style.width = score === 0 ? "100%" : accuracyPct + "%";
+          progressFill.style.width = "100%";
           progressFill.style.background = "transparent";
         }
         if (progressOk) progressOk.style.width = Math.round(okShare * 100) + "%";
