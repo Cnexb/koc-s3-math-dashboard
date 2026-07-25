@@ -1,0 +1,722 @@
+<!DOCTYPE html>
+<html lang="zh-HK">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Law of Indices — JM24</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Hanken+Grotesk:wght@400;600;700&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/katex@0.16.11/dist/katex.min.css">
+  <style>
+    :root {
+      --bg: #050816;
+      --surface: rgba(18, 22, 48, 0.78);
+      --surface-2: rgba(28, 34, 72, 0.9);
+      --text: #eef2ff;
+      --muted: #a8b4d8;
+      --line: rgba(140, 160, 255, 0.22);
+      --accent: #9ecbff;
+      --glow: #c4b5fd;
+      --good: #86efac;
+      --warn: #fde68a;
+      --tile: #3b82f6;
+      --tile2: #a78bfa;
+    }
+
+    * { box-sizing: border-box; }
+
+    body {
+      margin: 0;
+      min-height: 100vh;
+      color: var(--text);
+      font-family: "Hanken Grotesk", system-ui, sans-serif;
+      background:
+        radial-gradient(ellipse 80% 50% at 20% 8%, rgba(88, 70, 180, 0.32), transparent 55%),
+        radial-gradient(ellipse 60% 40% at 88% 18%, rgba(40, 80, 180, 0.26), transparent 50%),
+        linear-gradient(180deg, #050816 0%, #0a1028 50%, #070b1a 100%);
+    }
+
+    .stars {
+      position: fixed;
+      inset: 0;
+      pointer-events: none;
+      z-index: 0;
+      background-image:
+        radial-gradient(1.5px 1.5px at 10% 18%, #fff, transparent),
+        radial-gradient(1px 1px at 28% 42%, #fff, transparent),
+        radial-gradient(1.5px 1.5px at 55% 14%, #e0e7ff, transparent),
+        radial-gradient(1px 1px at 72% 58%, #fff, transparent),
+        radial-gradient(1px 1px at 88% 28%, #c7d2fe, transparent),
+        radial-gradient(1.5px 1.5px at 40% 78%, #fff, transparent),
+        radial-gradient(1px 1px at 16% 86%, #fff, transparent);
+      animation: twinkle 5s ease-in-out infinite alternate;
+    }
+
+    @keyframes twinkle {
+      from { opacity: .55; }
+      to { opacity: 1; }
+    }
+
+    .page {
+      position: relative;
+      z-index: 1;
+      width: min(920px, 100%);
+      margin: 0 auto;
+      padding: 28px 22px 72px;
+    }
+
+    .back {
+      display: inline-flex;
+      margin-bottom: 18px;
+      padding: 7px 12px;
+      border: 1px solid var(--line);
+      border-radius: 8px;
+      background: var(--surface-2);
+      color: var(--text);
+      text-decoration: none;
+      font-size: 13px;
+      font-weight: 600;
+    }
+
+    .back:hover { border-color: var(--accent); color: var(--accent); }
+
+    .eyebrow {
+      margin: 0 0 6px;
+      color: var(--glow);
+      font-size: 11px;
+      font-weight: 700;
+      letter-spacing: .12em;
+      text-transform: uppercase;
+    }
+
+    h1 {
+      margin: 0 0 8px;
+      font-size: clamp(26px, 4vw, 36px);
+      letter-spacing: -.03em;
+    }
+
+    .lead {
+      margin: 0 0 28px;
+      max-width: 560px;
+      color: var(--muted);
+      font-size: 15px;
+      line-height: 1.55;
+    }
+
+    section.block {
+      margin-bottom: 22px;
+      padding: 22px 20px 24px;
+      border: 1px solid var(--line);
+      border-radius: 16px;
+      background: var(--surface);
+      backdrop-filter: blur(12px);
+    }
+
+    section.block h2 {
+      margin: 0 0 8px;
+      font-size: 20px;
+    }
+
+    section.block > p {
+      margin: 0 0 16px;
+      color: var(--muted);
+      font-size: 14px;
+      line-height: 1.55;
+    }
+
+    .stage {
+      min-height: 120px;
+      padding: 18px 14px;
+      border-radius: 12px;
+      border: 1px dashed rgba(158, 203, 255, .28);
+      background: rgba(8, 12, 30, .55);
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      justify-content: center;
+      gap: 14px;
+    }
+
+    .row {
+      display: flex;
+      flex-wrap: wrap;
+      align-items: center;
+      justify-content: center;
+      gap: 10px;
+      min-height: 56px;
+    }
+
+    .tile {
+      width: 52px;
+      height: 52px;
+      border-radius: 12px;
+      display: grid;
+      place-items: center;
+      font-weight: 700;
+      font-size: 22px;
+      color: #fff;
+      background: linear-gradient(145deg, #60a5fa, #2563eb);
+      box-shadow: 0 8px 20px rgba(37, 99, 235, .35);
+      transition: transform .45s ease, opacity .45s ease, box-shadow .45s ease;
+    }
+
+    .tile.purple {
+      background: linear-gradient(145deg, #c4b5fd, #7c3aed);
+      box-shadow: 0 8px 20px rgba(124, 58, 237, .35);
+    }
+
+    .tile.gold {
+      background: linear-gradient(145deg, #fde68a, #f59e0b);
+      color: #1f1405;
+      box-shadow: 0 8px 20px rgba(245, 158, 11, .3);
+    }
+
+    .op {
+      color: var(--muted);
+      font-size: 22px;
+      font-weight: 700;
+      min-width: 24px;
+      text-align: center;
+    }
+
+    .eq {
+      color: var(--accent);
+      font-size: 22px;
+      font-weight: 700;
+    }
+
+    .result {
+      min-width: 64px;
+      height: 52px;
+      padding: 0 14px;
+      border-radius: 12px;
+      display: grid;
+      place-items: center;
+      font-weight: 700;
+      font-size: 22px;
+      color: var(--good);
+      border: 1px solid rgba(134, 239, 172, .35);
+      background: rgba(22, 101, 52, .25);
+      opacity: 0;
+      transform: scale(.85);
+      transition: opacity .4s ease, transform .4s ease;
+    }
+
+    .result.show {
+      opacity: 1;
+      transform: scale(1);
+    }
+
+    .controls {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 8px;
+      justify-content: center;
+    }
+
+    .btn {
+      border: 1px solid var(--line);
+      border-radius: 999px;
+      background: var(--surface-2);
+      color: var(--text);
+      font: inherit;
+      font-size: 13px;
+      font-weight: 600;
+      padding: 8px 14px;
+      cursor: pointer;
+    }
+
+    .btn:hover { border-color: var(--accent); color: var(--accent); }
+    .btn.primary {
+      background: rgba(158, 203, 255, .16);
+      border-color: rgba(158, 203, 255, .4);
+      color: var(--accent);
+    }
+
+    .caption {
+      margin: 0;
+      color: var(--muted);
+      font-size: 13px;
+      text-align: center;
+      line-height: 1.45;
+      min-height: 1.45em;
+    }
+
+    .caption strong { color: var(--text); }
+
+    .compare {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 12px;
+    }
+
+    @media (max-width: 640px) {
+      .compare { grid-template-columns: 1fr; }
+    }
+
+    .panel {
+      padding: 14px;
+      border-radius: 12px;
+      border: 1px solid var(--line);
+      background: rgba(8, 12, 30, .45);
+    }
+
+    .panel h3 {
+      margin: 0 0 8px;
+      font-size: 15px;
+    }
+
+    .panel.ok { border-color: rgba(134, 239, 172, .35); }
+    .panel.warn { border-color: rgba(253, 230, 138, .4); }
+
+    .formula {
+      margin: 12px 0 0;
+      text-align: center;
+      font-size: 1.15em;
+      color: var(--accent);
+    }
+
+    .stack-group {
+      display: inline-flex;
+      gap: 4px;
+      padding: 6px;
+      border-radius: 10px;
+      border: 1px solid rgba(158, 203, 255, .25);
+      background: rgba(30, 58, 138, .25);
+      transition: transform .4s ease, border-color .4s ease;
+    }
+
+    .stack-group .tile {
+      width: 40px;
+      height: 40px;
+      font-size: 18px;
+      border-radius: 9px;
+    }
+
+    .stack-group.pulse {
+      border-color: rgba(134, 239, 172, .55);
+      box-shadow: 0 0 0 3px rgba(134, 239, 172, .12);
+    }
+
+    .tower {
+      display: flex;
+      flex-direction: column-reverse;
+      align-items: center;
+      gap: 4px;
+      font-weight: 700;
+    }
+
+    .tower span {
+      padding: 4px 10px;
+      border-radius: 8px;
+      background: rgba(253, 230, 138, .15);
+      border: 1px solid rgba(253, 230, 138, .35);
+      color: var(--warn);
+    }
+
+    .fade-in {
+      animation: fadeUp .55s ease both;
+    }
+
+    @keyframes fadeUp {
+      from { opacity: 0; transform: translateY(10px); }
+      to { opacity: 1; transform: translateY(0); }
+    }
+
+    .merge-left { animation: mergeL .7s ease forwards; }
+    .merge-right { animation: mergeR .7s ease forwards; }
+
+    @keyframes mergeL {
+      to { transform: translateX(18px) scale(.92); opacity: .35; }
+    }
+    @keyframes mergeR {
+      to { transform: translateX(-18px) scale(.92); opacity: .35; }
+    }
+
+    .pop {
+      animation: pop .45s ease both;
+    }
+
+    @keyframes pop {
+      0% { transform: scale(.6); opacity: 0; }
+      70% { transform: scale(1.08); opacity: 1; }
+      100% { transform: scale(1); }
+    }
+  </style>
+</head>
+<body>
+  <div class="stars" aria-hidden="true"></div>
+
+  <main class="page">
+    <a class="back" href="../../s3.html#lessons">← S3 Lessons</a>
+    <p class="eyebrow">JM24 · Lesson 24</p>
+    <h1>Law of Indices</h1>
+    <p class="lead">先分清 \(2x\) 與 \(x^{2}\)，再用「數一數有幾個 \(x\) 相乘」去理解指數律。</p>
+
+    <!-- 1. 2x vs x^2 -->
+    <section class="block">
+      <h2>1. \(2x\) 和 \(x^{2}\) 有什麼不同？</h2>
+      <p>\(x+x\) 是兩個 \(x\) <strong>加</strong>起來 → 係數變成 \(2\)，寫成 \(2x\)。<br>
+         \(x^{2}\) 的「平方」代表<strong>兩個相同的東西相乘</strong>：\(x\times x\)。</p>
+
+      <div class="compare">
+        <div class="panel">
+          <h3>加法 → \(2x\)</h3>
+          <div class="stage" id="stage-2x">
+            <div class="row" id="row-2x">
+              <div class="tile" data-role="a">\(x\)</div>
+              <span class="op">+</span>
+              <div class="tile" data-role="b">\(x\)</div>
+              <span class="eq">=</span>
+              <div class="result" id="res-2x">\(2x\)</div>
+            </div>
+            <p class="caption" id="cap-2x">按 Play：兩個 \(x\) 合併成「2 個 \(x\)」</p>
+            <div class="controls">
+              <button class="btn primary" type="button" id="play-2x">Play</button>
+              <button class="btn" type="button" id="reset-2x">Reset</button>
+            </div>
+          </div>
+        </div>
+
+        <div class="panel">
+          <h3>乘法 → \(x^{2}\)</h3>
+          <div class="stage" id="stage-x2">
+            <div class="row" id="row-x2">
+              <div class="tile purple" data-role="a">\(x\)</div>
+              <span class="op">×</span>
+              <div class="tile purple" data-role="b">\(x\)</div>
+              <span class="eq">=</span>
+              <div class="result" id="res-x2">\(x^{2}\)</div>
+            </div>
+            <p class="caption" id="cap-x2">按 Play：兩個相同的 \(x\) 相乘 → 平方</p>
+            <div class="controls">
+              <button class="btn primary" type="button" id="play-x2">Play</button>
+              <button class="btn" type="button" id="reset-x2">Reset</button>
+            </div>
+          </div>
+        </div>
+      </div>
+      <p class="formula">\[ 2x = x+x \qquad\text{但}\qquad x^{2}=x\times x \]</p>
+    </section>
+
+    <!-- 2. product of powers -->
+    <section class="block">
+      <h2>2. 為什麼 \(x^{m+n}=x^{m}\times x^{n}\)？</h2>
+      <p>指數只是在數「有幾個 \(x\) 相乘」。例如 \(x^{2}\) 有 2 個，\(x^{3}\) 有 3 個；乘在一起就有 \(2+3=5\) 個 → \(x^{5}\)。</p>
+
+      <div class="stage">
+        <div class="row" id="row-prod">
+          <div class="stack-group" id="g-m" aria-label="x squared">
+            <div class="tile">\(x\)</div>
+            <div class="tile">\(x\)</div>
+          </div>
+          <span class="op">×</span>
+          <div class="stack-group purple-wrap" id="g-n" aria-label="x cubed">
+            <div class="tile purple">\(x\)</div>
+            <div class="tile purple">\(x\)</div>
+            <div class="tile purple">\(x\)</div>
+          </div>
+          <span class="eq">=</span>
+          <div class="stack-group" id="g-all" style="opacity:0;transform:scale(.9)">
+            <div class="tile">\(x\)</div>
+            <div class="tile">\(x\)</div>
+            <div class="tile purple">\(x\)</div>
+            <div class="tile purple">\(x\)</div>
+            <div class="tile purple">\(x\)</div>
+          </div>
+        </div>
+        <p class="caption" id="cap-prod">\(x^{2}\times x^{3}\)：左邊 2 個，右邊 3 個</p>
+        <div class="controls">
+          <button class="btn primary" type="button" id="play-prod">Play proof</button>
+          <button class="btn" type="button" id="reset-prod">Reset</button>
+        </div>
+      </div>
+      <p class="formula">\[ x^{2}\times x^{3}=x^{2+3}=x^{5} \qquad\Rightarrow\qquad x^{m}\times x^{n}=x^{m+n} \]</p>
+    </section>
+
+    <!-- 3. power of a power -->
+    <section class="block">
+      <h2>3. 為什麼 \((x^{m})^{n}=x^{mn}\)？</h2>
+      <p>\((x^{2})^{3}\) 的意思是：把整組 \(x^{2}\) <strong>再乘 3 次</strong>。每組有 2 個 \(x\)，共 3 組 → \(2\times 3=6\) 個 \(x\)。</p>
+
+      <div class="stage">
+        <div class="row" id="row-pow">
+          <div class="stack-group" id="p1">
+            <div class="tile">\(x\)</div>
+            <div class="tile">\(x\)</div>
+          </div>
+          <div class="stack-group" id="p2" style="opacity:.25">
+            <div class="tile">\(x\)</div>
+            <div class="tile">\(x\)</div>
+          </div>
+          <div class="stack-group" id="p3" style="opacity:.25">
+            <div class="tile">\(x\)</div>
+            <div class="tile">\(x\)</div>
+          </div>
+        </div>
+        <p class="caption" id="cap-pow">\((x^{2})^{3}\)：先出現一組 \(x^{2}\)</p>
+        <div class="controls">
+          <button class="btn primary" type="button" id="play-pow">Play proof</button>
+          <button class="btn" type="button" id="reset-pow">Reset</button>
+        </div>
+      </div>
+      <p class="formula">\[ (x^{2})^{3}=x^{2}\cdot x^{2}\cdot x^{2}=x^{6}=x^{2\times 3} \qquad\Rightarrow\qquad (x^{m})^{n}=x^{mn} \]</p>
+    </section>
+
+    <!-- 4. tower -->
+    <section class="block">
+      <h2>4. 小心：\(x^{m^{n}}\) 跟上面不一樣</h2>
+      <p>\((x^{m})^{n}\) 是「冪的冪」→ 指數<strong>相乘</strong>。<br>
+         \(x^{m^{n}}\) 是「指數塔」→ 先算上面的 \(m^{n}\)，再當指數。</p>
+
+      <div class="compare">
+        <div class="panel ok">
+          <h3>冪的冪（括號）</h3>
+          <div class="stage">
+            <div class="row">
+              <div class="result show" style="min-width:auto;padding:10px 16px">\((x^{2})^{3}=x^{6}\)</div>
+            </div>
+            <p class="caption">先乘指數：\(2\times 3=6\)</p>
+          </div>
+        </div>
+        <div class="panel warn">
+          <h3>指數塔（無括號）</h3>
+          <div class="stage">
+            <div class="tower fade-in" id="tower">
+              <span>\(x\)</span>
+              <span>\(2\)</span>
+              <span>\(3\)</span>
+            </div>
+            <p class="caption" id="cap-tower">寫成 \(x^{2^{3}}\)：由上往下算</p>
+            <div class="controls">
+              <button class="btn primary" type="button" id="play-tower">Play</button>
+              <button class="btn" type="button" id="reset-tower">Reset</button>
+            </div>
+            <div class="result" id="res-tower" style="margin-top:4px">\(x^{8}\)</div>
+          </div>
+        </div>
+      </div>
+      <p class="formula">\[ (x^{2})^{3}=x^{6} \neq x^{2^{3}}=x^{8} \]</p>
+      <p style="margin:12px 0 0;color:var(--muted);font-size:14px;line-height:1.55;text-align:center">
+        記住：有括號先用 \(mn\)；指數疊高先算上面，變成 \(x^{(m^{n})}\)。
+      </p>
+    </section>
+  </main>
+
+  <script defer src="https://cdn.jsdelivr.net/npm/katex@0.16.11/dist/katex.min.js"></script>
+  <script defer src="https://cdn.jsdelivr.net/npm/katex@0.16.11/dist/contrib/auto-render.min.js"></script>
+  <script>
+    function sleep(ms) { return new Promise((r) => setTimeout(r, ms)); }
+
+    function renderKatex(root) {
+      if (window.renderMathInElement) {
+        renderMathInElement(root || document.body, {
+          delimiters: [
+            { left: "\\(", right: "\\)", display: false },
+            { left: "\\[", right: "\\]", display: true },
+          ],
+        });
+      }
+    }
+
+    function waitKatex() {
+      return new Promise((resolve) => {
+        const tick = () => {
+          if (window.renderMathInElement) {
+            renderKatex(document.body);
+            resolve();
+          } else {
+            setTimeout(tick, 40);
+          }
+        };
+        tick();
+      });
+    }
+    waitKatex();
+
+    /* —— 2x —— */
+    const row2x = document.getElementById("row-2x");
+    const res2x = document.getElementById("res-2x");
+    const cap2x = document.getElementById("cap-2x");
+
+    function reset2x() {
+      row2x.innerHTML =
+        '<div class="tile" data-role="a">\\(x\\)</div>' +
+        '<span class="op">+</span>' +
+        '<div class="tile" data-role="b">\\(x\\)</div>' +
+        '<span class="eq">=</span>' +
+        '<div class="result" id="res-2x">\\(2x\\)</div>';
+      renderKatex(row2x);
+      cap2x.innerHTML = "按 Play：兩個 \\(x\\) 合併成「2 個 \\(x\\)」";
+      renderKatex(cap2x);
+    }
+
+    document.getElementById("reset-2x").onclick = reset2x;
+    document.getElementById("play-2x").onclick = async () => {
+      reset2x();
+      await sleep(200);
+      const a = row2x.querySelector('[data-role="a"]');
+      const b = row2x.querySelector('[data-role="b"]');
+      const op = row2x.querySelector(".op");
+      a.classList.add("merge-left");
+      b.classList.add("merge-right");
+      op.style.opacity = "0.2";
+      cap2x.innerHTML = "兩個 \\(x\\) 靠在一起……";
+      renderKatex(cap2x);
+      await sleep(700);
+      const res = row2x.querySelector(".result");
+      res.classList.add("show", "pop");
+      cap2x.innerHTML = "所以有 <strong>2 個</strong> \\(x\\) → \\(2x\\)（加法／係數）";
+      renderKatex(cap2x);
+    };
+
+    /* —— x^2 —— */
+    const rowX2 = document.getElementById("row-x2");
+    const capX2 = document.getElementById("cap-x2");
+
+    function resetX2() {
+      rowX2.innerHTML =
+        '<div class="tile purple" data-role="a">\\(x\\)</div>' +
+        '<span class="op">×</span>' +
+        '<div class="tile purple" data-role="b">\\(x\\)</div>' +
+        '<span class="eq">=</span>' +
+        '<div class="result" id="res-x2">\\(x^{2}\\)</div>';
+      renderKatex(rowX2);
+      capX2.innerHTML = "按 Play：兩個相同的 \\(x\\) 相乘 → 平方";
+      renderKatex(capX2);
+    }
+
+    document.getElementById("reset-x2").onclick = resetX2;
+    document.getElementById("play-x2").onclick = async () => {
+      resetX2();
+      await sleep(200);
+      const a = rowX2.querySelector('[data-role="a"]');
+      const b = rowX2.querySelector('[data-role="b"]');
+      a.style.transform = "scale(1.08)";
+      b.style.transform = "scale(1.08)";
+      capX2.innerHTML = "平方 = 兩個<strong>相同</strong>的東西相乘";
+      await sleep(600);
+      a.style.transform = "translateX(14px) scale(1)";
+      b.style.transform = "translateX(-14px) scale(1)";
+      await sleep(500);
+      rowX2.querySelector(".result").classList.add("show", "pop");
+      capX2.innerHTML = "\\(x\\times x = x^{2}\\)（不是 \\(2x\\)！）";
+      renderKatex(capX2);
+    };
+
+    /* —— product law —— */
+    const gM = document.getElementById("g-m");
+    const gN = document.getElementById("g-n");
+    const gAll = document.getElementById("g-all");
+    const capProd = document.getElementById("cap-prod");
+
+    function resetProd() {
+      gM.style.opacity = "1";
+      gN.style.opacity = "1";
+      gM.style.transform = "";
+      gN.style.transform = "";
+      gM.classList.remove("pulse");
+      gN.classList.remove("pulse");
+      gAll.style.opacity = "0";
+      gAll.style.transform = "scale(.9)";
+      gAll.classList.remove("pulse");
+      capProd.innerHTML = "\\(x^{2}\\times x^{3}\\)：左邊 2 個，右邊 3 個";
+      renderKatex(capProd);
+    }
+
+    document.getElementById("reset-prod").onclick = resetProd;
+    document.getElementById("play-prod").onclick = async () => {
+      resetProd();
+      await sleep(250);
+      gM.classList.add("pulse");
+      capProd.innerHTML = "\\(x^{2}\\) = 2 個 \\(x\\) 相乘";
+      renderKatex(capProd);
+      await sleep(900);
+      gN.classList.add("pulse");
+      capProd.innerHTML = "\\(x^{3}\\) = 3 個 \\(x\\) 相乘";
+      renderKatex(capProd);
+      await sleep(900);
+      gM.style.transform = "translateX(12px)";
+      gN.style.transform = "translateX(-12px)";
+      gM.style.opacity = "0.35";
+      gN.style.opacity = "0.35";
+      await sleep(500);
+      gAll.style.opacity = "1";
+      gAll.style.transform = "scale(1)";
+      gAll.classList.add("pulse", "pop");
+      capProd.innerHTML = "合共 <strong>5</strong> 個 \\(x\\) → \\(x^{5}=x^{2+3}\\)";
+      renderKatex(capProd);
+    };
+
+    /* —— power of power —— */
+    const p1 = document.getElementById("p1");
+    const p2 = document.getElementById("p2");
+    const p3 = document.getElementById("p3");
+    const capPow = document.getElementById("cap-pow");
+
+    function resetPow() {
+      [p1, p2, p3].forEach((el, i) => {
+        el.style.opacity = i === 0 ? "1" : "0.25";
+        el.style.transform = "";
+        el.classList.remove("pulse");
+      });
+      capPow.innerHTML = "\\((x^{2})^{3}\\)：先出現一組 \\(x^{2}\\)";
+      renderKatex(capPow);
+    }
+
+    document.getElementById("reset-pow").onclick = resetPow;
+    document.getElementById("play-pow").onclick = async () => {
+      resetPow();
+      await sleep(300);
+      p1.classList.add("pulse");
+      await sleep(700);
+      p2.style.opacity = "1";
+      p2.classList.add("pulse", "fade-in");
+      capPow.innerHTML = "再乘一組：\\(x^{2}\\cdot x^{2}\\)";
+      renderKatex(capPow);
+      await sleep(800);
+      p3.style.opacity = "1";
+      p3.classList.add("pulse", "fade-in");
+      capPow.innerHTML = "三組，每組 2 個 → 共 \\(2\\times 3=6\\) 個 \\(x\\) → \\(x^{6}\\)";
+      renderKatex(capPow);
+    };
+
+    /* —— tower —— */
+    const tower = document.getElementById("tower");
+    const capTower = document.getElementById("cap-tower");
+    const resTower = document.getElementById("res-tower");
+
+    function resetTower() {
+      tower.innerHTML = "<span>\\(x\\)</span><span>\\(2\\)</span><span>\\(3\\)</span>";
+      renderKatex(tower);
+      resTower.classList.remove("show");
+      capTower.innerHTML = "寫成 \\(x^{2^{3}}\\)：由上往下算";
+      renderKatex(capTower);
+    }
+
+    document.getElementById("reset-tower").onclick = resetTower;
+    document.getElementById("play-tower").onclick = async () => {
+      resetTower();
+      await sleep(250);
+      const spans = tower.querySelectorAll("span");
+      spans[2].style.background = "rgba(253,230,138,.35)";
+      spans[1].style.background = "rgba(253,230,138,.35)";
+      capTower.innerHTML = "先算上面：\\(2^{3}=8\\)";
+      renderKatex(capTower);
+      await sleep(1000);
+      spans[2].style.opacity = "0.25";
+      spans[1].textContent = "";
+      spans[1].innerHTML = "\\(8\\)";
+      renderKatex(spans[1]);
+      spans[1].style.background = "rgba(134,239,172,.25)";
+      spans[1].style.borderColor = "rgba(134,239,172,.45)";
+      spans[1].style.color = "#86efac";
+      await sleep(700);
+      capTower.innerHTML = "再當指數：\\(x^{8}\\)（不是 \\(x^{6}\\)）";
+      renderKatex(capTower);
+      resTower.classList.add("show", "pop");
+    };
+  </script>
+</body>
+</html>

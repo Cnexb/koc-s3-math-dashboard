@@ -124,7 +124,8 @@
       gap: 14px;
     }
 
-    button.card {
+    button.card,
+    a.card {
       display: flex;
       flex-direction: column;
       min-height: 0;
@@ -137,17 +138,20 @@
       color: inherit;
       font: inherit;
       text-align: left;
+      text-decoration: none;
       cursor: pointer;
       transition: transform .18s ease, border-color .18s ease, box-shadow .18s ease;
     }
 
-    button.card:hover {
+    button.card:hover,
+    a.card:hover {
       transform: translateY(-2px);
       border-color: rgba(196, 181, 253, .55);
       box-shadow: 0 0 0 1px rgba(158, 203, 255, .15), 0 12px 28px rgba(0, 0, 0, .4);
     }
 
     button.card:focus-visible,
+    a.card:focus-visible,
     .back:focus-visible {
       outline: 2px solid var(--accent);
       outline-offset: 3px;
@@ -315,14 +319,14 @@
       <h1>S3 Lessons</h1>
 
       <div class="grid">
-        <button class="card lesson indices" type="button" data-go="topic-jm24">
+        <a class="card lesson indices" href="topics/law_of_indices/index.html">
           <div class="cover">\( a^{x} \)</div>
           <div class="body">
             <h2>Law of Indices</h2>
             <p>JM24 · Lesson 24</p>
             <span class="tag">JM24</span>
           </div>
-        </button>
+        </a>
 
         <button class="card lesson polynomials" type="button" data-go="topic-jm25">
           <div class="cover">\( (x+a)(x+b) \)</div>
@@ -332,18 +336,6 @@
             <span class="tag">JM25</span>
           </div>
         </button>
-      </div>
-    </section>
-
-    <section class="view" id="topic-jm24">
-      <button class="back" type="button" data-go="lessons">← S3 Lessons</button>
-      <div class="topic-panel">
-        <div class="badge-row">
-          <span class="tag">JM24</span>
-          <span class="tag">Lesson 24</span>
-        </div>
-        <h1>Law of Indices</h1>
-        <p>Topic page for \( a^{x} \) and the laws of indices. Add slides, tools, or notes here next.</p>
       </div>
     </section>
 
@@ -376,7 +368,6 @@
       const titles = {
         home: "S3 Mathematics",
         lessons: "S3 Lessons",
-        "topic-jm24": "Law of Indices (JM24)",
         "topic-jm25": "Factorization & Polynomials (JM25)",
       };
       document.title = titles[id] || "S3 Mathematics";
@@ -385,6 +376,8 @@
     document.querySelectorAll("[data-go]").forEach((el) => {
       el.addEventListener("click", () => show(el.dataset.go));
     });
+    // Open lessons view if returning with #lessons
+    if (location.hash === "#lessons") show("lessons");
   </script>
 </body>
 </html>
