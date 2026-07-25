@@ -156,10 +156,9 @@
         btn.classList.add("sym");
       }
     });
-    const dpadHtml =
-      '<span class="pg-sym">\u2191</span> <span class="pg-sym">\u2193</span> highlight';
+    const dpadHtml = '<span class="pg-sym">\u2191/\u2193 highlight</span>';
     document.querySelectorAll(".pg-dpad > span:first-child").forEach((el) => {
-      el.innerHTML = dpadHtml;
+      el.outerHTML = dpadHtml;
     });
   }
 
@@ -176,7 +175,7 @@
     if (window.PctMartGame) window.PctMartGame.hide();
     if (window.PctBankGame) window.PctBankGame.hide();
     const arrowHint =
-      '<span class="pg-sym">\u2191</span> <span class="pg-sym">\u2193</span> highlight | Enter confirm | pocket calc for working';
+      '<span class="pg-sym">\u2191/\u2193 highlight</span> | Enter confirm | pocket calc for working';
     if (activeGameMode === "bank") {
       if (window.PctBankGame) window.PctBankGame.show();
       if (window.PctCalc) window.PctCalc.setTip("bank");
