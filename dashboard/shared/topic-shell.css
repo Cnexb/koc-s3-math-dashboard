@@ -260,3 +260,31 @@ html.phone-compact .sf-nav-btn,
 html.phone-compact .mg-btn {
   min-height: 44px;
 }
+
+/* Quiz results bar — green (correct) + red (incorrect); green length = accuracy */
+.quiz-progress-fill {
+  display: flex;
+  flex-direction: row;
+  overflow: hidden;
+}
+.quiz-progress-wrap:not(.done) .quiz-progress-ok,
+.quiz-progress-wrap:not(.done) .quiz-progress-bad {
+  display: none;
+}
+.quiz-progress-wrap.done .quiz-progress-fill {
+  background: transparent !important;
+}
+.quiz-progress-ok {
+  height: 100%;
+  width: 0;
+  flex: none;
+  background: var(--ab, #81C784);
+  transition: width 0.25s ease;
+}
+.quiz-progress-bad {
+  height: 100%;
+  width: 0;
+  flex: none;
+  background: var(--down, #F06292);
+  transition: width 0.25s ease;
+}

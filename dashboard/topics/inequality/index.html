@@ -7,7 +7,7 @@
   <link href="https://fonts.googleapis.com/css2?family=Hanken+Grotesk:wght@400;600;700&family=JetBrains+Mono:wght@400;700&display=swap" rel="stylesheet">
   <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/katex@0.16.11/dist/katex.min.css" crossorigin="anonymous">
   <script defer src="https://cdn.jsdelivr.net/npm/katex@0.16.11/dist/katex.min.js" crossorigin="anonymous"></script>
-  <link rel="stylesheet" href="../../shared/topic-shell.css?v=20260719-ipad">
+  <link rel="stylesheet" href="../../shared/topic-shell.css?v=20260725-quiz-bar">
   <link rel="stylesheet" href="sign-flip-doors.css?v=20260706-quiz2">
   <script defer src="../../shared/deck-touch-nav.js"></script>
   <script defer src="../../shared/phone-compact.js?v=20260711-phone"></script>
@@ -15,7 +15,7 @@
   <script defer src="inequality-tools.js?v=20260710-tools-light"></script>
   <script defer src="inequality-game.js?v=20260706-quiz2"></script>
   <script defer src="sign-flip-doors.js?v=20260706-quiz2"></script>
-  <script defer src="inequality-quiz.js?v=20260706-quiz2"></script>
+  <script defer src="inequality-quiz.js?v=20260725-quiz-bar"></script>
   <style>
     :root {
       --bg: #fdfbf7; --panel: #ffffff; --panel2: #f5efe6; --ink: #2c2420; --dim: #5d544f;
@@ -293,7 +293,6 @@
     #panel-quiz { overflow: visible; }
     .quiz-wrap { max-width: 960px; margin: 0 auto; min-width: 0; width: 100%; overflow: visible; }
     .quiz-progress-wrap { margin-bottom: 18px; }
-    .quiz-progress-wrap.done .quiz-progress-fill { background: var(--ab); }
     .quiz-progress-label {
       font-size: 14px; font-weight: 600; color: var(--dim); margin-bottom: 8px; text-align: center;
     }
@@ -681,7 +680,7 @@
     <div class="quiz-wrap">
       <div class="quiz-progress-wrap" id="quiz-progress-wrap">
         <div class="quiz-progress-label" id="quiz-progress-label">Question 1 of 1</div>
-        <div class="quiz-progress-track"><div class="quiz-progress-fill" id="quiz-progress-fill"></div></div>
+        <div class="quiz-progress-track"><div class="quiz-progress-fill" id="quiz-progress-fill"><span class="quiz-progress-ok" id="quiz-progress-ok" aria-hidden="true"></span><span class="quiz-progress-bad" id="quiz-progress-bad" aria-hidden="true"></span></div></div>
       </div>
       <div id="quiz-root"></div>
       <div class="quiz-nav" id="quiz-nav">

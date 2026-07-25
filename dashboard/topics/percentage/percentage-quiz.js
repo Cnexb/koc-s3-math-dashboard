@@ -114,6 +114,8 @@
     const progressWrap = document.getElementById("quiz-progress-wrap");
     const progressLabel = document.getElementById("quiz-progress-label");
     const progressFill = document.getElementById("quiz-progress-fill");
+    const progressOk = document.getElementById("quiz-progress-ok");
+    const progressBad = document.getElementById("quiz-progress-bad");
     const backBtn = document.getElementById("quiz-back");
     const nextBtn = document.getElementById("quiz-next");
     if (!root || !nextBtn) return;
@@ -125,14 +127,29 @@
       if (state.phase === "review") {
         progressWrap.classList.add("done");
         if (progressLabel) progressLabel.textContent = "Results";
-        if (progressFill) progressFill.style.width = "100%";
+        const total = QUIZ.length;
+        const score = QUIZ.filter((q) => checkQuestion(q, state.answers)).length;
+        const okShare = total ? score / total : 0;
+        const badShare = total ? (total - score) / total : 0;
+        const accuracyPct = total ? Math.round(okShare * 100) : 0;
+        if (progressFill) {
+          progressFill.style.width = score === 0 ? "100%" : accuracyPct + "%";
+          progressFill.style.background = "transparent";
+        }
+        if (progressOk) progressOk.style.width = Math.round(okShare * 100) + "%";
+        if (progressBad) progressBad.style.width = Math.round(badShare * 100) + "%";
         return;
       }
       progressWrap.classList.remove("done");
       const n = QUIZ.length;
       const cur = state.index + 1;
       if (progressLabel) progressLabel.textContent = "Question " + cur + " of " + n;
-      if (progressFill) progressFill.style.width = Math.round((cur / n) * 100) + "%";
+      if (progressFill) {
+        progressFill.style.width = Math.round((cur / n) * 100) + "%";
+        progressFill.style.background = "";
+      }
+      if (progressOk) progressOk.style.width = "0%";
+      if (progressBad) progressBad.style.width = "0%";
     }
 
     function updateNav() {

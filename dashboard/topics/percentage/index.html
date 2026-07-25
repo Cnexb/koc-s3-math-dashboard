@@ -8,7 +8,7 @@
   <script defer src="https://cdn.jsdelivr.net/npm/katex@0.16.11/dist/katex.min.js" crossorigin="anonymous"></script>
   <link href="https://fonts.googleapis.com/css2?family=Hanken+Grotesk:wght@400;600;700&family=JetBrains+Mono:wght@400;700&display=swap" rel="stylesheet">
   <link href="https://fonts.googleapis.com/css2?family=Press+Start+2P&display=swap" rel="stylesheet">
-  <link rel="stylesheet" href="../../shared/topic-shell.css?v=20260719-ipad">
+  <link rel="stylesheet" href="../../shared/topic-shell.css?v=20260725-quiz-bar">
   <script defer src="../../shared/deck-touch-nav.js"></script>
   <script defer src="../../shared/phone-compact.js?v=20260711-phone"></script>
   <script defer src="../../shared/embed-nav.js?v=20260710-deck-16x9"></script>
@@ -17,7 +17,7 @@
   <script defer src="percentage-game.js"></script>
   <script defer src="percentage-bank-game.js"></script>
   <script defer src="percentage-tools.js?v=20260720-comics"></script>
-  <script defer src="percentage-quiz.js?v=20260709-pct-q9"></script>
+  <script defer src="percentage-quiz.js?v=20260725-quiz-bar"></script>
   <script defer src="percentage-comics.js?v=20260725-comics-imgs"></script>
   <style>
     :root {
@@ -504,7 +504,6 @@
     /* ?? Quiz ?? */
     .quiz-wrap { max-width: 720px; margin: 0 auto; min-width: 0; }
     .quiz-progress-wrap { margin-bottom: 18px; }
-    .quiz-progress-wrap.done .quiz-progress-fill { background: var(--ab); }
     .quiz-progress-label { font-size: 14px; font-weight: 600; color: var(--dim); margin-bottom: 8px; text-align: center; }
     .quiz-progress-track { height: 8px; border-radius: 999px; background: var(--panel2); border: 1px solid var(--line); overflow: hidden; }
     .quiz-progress-fill { height: 100%; width: 0; border-radius: 999px; background: var(--a); transition: width .25s ease; }
@@ -911,7 +910,7 @@
     <div class="quiz-wrap">
       <div class="quiz-progress-wrap" id="quiz-progress-wrap">
         <div class="quiz-progress-label" id="quiz-progress-label">Question 1 of 1</div>
-        <div class="quiz-progress-track"><div class="quiz-progress-fill" id="quiz-progress-fill"></div></div>
+        <div class="quiz-progress-track"><div class="quiz-progress-fill" id="quiz-progress-fill"><span class="quiz-progress-ok" id="quiz-progress-ok" aria-hidden="true"></span><span class="quiz-progress-bad" id="quiz-progress-bad" aria-hidden="true"></span></div></div>
       </div>
       <div id="quiz-root"></div>
       <div class="quiz-nav" id="quiz-nav">
