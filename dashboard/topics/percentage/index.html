@@ -8,15 +8,15 @@
   <script defer src="https://cdn.jsdelivr.net/npm/katex@0.16.11/dist/katex.min.js" crossorigin="anonymous"></script>
   <link href="https://fonts.googleapis.com/css2?family=Hanken+Grotesk:wght@400;600;700&family=JetBrains+Mono:wght@400;700&display=swap" rel="stylesheet">
   <link href="https://fonts.googleapis.com/css2?family=Press+Start+2P&display=swap" rel="stylesheet">
-  <link rel="stylesheet" href="../../shared/topic-shell.css?v=20260725-fixes6">
+  <link rel="stylesheet" href="../../shared/topic-shell.css?v=20260725-fixes7">
   <script defer src="../../shared/deck-touch-nav.js?v=20260725-fixes6"></script>
   <script defer src="../../shared/phone-compact.js?v=20260711-phone"></script>
   <script defer src="../../shared/embed-nav.js?v=20260710-deck-16x9"></script>
   <script defer src="percentage-game-engine.js?v=20260719-hold"></script>
-  <script defer src="percentage-calc.js"></script>
+  <script defer src="percentage-calc.js?v=20260725-fixes7"></script>
   <script defer src="percentage-game.js"></script>
   <script defer src="percentage-bank-game.js"></script>
-  <script defer src="percentage-tools.js?v=20260725-fixes6"></script>
+  <script defer src="percentage-tools.js?v=20260725-fixes7"></script>
   <script defer src="percentage-quiz.js?v=20260725-fixes6"></script>
   <script defer src="percentage-comics.js?v=20260725-comics-imgs"></script>
   <style>
@@ -351,12 +351,16 @@
       color: #5a6648;
     }
 
-    .pg-sym, .pg-calc-key.op {
-      font-family: "JetBrains Mono", "Segoe UI Symbol", "Apple Symbols", sans-serif;
+    .pg-sym,
+    .pg-calc-key.op,
+    .pg-calc-key.sym {
+      font-family: "JetBrains Mono", "Segoe UI Symbol", "Apple Symbols", "Noto Sans Symbols 2", sans-serif !important;
       font-weight: 700;
+      letter-spacing: 0;
     }
     .pg-sym { font-size: 12px; }
-    .pg-calc-key.op { font-size: 13px; }
+    .pg-calc-key.op,
+    .pg-calc-key.sym { font-size: 14px; }
     .pg-dpad span { background: #7a8668; border: 2px solid #5a6648; border-radius: 4px; padding: 6px 10px; }
     @media (max-width: 520px) {
       #pg-text, #bg-text, .pg-dialog-text, .pg-opt-label { font-size: 11px; }
@@ -732,7 +736,7 @@
                 <span id="pg-chapter">SC 01</span>
               </div>
               <div class="pg-dpad">
-                <span><span class="pg-sym">&uarr;</span> <span class="pg-sym">&darr;</span> highlight</span>
+                <span><span class="pg-sym">&#x2191;</span> <span class="pg-sym">&#x2193;</span> highlight</span>
                 <span>Enter confirm</span>
               </div>
               <div class="pg-controls">
@@ -759,7 +763,7 @@
                 <span id="bg-chapter">SC 01</span>
               </div>
               <div class="pg-dpad">
-                <span><span class="pg-sym">&uarr;</span> <span class="pg-sym">&darr;</span> highlight</span>
+                <span><span class="pg-sym">&#x2191;</span> <span class="pg-sym">&#x2193;</span> highlight</span>
                 <span>Enter confirm</span>
               </div>
               <div class="pg-controls">
@@ -777,21 +781,21 @@
           </div>
           <div class="pg-calc-keys" id="pg-calc-keys">
             <button type="button" class="pg-calc-key fn" data-k="C">C</button>
-            <button type="button" class="pg-calc-key fn" data-k="BK">DEL</button>
+            <button type="button" class="pg-calc-key fn sym" data-k="BK">&#x232B;</button>
             <button type="button" class="pg-calc-key fn" data-k="(">(</button>
             <button type="button" class="pg-calc-key fn" data-k=")">)</button>
             <button type="button" class="pg-calc-key" data-k="7">7</button>
             <button type="button" class="pg-calc-key" data-k="8">8</button>
             <button type="button" class="pg-calc-key" data-k="9">9</button>
-            <button type="button" class="pg-calc-key op" data-k="/">&divide;</button>
+            <button type="button" class="pg-calc-key op" data-k="/">&#x00F7;</button>
             <button type="button" class="pg-calc-key" data-k="4">4</button>
             <button type="button" class="pg-calc-key" data-k="5">5</button>
             <button type="button" class="pg-calc-key" data-k="6">6</button>
-            <button type="button" class="pg-calc-key op" data-k="*">&times;</button>
+            <button type="button" class="pg-calc-key op" data-k="*">&#x00D7;</button>
             <button type="button" class="pg-calc-key" data-k="1">1</button>
             <button type="button" class="pg-calc-key" data-k="2">2</button>
             <button type="button" class="pg-calc-key" data-k="3">3</button>
-            <button type="button" class="pg-calc-key op" data-k="-">&minus;</button>
+            <button type="button" class="pg-calc-key op" data-k="-">&#x2212;</button>
             <button type="button" class="pg-calc-key" data-k="0">0</button>
             <button type="button" class="pg-calc-key" data-k=".">.</button>
             <button type="button" class="pg-calc-key fn" data-k="%">%</button>
@@ -807,7 +811,7 @@
       </div>
       <p class="pg-hint" id="pg-hint">
         Retro RPG adventures about percentages &amp; interest.<br>
-        <span class="pg-sym">&uarr;</span> <span class="pg-sym">&darr;</span> highlight | Enter confirm | pocket calc for working
+        <span class="pg-sym">&#x2191;</span> <span class="pg-sym">&#x2193;</span> highlight | Enter confirm | pocket calc for working
       </p>
     </div>
   </section>
