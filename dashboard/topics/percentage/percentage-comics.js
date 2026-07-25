@@ -3,7 +3,7 @@
 (function () {
   "use strict";
 
-  const COMIC_ASSET_V = "20260725";
+  const COMIC_ASSET_V = "20260725b";
 
   const COMICS = [
     {
