@@ -161,11 +161,11 @@
     if (activeGameMode === "bank") {
       if (window.PctBankGame) window.PctBankGame.show();
       if (window.PctCalc) window.PctCalc.setTip("bank");
-      if (hint) hint.innerHTML = "City Bank — simple vs compound interest.<br>↑↓ highlight · Enter confirm · pocket calc for working";
+      if (hint) hint.innerHTML = "City Bank &mdash; simple vs compound interest.<br>UP/DN highlight | Enter confirm | pocket calc for working";
     } else {
       if (window.PctMartGame) window.PctMartGame.show();
       if (window.PctCalc) window.PctCalc.setTip("mart");
-      if (hint) hint.innerHTML = "Super Mart — profit, discount &amp; marked price.<br>↑↓ highlight · Enter confirm · pocket calc for working";
+      if (hint) hint.innerHTML = "Super Mart &mdash; profit, discount &amp; marked price.<br>UP/DN highlight | Enter confirm | pocket calc for working";
     }
   }
 

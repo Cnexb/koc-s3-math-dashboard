@@ -84,13 +84,8 @@
       id: 10,
       type: "mc",
       prompt:
-        "Bank X offers interest at 4% p.a. compounded half-yearly. Bank Y offers interest at 2% p.a. compounded quarterly. Susan is going to deposit a sum of money in one of the banks. Assuming the principal to be P, what is the interest received in 10 years for Bank Y?",
-      choices: [
-        "P(1.005^{40}-1)",
-        "0.2P",
-        "P(1.02^{20}-1)",
-        "P(1.005^{20}-1)",
-      ],
+        "A car depreciates in value by 12% each year. If its present value is $50000, find its value after 2 years.",
+      choices: ["\\$38720", "\\$40000", "\\$44000", "\\$38000"],
       answer: 0,
     },
   ];

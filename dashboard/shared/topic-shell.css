@@ -314,10 +314,11 @@ html.phone-compact .mg-btn {
   min-height: 44px;
 }
 
-/* Quiz results bar  Egreen (correct) + red (incorrect); full width filled by score */
+/* Quiz results bar: green (correct) + red (incorrect); full width filled by score */
 .quiz-progress-fill {
   display: flex;
   flex-direction: row;
+  align-items: stretch;
   overflow: hidden;
 }
 .quiz-progress-wrap:not(.done) .quiz-progress-ok,
@@ -328,17 +329,23 @@ html.phone-compact .mg-btn {
   width: 100% !important;
   background: transparent !important;
 }
+.quiz-progress-wrap.done .quiz-progress-ok,
+.quiz-progress-wrap.done .quiz-progress-bad {
+  display: block !important;
+  height: 100%;
+  min-height: 8px;
+}
 .quiz-progress-ok {
   height: 100%;
   width: 0;
-  flex: none;
-  background: var(--ab, #81C784);
+  flex: 0 0 auto;
+  background: #81C784;
   transition: width 0.25s ease;
 }
 .quiz-progress-bad {
   height: 100%;
   width: 0;
-  flex: none;
-  background: var(--down, #F06292);
+  flex: 0 0 auto;
+  background: #F06292;
   transition: width 0.25s ease;
 }
