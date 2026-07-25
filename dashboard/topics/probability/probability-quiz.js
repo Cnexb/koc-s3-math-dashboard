@@ -206,7 +206,6 @@
         const prompt = document.createElement("div");
         prompt.className = "quiz-prompt";
         if (/\\frac\{/.test(q.prompt)) renderPrompt(prompt, q.prompt);
-        else if (/[\\$]|\\text/.test(q.prompt)) kx(prompt, q.prompt, false);
         else prompt.textContent = q.prompt;
         head.appendChild(prompt);
       }
