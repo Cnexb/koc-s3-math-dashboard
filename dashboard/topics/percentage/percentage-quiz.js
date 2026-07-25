@@ -76,13 +76,8 @@
       id: 9,
       type: "mc",
       prompt:
-        "Bank X offers interest at 4% p.a. compounded half-yearly. Bank Y offers interest at 2% p.a. compounded quarterly. Susan is going to deposit a sum of money in one of the banks. Assuming the principal to be P, what is the interest received in 10 years for Bank X?",
-      choices: [
-        "P(1.02^{20}-1)",
-        "0.4P",
-        "P(1.005^{40}-1)",
-        "P(1.04^{10}-1)",
-      ],
+        "A dress is marked at $960. During a sale, a customer gets a discount of 25% off the marked price, followed by an extra 10% off the reduced price. Find the amount the customer pays.",
+      choices: ["\\$648", "\\$720", "\\$672", "\\$864"],
       answer: 0,
     },
     {
@@ -110,20 +105,14 @@
   }
 
   function setReviewBar(progressFill, progressOk, progressBad, score, total) {
-    const okPct = total ? Math.round((score / total) * 100) : 0;
+    const okShare = total ? score / total : 0;
+    const badShare = total ? (total - score) / total : 0;
     if (progressFill) {
       progressFill.style.width = "100%";
-      if (okPct <= 0) {
-        progressFill.style.background = "var(--down, #F06292)";
-      } else if (okPct >= 100) {
-        progressFill.style.background = "var(--ab, #81C784)";
-      } else {
-        progressFill.style.background =
-          "linear-gradient(to right, var(--ab, #81C784) " + okPct + "%, var(--down, #F06292) " + okPct + "%)";
-      }
+      progressFill.style.background = "transparent";
     }
-    if (progressOk) progressOk.style.width = "0%";
-    if (progressBad) progressBad.style.width = "0%";
+    if (progressOk) progressOk.style.width = Math.round(okShare * 100) + "%";
+    if (progressBad) progressBad.style.width = Math.round(badShare * 100) + "%";
   }
 
   function initQuiz() {

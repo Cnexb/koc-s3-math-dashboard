@@ -1,4 +1,4 @@
-/* Factorization quiz  Epaginated MC, progress bar, submit on last ↁEall results */
+/* Factorization quiz — paginated MC, progress bar, submit on last → all results */
 (function () {
   "use strict";
 
@@ -150,7 +150,7 @@
     { label: "()²", insert: "()^2" },
     { label: "^", insert: "^{}" },
     { label: "+", insert: "+" },
-    { label: "∁E, insert: "-" },
+    { label: "−", insert: "-" },
     { label: "(", insert: "(" },
     { label: ")", insert: ")" },
     { label: "α", insert: "\\alpha" },
@@ -176,7 +176,7 @@
       .toLowerCase();
   }
 
-  // Flip (a-b) ↁE(b-a) for squared-binomial matching, e.g. (3u-5v)^2 ≡ (5v-3u)^2
+  // Flip (a-b) ↔ (b-a) for squared-binomial matching, e.g. (3u-5v)^2 ≡ (5v-3u)^2
   function binomialTerms(inner) {
     if (/^[+-]/.test(inner)) {
       const first = inner.match(/^([+-][^+-]+)/);
@@ -266,23 +266,6 @@
     return checkPart({ answer: q.answer }, answers[q.id]);
   }
 
-  function setReviewBar(progressFill, progressOk, progressBad, score, total) {
-    const okPct = total ? Math.round((score / total) * 100) : 0;
-    if (progressFill) {
-      progressFill.style.width = "100%";
-      if (okPct <= 0) {
-        progressFill.style.background = "var(--down, #F06292)";
-      } else if (okPct >= 100) {
-        progressFill.style.background = "var(--ab, #81C784)";
-      } else {
-        progressFill.style.background =
-          "linear-gradient(to right, var(--ab, #81C784) " + okPct + "%, var(--down, #F06292) " + okPct + "%)";
-      }
-    }
-    if (progressOk) progressOk.style.width = "0%";
-    if (progressBad) progressBad.style.width = "0%";
-  }
-
   function initQuiz() {
     const root = document.getElementById("quiz-root");
     const progressWrap = document.getElementById("quiz-progress-wrap");
@@ -321,8 +304,16 @@
       if (state.phase === "review") {
         progressWrap.classList.add("done");
         if (progressLabel) progressLabel.textContent = "Results";
+        const total = QUIZ.length;
         const score = QUIZ.filter((q) => checkQuestion(q, state.answers)).length;
-        setReviewBar(progressFill, progressOk, progressBad, score, QUIZ.length);
+        const okShare = total ? score / total : 0;
+        const badShare = total ? (total - score) / total : 0;
+        if (progressFill) {
+          progressFill.style.width = "100%";
+          progressFill.style.background = "transparent";
+        }
+        if (progressOk) progressOk.style.width = Math.round(okShare * 100) + "%";
+        if (progressBad) progressBad.style.width = Math.round(badShare * 100) + "%";
         return;
       }
       progressWrap.classList.remove("done");

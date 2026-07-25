@@ -1,4 +1,4 @@
-/* Probability quiz  EPre S3 L10 E2; paginated MC (10), progress bar */
+/* Probability quiz — Pre S3 L10–12; paginated MC (10), progress bar */
 (function () {
   "use strict";
 
@@ -93,6 +93,10 @@
     catch (e) { el.textContent = tex; }
   }
 
+  function checkQuestion(q, answers) {
+    return answers[q.id] === q.answer;
+  }
+
   function renderPrompt(el, text) {
     const re = /(\\frac\{[^}]+\}\{[^}]+\})/g;
     const parts = text.split(re);
@@ -109,23 +113,7 @@
     });
   }
 
-  function setReviewBar(progressFill, progressOk, progressBad, score, total) {
-    const okPct = total ? Math.round((score / total) * 100) : 0;
-    if (progressFill) {
-      progressFill.style.width = "100%";
-      if (okPct <= 0) {
-        progressFill.style.background = "var(--down, #F06292)";
-      } else if (okPct >= 100) {
-        progressFill.style.background = "var(--ab, #81C784)";
-      } else {
-        progressFill.style.background =
-          "linear-gradient(to right, var(--ab, #81C784) " + okPct + "%, var(--down, #F06292) " + okPct + "%)";
-      }
-    }
-    if (progressOk) progressOk.style.width = "0%";
-    if (progressBad) progressBad.style.width = "0%";
-  }
-
+  function initQuiz() {
     const root = document.getElementById("quiz-root");
     const progressWrap = document.getElementById("quiz-progress-wrap");
     const progressLabel = document.getElementById("quiz-progress-label");
@@ -143,8 +131,16 @@
       if (state.phase === "review") {
         progressWrap.classList.add("done");
         if (progressLabel) progressLabel.textContent = "Results";
+        const total = QUIZ.length;
         const score = QUIZ.filter((q) => checkQuestion(q, state.answers)).length;
-        setReviewBar(progressFill, progressOk, progressBad, score, QUIZ.length);
+        const okShare = total ? score / total : 0;
+        const badShare = total ? (total - score) / total : 0;
+        if (progressFill) {
+          progressFill.style.width = "100%";
+          progressFill.style.background = "transparent";
+        }
+        if (progressOk) progressOk.style.width = Math.round(okShare * 100) + "%";
+        if (progressBad) progressBad.style.width = Math.round(badShare * 100) + "%";
         return;
       }
       progressWrap.classList.remove("done");
@@ -210,6 +206,7 @@
         const prompt = document.createElement("div");
         prompt.className = "quiz-prompt";
         if (/\\frac\{/.test(q.prompt)) renderPrompt(prompt, q.prompt);
+        else if (/[\\$]|\\text/.test(q.prompt)) kx(prompt, q.prompt, false);
         else prompt.textContent = q.prompt;
         head.appendChild(prompt);
       }
