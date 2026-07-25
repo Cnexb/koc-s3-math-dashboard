@@ -16,8 +16,11 @@ $Quality = $Quality -replace '^q', ''
 # Real failures are caught via $LASTEXITCODE checks below.
 $ErrorActionPreference = "Continue"
 $Here = $PSScriptRoot
-$Venv = Join-Path $Here "..\KOC_web - reference\.venv\Scripts\manim-slides.exe"
-if (-not (Test-Path $Venv)) { Write-Error "manim-slides not found at $Venv"; exit 1 }
+$Venv = Join-Path $Here ".venv-manim\Scripts\manim-slides.exe"
+if (-not (Test-Path $Venv)) {
+    $Venv = Join-Path $Here "..\KOC_web - reference\.venv\Scripts\manim-slides.exe"
+}
+if (-not (Test-Path $Venv)) { Write-Error "manim-slides not found (tried .venv-manim and KOC_web - reference)"; exit 1 }
 
 Push-Location $Here
 try {
@@ -34,17 +37,20 @@ try {
     & $Venv convert --to=html $SceneName $OutHtml
     if ($LASTEXITCODE -ne 0) { exit $LASTEXITCODE }
 
-    # Patch deck: autoplay background videos to final frame on each slide.
+    # Patch deck: CDN rewrite for CF + autoplay background videos.
+    $DeckDir = Split-Path $OutHtml -Parent
+    $html = Get-Content $OutHtml -Raw
+    if ($html -notmatch 'shared/video-cdn\.js') {
+        $html = $html -replace '(</body>)', "    <script src=`"../../../shared/video-cdn.js`"></script>`n  `$1"
+    }
     $VideoPatch = Join-Path $Here "slides\slide-video-autoplay.js"
     if (Test-Path $VideoPatch) {
-        $DeckDir = Split-Path $OutHtml -Parent
         Copy-Item -Force $VideoPatch (Join-Path $DeckDir "slide-video-autoplay.js")
-        $html = Get-Content $OutHtml -Raw
         if ($html -notmatch 'slide-video-autoplay\.js') {
             $html = $html -replace '(</body>)', "    <script src=`"slide-video-autoplay.js`"></script>`n  `$1"
-            Set-Content -Path $OutHtml -Value $html -NoNewline
         }
     }
+    Set-Content -Path $OutHtml -Value $html -NoNewline
 
     Write-Host "Done: $OutHtml" -ForegroundColor Green
 }

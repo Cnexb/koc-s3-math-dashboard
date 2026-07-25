@@ -80,18 +80,18 @@ class SalaryCheckpoint(PctSlide):
         case_1 = Tex(
             r"Tony's monthly salary increased by $4\%$ in 2019",
             color=GROW,
-            font_size=36,
-        ).move_to([0, 1.8, 0])
+            font_size=44,
+        ).move_to([0, 1.85, 0])
         case_2 = Tex(
             r"and by $3.5\%$ in 2020.",
             color=GROW,
-            font_size=36,
-        ).next_to(case_1, DOWN, buff=0.25)
+            font_size=44,
+        ).next_to(case_1, DOWN, buff=0.28)
         case_3 = Tex(
             r"His salary in 2020 was $\$13\,455$. Find his salary in 2018.",
             color=INK,
-            font_size=34,
-        ).next_to(case_2, DOWN, buff=0.38)
+            font_size=40,
+        ).next_to(case_2, DOWN, buff=0.4)
 
         years = VGroup(
             Tex("2018", color=OLD, font_size=38),
@@ -115,24 +115,30 @@ class SalaryCheckpoint(PctSlide):
         self.play(FadeOut(VGroup(case_1, case_2, case_3, years, values, divider, table_rule)))
 
         # Calculation 1: first undo the most recent 3.5% increase.
-        prompt_1 = Tex(
-            r"Question: 2018 salary $=x$; then $+4\%$, then $+3.5\%$; 2020 salary $=\$13\,455$.",
+        prompt_a = Tex(
+            r"Question: 2018 salary $=x$; then $+4\%$, then $+3.5\%$.",
             color=INK,
-            font_size=24,
-        ).to_edge(UP, buff=1.35)
-        prompt_1.set_color_by_tex("x", OLD)
-        prompt_1.set_color_by_tex("+4", GROW)
-        prompt_1.set_color_by_tex("+3.5", GROW)
-        prompt_1.set_color_by_tex("13", NEW)
-        step_1 = Tex("Step 1: undo the latest increase first.", color=GOLD, font_size=35)
-        step_1.move_to([2.0, 1.2, 0])
-        factor_1 = MathTex(r"1+3.5\%=1.035", color=GROW, font_size=46).move_to([2.0, 0.45, 0])
-        working_1 = MathTex(r"13\,455 \div 1.035 = 13\,000", font_size=52).move_to([2.0, -0.65, 0])
+            font_size=32,
+        )
+        prompt_a.set_color_by_tex("x", OLD)
+        prompt_a.set_color_by_tex("+4", GROW)
+        prompt_a.set_color_by_tex("+3.5", GROW)
+        prompt_b = Tex(
+            r"2020 salary $=\$13\,455$. Find the 2018 salary.",
+            color=GOLD,
+            font_size=32,
+        )
+        prompt_b.set_color_by_tex("13", NEW)
+        prompt_1 = VGroup(prompt_a, prompt_b).arrange(DOWN, buff=0.14).to_edge(UP, buff=1.15)
+        step_1 = Tex("Step 1: undo the latest increase first.", color=GOLD, font_size=36)
+        step_1.move_to([2.0, 0.95, 0])
+        factor_1 = MathTex(r"1+3.5\%=1.035", color=GROW, font_size=46).move_to([2.0, 0.25, 0])
+        working_1 = MathTex(r"13\,455 \div 1.035 = 13\,000", font_size=52).move_to([2.0, -0.75, 0])
         working_1.set_color_by_tex("13", NEW)
         working_1.set_color_by_tex("1.035", FACTOR)
         working_1.set_color_by_tex("000", OLD)
         result_1 = Tex("So the 2019 salary was $13 000$.", color=MUTED, font_size=32)
-        result_1.move_to([2.0, -1.8, 0])
+        result_1.move_to([2.0, -1.85, 0])
         table_1 = compact_salary_table()
 
         self.play(FadeIn(prompt_1, shift=DOWN * 0.1))
@@ -146,14 +152,14 @@ class SalaryCheckpoint(PctSlide):
 
         # Calculation 2: undo the earlier 4% increase to reach 2018.
         prompt_2 = prompt_1.copy()
-        carried = MathTex(r"13\,455 \div 1.035 = 13\,000", font_size=34).move_to([0, 1.22, 0])
+        carried = MathTex(r"13\,455 \div 1.035 = 13\,000", font_size=34)
         carried.set_color_by_tex("13", NEW)
         carried.set_color_by_tex("1.035", FACTOR)
-        step_2 = Tex(r"Step 2: undo the earlier 4\% increase.", color=GOLD, font_size=35)
-        carried.move_to([2.0, 1.22, 0])
-        step_2.move_to([2.0, 0.45, 0])
-        factor_2 = MathTex(r"1+4\%=1.04", color=GROW, font_size=46).move_to([2.0, -0.25, 0])
-        working_2 = MathTex(r"13\,000 \div 1.04 = 12\,500", font_size=52).move_to([2.0, -1.32, 0])
+        step_2 = Tex(r"Step 2: undo the earlier 4\% increase.", color=GOLD, font_size=36)
+        carried.move_to([2.0, 0.95, 0])
+        step_2.move_to([2.0, 0.25, 0])
+        factor_2 = MathTex(r"1+4\%=1.04", color=GROW, font_size=46).move_to([2.0, -0.4, 0])
+        working_2 = MathTex(r"13\,000 \div 1.04 = 12\,500", font_size=52).move_to([2.0, -1.4, 0])
         working_2.set_color_by_tex("13", NEW)
         working_2.set_color_by_tex("1.04", FACTOR)
         working_2.set_color_by_tex("500", OLD)
@@ -173,7 +179,7 @@ class SalaryCheckpoint(PctSlide):
         reverse = MathTex(
             r"x=13\,455 \div 1.035 \div 1.04=12\,500",
             font_size=43,
-        ).move_to([2.0, 0.45, 0])
+        ).move_to([2.0, 0.3, 0])
         reverse.set_color_by_tex("13", NEW)
         reverse.set_color_by_tex("1.035", FACTOR)
         reverse.set_color_by_tex("1.04", FACTOR)
@@ -182,10 +188,10 @@ class SalaryCheckpoint(PctSlide):
             r"12\,500 \times 1.04 \times 1.035=13\,455",
             font_size=31,
             color=MUTED,
-        ).move_to([2.0, -0.65, 0])
+        ).move_to([2.0, -0.75, 0])
         answer_label = Tex("Tony's monthly salary in 2018 was", color=MUTED, font_size=28)
-        answer_label.move_to([2.0, -1.45, 0])
-        answer = MathTex(r"\boxed{\$12\,500}", color=GROW, font_size=58).move_to([2.0, -2.25, 0])
+        answer_label.move_to([2.0, -1.5, 0])
+        answer = MathTex(r"\boxed{\$12\,500}", color=GROW, font_size=58).move_to([2.0, -2.3, 0])
         table_3 = compact_salary_table()
 
         self.play(FadeIn(prompt_3, shift=DOWN * 0.1))
