@@ -1,8 +1,8 @@
 """A short Manim Slides deck for a sequential percentage-change example.
 
 Render from dashboard/:
-    .\render.ps1 -SceneFile manim\percentage\rainfall_change.py `
-        -SceneName RainfallChange -Deck percentage\rainfall-change -Quality m
+    .\\render.ps1 -SceneFile manim\\percentage\\rainfall_change.py `
+        -SceneName RainfallChange -Deck percentage\\rainfall-change -Quality m
 """
 from __future__ import annotations
 
@@ -31,7 +31,7 @@ class RainfallChange(PctSlide):
         factor = Tex("Change factor", color=FACTOR, font_size=48)
         relation = VGroup(new_value, equals, old_value, times, factor).arrange(
             RIGHT, buff=0.28
-        ).move_to([0, 0.5, 0])
+        ).move_to([0, 0.15, 0])
         meaning = Tex(
             "A percentage change is a multiplication.",
             color=MUTED,
@@ -47,7 +47,7 @@ class RainfallChange(PctSlide):
 
         # Slide 2: translate percentage changes into factors
         heading = Tex("Turn the percentage into a change factor", color=GOLD, font_size=42)
-        heading.move_to([0, 1.9, 0])
+        heading.move_to([0, 1.45, 0])
         grow_rate = MathTex(r"+12\%", color=GROW, font_size=58)
         grow_factor = MathTex(r"1+0.12=1.12", color=GROW, font_size=54)
         drop_rate = MathTex(r"-15\%", color=DROP, font_size=58)
@@ -58,7 +58,7 @@ class RainfallChange(PctSlide):
         decay = VGroup(drop_rate, MathTex(r"\longrightarrow", color=MUTED), drop_factor).arrange(
             RIGHT, buff=0.35
         )
-        factors = VGroup(grow, decay).arrange(DOWN, buff=0.65).move_to([0, 0, 0])
+        factors = VGroup(grow, decay).arrange(DOWN, buff=0.65).move_to([0, -0.35, 0])
         note = Tex(
             "Increase: add the rate.  Decrease: subtract the rate.",
             color=MUTED,
@@ -77,7 +77,7 @@ class RainfallChange(PctSlide):
             r"Rainfall was $2500\text{ mm}$ in 2019.",
             color=OLD,
             font_size=50,
-        ).move_to([0, 1.55, 0])
+        ).move_to([0, 1.15, 0])
         line_2 = Tex(
             r"In 2020, it increased by $12\%$.",
             color=GROW,
@@ -88,7 +88,7 @@ class RainfallChange(PctSlide):
             color=DROP,
             font_size=50,
         ).next_to(line_2, DOWN, buff=0.42)
-        ask = Tex("Find the rainfall in 2021.", color=GOLD, font_size=48).move_to([0, -1.65, 0])
+        ask = Tex("Find the rainfall in 2021.", color=GOLD, font_size=48).move_to([0, -1.95, 0])
 
         self.play(FadeIn(question, shift=DOWN * 0.15))
         self.play(FadeIn(line_2, shift=DOWN * 0.15))
@@ -97,8 +97,7 @@ class RainfallChange(PctSlide):
         self.next_slide()
         self.play(FadeOut(VGroup(question, line_2, line_3, ask)))
 
-        # Keep this larger two-line question at the top of every calculation
-        # slide so the working below never loses context.
+        # Persistent question banner — stays put across calculation slides.
         prompt_line_1 = Tex(
             r"Question: $2500\text{ mm}$ in 2019, then $+12\%$, then $-15\%$.",
             color=INK,
@@ -112,12 +111,13 @@ class RainfallChange(PctSlide):
             color=GOLD,
             font_size=34,
         )
-        prompt_1 = VGroup(prompt_line_1, prompt_line_2).arrange(
+        prompt = VGroup(prompt_line_1, prompt_line_2).arrange(
             DOWN, buff=0.14
-        ).to_edge(UP, buff=1.15)
+        ).to_edge(UP, buff=1.55)
+
         step_1_label = Tex(r"Step 1: apply the 12\% increase", color=GROW, font_size=36)
-        step_1_label.move_to([0, 0.95, 0])
-        working_1 = MathTex(r"2500 \times 1.12 = 2800", font_size=64).move_to([0, 0.05, 0])
+        step_1_label.move_to([0, 0.55, 0])
+        working_1 = MathTex(r"2500 \times 1.12 = 2800", font_size=64).move_to([0, -0.35, 0])
         working_1.set_color_by_tex("2500", OLD)
         working_1.set_color_by_tex("1.12", GROW)
         working_1.set_color_by_tex("2800", NEW)
@@ -125,25 +125,23 @@ class RainfallChange(PctSlide):
             r"The 2020 rainfall is $2800\text{ mm}$.",
             color=MUTED,
             font_size=34,
-        ).move_to([0, -1.35, 0])
+        ).move_to([0, -1.65, 0])
 
-        # Calculation page 1 of 3.
-        self.play(FadeIn(prompt_1, shift=DOWN * 0.1))
+        self.play(FadeIn(prompt, shift=DOWN * 0.1))
         self.play(Write(step_1_label))
         self.play(Write(working_1))
         self.play(FadeIn(explanation_1))
         self.next_slide()
-        self.play(FadeOut(VGroup(prompt_1, step_1_label, working_1, explanation_1)))
 
-        prompt_2 = prompt_1.copy()
+        # Keep the question banner; only swap the step-1 detail for a compact recap.
         carried_step_1 = MathTex(r"\text{Step 1: }2500 \times 1.12 = 2800", font_size=34)
         carried_step_1.set_color_by_tex("2500", OLD)
         carried_step_1.set_color_by_tex("1.12", GROW)
         carried_step_1.set_color_by_tex("2800", NEW)
-        carried_step_1.move_to([0, 0.95, 0])
+        carried_step_1.move_to([0, 0.55, 0])
         step_2_label = Tex(r"Step 2: apply the 15\% decrease to 2800", color=DROP, font_size=36)
-        step_2_label.move_to([0, 0.15, 0])
-        working_2 = MathTex(r"2800 \times 0.85 = 2380", font_size=64).move_to([0, -0.8, 0])
+        step_2_label.move_to([0, -0.2, 0])
+        working_2 = MathTex(r"2800 \times 0.85 = 2380", font_size=64).move_to([0, -1.1, 0])
         working_2.set_color_by_tex("2800", NEW)
         working_2.set_color_by_tex("0.85", DROP)
         working_2.set_color_by_tex("2380", GROW)
@@ -151,55 +149,43 @@ class RainfallChange(PctSlide):
             r"The 2021 rainfall is $2380\text{ mm}$.",
             color=MUTED,
             font_size=34,
-        ).move_to([0, -1.9, 0])
+        ).move_to([0, -2.15, 0])
 
-        # Calculation page 2 of 3: retain step 1 while revealing step 2.
-        self.play(FadeIn(prompt_2, shift=DOWN * 0.1))
-        self.play(Write(carried_step_1))
+        self.play(
+            FadeOut(VGroup(step_1_label, explanation_1)),
+            ReplacementTransform(working_1, carried_step_1),
+        )
         self.play(Write(step_2_label))
         self.play(Write(working_2))
         self.play(FadeIn(explanation_2))
         self.next_slide()
-        self.play(FadeOut(VGroup(
-            prompt_2, carried_step_1, step_2_label, working_2, explanation_2
-        )))
 
-        prompt_3 = prompt_1.copy()
-        recap_1 = MathTex(r"2500 \times 1.12 = 2800", font_size=34).move_to([0, 0.95, 0])
-        recap_1.set_color_by_tex("2500", OLD)
-        recap_1.set_color_by_tex("1.12", GROW)
-        recap_1.set_color_by_tex("2800", NEW)
-        recap_2 = MathTex(r"2800 \times 0.85 = 2380", font_size=34).move_to([0, 0.45, 0])
-        recap_2.set_color_by_tex("2800", NEW)
-        recap_2.set_color_by_tex("0.85", DROP)
-        recap_2.set_color_by_tex("2380", GROW)
+        # Keep banner + both step results; only add the warning / final answer.
         wrong_label = Tex(
             r"Wrong: do not add $+12\%$ and $-15\%$ directly.",
             color=DROP,
             font_size=30,
-        ).move_to([0, -0.1, 0])
+        ).move_to([0, -0.35, 0])
         wrong_working = MathTex(
             r"2500 \times (1+0.12-0.15)=2425 \ne 2380",
             color=DROP,
             font_size=40,
-        ).move_to([0, -0.65, 0])
+        ).move_to([0, -0.9, 0])
         why_wrong = Tex(
             r"The $15\%$ decrease is taken from $2800$, not from $2500$.",
             color=MUTED,
             font_size=28,
-        ).move_to([0, -1.2, 0])
+        ).move_to([0, -1.4, 0])
         combined = MathTex(r"2500 \times 1.12 \times 0.85 = 2380", font_size=40)
-        combined.move_to([0, -1.78, 0])
+        combined.move_to([0, -1.95, 0])
         combined.set_color_by_tex("2500", OLD)
         combined.set_color_by_tex("1.12", GROW)
         combined.set_color_by_tex("0.85", DROP)
         combined.set_color_by_tex("2380", GROW)
-        answer = MathTex(r"\boxed{2380\text{ mm}}", color=GROW, font_size=54).move_to([0, -2.5, 0])
+        answer = MathTex(r"\boxed{2380\text{ mm}}", color=GROW, font_size=54).move_to([0, -2.65, 0])
 
-        # Calculation page 3 of 3: retain both steps and contrast the common
-        # but invalid "add the percentages" shortcut with the correct method.
-        self.play(FadeIn(prompt_3, shift=DOWN * 0.1))
-        self.play(Write(recap_1), Write(recap_2))
+        self.play(FadeOut(VGroup(step_2_label, explanation_2)))
+        self.play(working_2.animate.scale(0.55).move_to([0, 0.05, 0]))
         self.play(FadeIn(wrong_label), Write(wrong_working))
         self.play(FadeIn(why_wrong))
         self.play(Write(combined))
