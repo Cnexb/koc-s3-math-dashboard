@@ -1,4 +1,4 @@
-/* Topic dashboard shell — natural one-page layout for slides/tools/game.
+/* Topic dashboard shell  Enatural one-page layout for slides/tools/game.
    KOC flex fill applies only while Worked Solutions tab is active. */
 html, body {
   height: 100%;
@@ -23,7 +23,7 @@ html.tablet-touch.in-embed body {
   display: none;
 }
 
-/* ── Slides: classic 16:9 deck (sizes from width — worked well before) ── */
+/* ── Slides: classic 16:9 deck (sizes from width  Eworked well before) ── */
 #panel-slides .subnav {
   margin-bottom: 12px;
 }
@@ -60,14 +60,12 @@ html.tablet-touch.in-embed body {
 .hint-deck-phone {
   display: none;
 }
-html.tablet-touch .deck-slideshow,
-html.phone-compact .deck-slideshow {
+html.tablet-touch .deck-slideshow {
   display: flex;
   align-items: center;
   gap: 10px;
 }
-html.tablet-touch .deck-nav-btn,
-html.phone-compact .deck-nav-btn {
+html.tablet-touch .deck-nav-btn {
   display: flex;
   flex: none;
   align-items: center;
@@ -85,16 +83,59 @@ html.phone-compact .deck-nav-btn {
   transition: border-color .15s, color .15s;
   box-shadow: 0 1px 2px rgba(0, 0, 0, 0.04);
 }
-html.tablet-touch .deck-nav-btn:active,
+html.tablet-touch .deck-nav-btn:active {
+  border-color: var(--a, #4fc3f7);
+  color: var(--a, #4fc3f7);
+}
+html.tablet-touch #panel-slides .deck-wrap {
+  flex: 1;
+  min-width: 0;
+  touch-action: pan-y pinch-zoom;
+}
+html.phone-compact .deck-slideshow {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  grid-template-rows: auto auto;
+  gap: 10px;
+  align-items: stretch;
+}
+html.phone-compact .deck-nav-btn {
+  display: flex;
+  flex: none;
+  align-items: center;
+  justify-content: center;
+  width: auto;
+  height: 44px;
+  border-radius: 999px;
+  border: 1px solid var(--line, rgba(0, 0, 0, 0.08));
+  background: var(--panel, #ffffff);
+  color: var(--ink, #2c2420);
+  font: inherit;
+  font-size: 18px;
+  font-weight: 700;
+  cursor: pointer;
+  transition: border-color .15s, color .15s;
+  box-shadow: 0 1px 2px rgba(0, 0, 0, 0.04);
+}
 html.phone-compact .deck-nav-btn:active {
   border-color: var(--a, #4fc3f7);
   color: var(--a, #4fc3f7);
 }
-html.tablet-touch #panel-slides .deck-wrap,
 html.phone-compact #panel-slides .deck-wrap {
-  flex: 1;
+  grid-column: 1 / -1;
+  grid-row: 1;
+  flex: none;
+  width: 100%;
   min-width: 0;
   touch-action: pan-y pinch-zoom;
+}
+html.phone-compact .deck-prev {
+  grid-column: 1;
+  grid-row: 2;
+}
+html.phone-compact .deck-next {
+  grid-column: 2;
+  grid-row: 2;
 }
 html.tablet-touch .hint-deck-desktop,
 html.phone-compact .hint-deck-desktop {
@@ -208,7 +249,7 @@ html.tablet-touch.in-embed .panel:not(.hidden) {
   padding-bottom: 8px;
 }
 
-/* ── iPhone only (<=767px, html.phone-compact) — desktop & iPad unchanged ── */
+/* ── iPhone only (<=767px, html.phone-compact)  Edesktop & iPad unchanged ── */
 html.phone-compact header {
   flex-direction: column;
   align-items: flex-start;
@@ -273,7 +314,7 @@ html.phone-compact .mg-btn {
   min-height: 44px;
 }
 
-/* Quiz results bar — green (correct) + red (incorrect); full width filled by score */
+/* Quiz results bar  Egreen (correct) + red (incorrect); full width filled by score */
 .quiz-progress-fill {
   display: flex;
   flex-direction: row;

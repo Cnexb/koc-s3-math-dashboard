@@ -1,4 +1,4 @@
-/** iPad / tablet slide-deck touch nav (swipe + arrows). Desktop unchanged — gated by html.tablet-touch. */
+/** iPad / tablet slide-deck touch nav (swipe + arrows). Desktop unchanged  Egated by html.tablet-touch. */
 (function () {
   "use strict";
 
@@ -73,7 +73,7 @@
     return false;
   }
 
-  /** Parent-page keys so → / Enter work without clicking the iframe first. */
+  /** Parent-page keys so ↁE/ Enter work without clicking the iframe first. */
   function initDeckParentKeys(frame) {
     if (!frame || frame.dataset.kocParentKeys === "1") return;
     frame.dataset.kocParentKeys = "1";

@@ -1,4 +1,4 @@
-/* Inequality quiz — paginated MC (10), progress bar, submit on last → all results */
+/* Inequality quiz  Epaginated MC (10), progress bar, submit on last ↁEall results */
 (function () {
   "use strict";
 
@@ -120,7 +120,7 @@
     { label: ">", insert: ">" },
     { label: "≤ frac", insert: "\\frac{}{}" },
     { label: "+", insert: "+" },
-    { label: "−", insert: "-" },
+    { label: "∁E, insert: "-" },
     { label: "=", insert: "=" },
     { label: ",", insert: ", " },
     { label: "(", insert: "(" },
@@ -233,6 +233,23 @@
     return checkPart({ answer: q.answer, accept: q.accept }, answers[q.id]);
   }
 
+  function setReviewBar(progressFill, progressOk, progressBad, score, total) {
+    const okPct = total ? Math.round((score / total) * 100) : 0;
+    if (progressFill) {
+      progressFill.style.width = "100%";
+      if (okPct <= 0) {
+        progressFill.style.background = "var(--down, #F06292)";
+      } else if (okPct >= 100) {
+        progressFill.style.background = "var(--ab, #81C784)";
+      } else {
+        progressFill.style.background =
+          "linear-gradient(to right, var(--ab, #81C784) " + okPct + "%, var(--down, #F06292) " + okPct + "%)";
+      }
+    }
+    if (progressOk) progressOk.style.width = "0%";
+    if (progressBad) progressBad.style.width = "0%";
+  }
+
   function initQuiz() {
     const root = document.getElementById("quiz-root");
     const progressWrap = document.getElementById("quiz-progress-wrap");
@@ -271,16 +288,8 @@
       if (state.phase === "review") {
         progressWrap.classList.add("done");
         if (progressLabel) progressLabel.textContent = "Results";
-        const total = QUIZ.length;
         const score = QUIZ.filter((q) => checkQuestion(q, state.answers)).length;
-        const okShare = total ? score / total : 0;
-        const badShare = total ? (total - score) / total : 0;
-        if (progressFill) {
-          progressFill.style.width = "100%";
-          progressFill.style.background = "transparent";
-        }
-        if (progressOk) progressOk.style.width = Math.round(okShare * 100) + "%";
-        if (progressBad) progressBad.style.width = Math.round(badShare * 100) + "%";
+        setReviewBar(progressFill, progressOk, progressBad, score, QUIZ.length);
         return;
       }
       progressWrap.classList.remove("done");

@@ -1,4 +1,4 @@
-/* Inequality — Tab 1 deck wiring + Tab 2 sign-flip flashcards.
+/* Inequality  ETab 1 deck wiring + Tab 2 sign-flip flashcards.
  *
  * One card at a time: drag the correct inequality sign and hollow/filled dot
  * onto the answer and number line. After checking, wrong cards show the
@@ -130,24 +130,66 @@
     });
 
     let pointerDrag = false;
+    let dragGhost = null;
+
+    function clearGhost() {
+      if (dragGhost) {
+        dragGhost.remove();
+        dragGhost = null;
+      }
+      document.querySelectorAll("[data-drop-accept].drag-over").forEach((n) => {
+        n.classList.remove("drag-over");
+      });
+      el.style.opacity = "";
+    }
+
+    function moveGhost(x, y) {
+      if (!dragGhost) return;
+      dragGhost.style.left = x + "px";
+      dragGhost.style.top = y + "px";
+      const hit = document.elementFromPoint(x, y);
+      document.querySelectorAll("[data-drop-accept]").forEach((slot) => {
+        slot.classList.toggle("drag-over", !!(hit && slot.contains(hit)));
+      });
+    }
+
     el.addEventListener("pointerdown", (e) => {
       if (e.pointerType === "mouse") return;
       pointerDrag = true;
       chips.forEach((c) => c.classList.toggle("selected", c === el));
+      dragGhost = el.cloneNode(true);
+      dragGhost.classList.add("sf-drag-ghost");
+      dragGhost.removeAttribute("draggable");
+      document.body.appendChild(dragGhost);
+      moveGhost(e.clientX, e.clientY);
+      el.style.opacity = "0.35";
       try { el.setPointerCapture(e.pointerId); } catch (err) { /* ignore */ }
+      e.preventDefault();
     });
+
+    el.addEventListener("pointermove", (e) => {
+      if (!pointerDrag || e.pointerType === "mouse") return;
+      moveGhost(e.clientX, e.clientY);
+      e.preventDefault();
+    });
+
     el.addEventListener("pointerup", (e) => {
       if (!pointerDrag || e.pointerType === "mouse") return;
       pointerDrag = false;
       try { el.releasePointerCapture(e.pointerId); } catch (err) { /* ignore */ }
       const hit = document.elementFromPoint(e.clientX, e.clientY);
+      clearGhost();
       if (!hit) return;
       const slot = hit.closest("[data-drop-accept]");
       if (slot && typeof slot._acceptDrop === "function" && slot._acceptDrop(payload)) {
         chips.forEach((c) => c.classList.remove("selected"));
       }
     });
-    el.addEventListener("pointercancel", () => { pointerDrag = false; });
+
+    el.addEventListener("pointercancel", () => {
+      pointerDrag = false;
+      clearGhost();
+    });
   }
 
   function wireDropSlot(slot, acceptPrefix, onDrop) {
