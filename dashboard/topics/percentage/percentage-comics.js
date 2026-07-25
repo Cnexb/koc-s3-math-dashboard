@@ -3,12 +3,14 @@
 (function () {
   "use strict";
 
+  const COMIC_ASSET_V = "20260725";
+
   const COMICS = [
     {
       id: "calculator-deal",
       title: "The Calculator Deal",
       chapter: "Ch.1 · Successive discounts",
-      image: "comics/01-calculator-deal.png",
+      image: "comics/01-calculator-deal.png?v=" + COMIC_ASSET_V,
       checks: [
         {
           id: "c1q1",
@@ -34,7 +36,7 @@
       id: "comic-con-sales",
       title: "Comic-Con Sales",
       chapter: "Ch.2 · Cost, marked & selling price",
-      image: "comics/02-comic-con-sales.png",
+      image: "comics/02-comic-con-sales.png?v=" + COMIC_ASSET_V,
       checks: [
         {
           id: "c2q1",
@@ -60,7 +62,7 @@
       id: "simple-interest",
       title: "Simple or Compound?",
       chapter: "Ch.3 · Simple interest",
-      image: "comics/03-simple-interest.png",
+      image: "comics/03-simple-interest.png?v=" + COMIC_ASSET_V,
       checks: [
         {
           id: "c3q1",
@@ -86,7 +88,7 @@
       id: "compound-interest",
       title: "Interest on Interest",
       chapter: "Ch.4 · Compound interest",
-      image: "comics/04-compound-interest.png",
+      image: "comics/04-compound-interest.png?v=" + COMIC_ASSET_V,
       checks: [
         {
           id: "c4q1",
@@ -122,7 +124,7 @@
       id: "who-is-the-base",
       title: "Who Is the Base?",
       chapter: "Ch.5 · Comparison base",
-      image: "comics/05-who-is-the-base.png",
+      image: "comics/05-who-is-the-base.png?v=" + COMIC_ASSET_V,
       checks: [
         {
           id: "c5q1",
