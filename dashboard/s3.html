@@ -1,0 +1,390 @@
+<!DOCTYPE html>
+<html lang="zh-HK">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>S3 Mathematics</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Hanken+Grotesk:wght@400;600;700&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/katex@0.16.11/dist/katex.min.css">
+  <style>
+    :root {
+      --bg: #050816;
+      --surface: rgba(18, 22, 48, 0.72);
+      --surface-2: rgba(28, 34, 72, 0.85);
+      --text: #eef2ff;
+      --muted: #a8b4d8;
+      --line: rgba(140, 160, 255, 0.22);
+      --accent: #9ecbff;
+      --glow: #c4b5fd;
+    }
+
+    * { box-sizing: border-box; }
+
+    body {
+      min-height: 100vh;
+      margin: 0;
+      color: var(--text);
+      font-family: "Hanken Grotesk", system-ui, sans-serif;
+      background:
+        radial-gradient(ellipse 80% 50% at 20% 10%, rgba(88, 70, 180, 0.35), transparent 55%),
+        radial-gradient(ellipse 60% 40% at 85% 20%, rgba(40, 80, 180, 0.28), transparent 50%),
+        radial-gradient(ellipse 70% 50% at 50% 100%, rgba(20, 40, 100, 0.4), transparent 55%),
+        linear-gradient(180deg, #050816 0%, #0a1028 45%, #070b1a 100%);
+      overflow-x: hidden;
+    }
+
+    .stars, .stars2, .stars3 {
+      position: fixed;
+      inset: 0;
+      pointer-events: none;
+      z-index: 0;
+    }
+
+    .stars {
+      background-image:
+        radial-gradient(1.5px 1.5px at 8% 12%, #fff, transparent),
+        radial-gradient(1px 1px at 18% 42%, #fff, transparent),
+        radial-gradient(1.5px 1.5px at 28% 18%, #e0e7ff, transparent),
+        radial-gradient(1px 1px at 42% 68%, #fff, transparent),
+        radial-gradient(1.5px 1.5px at 55% 22%, #fff, transparent),
+        radial-gradient(1px 1px at 62% 78%, #c7d2fe, transparent),
+        radial-gradient(1.5px 1.5px at 72% 35%, #fff, transparent),
+        radial-gradient(1px 1px at 84% 58%, #fff, transparent),
+        radial-gradient(1px 1px at 92% 14%, #e0e7ff, transparent),
+        radial-gradient(1.5px 1.5px at 12% 82%, #fff, transparent),
+        radial-gradient(1px 1px at 35% 90%, #fff, transparent),
+        radial-gradient(1px 1px at 48% 8%, #fff, transparent),
+        radial-gradient(1.5px 1.5px at 78% 88%, #c7d2fe, transparent),
+        radial-gradient(1px 1px at 95% 72%, #fff, transparent);
+      animation: twinkle 5s ease-in-out infinite alternate;
+    }
+
+    .stars2 {
+      background-image:
+        radial-gradient(1px 1px at 15% 30%, rgba(255,255,255,.7), transparent),
+        radial-gradient(1px 1px at 33% 55%, rgba(255,255,255,.6), transparent),
+        radial-gradient(1px 1px at 58% 40%, rgba(255,255,255,.75), transparent),
+        radial-gradient(1px 1px at 70% 15%, rgba(255,255,255,.5), transparent),
+        radial-gradient(1px 1px at 88% 45%, rgba(255,255,255,.65), transparent),
+        radial-gradient(1px 1px at 22% 70%, rgba(255,255,255,.55), transparent);
+      animation: twinkle 7s ease-in-out infinite alternate-reverse;
+    }
+
+    .stars3 {
+      opacity: .55;
+      background-image:
+        radial-gradient(2px 2px at 40% 25%, rgba(196, 181, 253, .9), transparent),
+        radial-gradient(2px 2px at 65% 60%, rgba(158, 203, 255, .8), transparent),
+        radial-gradient(1.5px 1.5px at 25% 50%, rgba(255,255,255,.9), transparent);
+      animation: twinkle 4s ease-in-out infinite alternate;
+    }
+
+    @keyframes twinkle {
+      from { opacity: .55; }
+      to { opacity: 1; }
+    }
+
+    .page {
+      position: relative;
+      z-index: 1;
+      width: min(960px, 100%);
+      margin: 0 auto;
+      padding: 34px 28px 56px;
+    }
+
+    .eyebrow {
+      margin: 0 0 6px;
+      color: var(--glow);
+      font-size: 11px;
+      font-weight: 700;
+      letter-spacing: .12em;
+      text-transform: uppercase;
+    }
+
+    h1 {
+      margin: 0;
+      font-size: clamp(24px, 4vw, 34px);
+      letter-spacing: -.03em;
+      text-shadow: 0 0 28px rgba(158, 203, 255, .25);
+    }
+
+    .intro {
+      max-width: 520px;
+      margin: 8px 0 22px;
+      color: var(--muted);
+      font-size: 14px;
+      line-height: 1.5;
+    }
+
+    .grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(220px, 1fr));
+      gap: 14px;
+    }
+
+    button.card {
+      display: flex;
+      flex-direction: column;
+      min-height: 0;
+      padding: 0;
+      overflow: hidden;
+      border: 1px solid var(--line);
+      border-radius: 12px;
+      background: var(--surface);
+      backdrop-filter: blur(10px);
+      color: inherit;
+      font: inherit;
+      text-align: left;
+      cursor: pointer;
+      transition: transform .18s ease, border-color .18s ease, box-shadow .18s ease;
+    }
+
+    button.card:hover {
+      transform: translateY(-2px);
+      border-color: rgba(196, 181, 253, .55);
+      box-shadow: 0 0 0 1px rgba(158, 203, 255, .15), 0 12px 28px rgba(0, 0, 0, .4);
+    }
+
+    button.card:focus-visible,
+    .back:focus-visible {
+      outline: 2px solid var(--accent);
+      outline-offset: 3px;
+    }
+
+    .cover {
+      height: 72px;
+      display: grid;
+      place-items: center;
+      background:
+        radial-gradient(circle at 30% 40%, rgba(158, 203, 255, .2), transparent 55%),
+        linear-gradient(135deg, rgba(40, 50, 110, .9), rgba(20, 25, 55, .95));
+    }
+
+    .cover .katex {
+      font-size: 1.55em;
+      color: inherit;
+      text-shadow: 0 0 16px rgba(158, 203, 255, .35);
+    }
+
+    .s3-mark {
+      color: var(--accent);
+      font-size: 34px;
+      font-weight: 700;
+      text-shadow: 0 0 18px rgba(158, 203, 255, .55);
+    }
+
+    .body {
+      padding: 12px 14px 14px;
+    }
+
+    .body h2 {
+      margin: 0 0 4px;
+      font-size: 16px;
+      line-height: 1.25;
+    }
+
+    .body p {
+      margin: 0;
+      color: var(--muted);
+      font-size: 12.5px;
+      line-height: 1.4;
+    }
+
+    .tag {
+      display: inline-block;
+      margin-top: 10px;
+      padding: 3px 9px;
+      border: 1px solid var(--line);
+      border-radius: 999px;
+      background: var(--surface-2);
+      color: var(--muted);
+      font-size: 11px;
+      font-weight: 600;
+    }
+
+    .view { display: none; }
+    .view.active { display: block; }
+
+    .back {
+      margin: 0 0 18px;
+      padding: 7px 12px;
+      border: 1px solid var(--line);
+      border-radius: 8px;
+      background: var(--surface-2);
+      color: var(--text);
+      font: inherit;
+      font-size: 13px;
+      font-weight: 600;
+      cursor: pointer;
+    }
+
+    .back:hover {
+      border-color: var(--accent);
+      color: var(--accent);
+    }
+
+    .lesson .cover {
+      height: 64px;
+    }
+
+    .lesson.indices .cover {
+      color: var(--accent);
+      background:
+        radial-gradient(circle at 70% 30%, rgba(158, 203, 255, .25), transparent 50%),
+        linear-gradient(135deg, rgba(30, 50, 120, .95), rgba(15, 20, 45, .98));
+    }
+
+    .lesson.polynomials .cover {
+      color: #fde68a;
+      background:
+        radial-gradient(circle at 25% 60%, rgba(253, 230, 138, .18), transparent 50%),
+        linear-gradient(135deg, rgba(55, 40, 100, .95), rgba(20, 25, 50, .98));
+    }
+
+    .lesson.polynomials .cover .katex {
+      font-size: 1.2em;
+      text-shadow: 0 0 14px rgba(253, 230, 138, .3);
+    }
+
+    .topic-panel {
+      margin-top: 8px;
+      padding: 22px 22px 26px;
+      border: 1px solid var(--line);
+      border-radius: 14px;
+      background: var(--surface);
+      backdrop-filter: blur(12px);
+      box-shadow: 0 0 40px rgba(88, 70, 180, .12);
+    }
+
+    .topic-panel .badge-row {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 8px;
+      margin-bottom: 12px;
+    }
+
+    .topic-panel h1 {
+      margin-bottom: 8px;
+    }
+
+    .topic-panel p {
+      margin: 0;
+      color: var(--muted);
+      font-size: 14px;
+      line-height: 1.55;
+      max-width: 520px;
+    }
+
+    .topic-panel .katex {
+      color: var(--accent);
+    }
+
+    @media (max-width: 600px) {
+      .page { padding: 24px 16px 40px; }
+    }
+  </style>
+</head>
+<body>
+  <div class="stars" aria-hidden="true"></div>
+  <div class="stars2" aria-hidden="true"></div>
+  <div class="stars3" aria-hidden="true"></div>
+
+  <main class="page">
+    <section class="view active" id="home">
+      <p class="eyebrow">Mathematics Gallery</p>
+      <h1>Course Levels</h1>
+      <p class="intro">Choose a level to view its lessons.</p>
+
+      <div class="grid">
+        <button class="card" type="button" data-go="lessons">
+          <div class="cover"><span class="s3-mark">S3</span></div>
+          <div class="body">
+            <h2>S3</h2>
+            <p>Indices · Factorization &amp; Polynomials</p>
+            <span class="tag">JM24–JM25</span>
+          </div>
+        </button>
+      </div>
+    </section>
+
+    <section class="view" id="lessons">
+      <button class="back" type="button" data-go="home">← All levels</button>
+      <p class="eyebrow">S3 Mathematics</p>
+      <h1>S3 Lessons</h1>
+
+      <div class="grid">
+        <button class="card lesson indices" type="button" data-go="topic-jm24">
+          <div class="cover">\( a^{x} \)</div>
+          <div class="body">
+            <h2>Law of Indices</h2>
+            <p>JM24 · Lesson 24</p>
+            <span class="tag">JM24</span>
+          </div>
+        </button>
+
+        <button class="card lesson polynomials" type="button" data-go="topic-jm25">
+          <div class="cover">\( (x+a)(x+b) \)</div>
+          <div class="body">
+            <h2>More about Factorization and Polynomials</h2>
+            <p>JM25 · Lesson 25</p>
+            <span class="tag">JM25</span>
+          </div>
+        </button>
+      </div>
+    </section>
+
+    <section class="view" id="topic-jm24">
+      <button class="back" type="button" data-go="lessons">← S3 Lessons</button>
+      <div class="topic-panel">
+        <div class="badge-row">
+          <span class="tag">JM24</span>
+          <span class="tag">Lesson 24</span>
+        </div>
+        <h1>Law of Indices</h1>
+        <p>Topic page for \( a^{x} \) and the laws of indices. Add slides, tools, or notes here next.</p>
+      </div>
+    </section>
+
+    <section class="view" id="topic-jm25">
+      <button class="back" type="button" data-go="lessons">← S3 Lessons</button>
+      <div class="topic-panel">
+        <div class="badge-row">
+          <span class="tag">JM25</span>
+          <span class="tag">Lesson 25</span>
+        </div>
+        <h1>More about Factorization and Polynomials</h1>
+        <p>Topic page for expressions such as \( (x+a)(x+b) \). Add slides, tools, or notes here next.</p>
+      </div>
+    </section>
+  </main>
+
+  <script defer src="https://cdn.jsdelivr.net/npm/katex@0.16.11/dist/katex.min.js"></script>
+  <script defer src="https://cdn.jsdelivr.net/npm/katex@0.16.11/dist/contrib/auto-render.min.js"
+    onload="renderMathInElement(document.body, {
+      delimiters: [
+        { left: '\\(', right: '\\)', display: false },
+        { left: '\\[', right: '\\]', display: true }
+      ]
+    });"></script>
+  <script>
+    const views = document.querySelectorAll(".view");
+
+    function show(id) {
+      views.forEach((v) => v.classList.toggle("active", v.id === id));
+      const titles = {
+        home: "S3 Mathematics",
+        lessons: "S3 Lessons",
+        "topic-jm24": "Law of Indices (JM24)",
+        "topic-jm25": "Factorization & Polynomials (JM25)",
+      };
+      document.title = titles[id] || "S3 Mathematics";
+    }
+
+    document.querySelectorAll("[data-go]").forEach((el) => {
+      el.addEventListener("click", () => show(el.dataset.go));
+    });
+  </script>
+</body>
+</html>
