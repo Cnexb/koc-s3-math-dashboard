@@ -117,62 +117,50 @@
       letter-spacing: .12em; text-transform: uppercase;
     }
     h1 { margin: 0 0 8px; font-size: clamp(26px, 4vw, 36px); letter-spacing: -.03em; }
-    .lead { margin: 0 0 22px; color: var(--muted); font-size: 15px; line-height: 1.55; }
-    .grid {
-      display: grid;
-      grid-template-columns: repeat(auto-fit, minmax(220px, 1fr));
-      gap: 14px;
-    }
-    button.card {
-      display: flex; flex-direction: column; min-height: 0; padding: 0; overflow: hidden;
-      border: 1px solid var(--line); border-radius: 12px; background: var(--surface);
-      backdrop-filter: blur(10px); color: inherit; font: inherit; text-align: left;
-      cursor: pointer; transition: transform .18s ease, border-color .18s ease, box-shadow .18s ease;
-    }
-    button.card:hover {
-      transform: translateY(-2px);
-      border-color: rgba(196, 181, 253, .55);
-      box-shadow: 0 0 0 1px rgba(158, 203, 255, .15), 0 12px 28px rgba(0, 0, 0, .4);
-    }
-    button.card:focus-visible, .back:focus-visible {
+    .lead { margin: 0 0 18px; color: var(--muted); font-size: 15px; line-height: 1.55; }
+    .back:focus-visible, .tab:focus-visible, .chip:focus-visible {
       outline: 2px solid var(--accent); outline-offset: 3px;
     }
-    .cover {
-      height: 72px; display: grid; place-items: center;
-      background:
-        radial-gradient(circle at 30% 40%, rgba(158, 203, 255, .2), transparent 55%),
-        linear-gradient(135deg, rgba(40, 50, 110, .9), rgba(20, 25, 55, .95));
+    .tabs {
+      display: flex; gap: 6px; margin: 0 0 14px;
+      border-bottom: 1px solid var(--line); padding-bottom: 0;
     }
-    .cover .katex {
-      font-size: 1.55em; color: var(--accent);
-      text-shadow: 0 0 16px rgba(158, 203, 255, .35);
+    .tab {
+      background: none; border: none; color: var(--muted);
+      font: inherit; font-weight: 600; font-size: 15px;
+      padding: 10px 16px; cursor: pointer;
+      border-radius: 10px 10px 0 0;
     }
-    .card.binary .cover {
-      color: #86efac;
-      background:
-        radial-gradient(circle at 70% 35%, rgba(134, 239, 172, .18), transparent 50%),
-        linear-gradient(135deg, rgba(20, 60, 70, .95), rgba(15, 25, 45, .98));
+    .tab:hover { color: var(--text); }
+    .tab.active {
+      color: var(--text);
+      background: var(--surface);
+      box-shadow: inset 0 -2px 0 var(--accent);
     }
-    .card.binary .cover .katex {
-      color: #86efac;
-      font-size: 1.45em;
-      text-shadow: 0 0 16px rgba(134, 239, 172, .35);
+    .mode-panel { display: block; }
+    .mode-panel.hidden { display: none; }
+    .subnav {
+      display: flex; flex-wrap: wrap; gap: 8px;
+      margin: 0 0 16px; align-items: center;
     }
-    .card .body { padding: 12px 14px 14px; }
-    .card .body h2 { margin: 0 0 4px; font-size: 16px; line-height: 1.25; }
-    .card .body p { margin: 0; color: var(--muted); font-size: 12.5px; line-height: 1.4; }
-    .tag {
-      display: inline-block; margin-top: 10px; padding: 3px 9px;
-      border: 1px solid var(--line); border-radius: 999px;
-      background: var(--surface-2); color: var(--muted); font-size: 11px; font-weight: 600;
+    .chip {
+      background: var(--surface); border: 1px solid var(--line); color: var(--muted);
+      font: inherit; font-weight: 600; padding: 8px 14px;
+      border-radius: 10px; cursor: pointer; font-size: 14px;
+      transition: color .15s, background .15s, border-color .15s;
     }
-    .view { display: none; }
-    .view.active { display: block; }
+    .chip:hover { color: var(--text); }
+    .chip.active {
+      color: #0b1224; background: var(--accent); border-color: var(--accent);
+    }
+    .lab { display: none; }
+    .lab.active { display: block; }
     .part-title {
       margin: 28px 0 12px; font-size: 13px; font-weight: 700;
       letter-spacing: .1em; text-transform: uppercase; color: var(--accent);
     }
-    .view > .part-title:first-of-type { margin-top: 8px; }
+    .lab > .part-title:first-of-type { margin-top: 4px; }
+    .lab > .lead { margin-bottom: 14px; }
     section.block {
       margin-bottom: 16px; padding: 18px 16px 20px;
       border: 1px solid var(--line); border-radius: 16px;
@@ -325,36 +313,23 @@
   <div class="stars2" aria-hidden="true"></div>
   <div class="stars3" aria-hidden="true"></div>
   <main class="page">
-  <main class="page">
-    <section class="view active" id="topics">
-      <a class="back" href="../../s3.html#lessons">← S3 Lessons</a>
-      <p class="eyebrow">JM24 · Lesson 24</p>
-      <h1>Law of Indices</h1>
-      <p class="lead">Choose a topic.</p>
-      <div class="grid">
-        <button class="card" type="button" data-go="powers">
-          <div class="cover">\( a^{x} \)</div>
-          <div class="body">
-            <h2>Powers</h2>
-            <p>Meaning of a power · index laws</p>
-            <span class="tag">Indices</span>
-          </div>
-        </button>
-        <button class="card binary" type="button" data-go="binary">
-          <div class="cover">\(1001_{2}\)</div>
-          <div class="body">
-            <h2>Binary</h2>
-            <p>Base-2 numbers</p>
-            <span class="tag">Binary</span>
-          </div>
-        </button>
-      </div>
-    </section>
+    <a class="back" href="../../s3.html#lessons">← S3 Lessons</a>
+    <p class="eyebrow">JM24 · Lesson 24</p>
+    <h1>Law of Indices</h1>
+    <p class="lead">Interactive tools for powers and binary, plus comics.</p>
 
-    <section class="view" id="powers">
-      <button class="back" type="button" data-go="topics">← Topics</button>
-      <p class="eyebrow">JM24 · Powers</p>
-      <h1>Powers</h1>
+    <nav class="tabs" aria-label="Lesson sections">
+      <button class="tab active" type="button" data-tab="tools">Interactive Tools</button>
+      <button class="tab" type="button" data-tab="comics">Comics</button>
+    </nav>
+
+    <section id="panel-tools" class="mode-panel">
+      <div class="subnav" aria-label="Tools">
+        <button class="chip active" type="button" data-lab="powers">Powers</button>
+        <button class="chip" type="button" data-lab="binary">Binary</button>
+      </div>
+
+      <div class="lab active" id="lab-powers">
       <p class="lead">Part 1: meaning of a power. Part 2: prove the laws — product, quotient, power of a power, roots, then zero and negative indices.</p>
 
     <p class="part-title">Part 1 · What does a power mean?</p>
@@ -603,11 +578,12 @@
       </div>
       <p class="formula">\[ x^{-n}=\frac{1}{x^{n}}\quad(x\neq 0) \]</p>
     </section>
+      </div>
+
+      <div class="lab" id="lab-binary"></div>
     </section>
 
-    <section class="view" id="binary">
-      <button class="back" type="button" data-go="topics">← Topics</button>
-    </section>
+    <section id="panel-comics" class="mode-panel hidden"></section>
   </main>
 
   <script defer src="https://cdn.jsdelivr.net/npm/katex@0.16.11/dist/katex.min.js"></script>
@@ -904,14 +880,39 @@
     });
     document.getElementById("pow-reset").addEventListener("click", resetPow);
 
-    function show(id) {
-      document.querySelectorAll(".view").forEach((v) => v.classList.toggle("active", v.id === id));
-      history.replaceState(null, "", id === "topics" ? "#" : "#" + id);
-      window.scrollTo(0, 0);
-      if (id === "powers") renderKatex(document.getElementById("powers"));
+    function showTab(name) {
+      document.querySelectorAll(".tab").forEach((btn) => {
+        btn.classList.toggle("active", btn.dataset.tab === name);
+      });
+      document.querySelectorAll(".mode-panel").forEach((panel) => {
+        panel.classList.toggle("hidden", panel.id !== "panel-" + name);
+      });
+      if (name === "tools") renderKatex(document.getElementById("lab-powers"));
     }
-    document.querySelectorAll("[data-go]").forEach((el) => {
-      el.addEventListener("click", () => show(el.dataset.go));
+    function showLab(name) {
+      showTab("tools");
+      document.querySelectorAll(".subnav .chip").forEach((btn) => {
+        btn.classList.toggle("active", btn.dataset.lab === name);
+      });
+      document.querySelectorAll(".lab").forEach((lab) => {
+        lab.classList.toggle("active", lab.id === "lab-" + name);
+      });
+      history.replaceState(null, "", "#" + name);
+      if (name === "powers") renderKatex(document.getElementById("lab-powers"));
+    }
+    document.querySelectorAll(".tab").forEach((btn) => {
+      btn.addEventListener("click", () => {
+        const name = btn.dataset.tab;
+        showTab(name);
+        history.replaceState(null, "", name === "tools" ? "#powers" : "#comics");
+        if (name === "tools") {
+          const active = document.querySelector(".subnav .chip.active");
+          if (active) history.replaceState(null, "", "#" + active.dataset.lab);
+        }
+      });
+    });
+    document.querySelectorAll(".subnav .chip").forEach((btn) => {
+      btn.addEventListener("click", () => showLab(btn.dataset.lab));
     });
 
     waitKatex().then(() => {
@@ -920,7 +921,9 @@
       resetQuot();
       resetPow();
       const hash = (location.hash || "").replace("#", "");
-      if (hash === "powers" || hash === "binary") show(hash);
+      if (hash === "comics") showTab("comics");
+      else if (hash === "binary") showLab("binary");
+      else if (hash === "powers" || hash === "tools") showLab("powers");
     });
   </script>
 </body>
