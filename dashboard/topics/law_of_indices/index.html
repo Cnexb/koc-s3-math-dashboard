@@ -289,14 +289,19 @@
       background: #eef2f7; border: 1px solid var(--line); white-space: nowrap;
     }
     .ladder-remainders {
-      display: flex; align-items: center; flex-wrap: wrap; gap: 6px;
-      font-size: 13px; margin-bottom: 8px;
+      margin: 8px 0;
     }
-    .ladder-remainders .rem-digits {
-      font-family: ui-monospace, monospace; font-weight: 700;
-      padding: 2px 8px; border-radius: 6px; background: #fff;
-      border: 1px solid var(--line);
+    .ladder-remainders .hint {
+      margin: 0 0 6px; font-size: 13px;
     }
+    .ladder-binary-row {
+      max-height: none; min-height: 36px;
+    }
+    .ladder-binary-chip {
+      font-size: 12px; padding: 3px 10px; min-height: 28px;
+      display: inline-flex; align-items: center; justify-content: center;
+    }
+    .ladder-binary-chip .katex { font-size: 1em; }
     .sort-area { display: flex; flex-direction: column; gap: 10px; margin-top: 8px; }
     .sort-pool {
       display: flex; flex-wrap: wrap; gap: 8px; min-height: 52px; padding: 10px;
@@ -319,6 +324,7 @@
       border: 1px dashed rgba(2, 132, 199, .35); background: var(--surface-2);
       display: flex; align-items: center; justify-content: center;
       transition: border-color .15s, background .15s;
+      overflow: hidden;
     }
     .sort-slot.drag-over { border-color: var(--accent); background: rgba(2, 132, 199, .08); }
     .sort-card {
@@ -680,12 +686,13 @@
             <p class="hint" style="margin:0 0 8px">Convert: <strong id="bin-ladder-target">\(35_{(10)}\)</strong></p>
             <div class="ladder-steps" id="bin-ladder-steps"></div>
             <div class="ladder-remainders">
-              <span>Remainders (bottom-up):</span>
-              <span class="rem-digits" id="bin-ladder-digits">—</span>
+              <p class="hint">Binary (read remainders bottom-up):</p>
+              <div class="ladder-steps ladder-binary-row">
+                <span class="ladder-step-chip ladder-binary-chip" id="bin-ladder-digits">—</span>
+              </div>
             </div>
             <div class="count-row">
               <button class="btn" type="button" id="bin-ladder-step">Divide by 2</button>
-              <button class="btn" type="button" id="bin-ladder-check">Check</button>
               <button class="btn" type="button" id="bin-ladder-reset">New number</button>
             </div>
             <p class="feedback" id="fb-bin-ladder">Click “Divide by 2” for each step.</p>
@@ -754,7 +761,7 @@
 
   <script defer src="https://cdn.jsdelivr.net/npm/katex@0.16.11/dist/katex.min.js"></script>
   <script defer src="https://cdn.jsdelivr.net/npm/katex@0.16.11/dist/contrib/auto-render.min.js"></script>
-  <script defer src="law-of-indices-binary.js?v=20260729-bin3"></script>
+  <script defer src="law-of-indices-binary.js?v=20260729-bin4"></script>
   <script>
     function renderKatex(root) {
       if (!window.renderMathInElement) return;

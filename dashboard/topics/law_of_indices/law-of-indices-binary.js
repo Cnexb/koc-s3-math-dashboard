@@ -297,7 +297,18 @@
         ladderDigitsEl.textContent = "—";
         return;
       }
-      ladderDigitsEl.textContent = ladderDigits.slice().reverse().join("");
+      const bin = ladderDigits.slice().reverse().join("");
+      ladderDigitsEl.innerHTML = "\\(" + bin + "_{(2)}\\)";
+      renderKatexIn(ladderDigitsEl);
+    }
+
+    function finishLadder() {
+      const expected = denaryToBinaryString(ladderN);
+      fbLadder.className = "feedback ok";
+      fbLadder.innerHTML =
+        "Done — \\(" + ladderN + "_{(10)} = " + expected + "_{(2)}\\).";
+      if (window.revealFormula) window.revealFormula("formula-bin-ladder");
+      renderKatexIn(fbLadder);
     }
 
     function resetLadder() {
@@ -319,7 +330,7 @@
       const steps = divideBy2Steps(ladderN);
       if (ladderStep >= steps.length) {
         fbLadder.className = "feedback warn";
-        fbLadder.textContent = "Ladder complete — read remainders bottom-up, then Check.";
+        fbLadder.textContent = "Ladder complete.";
         return;
       }
       const s = steps[ladderStep];
@@ -332,37 +343,10 @@
       ladderStep++;
       syncLadderRemainders();
       if (ladderStep >= steps.length) {
-        fbLadder.className = "feedback";
-        fbLadder.innerHTML =
-          "Done — binary: \\(" +
-          ladderDigits.slice().reverse().join("") +
-          "_{(2)}\\). Click Check.";
-        renderKatexIn(fbLadder);
+        finishLadder();
       }
     });
 
-    document.getElementById("bin-ladder-check").addEventListener("click", function () {
-      const expected = denaryToBinaryString(ladderN);
-      const built = ladderDigits.slice().reverse().join("");
-      if (built === expected) {
-        fbLadder.className = "feedback ok";
-        fbLadder.innerHTML =
-          "Correct — \\(" + ladderN + "_{(10)} = " + expected + "_{(2)}\\).";
-        if (window.revealFormula) window.revealFormula("formula-bin-ladder");
-      } else {
-        fbLadder.className = "feedback bad";
-        fbLadder.innerHTML =
-          "Answer — \\(" +
-          ladderN +
-          "_{(10)} = " +
-          expected +
-          "_{(2)}\\). You built \\(" +
-          (built || "?") +
-          "_{(2)}\\).";
-        if (window.revealFormula) window.revealFormula("formula-bin-ladder");
-      }
-      renderKatexIn(fbLadder);
-    });
     document.getElementById("bin-ladder-reset").addEventListener("click", resetLadder);
     resetLadder();
 
@@ -508,6 +492,7 @@
             if (!moved) return;
             const hit = slotUnder(ev);
             const cardId = card.id;
+            const fromSlotIdx = orderPlacements.slots.indexOf(cardId);
             let newPool = orderPlacements.pool.filter(function (id) {
               return id !== cardId;
             });
@@ -516,9 +501,21 @@
             });
             if (hit && hit.classList.contains("sort-slot")) {
               const slotIdx = Number(hit.dataset.slot);
+              if (fromSlotIdx === slotIdx) {
+                orderPlacements.pool = originPool;
+                orderPlacements.slots = originSlots;
+                renderOrder();
+                return;
+              }
               const displaced = newSlots[slotIdx];
-              if (displaced) newPool.push(displaced);
               newSlots[slotIdx] = cardId;
+              if (displaced) {
+                if (fromSlotIdx >= 0) {
+                  newSlots[fromSlotIdx] = displaced;
+                } else {
+                  newPool.push(displaced);
+                }
+              }
             } else if (hit && hit.classList.contains("sort-pool")) {
               newPool.push(cardId);
             } else {
