@@ -42,12 +42,19 @@
   ];
 
   var PRESETS = {
-    acute: [{ x: 85, y: 300 }, { x: 395, y: 300 }, { x: 310, y: 72 }],
+    // Scalene acute: three different side lengths, all angles < 90°
+    acute: [{ x: 55, y: 320 }, { x: 440, y: 300 }, { x: 200, y: 55 }],
     right: [{ x: 100, y: 300 }, { x: 380, y: 300 }, { x: 100, y: 95 }],
-    obtuse: [{ x: 70, y: 140 }, { x: 430, y: 140 }, { x: 320, y: 320 }],
+    // Obtuse at A (~93°); H stays inside fixed viewBox
+    obtuse: [{ x: 100, y: 320 }, { x: 420, y: 300 }, { x: 70, y: 80 }],
+    // AC = BC (isosceles at C)
     isosceles: [{ x: 150, y: 300 }, { x: 350, y: 300 }, { x: 250, y: 85 }],
-    equilateral: [{ x: 130, y: 300 }, { x: 370, y: 300 }, { x: 250, y: 92 }],
+    equilateral: [{ x: 130, y: 300 }, { x: 370, y: 300 }, { x: 250, y: 92.2 }],
   };
+
+  var PAD = 28;
+  var I_COLOR = "#34d399";
+  var I_LINE = "#a78bfa";
 
   var CONG = [
     { id: "SSS", cap: "**SSS** — three pairs of equal sides (same tick marks)." },
@@ -144,25 +151,57 @@
     });
   }
 
+  function shortArcPath(V, a1, a2, r) {
+    var da = a2 - a1;
+    while (da <= -Math.PI) da += Math.PI * 2;
+    while (da > Math.PI) da -= Math.PI * 2;
+    // SVG y-down: sweep 1 = clockwise = positive atan2 direction
+    var sweep = da >= 0 ? 1 : 0;
+    return "M " + (V.x + r * Math.cos(a1)) + " " + (V.y + r * Math.sin(a1)) +
+      " A " + r + " " + r + " 0 0 " + sweep + " " +
+      (V.x + r * Math.cos(a2)) + " " + (V.y + r * Math.sin(a2));
+  }
+
   function outwardArcs(V, P, Q, count, baseR) {
     var g = E("g", {});
     var a1 = Math.atan2(P.y - V.y, P.x - V.x);
     var a2 = Math.atan2(Q.y - V.y, Q.x - V.x);
-    var da = a2 - a1;
-    while (da <= -Math.PI) da += Math.PI * 2;
-    while (da > Math.PI) da -= Math.PI * 2;
-    var sweep = da > 0 ? 0 : 1;
-    var large = Math.abs(da) > Math.PI ? 1 : 0;
     for (var k = 0; k < count; k++) {
       var r = baseR + k * 5;
       g.appendChild(E("path", {
-        d: "M " + (V.x + r * Math.cos(a1)) + " " + (V.y + r * Math.sin(a1)) +
-          " A " + r + " " + r + " 0 " + large + " " + sweep + " " +
-          (V.x + r * Math.cos(a2)) + " " + (V.y + r * Math.sin(a2)),
+        d: shortArcPath(V, a1, a2, r),
         fill: "none", stroke: MARK, "stroke-width": 1.6,
       }));
     }
     return g;
+  }
+
+  /** Equal-angle marks on both halves of a bisected angle — same curve direction. */
+  function bisectorArcMarks(V, P, Q, I, count, baseR) {
+    var g = E("g", {});
+    var aP = Math.atan2(P.y - V.y, P.x - V.x);
+    var aQ = Math.atan2(Q.y - V.y, Q.x - V.x);
+    var aI = Math.atan2(I.y - V.y, I.x - V.x);
+    for (var k = 0; k < count; k++) {
+      var r = baseR + k * 5;
+      g.appendChild(E("path", {
+        d: shortArcPath(V, aP, aI, r),
+        fill: "none", stroke: MARK, "stroke-width": 1.6,
+      }));
+      g.appendChild(E("path", {
+        d: shortArcPath(V, aI, aQ, r),
+        fill: "none", stroke: MARK, "stroke-width": 1.6,
+      }));
+    }
+    return g;
+  }
+
+  function rayHitOpposite(V, through, B, C) {
+    var hit = intersectLines(V, through, B, C);
+    if (!hit) return through;
+    var along = (hit.x - V.x) * (through.x - V.x) + (hit.y - V.y) * (through.y - V.y);
+    if (along <= 0) return extendThrough(V, through, 40);
+    return hit;
   }
 
   function foot(A, B, C) {
@@ -208,9 +247,18 @@
   }
 
   function circumcentre(v) {
-    var mAB = mid(v[0], v[1]);
-    var mBC = mid(v[1], v[2]);
-    return intersectLines(mAB, v[2], mBC, v[0]) || mid(v[0], v[2]);
+    var A = v[0];
+    var B = v[1];
+    var C = v[2];
+    var D = 2 * (A.x * (B.y - C.y) + B.x * (C.y - A.y) + C.x * (A.y - B.y));
+    if (Math.abs(D) < 1e-6) return null;
+    var a2 = A.x * A.x + A.y * A.y;
+    var b2 = B.x * B.x + B.y * B.y;
+    var c2 = C.x * C.x + C.y * C.y;
+    return {
+      x: (a2 * (B.y - C.y) + b2 * (C.y - A.y) + c2 * (A.y - B.y)) / D,
+      y: (a2 * (C.x - B.x) + b2 * (A.x - C.x) + c2 * (B.x - A.x)) / D,
+    };
   }
 
   function sideLengths(v) {
@@ -308,45 +356,57 @@
     return -1;
   }
 
-  function sideMarkPlan(kind, sides) {
-    var sorted = sides.map(function (s, i) { return { len: s, i: i }; }).sort(function (a, b) { return a.len - b.len; });
-    var plan = [1, 2, 3];
-    if (kind === "equilateral") return [1, 1, 1];
-    if (kind === "isosceles") {
-      if (Math.abs(sorted[0].len - sorted[1].len) < sorted[2].len * 0.04) {
-        plan[sorted[0].i] = 2;
-        plan[sorted[1].i] = 2;
-        plan[sorted[2].i] = 1;
-      } else {
-        plan[sorted[1].i] = 2;
-        plan[sorted[2].i] = 2;
-        plan[sorted[0].i] = 1;
+  /** Tick counts only for sides that belong to an equal-length pair; unique sides get 0. */
+  function equalSideTickPlan(v) {
+    var sides = sideLengths(v);
+    var avg = (sides[0] + sides[1] + sides[2]) / 3;
+    var tol = avg * 0.04;
+    var plan = [0, 0, 0];
+    var pairs = [[0, 1], [1, 2], [0, 2]];
+    var tick = 1;
+    pairs.forEach(function (pr) {
+      if (Math.abs(sides[pr[0]] - sides[pr[1]]) < tol) {
+        if (!plan[pr[0]]) plan[pr[0]] = tick;
+        if (!plan[pr[1]]) plan[pr[1]] = tick;
+        tick++;
       }
-      return plan;
-    }
+    });
     return plan;
   }
 
-  function sideTickLevels(v, kind) {
-    var sides = sideLengths(v);
-    if (kind === "equilateral") return [1, 1, 1];
-    if (kind === "isosceles") return sideMarkPlan(kind, sides);
+  /** Median half-ticks: only mark equal halves; omit for equilateral; isosceles omits unequal base. */
+  function medianTickPlan(v, kind) {
+    if (kind === "equilateral") return [0, 0, 0];
+    if (kind === "isosceles") return equalSideTickPlan(v);
     return SIDE_TICKS.slice();
   }
 
   function drawSideEqualityMarks(g, v, kind) {
-    if (kind !== "isosceles" && kind !== "equilateral") return;
-    var sides = sideLengths(v);
-    var plan = sideMarkPlan(kind, sides);
+    // Only when sides are equal — omit entirely for equilateral (all equal is obvious / clutter)
+    if (kind !== "isosceles") return;
+    var plan = equalSideTickPlan(v);
     [0, 1, 2].forEach(function (i) {
+      if (!plan[i]) return;
       var j = (i + 1) % 3;
       g.appendChild(sideHashes(v[i], v[j], plan[i], TICK));
     });
   }
 
-  function angleArcPlan(kind) {
+  function angleArcPlan(kind, v) {
     if (kind === "equilateral") return [1, 1, 1];
-    if (kind === "isosceles") return [1, 2, 2];
+    if (kind === "isosceles") {
+      // Equal base angles share the same arc count; apex differs
+      var plan = [1, 1, 1];
+      var sides = sideLengths(v);
+      var avg = (sides[0] + sides[1] + sides[2]) / 3;
+      var tol = avg * 0.04;
+      // side i opposite vertex i+2? sides[0]=AB opp C, sides[1]=BC opp A, sides[2]=CA opp B
+      // Equal sides AC=BC means sides[2]=sides[1] ⇒ equal angles at A and B
+      if (Math.abs(sides[1] - sides[2]) < tol) return [2, 2, 1];
+      if (Math.abs(sides[0] - sides[2]) < tol) return [2, 1, 2];
+      if (Math.abs(sides[0] - sides[1]) < tol) return [1, 2, 2];
+      return plan;
+    }
     return ANGLE_ARCS.slice();
   }
 
@@ -372,18 +432,15 @@
     el.textContent = parts.join(" ");
   }
 
-  function fitViewBox(svg, pts, pad) {
-    pad = pad || 36;
-    if (!pts.length) return;
-    var xs = pts.map(function (p) { return p.x; });
-    var ys = pts.map(function (p) { return p.y; });
-    var minX = Math.min.apply(null, xs) - pad;
-    var maxX = Math.max.apply(null, xs) + pad;
-    var minY = Math.min.apply(null, ys) - pad;
-    var maxY = Math.max.apply(null, ys) + pad;
-    var w = Math.max(maxX - minX, 200);
-    var h = Math.max(maxY - minY, 180);
-    svg.setAttribute("viewBox", minX + " " + minY + " " + w + " " + h);
+  function setFixedViewBox(svg) {
+    svg.setAttribute("viewBox", "0 0 " + VB_W + " " + VB_H);
+  }
+
+  function clampVert(p) {
+    return {
+      x: Math.max(PAD, Math.min(VB_W - PAD, p.x)),
+      y: Math.max(PAD, Math.min(VB_H - PAD, p.y)),
+    };
   }
 
   function renderMixed(el, text) {
@@ -417,12 +474,11 @@
   function renderLines() {
     var svg = document.getElementById("tri-svg");
     clr(svg);
+    setFixedViewBox(svg);
     var kind = triangleKind(verts);
-    var viewPts = verts.slice();
     var c = triCenter(verts);
 
     drawTriOutline(svg, verts);
-    drawSideEqualityMarks(svg, verts, kind);
 
     if (kind === "right") {
       var raSize = mode === "bisector" ? 8 : 11;
@@ -435,16 +491,25 @@
     }
 
     if (mode === "altitude") {
+      drawSideEqualityMarks(svg, verts, kind);
       var H = orthocentre(verts);
-      if (H) viewPts.push(H);
       verts.forEach(function (v, i) {
         var B = verts[(i + 1) % 3];
         var C = verts[(i + 2) % 3];
         var F = foot(v, B, C);
-        viewPts.push(F);
-        var end = H || F;
-        var tip = extendThrough(v, end, H ? 18 : 0);
-        svg.appendChild(seg(v, tip, ACCENT));
+        // Always reach the opposite side (or its extension) at the foot
+        if (H) {
+          var u = unit(v, F);
+          var tH = (H.x - v.x) * u.x + (H.y - v.y) * u.y;
+          var tF = (F.x - v.x) * u.x + (F.y - v.y) * u.y;
+          var tMax = Math.max(tF, tH);
+          var tMin = Math.min(0, Math.min(tF, tH));
+          var p0 = { x: v.x + u.x * tMin, y: v.y + u.y * tMin };
+          var p1 = { x: v.x + u.x * tMax, y: v.y + u.y * tMax };
+          svg.appendChild(seg(p0, p1, ACCENT));
+        } else {
+          svg.appendChild(seg(v, F, ACCENT));
+        }
         svg.appendChild(dot(F, MUTED, 3.5));
         svg.appendChild(rightAngle(F, v, B, 10));
       });
@@ -457,8 +522,7 @@
 
     if (mode === "median") {
       var G = centroid(verts);
-      viewPts.push(G);
-      var sideTicks = sideTickLevels(verts, kind);
+      var sideTicks = medianTickPlan(verts, kind);
       verts.forEach(function (v, i) {
         var opp = [(i + 1) % 3, (i + 2) % 3];
         var p1 = verts[opp[0]];
@@ -467,7 +531,9 @@
         var M = mid(p1, p2);
         svg.appendChild(seg(v, M, ACCENT));
         svg.appendChild(dot(M, MUTED, 3.5));
-        svg.appendChild(medianHalfMarks(p1, M, p2, sideTicks[sideIdx]));
+        if (sideTicks[sideIdx] > 0) {
+          svg.appendChild(medianHalfMarks(p1, M, p2, sideTicks[sideIdx]));
+        }
         if (i === 0) svg.appendChild(labelAway(M, c, "D", MUTED, 16));
       });
       svg.appendChild(dot(G, MARK, 6));
@@ -476,38 +542,43 @@
     }
 
     if (mode === "bisector") {
+      drawSideEqualityMarks(svg, verts, kind);
       var I = incentre(verts);
-      viewPts.push(I);
-      var arcPlan = angleArcPlan(kind);
+      var arcPlan = angleArcPlan(kind, verts);
       verts.forEach(function (v, i) {
         var B = verts[(i + 1) % 3];
         var C = verts[(i + 2) % 3];
-        svg.appendChild(seg(v, I, "#a78bfa"));
-        svg.appendChild(outwardArcs(v, B, I, arcPlan[i], 16));
-        svg.appendChild(outwardArcs(v, I, C, arcPlan[i], 16));
+        var hit = rayHitOpposite(v, I, B, C);
+        var tip = extendThrough(v, hit, 14);
+        svg.appendChild(seg(v, tip, I_LINE));
+        svg.appendChild(bisectorArcMarks(v, B, C, I, arcPlan[i], 16));
       });
-      svg.appendChild(dot(I, "#a78bfa", 6));
-      centreLabel(svg, I, verts, "I", "#a78bfa");
+      svg.appendChild(dot(I, I_COLOR, 7));
+      centreLabel(svg, I, verts, "I", I_COLOR);
       setPlacement("bisector", kind, I, verts);
     }
 
     if (mode === "perp") {
       var O = circumcentre(verts);
-      if (O) viewPts.push(O);
-      var sideTicks = sideTickLevels(verts, kind);
-      [[0, 1], [1, 2], [2, 0]].forEach(function (pair, idx) {
+      [[0, 1], [1, 2], [2, 0]].forEach(function (pair) {
         var p1 = verts[pair[0]];
         var p2 = verts[pair[1]];
         var M = mid(p1, p2);
         var n = perp(unit(p1, p2));
-        var toO = O ? { x: O.x - M.x, y: O.y - M.y } : n;
-        var dir = (toO.x * n.x + toO.y * n.y) >= 0 ? n : { x: -n.x, y: -n.y };
-        var far = O ? extendThrough(M, O, 28) : { x: M.x + dir.x * 80, y: M.y + dir.y * 80 };
-        var near = { x: M.x - dir.x * 22, y: M.y - dir.y * 22 };
+        // True perpendicular through the midpoint — not toward a vertex
+        var len = 90;
+        if (O) {
+          var dist = Math.hypot(O.x - M.x, O.y - M.y);
+          len = Math.max(90, dist + 28);
+          var toO = { x: O.x - M.x, y: O.y - M.y };
+          if (toO.x * n.x + toO.y * n.y < 0) n = { x: -n.x, y: -n.y };
+        }
+        var far = { x: M.x + n.x * len, y: M.y + n.y * len };
+        var near = { x: M.x - n.x * 28, y: M.y - n.y * 28 };
         svg.appendChild(seg(near, far, "#f87171"));
         svg.appendChild(dot(M, MUTED, 3.5));
-        svg.appendChild(rightAngle(M, p1, p2, 10));
-        svg.appendChild(medianHalfMarks(p1, M, p2, sideTicks[idx]));
+        // Right-angle mark using the perpendicular direction
+        svg.appendChild(rightAngle(M, p2, { x: M.x + n.x * 40, y: M.y + n.y * 40 }, 10));
       });
       if (O) {
         svg.appendChild(dot(O, "#f87171", 6));
@@ -521,8 +592,6 @@
       h.style.cursor = "grab";
       svg.appendChild(h);
     });
-
-    fitViewBox(svg, viewPts, kind === "obtuse" ? 48 : 32);
 
     var badges = document.getElementById("tri-type-badges");
     badges.innerHTML = "";
@@ -764,7 +833,7 @@
     });
     svg.addEventListener("pointermove", function (e) {
       if (drag == null) return;
-      var p = pt(e, svg);
+      var p = clampVert(pt(e, svg));
       verts[drag].x = p.x;
       verts[drag].y = p.y;
       activePreset = "";
