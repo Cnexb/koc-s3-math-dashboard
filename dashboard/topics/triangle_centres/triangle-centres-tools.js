@@ -13,9 +13,8 @@
 
   var LABS = [
     { id: "lines", label: "Lines & centres" },
-    { id: "cong", label: "Congruence" },
     { id: "angles", label: "Angle pairs" },
-    { id: "sim", label: "Similarity" },
+    { id: "match", label: "Congruence & similarity" },
   ];
 
   var MODES = [
@@ -57,23 +56,28 @@
   var I_LINE = "#a78bfa";
 
   var CONG = [
-    { id: "SSS", cap: "**SSS** — three pairs of equal sides (same tick marks)." },
-    { id: "SAS", cap: "**SAS** — two sides and the **included** angle equal." },
-    { id: "ASA", cap: "**ASA** — two angles and the **included** side equal." },
-    { id: "AAS", cap: "**AAS** — two angles and a **non-included** side equal." },
-    { id: "RHS", cap: "**RHS** — right angle, hypotenuse and one other side equal." },
+    { id: "SSS", label: "SSS", cap: "**SSS** — three pairs of equal sides (same tick marks) ⇒ congruent." },
+    { id: "SAS", label: "SAS", cap: "**SAS** — two sides and the **included** angle equal ⇒ congruent." },
+    { id: "ASA", label: "ASA", cap: "**ASA** — two angles and the **included** side equal ⇒ congruent." },
+    { id: "AAS", label: "AAS", cap: "**AAS** — two angles and a **non-included** side equal ⇒ congruent." },
+    { id: "RHS", label: "RHS", cap: "**RHS** — right angle, hypotenuse and one other side equal ⇒ congruent." },
   ];
 
   var ANG = [
-    { id: "corr", cap: "**Corresponding angles** are equal (same position at each intersection)." },
-    { id: "alt", cap: "**Alternate angles** are equal (Z-shape between the parallel lines)." },
-    { id: "int", cap: "**Interior angles on the same side** add up to \\(180^\\circ\\)." },
+    { id: "corr", label: "Corresponding", cap: "**Corresponding angles** are equal — same position relative to the transversal at each parallel." },
+    { id: "alt", label: "Alternate interior", cap: "**Alternate interior angles** are equal — opposite sides of the transversal, between the parallels (Z-shape)." },
+    { id: "int", label: "Interior same side", cap: "**Interior angles on the same side** of the transversal add up to \\(180^\\circ\\) (C-shape / co-interior)." },
   ];
 
   var SIM = [
-    { id: "AAA", cap: "**AAA** — all three angles equal ⇒ triangles similar." },
-    { id: "3sides", cap: "**Three sides proportional** — corresponding sides in ratio \\(k\\)." },
-    { id: "2side", cap: "**Two sides proportional** with **equal included angle** ⇒ similar." },
+    { id: "AAA", label: "AAA", cap: "**AAA** — all three angles equal ⇒ triangles similar (same shape, possibly different size)." },
+    { id: "3sides", label: "3 sides ∝", cap: "**Three sides proportional** — corresponding sides in the same ratio \\(k\\) ⇒ similar." },
+    { id: "2side", label: "2 sides + ∠", cap: "**Two sides proportional** with **equal included angle** ⇒ similar." },
+  ];
+
+  var MATCH_KINDS = [
+    { id: "cong", label: "Congruent (≅)" },
+    { id: "sim", label: "Similar (∼)" },
   ];
 
   var SIDE_TICKS = [1, 2, 3];
@@ -85,8 +89,19 @@
   var congMode = "SSS";
   var angMode = "corr";
   var simMode = "AAA";
-  var simK = 1;
+  var matchKind = "cong";
+  var simK = 0.8;
   var drag = null;
+  var angDrag = null;
+  var matchDrag = null;
+
+  // Transversal endpoints for Lab 2 (parallel lines at fixed y)
+  var angY1 = 90;
+  var angY2 = 230;
+  var angT = [{ x: 110, y: 30 }, { x: 410, y: 290 }];
+
+  // Draggable left triangle for Lab 3
+  var matchA = [{ x: 70, y: 230 }, { x: 200, y: 230 }, { x: 110, y: 80 }];
 
   function E(tag, attrs) {
     var el = document.createElementNS(NS, tag);
@@ -664,18 +679,186 @@
     renderMixed(document.getElementById("tri-caption"), MODES.find(function (x) { return x.id === mode; }).cap);
   }
 
-  function triPoints(x0, y0, w, h) {
-    return [{ x: x0, y: y0 + h }, { x: x0 + w, y: y0 + h }, { x: x0 + w / 2, y: y0 }];
+  function lineHitY(p1, p2, y) {
+    var dy = p2.y - p1.y;
+    if (Math.abs(dy) < 1e-6) return { x: p1.x, y: y };
+    var t = (y - p1.y) / dy;
+    return { x: p1.x + (p2.x - p1.x) * t, y: y };
   }
 
-  function angleArcAt(V, P, Q, r, col) {
-    var a1 = Math.atan2(P.y - V.y, P.x - V.x);
-    var a2 = Math.atan2(Q.y - V.y, Q.x - V.x);
-    return E("path", {
-      d: "M " + (V.x + r * Math.cos(a1)) + " " + (V.y + r * Math.sin(a1)) +
-        " A " + r + " " + r + " 0 0 1 " + (V.x + r * Math.cos(a2)) + " " + (V.y + r * Math.sin(a2)),
-      fill: "none", stroke: col || MARK, "stroke-width": 2,
+  function wedgePath(V, a0, a1, r) {
+    var da = a1 - a0;
+    while (da <= -Math.PI) da += Math.PI * 2;
+    while (da > Math.PI) da -= Math.PI * 2;
+    var sweep = da >= 0 ? 1 : 0;
+    return "M " + V.x + " " + V.y +
+      " L " + (V.x + r * Math.cos(a0)) + " " + (V.y + r * Math.sin(a0)) +
+      " A " + r + " " + r + " 0 0 " + sweep + " " +
+      (V.x + r * Math.cos(a1)) + " " + (V.y + r * Math.sin(a1)) + " Z";
+  }
+
+  function renderAngles() {
+    var svg = document.getElementById("ang-svg");
+    if (!svg) return;
+    clr(svg);
+    var x0 = 40, x1 = 480;
+    svg.appendChild(seg({ x: x0, y: angY1 }, { x: x1, y: angY1 }, INK, 2.2));
+    svg.appendChild(seg({ x: x0, y: angY2 }, { x: x1, y: angY2 }, INK, 2.2));
+    // parallel marks (two ticks on each line)
+    [angY1, angY2].forEach(function (y) {
+      svg.appendChild(seg({ x: 95, y: y - 7 }, { x: 105, y: y + 7 }, MUTED, 1.5));
+      svg.appendChild(seg({ x: 102, y: y - 7 }, { x: 112, y: y + 7 }, MUTED, 1.5));
     });
+
+    var T1 = angT[0];
+    var T2 = angT[1];
+    var u = unit(T1, T2);
+    var ext1 = { x: T1.x - u.x * 40, y: T1.y - u.y * 40 };
+    var ext2 = { x: T2.x + u.x * 40, y: T2.y + u.y * 40 };
+    svg.appendChild(seg(ext1, ext2, ACCENT, 2.4));
+
+    var P = lineHitY(T1, T2, angY1);
+    var Q = lineHitY(T1, T2, angY2);
+    svg.appendChild(dot(P, "#94a3b8", 4));
+    svg.appendChild(dot(Q, "#94a3b8", 4));
+
+    function anglesAt(alongTrans) {
+      var aE = 0;
+      var aW = Math.PI;
+      var aDown = Math.atan2(alongTrans.y, alongTrans.x);
+      var aUp = Math.atan2(-alongTrans.y, -alongTrans.x);
+      var rays = [
+        { a: aE }, { a: aW }, { a: aDown }, { a: aUp },
+      ];
+      rays.forEach(function (r) {
+        while (r.a < 0) r.a += Math.PI * 2;
+        while (r.a >= Math.PI * 2) r.a -= Math.PI * 2;
+      });
+      rays.sort(function (a, b) { return a.a - b.a; });
+      var wedges = [];
+      for (var i = 0; i < 4; i++) {
+        var a0 = rays[i].a;
+        var a1 = rays[(i + 1) % 4].a;
+        if (a1 <= a0) a1 += Math.PI * 2;
+        wedges.push({ a0: a0, a1: a1, mid: (a0 + a1) / 2 });
+      }
+      return wedges;
+    }
+
+    var along = { x: T2.x - T1.x, y: T2.y - T1.y };
+    var wP = anglesAt(along);
+    var wQ = anglesAt(along);
+
+    function classify(midA, isUpper) {
+      var mx = Math.cos(midA);
+      var my = Math.sin(midA);
+      var interior = isUpper ? my > 0 : my < 0;
+      var cross = along.x * my - along.y * mx;
+      return { interior: interior, left: cross > 0, above: my < 0 };
+    }
+
+    var labeled = [];
+    function addWedges(V, wedges, isUpper, startId) {
+      wedges.forEach(function (w, i) {
+        var cls = classify(w.mid, isUpper);
+        labeled.push({
+          id: startId + i,
+          V: V,
+          w: w,
+          interior: cls.interior,
+          left: cls.left,
+          above: cls.above,
+          isUpper: isUpper,
+          labelPos: {
+            x: V.x + Math.cos(w.mid) * 28,
+            y: V.y + Math.sin(w.mid) * 28,
+          },
+        });
+      });
+    }
+    addWedges(P, wP, true, 0);
+    addWedges(Q, wQ, false, 4);
+
+    var hiSet = {};
+    var pairNote = "";
+
+    if (angMode === "corr") {
+      labeled.forEach(function (a) {
+        if (!a.isUpper) return;
+        labeled.forEach(function (b) {
+          if (b.isUpper) return;
+          if (a.left === b.left && a.above === b.above) {
+            hiSet[a.id] = true;
+            hiSet[b.id] = true;
+          }
+        });
+      });
+      pairNote = "Highlighted pairs are equal (corresponding angles).";
+    } else if (angMode === "alt") {
+      labeled.forEach(function (a) {
+        if (!a.interior || !a.isUpper) return;
+        labeled.forEach(function (b) {
+          if (!b.interior || b.isUpper) return;
+          if (a.left !== b.left) {
+            hiSet[a.id] = true;
+            hiSet[b.id] = true;
+          }
+        });
+      });
+      pairNote = "Highlighted pairs are equal (alternate interior angles).";
+    } else {
+      labeled.forEach(function (a) {
+        if (!a.interior || !a.isUpper) return;
+        labeled.forEach(function (b) {
+          if (!b.interior || b.isUpper) return;
+          if (a.left === b.left) {
+            hiSet[a.id] = true;
+            hiSet[b.id] = true;
+          }
+        });
+      });
+      pairNote = "Highlighted pairs add to 180° (interior angles on the same side).";
+    }
+
+    labeled.forEach(function (L, idx) {
+      var on = !!hiSet[L.id];
+      svg.appendChild(E("path", {
+        d: wedgePath(L.V, L.w.a0, L.w.a1, 22),
+        fill: on ? "rgba(251,191,36,.45)" : "rgba(148,163,184,.12)",
+        stroke: on ? MARK : "rgba(148,163,184,.35)",
+        "stroke-width": on ? 1.8 : 1,
+      }));
+      var tEl = E("text", {
+        x: L.labelPos.x, y: L.labelPos.y + 4,
+        fill: on ? MARK : MUTED,
+        "font-size": 13, "font-weight": 700, "text-anchor": "middle",
+      });
+      tEl.textContent = String(idx + 1);
+      svg.appendChild(tEl);
+    });
+
+    // Drag handles
+    angT.forEach(function (p, i) {
+      svg.appendChild(dot(p, ACCENT, 8));
+      var h = E("circle", { cx: p.x, cy: p.y, r: 16, fill: "transparent", "data-ang": i });
+      h.style.cursor = "grab";
+      svg.appendChild(h);
+    });
+
+    renderMixed(document.getElementById("ang-caption"), ANG.find(function (a) { return a.id === angMode; }).cap);
+    var note = document.getElementById("ang-note");
+    if (note) note.textContent = pairNote + " Drag the blue endpoints to change the transversal.";
+  }
+
+  function matchSecondTriangle(A, k) {
+    // Place DEF to the right, scaled by k about its own centroid-ish base
+    var ox = 300;
+    var oy = 230;
+    return [
+      { x: ox, y: oy },
+      { x: ox + (A[1].x - A[0].x) * k, y: oy + (A[1].y - A[0].y) * k },
+      { x: ox + (A[2].x - A[0].x) * k, y: oy + (A[2].y - A[0].y) * k },
+    ];
   }
 
   function drawTri(g, v, labels) {
@@ -690,120 +873,124 @@
     });
   }
 
-  function renderCong() {
-    var svg = document.getElementById("cong-svg");
-    clr(svg);
-    var A = triPoints(40, 40, 120, 100);
-    var D = triPoints(280, 40, 120, 100);
-    if (congMode === "RHS") {
-      A = [{ x: 50, y: 200 }, { x: 170, y: 200 }, { x: 50, y: 80 }];
-      D = [{ x: 290, y: 200 }, { x: 410, y: 200 }, { x: 290, y: 80 }];
-    }
-    drawTri(svg, A, ["A", "B", "C"]);
-    drawTri(svg, D, ["D", "E", "F"]);
-    if (congMode === "SSS") {
-      [[0, 1], [1, 2], [2, 0]].forEach(function (s, i) {
-        svg.appendChild(sideHashes(A[s[0]], A[s[1]], i + 1, TICK));
-        svg.appendChild(sideHashes(D[s[0]], D[s[1]], i + 1, TICK));
-      });
-    } else if (congMode === "SAS") {
-      svg.appendChild(sideHashes(A[0], A[1], 1, TICK));
-      svg.appendChild(sideHashes(A[1], A[2], 2, TICK));
-      svg.appendChild(sideHashes(D[0], D[1], 1, TICK));
-      svg.appendChild(sideHashes(D[1], D[2], 2, TICK));
-      svg.appendChild(angleArcAt(A[1], A[0], A[2], 24, MARK));
-      svg.appendChild(angleArcAt(D[1], D[0], D[2], 24, MARK));
-    } else if (congMode === "ASA") {
-      svg.appendChild(sideHashes(A[1], A[2], 1, TICK));
-      svg.appendChild(sideHashes(D[1], D[2], 1, TICK));
-      svg.appendChild(outwardArcs(A[1], A[0], A[2], 1, 22));
-      svg.appendChild(outwardArcs(A[2], A[1], A[0], 1, 22));
-      svg.appendChild(outwardArcs(D[1], D[0], D[2], 1, 22));
-      svg.appendChild(outwardArcs(D[2], D[1], D[0], 1, 22));
-    } else if (congMode === "AAS") {
-      svg.appendChild(sideHashes(A[0], A[1], 1, TICK));
-      svg.appendChild(sideHashes(D[0], D[1], 1, TICK));
-      svg.appendChild(outwardArcs(A[0], A[1], A[2], 1, 22));
-      svg.appendChild(outwardArcs(A[1], A[0], A[2], 1, 22));
-      svg.appendChild(outwardArcs(D[0], D[1], D[2], 1, 22));
-      svg.appendChild(outwardArcs(D[1], D[0], D[2], 1, 22));
-    } else if (congMode === "RHS") {
-      svg.appendChild(rightAngle(A[0], A[1], A[2], 14));
-      svg.appendChild(rightAngle(D[0], D[1], D[2], 14));
-      svg.appendChild(sideHashes(A[1], A[2], 1, TICK));
-      svg.appendChild(sideHashes(D[1], D[2], 1, TICK));
-      svg.appendChild(sideHashes(A[0], A[2], 2, TICK));
-      svg.appendChild(sideHashes(D[0], D[2], 2, TICK));
-    }
-    renderMixed(document.getElementById("cong-caption"), CONG.find(function (c) { return c.id === congMode; }).cap);
-  }
-
-  function renderAngles() {
-    var svg = document.getElementById("ang-svg");
-    clr(svg);
-    var y1 = 80, y2 = 220;
-    svg.appendChild(seg({ x: 40, y: y1 }, { x: 480, y: y1 }, INK));
-    svg.appendChild(seg({ x: 40, y: y2 }, { x: 480, y: y2 }, INK));
-    var T1 = { x: 120, y: 20 }, T2 = { x: 400, y: 280 };
-    svg.appendChild(seg(T1, T2, ACCENT));
-    var pts = [
-      { x: 170, y: y1, id: "1" }, { x: 320, y: y1, id: "2" },
-      { x: 170, y: y2, id: "3" }, { x: 320, y: y2, id: "4" },
-      { x: 230, y: 130, id: "5" }, { x: 260, y: 170, id: "6" },
-    ];
-    var pairs = { corr: [[0, 2], [1, 3]], alt: [[0, 5], [2, 4]], int: [[1, 4], [3, 5]] };
-    var hi = pairs[angMode] || pairs.corr;
-    var hiSet = {};
-    hi.forEach(function (p) { hiSet[p[0]] = hiSet[p[1]] = true; });
-    pts.forEach(function (p, i) {
-      svg.appendChild(E("circle", {
-        cx: p.x, cy: p.y, r: 16,
-        fill: hiSet[i] ? "rgba(251,191,36,.35)" : "transparent",
-        stroke: hiSet[i] ? MARK : "none", "stroke-width": 2,
-      }));
-      var tEl = E("text", {
-        x: p.x, y: p.y + 5, fill: hiSet[i] ? MARK : MUTED,
-        "font-size": 14, "font-weight": 700, "text-anchor": "middle",
-      });
-      tEl.textContent = p.id;
-      svg.appendChild(tEl);
-    });
-    renderMixed(document.getElementById("ang-caption"), ANG.find(function (a) { return a.id === angMode; }).cap);
-  }
-
-  function renderSim() {
-    var svg = document.getElementById("sim-svg");
-    clr(svg);
-    var k = simK;
-    var A = triPoints(30, 50, 100, 90);
-    var D = triPoints(260, 50 + 45 * (1 - k), 100 * k, 90 * k);
-    drawTri(svg, A, ["A", "B", "C"]);
-    drawTri(svg, D, ["D", "E", "F"]);
-    if (simMode === "AAA") {
-      [A, D].forEach(function (t) {
-        var plan = [1, 2, 3];
-        [0, 1, 2].forEach(function (i) {
-          var prev = t[(i + 2) % 3];
-          var cur = t[i];
-          var next = t[(i + 1) % 3];
-          svg.appendChild(outwardArcs(cur, prev, next, plan[i], 14));
+  function applyMatchMarks(svg, A, D, kind, cond) {
+    if (kind === "cong") {
+      if (cond === "SSS") {
+        [[0, 1], [1, 2], [2, 0]].forEach(function (s, i) {
+          svg.appendChild(sideHashes(A[s[0]], A[s[1]], i + 1, TICK));
+          svg.appendChild(sideHashes(D[s[0]], D[s[1]], i + 1, TICK));
         });
-      });
-    } else if (simMode === "3sides") {
-      [[0, 1], [1, 2], [2, 0]].forEach(function (s, i) {
-        svg.appendChild(sideHashes(A[s[0]], A[s[1]], i + 1, TICK));
-        svg.appendChild(sideHashes(D[s[0]], D[s[1]], i + 1, TICK));
-      });
+      } else if (cond === "SAS") {
+        svg.appendChild(sideHashes(A[0], A[1], 1, TICK));
+        svg.appendChild(sideHashes(A[1], A[2], 2, TICK));
+        svg.appendChild(sideHashes(D[0], D[1], 1, TICK));
+        svg.appendChild(sideHashes(D[1], D[2], 2, TICK));
+        svg.appendChild(outwardArcs(A[1], A[0], A[2], 1, 20));
+        svg.appendChild(outwardArcs(D[1], D[0], D[2], 1, 20));
+      } else if (cond === "ASA") {
+        svg.appendChild(sideHashes(A[1], A[2], 1, TICK));
+        svg.appendChild(sideHashes(D[1], D[2], 1, TICK));
+        svg.appendChild(outwardArcs(A[1], A[0], A[2], 1, 20));
+        svg.appendChild(outwardArcs(A[2], A[1], A[0], 2, 18));
+        svg.appendChild(outwardArcs(D[1], D[0], D[2], 1, 20));
+        svg.appendChild(outwardArcs(D[2], D[1], D[0], 2, 18));
+      } else if (cond === "AAS") {
+        svg.appendChild(sideHashes(A[0], A[1], 1, TICK));
+        svg.appendChild(sideHashes(D[0], D[1], 1, TICK));
+        svg.appendChild(outwardArcs(A[0], A[1], A[2], 1, 20));
+        svg.appendChild(outwardArcs(A[1], A[0], A[2], 2, 18));
+        svg.appendChild(outwardArcs(D[0], D[1], D[2], 1, 20));
+        svg.appendChild(outwardArcs(D[1], D[0], D[2], 2, 18));
+      } else if (cond === "RHS") {
+        // Force right angle look at A/D by mark only (triangle may not be right — reset on RHS pick)
+        svg.appendChild(rightAngle(A[0], A[1], A[2], 12));
+        svg.appendChild(rightAngle(D[0], D[1], D[2], 12));
+        svg.appendChild(sideHashes(A[1], A[2], 1, TICK));
+        svg.appendChild(sideHashes(D[1], D[2], 1, TICK));
+        svg.appendChild(sideHashes(A[0], A[2], 2, TICK));
+        svg.appendChild(sideHashes(D[0], D[2], 2, TICK));
+      }
     } else {
-      svg.appendChild(sideHashes(A[0], A[1], 1, TICK));
-      svg.appendChild(sideHashes(A[1], A[2], 2, TICK));
-      svg.appendChild(sideHashes(D[0], D[1], 1, TICK));
-      svg.appendChild(sideHashes(D[1], D[2], 2, TICK));
-      svg.appendChild(outwardArcs(A[1], A[0], A[2], 1, 22));
-      svg.appendChild(outwardArcs(D[1], D[0], D[2], 1, 22));
+      if (cond === "AAA") {
+        [A, D].forEach(function (t) {
+          [0, 1, 2].forEach(function (i) {
+            svg.appendChild(outwardArcs(t[i], t[(i + 2) % 3], t[(i + 1) % 3], i + 1, 14));
+          });
+        });
+      } else if (cond === "3sides") {
+        [[0, 1], [1, 2], [2, 0]].forEach(function (s, i) {
+          svg.appendChild(sideHashes(A[s[0]], A[s[1]], i + 1, TICK));
+          svg.appendChild(sideHashes(D[s[0]], D[s[1]], i + 1, TICK));
+        });
+      } else {
+        svg.appendChild(sideHashes(A[0], A[1], 1, TICK));
+        svg.appendChild(sideHashes(A[1], A[2], 2, TICK));
+        svg.appendChild(sideHashes(D[0], D[1], 1, TICK));
+        svg.appendChild(sideHashes(D[1], D[2], 2, TICK));
+        svg.appendChild(outwardArcs(A[1], A[0], A[2], 1, 20));
+        svg.appendChild(outwardArcs(D[1], D[0], D[2], 1, 20));
+      }
     }
-    document.getElementById("sim-k-val").textContent = k.toFixed(1);
-    renderMixed(document.getElementById("sim-caption"), SIM.find(function (s) { return s.id === simMode; }).cap);
+  }
+
+  function renderMatch() {
+    var svg = document.getElementById("match-svg");
+    if (!svg) return;
+    clr(svg);
+
+    var k = matchKind === "cong" ? 1 : simK;
+    var A = matchA;
+    if (congMode === "RHS" && matchKind === "cong") {
+      // Snap to a clear right triangle for RHS
+      A = [{ x: 70, y: 230 }, { x: 210, y: 230 }, { x: 70, y: 90 }];
+    }
+    var D = matchSecondTriangle(A, k);
+    drawTri(svg, A, ["A", "B", "C"]);
+    drawTri(svg, D, ["D", "E", "F"]);
+
+    var cond = matchKind === "cong" ? congMode : simMode;
+    applyMatchMarks(svg, A, D, matchKind, cond);
+
+    // Drag handles on ABC only (not when RHS snap unless we allow)
+    if (!(matchKind === "cong" && congMode === "RHS")) {
+      matchA.forEach(function (v, i) {
+        var h = E("circle", { cx: v.x, cy: v.y, r: 16, fill: "transparent", "data-match": i });
+        h.style.cursor = "grab";
+        svg.appendChild(h);
+      });
+    }
+
+    var sym = matchKind === "cong" ? "≅" : "∼";
+    var list = matchKind === "cong" ? CONG : SIM;
+    var item = list.find(function (c) { return c.id === cond; });
+    renderMixed(document.getElementById("match-caption"), item ? item.cap : "");
+    var note = document.getElementById("match-note");
+    if (note) {
+      note.textContent = matchKind === "cong"
+        ? "△ABC " + sym + " △DEF when the highlighted parts match. Drag A, B, C to reshape."
+        : "△ABC " + sym + " △DEF with scale factor k = " + k.toFixed(1) + ". Drag A, B, C; adjust k with the slider.";
+    }
+
+    var kRow = document.getElementById("match-k-row");
+    if (kRow) kRow.hidden = matchKind !== "sim";
+    var kv = document.getElementById("match-k-val");
+    if (kv) kv.textContent = simK.toFixed(1);
+  }
+
+  function refreshMatchCondBtns() {
+    var items = matchKind === "cong" ? CONG : SIM;
+    var active = matchKind === "cong" ? congMode : simMode;
+    bindBtns("match-cond-btns", items, active, function (id) {
+      if (matchKind === "cong") {
+        congMode = id;
+        if (id === "RHS") {
+          matchA = [{ x: 70, y: 230 }, { x: 210, y: 230 }, { x: 70, y: 90 }];
+        }
+      } else {
+        simMode = id;
+      }
+      renderMatch();
+    });
   }
 
   function pt(e, svg) {
@@ -817,6 +1004,7 @@
 
   function bindBtns(containerId, items, active, onPick) {
     var row = document.getElementById(containerId);
+    if (!row) return;
     row.innerHTML = "";
     items.forEach(function (item) {
       var id = item.id || item;
@@ -841,9 +1029,11 @@
       c.classList.toggle("active", c.dataset.lab === id);
     });
     if (id === "lines") renderLines();
-    if (id === "cong") renderCong();
     if (id === "angles") renderAngles();
-    if (id === "sim") renderSim();
+    if (id === "match") {
+      refreshMatchCondBtns();
+      renderMatch();
+    }
   }
 
   function init() {
@@ -874,32 +1064,72 @@
     });
 
     bindBtns("tri-mode-btns", MODES, mode, function (id) { mode = id; renderLines(); });
-    bindBtns("cong-mode-btns", CONG, congMode, function (id) { congMode = id; renderCong(); });
     bindBtns("ang-mode-btns", ANG, angMode, function (id) { angMode = id; renderAngles(); });
-    bindBtns("sim-mode-btns", SIM, simMode, function (id) { simMode = id; renderSim(); });
+    bindBtns("match-kind-btns", MATCH_KINDS, matchKind, function (id) {
+      matchKind = id;
+      refreshMatchCondBtns();
+      renderMatch();
+    });
+    refreshMatchCondBtns();
 
-    var svg = document.getElementById("tri-svg");
-    svg.addEventListener("pointerdown", function (e) {
+    var triSvg = document.getElementById("tri-svg");
+    triSvg.addEventListener("pointerdown", function (e) {
       if (e.target.dataset.i != null) {
         drag = +e.target.dataset.i;
-        e.target.setPointerCapture(e.pointerId);
+        triSvg.setPointerCapture(e.pointerId);
       }
     });
-    svg.addEventListener("pointermove", function (e) {
+    triSvg.addEventListener("pointermove", function (e) {
       if (drag == null) return;
-      var p = clampVert(pt(e, svg));
+      var p = clampVert(pt(e, triSvg));
       verts[drag].x = p.x;
       verts[drag].y = p.y;
       activePreset = "";
       renderLines();
     });
-    svg.addEventListener("pointerup", function () { drag = null; });
-    svg.addEventListener("pointercancel", function () { drag = null; });
+    triSvg.addEventListener("pointerup", function () { drag = null; });
+    triSvg.addEventListener("pointercancel", function () { drag = null; });
 
-    document.getElementById("sim-k").addEventListener("input", function (e) {
-      simK = +e.target.value;
-      renderSim();
+    // Capture on the SVG itself so redraw mid-drag does not drop the pointer
+    var angSvg = document.getElementById("ang-svg");
+    angSvg.addEventListener("pointerdown", function (e) {
+      if (e.target.getAttribute("data-ang") == null) return;
+      angDrag = +e.target.getAttribute("data-ang");
+      angSvg.setPointerCapture(e.pointerId);
     });
+    angSvg.addEventListener("pointermove", function (e) {
+      if (angDrag == null) return;
+      var p = pt(e, angSvg);
+      angT[angDrag].x = Math.max(40, Math.min(480, p.x));
+      angT[angDrag].y = Math.max(20, Math.min(300, p.y));
+      renderAngles();
+    });
+    angSvg.addEventListener("pointerup", function () { angDrag = null; });
+    angSvg.addEventListener("pointercancel", function () { angDrag = null; });
+
+    var matchSvg = document.getElementById("match-svg");
+    matchSvg.addEventListener("pointerdown", function (e) {
+      if (e.target.getAttribute("data-match") == null) return;
+      matchDrag = +e.target.getAttribute("data-match");
+      matchSvg.setPointerCapture(e.pointerId);
+    });
+    matchSvg.addEventListener("pointermove", function (e) {
+      if (matchDrag == null) return;
+      var p = pt(e, matchSvg);
+      matchA[matchDrag].x = Math.max(30, Math.min(250, p.x));
+      matchA[matchDrag].y = Math.max(40, Math.min(270, p.y));
+      renderMatch();
+    });
+    matchSvg.addEventListener("pointerup", function () { matchDrag = null; });
+    matchSvg.addEventListener("pointercancel", function () { matchDrag = null; });
+
+    var kEl = document.getElementById("match-k");
+    if (kEl) {
+      kEl.addEventListener("input", function (e) {
+        simK = +e.target.value;
+        renderMatch();
+      });
+    }
 
     showLab("lines");
   }

@@ -8,7 +8,7 @@
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
   <link href="https://fonts.googleapis.com/css2?family=Hanken+Grotesk:wght@400;600;700&display=swap" rel="stylesheet">
   <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/katex@0.16.11/dist/katex.min.css">
-  <link rel="stylesheet" href="../../shared/jm-lesson.css?v=20260729-jm28f">
+  <link rel="stylesheet" href="../../shared/jm-lesson.css?v=20260729-jm28g">
   <style>
     body { margin:0; min-height:100vh; color:var(--text); font-family:"Hanken Grotesk",system-ui,sans-serif;
       background:linear-gradient(180deg,#f8fafc,#f1f5f9); user-select:none; }
@@ -19,6 +19,7 @@
       border: 1px solid rgba(2,132,199,.25); background: rgba(2,132,199,.06);
       font-size: 14px; line-height: 1.55; color: var(--text);
     }
+    .split-hint { margin: 0 0 10px; font-size: 13px; color: var(--muted); }
   </style>
 </head>
 <body>
@@ -26,7 +27,7 @@
     <a class="jm-back" href="../../s3.html#lessons">← S3 Lessons</a>
     <p class="jm-eyebrow">JM28 · Lesson 28</p>
     <h1>Special Line and Centres in Triangles</h1>
-    <p class="lead">Special lines, congruence &amp; similarity, angle pairs, and the four centres — with standard geometry markings.</p>
+    <p class="lead">Special lines &amp; centres, angle pairs on parallel lines, then congruence and similarity — with standard geometry markings.</p>
     <nav class="jm-tabs" aria-label="Lesson sections">
       <button class="jm-tab active" type="button" data-tab="tools">Interactive Tools</button>
       <button class="jm-tab" type="button" data-tab="comics">Comics</button>
@@ -38,7 +39,7 @@
         <p class="part-title">Lab 1 · Special lines &amp; centres</p>
         <section class="block">
           <h2>Four special lines → four centres</h2>
-          <p class="hint">All construction lines are solid. Medians use tick marks on equal halves; altitudes show a right-angle symbol at the foot; angle bisectors use outward arc marks.</p>
+          <p class="hint">All construction lines are solid. Medians use tick marks on equal halves; altitudes show a right-angle symbol at the foot; angle bisectors use outward arc marks. Drag vertices to explore.</p>
           <div class="tool-toggle-row" id="tri-preset-btns"></div>
           <div class="tool-toggle-row" id="tri-mode-btns"></div>
           <svg class="lab-svg" id="tri-svg" viewBox="0 0 500 400" aria-label="Special lines and centres"></svg>
@@ -48,41 +49,34 @@
         </section>
       </div>
 
-      <div class="lab" id="lab-cong">
-        <p class="part-title">Lab 2 · Congruent triangles</p>
-        <section class="block">
-          <h2>SSS · SAS · ASA · AAS · RHS</h2>
-          <p class="hint">Tick marks show equal lengths; arc marks show equal angles. Pick a condition to see what must match.</p>
-          <div class="tool-toggle-row" id="cong-mode-btns"></div>
-          <svg class="lab-svg" id="cong-svg" viewBox="0 0 520 280" aria-label="Congruence lab"></svg>
-          <p class="formula" id="cong-caption"></p>
-        </section>
-      </div>
-
       <div class="lab" id="lab-angles">
-        <p class="part-title">Lab 3 · Angle pairs (parallel lines)</p>
+        <p class="part-title">Lab 2 · Angle pairs (parallel lines)</p>
         <section class="block">
           <h2>Corresponding · alternate · interior on same side</h2>
-          <p class="hint">Two parallel lines cut by a transversal — highlighted angles share the chosen relationship.</p>
+          <p class="hint">Two parallel lines cut by a transversal. Drag the blue handles to move the transversal; pick a relationship to highlight matching angles.</p>
           <div class="tool-toggle-row" id="ang-mode-btns"></div>
-          <svg class="lab-svg" id="ang-svg" viewBox="0 0 520 300" aria-label="Angle pairs lab"></svg>
+          <svg class="lab-svg" id="ang-svg" viewBox="0 0 520 320" aria-label="Angle pairs lab"></svg>
           <p class="formula" id="ang-caption"></p>
+          <div class="note-box" id="ang-note"></div>
         </section>
       </div>
 
-      <div class="lab" id="lab-sim">
-        <p class="part-title">Lab 4 · Similar triangles</p>
+      <div class="lab" id="lab-match">
+        <p class="part-title">Lab 3 · Congruence &amp; similarity</p>
         <section class="block">
-          <h2>AAA · three sides proportional · two sides + included angle</h2>
-          <p class="hint">Similar triangles have equal angles and proportional sides. Adjust the scale factor \(k\).</p>
-          <div class="tool-toggle-row" id="sim-mode-btns"></div>
-          <div class="slider-row">
-            <label for="sim-k">Scale factor \(k\)</label>
-            <input id="sim-k" type="range" min="0.5" max="1.5" step="0.1" value="1">
-            <span id="sim-k-val">1.0</span>
+          <h2>Congruent △ · Similar △</h2>
+          <p class="hint">Switch between congruence and similarity. Drag vertices of △ABC; △DEF follows. Markings show what must match for each condition.</p>
+          <div class="tool-toggle-row" id="match-kind-btns"></div>
+          <div class="tool-toggle-row" id="match-cond-btns"></div>
+          <div class="slider-row" id="match-k-row" hidden>
+            <label for="match-k">Scale factor \(k\)</label>
+            <input id="match-k" type="range" min="0.5" max="1.5" step="0.1" value="0.8">
+            <span id="match-k-val">0.8</span>
           </div>
-          <svg class="lab-svg" id="sim-svg" viewBox="0 0 520 300" aria-label="Similarity lab"></svg>
-          <p class="formula" id="sim-caption"></p>
+          <p class="split-hint" id="match-drag-hint">Drag A, B or C — the second triangle updates with you.</p>
+          <svg class="lab-svg" id="match-svg" viewBox="0 0 520 300" aria-label="Congruence and similarity lab"></svg>
+          <p class="formula" id="match-caption"></p>
+          <div class="note-box" id="match-note"></div>
         </section>
       </div>
     </section>
@@ -95,8 +89,8 @@
   </main>
   <script defer src="https://cdn.jsdelivr.net/npm/katex@0.16.11/dist/katex.min.js"></script>
   <script defer src="https://cdn.jsdelivr.net/npm/katex@0.16.11/dist/contrib/auto-render.min.js"></script>
-  <script defer src="../../shared/jm-tabs.js?v=20260729-jm28f"></script>
-  <script defer src="triangle-centres-tools.js?v=20260729-jm28f"></script>
+  <script defer src="../../shared/jm-tabs.js?v=20260729-jm28g"></script>
+  <script defer src="triangle-centres-tools.js?v=20260729-jm28g"></script>
   <script>
     document.addEventListener("DOMContentLoaded", function () {
       if (window.initJmTabs) window.initJmTabs();
