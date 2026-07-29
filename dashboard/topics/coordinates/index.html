@@ -7,24 +7,68 @@
   <link rel="preconnect" href="https://fonts.googleapis.com">
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
   <link href="https://fonts.googleapis.com/css2?family=Hanken+Grotesk:wght@400;600;700&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/katex@0.16.11/dist/katex.min.css">
+  <link rel="stylesheet" href="../../shared/jm-lesson.css?v=20260729-jm">
   <style>
-    :root { --text: #1e293b; --muted: #64748b; --line: rgba(30,41,59,.12); --accent: #0284c7; }
-    * { box-sizing: border-box; }
-    body { margin: 0; min-height: 100vh; color: var(--text); font-family: "Hanken Grotesk", system-ui, sans-serif; background: linear-gradient(180deg, #f8fafc, #f1f5f9); }
-    .page { width: min(860px, 100%); margin: 0 auto; padding: 28px 22px 80px; }
-    .back { display: inline-flex; margin-bottom: 18px; padding: 7px 12px; border: 1px solid var(--line); border-radius: 8px; background: #eef2f7; color: var(--text); text-decoration: none; font-size: 13px; font-weight: 600; }
-    .back:hover { border-color: var(--accent); color: var(--accent); }
-    .eyebrow { margin: 0 0 6px; color: #0369a1; font-size: 11px; font-weight: 700; letter-spacing: .12em; text-transform: uppercase; }
-    h1 { margin: 0 0 8px; font-size: clamp(26px, 4vw, 36px); }
-    .lead { margin: 0; color: var(--muted); font-size: 15px; line-height: 1.55; }
+    body { margin:0; min-height:100vh; color:var(--text); font-family:"Hanken Grotesk",system-ui,sans-serif;
+      background:linear-gradient(180deg,#f8fafc,#f1f5f9); user-select:none; }
+    h1 { margin:0 0 8px; font-size:clamp(26px,4vw,36px); }
+    .lead { margin:0 0 18px; color:var(--muted); font-size:15px; line-height:1.55; }
   </style>
 </head>
 <body>
-  <main class="page">
-    <a class="back" href="../../s3.html#lessons">← S3 Lessons</a>
-    <p class="eyebrow">JM33 · Lesson 33</p>
+  <main class="jm-page">
+    <a class="jm-back" href="../../s3.html#lessons">← S3 Lessons</a>
+    <p class="jm-eyebrow">JM33 · Lesson 33</p>
     <h1>Coordinates of Straight Lines</h1>
-    <p class="lead">Interactive tools for this topic are coming soon.</p>
+    <p class="lead">Drag points A and B on the grid — gradient, equation, distance and midpoint update live.</p>
+    <nav class="jm-tabs" aria-label="Lesson sections">
+      <button class="jm-tab active" type="button" data-tab="tools">Interactive Tools</button>
+      <button class="jm-tab" type="button" data-tab="comics">Comics</button>
+    </nav>
+    <section id="panel-tools" class="jm-panel">
+      <p class="part-title">Part 1 · Coordinate grid lab</p>
+      <section class="block">
+        <h2>1. Two-point explorer</h2>
+        <p class="hint">Each grid square is 1 unit. Drag A (gold) and B (teal) to explore \(y = mx + c\).</p>
+        <svg class="lab-svg" id="coord-svg" viewBox="0 0 500 500" aria-label="Coordinate grid"></svg>
+        <div class="stat-grid">
+          <div class="stat-card"><div class="val" id="coord-a">A</div><div class="lbl">Point A</div></div>
+          <div class="stat-card"><div class="val" id="coord-b">B</div><div class="lbl">Point B</div></div>
+          <div class="stat-card"><div class="val" id="coord-m">m</div><div class="lbl">Gradient</div></div>
+          <div class="stat-card"><div class="val" id="coord-d">d</div><div class="lbl">Distance</div></div>
+        </div>
+        <p class="formula" id="coord-eq">\(y = mx + c\)</p>
+        <p class="hint" id="coord-mid">Midpoint: —</p>
+      </section>
+      <section class="block">
+        <h2>2. Gradient guess</h2>
+        <p class="hint">Move B to \((4, 6)\) with A at \((0, 2)\). What is the gradient?</p>
+        <div class="task-box">
+          <div class="count-row">
+            <button class="btn" type="button" id="coord-setup">Set A(0,2) B(4,6)</button>
+            <input id="coord-check-in" type="text" placeholder="m = ?">
+            <button class="btn" type="button" id="coord-check-btn">Check</button>
+          </div>
+          <p class="feedback" id="coord-check-fb">Use rise ÷ run.</p>
+        </div>
+      </section>
+    </section>
+    <section id="panel-comics" class="jm-panel hidden">
+      <div id="comics-subnav"></div>
+      <div id="comics-stage"></div>
+    </section>
   </main>
+  <script defer src="https://cdn.jsdelivr.net/npm/katex@0.16.11/dist/katex.min.js"></script>
+  <script defer src="https://cdn.jsdelivr.net/npm/katex@0.16.11/dist/contrib/auto-render.min.js"></script>
+  <script defer src="../../shared/jm-tabs.js?v=20260729-jm"></script>
+  <script defer src="../../shared/jm-comics-engine.js?v=20260729-jm"></script>
+  <script defer src="coordinates-tools.js?v=20260729-jm"></script>
+  <script defer src="coordinates-comics.js?v=20260729-jm"></script>
+  <script>
+    document.addEventListener("DOMContentLoaded", function () {
+      if (window.initJmTabs) window.initJmTabs();
+    });
+  </script>
 </body>
 </html>
