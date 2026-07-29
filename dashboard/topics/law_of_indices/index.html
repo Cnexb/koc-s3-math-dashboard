@@ -101,6 +101,7 @@
     section.block h2 { margin: 0 0 8px; font-size: 18px; line-height: 1.35; }
     .hint { margin: 0 0 12px; color: var(--muted); font-size: 15px; line-height: 1.55; }
     .formula { margin: 14px 0 0; text-align: center; color: var(--accent); font-size: 1.15em; }
+    .formula.formula-locked { display: none; }
 
     .step-frame {
       display: grid; grid-template-columns: 48px 1fr 48px; gap: 10px;
@@ -358,7 +359,7 @@
         </div>
         <p class="feedback" id="fb-prod">Expand both blocks first.</p>
       </div>
-      <p class="formula">\[ x^{2}\times x^{3}=x^{2+3}=x^{5} \]</p>
+      <p class="formula formula-locked" id="formula-prod">\[ x^{2}\times x^{3}=x^{2+3}=x^{5} \]</p>
     </section>
 
     <!-- − Quotient -->
@@ -387,11 +388,14 @@
           2) Click one top \(x\) and one bottom \(x\) to cancel.
         </p>
         <div class="count-row">
+          <label for="quot-count">How many \(x\) remain on top?</label>
+          <input id="quot-count" type="number" min="0" max="20">
+          <button class="btn" type="button" id="quot-check">Check</button>
           <button class="btn" type="button" id="quot-reset">Reset</button>
         </div>
-        <p class="feedback" id="fb-quot">Expand both powers to begin.</p>
+        <p class="feedback" id="fb-quot">Answer the question above — you do not need to expand the blocks first.</p>
       </div>
-      <p class="formula">\[ \frac{x^{5}}{x^{2}}=x^{5-2}=x^{3} \]</p>
+      <p class="formula formula-locked" id="formula-quot">\[ \frac{x^{5}}{x^{2}}=x^{5-2}=x^{3} \]</p>
     </section>
 
     <!-- × Power of a power -->
@@ -419,7 +423,7 @@
         </div>
         <p class="feedback" id="fb-pow">Expand all three blocks first.</p>
       </div>
-      <p class="formula">\[ (x^{2})^{3}=x^{2}\times x^{2}\times x^{2}=x^{6}=x^{2\times 3} \]</p>
+      <p class="formula formula-locked" id="formula-pow">\[ (x^{2})^{3}=x^{2}\times x^{2}\times x^{2}=x^{6}=x^{2\times 3} \]</p>
     </section>
 
     <!-- ÷ Roots -->
@@ -578,6 +582,18 @@
       renderKatex(block);
     }
 
+    function revealFormula(id) {
+      const el = document.getElementById(id);
+      if (el) {
+        el.classList.remove("formula-locked");
+        renderKatex(el);
+      }
+    }
+    function lockFormula(id) {
+      const el = document.getElementById(id);
+      if (el) el.classList.add("formula-locked");
+    }
+
     /* Product */
     function resetProd() {
       const b2 = document.getElementById("block-x2");
@@ -596,6 +612,7 @@
       const fb = document.getElementById("fb-prod");
       fb.className = "feedback";
       fb.textContent = "Expand both blocks first.";
+      lockFormula("formula-prod");
     }
     function updateProdReady() {
       const both = document.getElementById("block-x2").classList.contains("open")
@@ -621,6 +638,7 @@
       if (val === 5) {
         fb.className = "feedback ok";
         fb.innerHTML = "Correct — 5 factors, so \\(x^{2}\\times x^{3}=x^{5}=x^{2+3}\\).";
+        revealFormula("formula-prod");
       } else {
         fb.className = "feedback bad";
         fb.innerHTML = "Count again: \\(x\\times x\\times x\\times x\\times x\\).";
@@ -669,7 +687,10 @@
       renderKatex(g);
       const fb = document.getElementById("fb-quot");
       fb.className = "feedback";
-      fb.textContent = "Expand both powers to begin.";
+      fb.innerHTML = "Answer the question above — you do not need to expand the blocks first.";
+      renderKatex(fb);
+      document.getElementById("quot-count").value = "";
+      lockFormula("formula-quot");
     }
     function bindCancel(root) {
       root.querySelectorAll(".tiny-x").forEach((x) => {
@@ -737,10 +758,12 @@
       const numHidden = document.getElementById("quot-num")?.style.display === "none";
       const denHidden = document.getElementById("quot-den")?.style.display === "none";
       if (numHidden && denHidden) {
-        document.getElementById("fb-quot").textContent = "Click one top x and one bottom x to cancel.";
+        document.getElementById("fb-quot").innerHTML = "Click one top \\(x\\) and one bottom \\(x\\) to cancel.";
+        renderKatex(document.getElementById("fb-quot"));
       }
     }
     function updateQuot() {
+      if (!document.getElementById("formula-quot").classList.contains("formula-locked")) return;
       const numLeft = document.querySelectorAll("#quot-num-row .tiny-x:not(.gone)").length;
       const denLeft = document.querySelectorAll("#quot-den-row .tiny-x:not(.gone)").length;
       const one = document.getElementById("quot-one");
@@ -760,6 +783,19 @@
       renderKatex(fb);
     }
     document.getElementById("quot-reset").addEventListener("click", resetQuot);
+    document.getElementById("quot-check").addEventListener("click", () => {
+      const fb = document.getElementById("fb-quot");
+      const val = Number(document.getElementById("quot-count").value);
+      if (val === 3) {
+        fb.className = "feedback ok";
+        fb.innerHTML = "Correct — \\(\\dfrac{x^{5}}{x^{2}}=x^{5-2}=x^{3}\\), so 3 factors remain on top.";
+        revealFormula("formula-quot");
+      } else {
+        fb.className = "feedback bad";
+        fb.innerHTML = "Subtract the indices: \\(5-2=3\\), so \\(x^{3}\\) factors remain on top.";
+      }
+      renderKatex(fb);
+    });
 
     // Initial dblclick bindings are attached inside resetQuot()
     // so first load must call resetQuot after katex.
@@ -781,6 +817,7 @@
       const fb = document.getElementById("fb-pow");
       fb.className = "feedback";
       fb.textContent = "Expand all three blocks first.";
+      lockFormula("formula-pow");
     }
     function updatePowReady() {
       const all = ["pow-a", "pow-b", "pow-c"].every((id) => document.getElementById(id).classList.contains("open"));
@@ -803,6 +840,7 @@
       if (val === 6) {
         fb.className = "feedback ok";
         fb.innerHTML = "Correct — 6 factors, so \\((x^{2})^{3}=x^{6}=x^{2\\times 3}\\).";
+        revealFormula("formula-pow");
       } else {
         fb.className = "feedback bad";
         fb.innerHTML = "Three groups of \\(x\\times x\\) make six \\(x\\)'s.";
