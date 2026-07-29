@@ -95,7 +95,7 @@
   var angDrag = null;
   var matchDrag = null;
   var matchOverlay = false;
-  var matchReveal = -1; // -1 = show all matching parts in cong mode
+  var matchReveal = 0; // 0 = show nothing first; -1 = show all
 
   var PAIR_COLORS = [
     { fill: "rgba(56,189,248,.5)", stroke: "#38bdf8", text: "#7dd3fc" },
@@ -861,18 +861,36 @@
     if (note) note.textContent = pairNote + " Drag the blue endpoints to change the transversal.";
   }
 
-  function placeShapeInBox(shape, box) {
+  function shapeFrom(A) {
+    return [
+      { x: 0, y: 0 },
+      { x: A[1].x - A[0].x, y: A[1].y - A[0].y },
+      { x: A[2].x - A[0].x, y: A[2].y - A[0].y },
+    ];
+  }
+
+  function shapeBBox(shape) {
     var xs = shape.map(function (p) { return p.x; });
     var ys = shape.map(function (p) { return p.y; });
-    var minX = Math.min.apply(null, xs);
-    var maxX = Math.max.apply(null, xs);
-    var minY = Math.min.apply(null, ys);
-    var maxY = Math.max.apply(null, ys);
-    var w = Math.max(maxX - minX, 1);
-    var h = Math.max(maxY - minY, 1);
-    var s = Math.min((box.w - 20) / w, (box.h - 20) / h);
-    var cx = (minX + maxX) / 2;
-    var cy = (minY + maxY) / 2;
+    return {
+      minX: Math.min.apply(null, xs),
+      maxX: Math.max.apply(null, xs),
+      minY: Math.min.apply(null, ys),
+      maxY: Math.max.apply(null, ys),
+    };
+  }
+
+  function fitScale(shape, box) {
+    var b = shapeBBox(shape);
+    var w = Math.max(b.maxX - b.minX, 1);
+    var h = Math.max(b.maxY - b.minY, 1);
+    return Math.min((box.w - 24) / w, (box.h - 24) / h);
+  }
+
+  function placeShape(shape, s, box) {
+    var b = shapeBBox(shape);
+    var cx = (b.minX + b.maxX) / 2;
+    var cy = (b.minY + b.maxY) / 2;
     var bx = box.x + box.w / 2;
     var by = box.y + box.h / 2;
     return shape.map(function (p) {
@@ -880,17 +898,55 @@
     });
   }
 
-  function matchSecondTriangle(A, k) {
-    var shape = [
-      { x: 0, y: 0 },
-      { x: (A[1].x - A[0].x) * k, y: (A[1].y - A[0].y) * k },
-      { x: (A[2].x - A[0].x) * k, y: (A[2].y - A[0].y) * k },
-    ];
-    return placeShapeInBox(shape, { x: 270, y: 25, w: 230, h: 270 });
+  var MATCH_LEFT = { x: 15, y: 20, w: 235, h: 280 };
+  var MATCH_RIGHT = { x: 270, y: 20, w: 235, h: 280 };
+  var MATCH_CENTER = { x: 120, y: 30, w: 280, h: 260 };
+  var lastMatchLayout = null;
+
+  /** Congruent: same scale. Similar: DEF size fixed; ABC = DEF/k so changing k resizes ABC only. */
+  function layoutMatchPair(raw, k, congruent) {
+    var sh = shapeFrom(raw);
+    if (congruent) {
+      var s = Math.min(fitScale(sh, MATCH_LEFT), fitScale(sh, MATCH_RIGHT));
+      return {
+        A: placeShape(sh, s, MATCH_LEFT),
+        D: placeShape(sh, s, MATCH_RIGHT),
+        sA: s,
+        sD: s,
+        sh: sh,
+      };
+    }
+    var sDef = fitScale(sh, MATCH_RIGHT);
+    var sAbc = sDef / Math.max(k, 0.05);
+    var sAbcMax = fitScale(sh, MATCH_LEFT);
+    if (sAbc > sAbcMax) {
+      sAbc = sAbcMax;
+      sDef = sAbc * k;
+    }
+    return {
+      A: placeShape(sh, sAbc, MATCH_LEFT),
+      D: placeShape(sh, sDef, MATCH_RIGHT),
+      sA: sAbc,
+      sD: sDef,
+      sh: sh,
+    };
   }
 
-  function matchFirstTriangle(A) {
-    return placeShapeInBox(A, { x: 20, y: 25, w: 230, h: 270 });
+  function invPlaceToShape(p, sh, s, box) {
+    var b = shapeBBox(sh);
+    var cx = (b.minX + b.maxX) / 2;
+    var cy = (b.minY + b.maxY) / 2;
+    var bx = box.x + box.w / 2;
+    var by = box.y + box.h / 2;
+    return { x: cx + (p.x - bx) / s, y: cy + (p.y - by) / s };
+  }
+
+  function commitShapeToMatchA(sh) {
+    matchA = [
+      { x: 80, y: 230 },
+      { x: 80 + sh[1].x, y: 230 + sh[1].y },
+      { x: 80 + sh[2].x, y: 230 + sh[2].y },
+    ];
   }
 
   function drawTri(g, v, labels, opt) {
@@ -921,6 +977,11 @@
     g.appendChild(t);
   }
 
+  function kSideLabel(name) {
+    var ks = simK.toFixed(1);
+    return ks + name;
+  }
+
   function congPartsList(cond) {
     if (cond === "SSS") return ["side AB≅DE", "side BC≅EF", "side CA≅FD"];
     if (cond === "SAS") return ["side AB≅DE", "∠B≅∠E", "side BC≅EF"];
@@ -930,9 +991,15 @@
     return [];
   }
 
+  function simPartsList(cond) {
+    if (cond === "AAA") return ["∠A=∠D", "∠B=∠E", "∠C=∠F"];
+    if (cond === "3sides") return ["AB:" + kSideLabel("a"), "BC:" + kSideLabel("b"), "CA:" + kSideLabel("c")];
+    return ["AB→" + kSideLabel("a"), "∠B=∠E", "BC→" + kSideLabel("b")];
+  }
+
   function applyMatchMarks(svg, A, D, kind, cond, revealCount) {
+    var parts = [];
     if (kind === "cong") {
-      var parts = [];
       if (cond === "SSS") {
         parts = [
           function () {
@@ -1009,33 +1076,41 @@
           },
         ];
       }
-      var n = revealCount < 0 ? parts.length : Math.min(revealCount, parts.length);
-      for (var i = 0; i < n; i++) parts[i]();
-      return parts.length;
-    }
-
-    // Similarity — proportional, NOT equal: use labels a/ka etc., never equality ticks
-    if (cond === "AAA") {
-      [A, D].forEach(function (t) {
-        [0, 1, 2].forEach(function (i) {
-          svg.appendChild(outwardArcs(t[i], t[(i + 2) % 3], t[(i + 1) % 3], i + 1, 14));
-        });
+    } else if (cond === "AAA") {
+      parts = [0, 1, 2].map(function (i) {
+        return function () {
+          svg.appendChild(outwardArcs(A[i], A[(i + 2) % 3], A[(i + 1) % 3], i + 1, 14));
+          svg.appendChild(outwardArcs(D[i], D[(i + 2) % 3], D[(i + 1) % 3], i + 1, 14));
+        };
       });
     } else if (cond === "3sides") {
       var names = ["a", "b", "c"];
-      [[0, 1], [1, 2], [2, 0]].forEach(function (s, i) {
-        sideRatioLabel(svg, A[s[0]], A[s[1]], names[i], "#f472b6");
-        sideRatioLabel(svg, D[s[0]], D[s[1]], "k·" + names[i], "#f472b6");
+      parts = [[0, 1], [1, 2], [2, 0]].map(function (s, i) {
+        return function () {
+          sideRatioLabel(svg, A[s[0]], A[s[1]], names[i], "#f472b6");
+          sideRatioLabel(svg, D[s[0]], D[s[1]], kSideLabel(names[i]), "#f472b6");
+        };
       });
     } else {
-      sideRatioLabel(svg, A[0], A[1], "a", "#f472b6");
-      sideRatioLabel(svg, A[1], A[2], "b", "#f472b6");
-      sideRatioLabel(svg, D[0], D[1], "k·a", "#f472b6");
-      sideRatioLabel(svg, D[1], D[2], "k·b", "#f472b6");
-      svg.appendChild(outwardArcs(A[1], A[0], A[2], 1, 20));
-      svg.appendChild(outwardArcs(D[1], D[0], D[2], 1, 20));
+      parts = [
+        function () {
+          sideRatioLabel(svg, A[0], A[1], "a", "#f472b6");
+          sideRatioLabel(svg, D[0], D[1], kSideLabel("a"), "#f472b6");
+        },
+        function () {
+          svg.appendChild(outwardArcs(A[1], A[0], A[2], 1, 20));
+          svg.appendChild(outwardArcs(D[1], D[0], D[2], 1, 20));
+        },
+        function () {
+          sideRatioLabel(svg, A[1], A[2], "b", "#f472b6");
+          sideRatioLabel(svg, D[1], D[2], kSideLabel("b"), "#f472b6");
+        },
+      ];
     }
-    return 0;
+
+    var n = revealCount < 0 ? parts.length : Math.min(revealCount, parts.length);
+    for (var i = 0; i < n; i++) parts[i]();
+    return parts.length;
   }
 
   function renderMatch() {
@@ -1052,8 +1127,11 @@
     var A;
     var D;
     if (matchKind === "cong" && matchOverlay) {
-      A = placeShapeInBox(rawA, { x: 120, y: 30, w: 280, h: 260 });
+      var sh = shapeFrom(rawA);
+      var s = fitScale(sh, MATCH_CENTER);
+      A = placeShape(sh, s, MATCH_CENTER);
       D = A.map(function (p) { return { x: p.x + 0.01, y: p.y + 0.01 }; });
+      lastMatchLayout = { A: A, D: D, sA: s, sD: s, sh: sh, overlay: true };
       drawTri(svg, A, ["A", "B", "C"], { fill: "rgba(56,189,248,.18)" });
       drawTri(svg, D, ["D", "E", "F"], {
         fill: "rgba(251,191,36,.12)",
@@ -1062,9 +1140,11 @@
         dash: "7 5",
       });
     } else {
-      // Left triangle stays as dragged; right is fitted so k=1.5 never clips
-      A = rawA;
-      D = matchSecondTriangle(rawA, k);
+      var pair = layoutMatchPair(rawA, k, matchKind === "cong");
+      A = pair.A;
+      D = pair.D;
+      lastMatchLayout = pair;
+      lastMatchLayout.overlay = false;
       drawTri(svg, A, ["A", "B", "C"]);
       drawTri(svg, D, ["D", "E", "F"]);
     }
@@ -1087,15 +1167,16 @@
 
     var note = document.getElementById("match-note");
     if (note) {
+      var parts = matchKind === "cong" ? congPartsList(cond) : simPartsList(cond);
+      var shown = matchReveal < 0 ? parts.length : Math.min(matchReveal, parts.length);
       if (matchKind === "cong") {
-        var parts = congPartsList(cond);
-        var shown = matchReveal < 0 ? parts.length : Math.min(matchReveal, parts.length);
-        note.textContent = "△ABC " + sym + " △DEF. Showing " + shown + "/" + parts.length +
-          " required matches" + (shown ? ": " + parts.slice(0, shown).join("; ") : "") +
-          ". Use Reveal next / Show all, or Overlay to stack the triangles.";
+        note.textContent = "△ABC " + sym + " △DEF (same size). Marks hidden until you reveal — showing " +
+          shown + "/" + parts.length +
+          (shown ? ": " + parts.slice(0, shown).join("; ") : "") +
+          ".";
       } else {
-        note.textContent = "△ABC " + sym + " △DEF with scale factor k = " + k.toFixed(1) +
-          ". Side labels show ratios (a with k·a) — not equal lengths. Drag A, B, C; adjust k.";
+        note.textContent = "△ABC " + sym + " △DEF. DEF stays fixed size; ABC is scaled so sides of DEF are " +
+          simK.toFixed(1) + "× the matching sides of ABC. Showing " + shown + "/" + parts.length + " marks.";
       }
     }
 
@@ -1108,9 +1189,10 @@
     if (hint) {
       hint.textContent = matchKind === "cong"
         ? (matchOverlay
-          ? "Overlay on — dashed △DEF sits on △ABC (same size). Drag A/B/C still reshapes both."
-          : "Drag A, B or C. Reveal matching parts step by step, or Overlay to stack △DEF on △ABC.")
-        : "Drag A, B or C — △DEF scales by k and stays inside the canvas.";
+          ? "Overlay on — dashed △DEF sits on △ABC (same size)."
+          : "Drag A, B or C. Start with no marks — use Reveal next / Show all. Overlay stacks △DEF on △ABC.")
+        : "Drag A, B or C to change the shape. Adjust k to resize ABC only (DEF size stays put). Labels use " +
+          simK.toFixed(1) + "a, " + simK.toFixed(1) + "b, …";
     }
 
     refreshMatchExtraBtns(totalParts);
@@ -1120,7 +1202,6 @@
     var row = document.getElementById("match-extra-btns");
     if (!row) return;
     row.innerHTML = "";
-    if (matchKind !== "cong") return;
 
     function addBtn(label, active, fn) {
       var b = document.createElement("button");
@@ -1131,8 +1212,9 @@
       row.appendChild(b);
     }
 
+    var max = totalParts || (matchKind === "cong" ? congPartsList(congMode).length : simPartsList(simMode).length);
+
     addBtn("Reveal next", false, function () {
-      var max = totalParts || congPartsList(congMode).length;
       if (matchReveal < 0) matchReveal = 0;
       matchReveal = Math.min(max, matchReveal + 1);
       renderMatch();
@@ -1145,10 +1227,12 @@
       matchReveal = 0;
       renderMatch();
     });
-    addBtn(matchOverlay ? "Side by side" : "Overlay ≅", matchOverlay, function () {
-      matchOverlay = !matchOverlay;
-      renderMatch();
-    });
+    if (matchKind === "cong") {
+      addBtn(matchOverlay ? "Side by side" : "Overlay ≅", matchOverlay, function () {
+        matchOverlay = !matchOverlay;
+        renderMatch();
+      });
+    }
   }
 
   function refreshMatchCondBtns() {
@@ -1157,13 +1241,14 @@
     bindBtns("match-cond-btns", items, active, function (id) {
       if (matchKind === "cong") {
         congMode = id;
-        matchReveal = -1;
+        matchReveal = 0;
         if (id === "RHS") {
           matchA = [{ x: 70, y: 230 }, { x: 210, y: 230 }, { x: 70, y: 90 }];
         }
       } else {
         simMode = id;
         matchOverlay = false;
+        matchReveal = 0;
       }
       renderMatch();
     });
@@ -1244,7 +1329,7 @@
     bindBtns("match-kind-btns", MATCH_KINDS, matchKind, function (id) {
       matchKind = id;
       matchOverlay = false;
-      matchReveal = -1;
+      matchReveal = 0;
       refreshMatchCondBtns();
       renderMatch();
     });
@@ -1292,10 +1377,22 @@
       matchSvg.setPointerCapture(e.pointerId);
     });
     matchSvg.addEventListener("pointermove", function (e) {
-      if (matchDrag == null) return;
+      if (matchDrag == null || !lastMatchLayout || lastMatchLayout.overlay) return;
       var p = pt(e, matchSvg);
-      matchA[matchDrag].x = Math.max(35, Math.min(245, p.x));
-      matchA[matchDrag].y = Math.max(35, Math.min(295, p.y));
+      var sh = lastMatchLayout.sh.slice().map(function (q) { return { x: q.x, y: q.y }; });
+      var local = invPlaceToShape(p, lastMatchLayout.sh, lastMatchLayout.sA, MATCH_LEFT);
+      sh[matchDrag] = local;
+      if (matchDrag === 0) {
+        var dx = sh[0].x;
+        var dy = sh[0].y;
+        sh = sh.map(function (q) { return { x: q.x - dx, y: q.y - dy }; });
+      }
+      // Avoid collapsing the triangle
+      var area = Math.abs(
+        (sh[1].x * sh[2].y - sh[2].x * sh[1].y)
+      );
+      if (area < 80) return;
+      commitShapeToMatchA(sh);
       renderMatch();
     });
     matchSvg.addEventListener("pointerup", function () { matchDrag = null; });
