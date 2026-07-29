@@ -3,7 +3,7 @@
 (function () {
   "use strict";
 
-  const COMIC_ASSET_V = "20260729a";
+  const COMIC_ASSET_V = "20260729b";
 
   const COMICS = [
     {
@@ -24,16 +24,21 @@
           ],
           answer: 0,
           explain:
-            "V(pyramid) = (1/3)Bh = (1/3) × 24 × 9 = 72 cm³. Do not forget the one-third.",
+            "V(pyramid) = $\\frac{1}{3}$Bh = $\\frac{1}{3}$ × $24$ × $9$ = $72$ cm³.",
         },
         {
           id: "c1q2",
           prompt:
             "A cone has radius r = $4$ cm and height h = $9$ cm. What is its volume? (Leave π in the answer.)",
-          choices: ["48\\pi", "144\\pi", "36\\pi", "16\\pi"],
+          choices: [
+            "48\\pi\\text{ cm}^3",
+            "144\\pi\\text{ cm}^3",
+            "36\\pi\\text{ cm}^3",
+            "16\\pi\\text{ cm}^3",
+          ],
           answer: 0,
           explain:
-            "V(cone) = (1/3)πr²h = (1/3)π(16)(9) = 48π. A cone uses the same one-third factor as a pyramid.",
+            "V(cone) = $\\frac{1}{3}$πr²h = $\\frac{1}{3}$π($16$)($9$) = $48$π cm³.",
         },
       ],
     },
@@ -55,16 +60,21 @@
           ],
           answer: 0,
           explain:
-            "V(pyramid) = (1/3)Bh = (1/3) × 36 × 10 = 120 cm³. Do not forget the one-third.",
+            "V(pyramid) = $\\frac{1}{3}$Bh = $\\frac{1}{3}$ × $36$ × $10$ = $120$ cm³.",
         },
         {
           id: "c2q2",
           prompt:
             "A cone has radius r = $3$ cm and height h = $7$ cm. What is its volume? (Leave π in the answer.)",
-          choices: ["21\\pi", "63\\pi", "7\\pi", "9\\pi"],
+          choices: [
+            "21\\pi\\text{ cm}^3",
+            "63\\pi\\text{ cm}^3",
+            "7\\pi\\text{ cm}^3",
+            "9\\pi\\text{ cm}^3",
+          ],
           answer: 0,
           explain:
-            "A cone is a circular-base pyramid: V = (1/3)πr²h = (1/3)π(9)(7) = 21π.",
+            "A cone is a circular-base pyramid: V = $\\frac{1}{3}$πr²h = $\\frac{1}{3}$π($9$)($7$) = $21$π cm³.",
         },
       ],
     },
@@ -86,7 +96,7 @@
           ],
           answer: 0,
           explain:
-            "TSA(cube) = 6 × (edge)² = 6 × 16 = 96 cm². A cube has six identical square faces.",
+            "TSA(cube) = $6$ × (edge)² = $6$ × $16$ = $96$ cm².",
         },
         {
           id: "c3q2",
@@ -100,7 +110,7 @@
           ],
           answer: 0,
           explain:
-            "Open top means five faces: base 5×3 = 15; two 5×2 faces = 20; two 3×2 faces = 12. Total = 47 cm².",
+            "Open top means five faces: base $5$×$3$ = $15$; two $5$×$2$ faces = $20$; two $3$×$2$ faces = $12$. Total = $47$ cm².",
         },
       ],
     },
@@ -122,7 +132,7 @@
           ],
           answer: 0,
           explain:
-            "TSA(right prism) = 2B + Ph = 2(20) + 18(5) = 40 + 90 = 130 cm².",
+            "TSA(right prism) = $2$B + Ph = $2$($20$) + $18$($5$) = $40$ + $90$ = $130$ cm².",
         },
         {
           id: "c4q2",
@@ -136,7 +146,7 @@
           ],
           answer: 0,
           explain:
-            "Lateral area = (1/2)Pℓ = (1/2)(24)(10) = 120. TSA = B + (1/2)Pℓ = 36 + 120 = 156 cm².",
+            "Lateral area = $\\frac{1}{2}$Pℓ = $\\frac{1}{2}$($24$)($10$) = $120$ cm². TSA = B + $\\frac{1}{2}$Pℓ = $36$ + $120$ = $156$ cm².",
         },
       ],
     },
@@ -150,19 +160,29 @@
           id: "c5q1",
           prompt:
             "A sphere has radius r = $3$ cm. What is its volume? (Leave π in the answer.)",
-          choices: ["36\\pi", "12\\pi", "9\\pi", "4\\pi"],
+          choices: [
+            "36\\pi\\text{ cm}^3",
+            "12\\pi\\text{ cm}^3",
+            "9\\pi\\text{ cm}^3",
+            "4\\pi\\text{ cm}^3",
+          ],
           answer: 0,
           explain:
-            "V(sphere) = (4/3)πr³ = (4/3)π(27) = 36π.",
+            "V(sphere) = $\\frac{4}{3}$πr³ = $\\frac{4}{3}$π($27$) = $36$π cm³.",
         },
         {
           id: "c5q2",
           prompt:
             "A solid hemisphere has radius r = $6$ cm. What is its volume? (Leave π in the answer.)",
-          choices: ["144\\pi", "288\\pi", "72\\pi", "216\\pi"],
+          choices: [
+            "144\\pi\\text{ cm}^3",
+            "288\\pi\\text{ cm}^3",
+            "72\\pi\\text{ cm}^3",
+            "216\\pi\\text{ cm}^3",
+          ],
           answer: 0,
           explain:
-            "V(hemisphere) = (2/3)πr³ = (2/3)π(216) = 144π. (Half of a sphere of the same radius.)",
+            "V(hemisphere) = $\\frac{2}{3}$πr³ = $\\frac{2}{3}$π($216$) = $144$π cm³.",
         },
       ],
     },
@@ -176,19 +196,29 @@
           id: "c6q1",
           prompt:
             "A sphere has radius r = $2$ cm. What is its surface area? (Leave π in the answer.)",
-          choices: ["16\\pi", "8\\pi", "4\\pi", "32\\pi/3"],
+          choices: [
+            "16\\pi\\text{ cm}^2",
+            "8\\pi\\text{ cm}^2",
+            "4\\pi\\text{ cm}^2",
+            "\\frac{32\\pi}{3}\\text{ cm}^2",
+          ],
           answer: 0,
           explain:
-            "SA(sphere) = 4πr² = 4π(4) = 16π. (About four great circles of area πr².)",
+            "SA(sphere) = $4$πr² = $4$π($4$) = $16$π cm².",
         },
         {
           id: "c6q2",
           prompt:
             "A solid hemisphere has radius r = $5$ cm. What is its total surface area? (Leave π in the answer.)",
-          choices: ["75\\pi", "50\\pi", "25\\pi", "100\\pi"],
+          choices: [
+            "75\\pi\\text{ cm}^2",
+            "50\\pi\\text{ cm}^2",
+            "25\\pi\\text{ cm}^2",
+            "100\\pi\\text{ cm}^2",
+          ],
           answer: 0,
           explain:
-            "Curved SA = 2πr² = 50π; flat base = πr² = 25π. Total = 3πr² = 75π.",
+            "Curved SA = $2$πr² = $50$π cm²; flat base = πr² = $25$π cm². Total = $3$πr² = $75$π cm².",
         },
       ],
     },
@@ -392,7 +422,7 @@
         msg.className = "quiz-result-msg";
         msg.textContent = ok ? "Correct. " : "Not quite. ";
         const explain = document.createElement("span");
-        explain.textContent = q.explain;
+        renderMixedTex(explain, q.explain);
         msg.appendChild(explain);
         result.appendChild(msg);
         card.appendChild(result);
