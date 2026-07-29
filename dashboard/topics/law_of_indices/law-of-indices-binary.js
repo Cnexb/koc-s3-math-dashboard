@@ -338,7 +338,7 @@
       ladderDigits.push(s.r);
       const chip = document.createElement("span");
       chip.className = "ladder-step-chip";
-      chip.innerHTML = "\\(" + s.n + "\\div2=" + s.q + "\\,r" + s.r + "\\)";
+      chip.innerHTML = "\\(" + s.n + "\\div2=" + s.q + "\\,\\text{...}\\," + s.r + "\\)";
       ladderSteps.appendChild(chip);
       renderKatexIn(chip);
       ladderStep++;
