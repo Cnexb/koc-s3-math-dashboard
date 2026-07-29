@@ -776,12 +776,9 @@
       if (denLeft > 0) {
         fb.className = "feedback";
         fb.innerHTML = "Remaining: top \\(" + numLeft + "\\), bottom \\(" + denLeft + "\\). Keep cancelling.";
-      } else if (numLeft === 3) {
-        fb.className = "feedback ok";
-        fb.innerHTML = "Bottom is \\(1\\), top has 3 factors → \\(\\dfrac{x^{3}}{1}=x^{3}=x^{5-2}\\).";
       } else {
-        fb.className = "feedback warn";
-        fb.innerHTML = "Bottom became \\(1\\). Top factors left: \\(" + numLeft + "\\).";
+        fb.className = "feedback";
+        fb.textContent = "Answer the question above.";
       }
       renderKatex(fb);
     }
