@@ -8,7 +8,7 @@
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
   <link href="https://fonts.googleapis.com/css2?family=Hanken+Grotesk:wght@400;600;700&display=swap" rel="stylesheet">
   <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/katex@0.16.11/dist/katex.min.css">
-  <link rel="stylesheet" href="../../shared/jm-lesson.css?v=20260729-jm28">
+  <link rel="stylesheet" href="../../shared/jm-lesson.css?v=20260729-jm28b">
   <style>
     body { margin:0; min-height:100vh; color:var(--text); font-family:"Hanken Grotesk",system-ui,sans-serif;
       background:linear-gradient(180deg,#f8fafc,#f1f5f9); user-select:none; }
@@ -26,64 +26,84 @@
     <a class="jm-back" href="../../s3.html#lessons">← S3 Lessons</a>
     <p class="jm-eyebrow">JM28 · Lesson 28</p>
     <h1>Special Line and Centres in Triangles</h1>
-    <p class="lead">Four special lines — altitude, median, angle bisector and perpendicular bisector — meet at the orthocentre, centroid, in-centre and circumcentre.</p>
+    <p class="lead">Special lines, congruence &amp; similarity, angle pairs, and the four centres — with standard geometry markings.</p>
     <nav class="jm-tabs" aria-label="Lesson sections">
       <button class="jm-tab active" type="button" data-tab="tools">Interactive Tools</button>
       <button class="jm-tab" type="button" data-tab="comics">Comics</button>
     </nav>
     <section id="panel-tools" class="jm-panel">
-      <p class="part-title">Part 1 · Special lines &amp; centres</p>
-      <section class="block">
-        <h2>1. Line → centre explorer</h2>
-        <p class="hint">Pick a special line. Its three lines concur at the matching centre — \(H\), \(G\), \(I\) or \(O\). Try the triangle presets (acute / right / obtuse / isosceles / equilateral).</p>
-        <div class="tool-toggle-row" id="tri-preset-btns"></div>
-        <div class="tool-toggle-row" id="tri-mode-btns"></div>
-        <svg class="lab-svg" id="tri-svg" viewBox="0 0 500 340" aria-label="Triangle centres lab"></svg>
-        <div class="badge-row" id="tri-type-badges"></div>
-        <p class="formula" id="tri-caption">Altitudes meet at the orthocentre \(H\).</p>
-        <div class="note-box" id="tri-placement"></div>
-      </section>
+      <div class="subnav" id="jm28-lab-nav" aria-label="Tool labs"></div>
 
-      <p class="part-title">Part 2 · Properties (worksheet A–D)</p>
-      <section class="block">
-        <h2>2. Angle bisector &amp; perpendicular bisector</h2>
-        <p class="hint">An <strong>angle bisector</strong> splits the angle into two equal parts. A <strong>perpendicular bisector</strong> is perpendicular to a side and passes through its mid-point — any point on it is equidistant from the end-points.</p>
-        <div class="tool-toggle-row" id="tri-prop-btns">
-          <button class="btn active" type="button" data-prop="bisect">Angle bisector property</button>
-          <button class="btn" type="button" data-prop="perp">Perp. bisector property</button>
-        </div>
-        <svg class="lab-svg" id="tri-prop-svg" viewBox="0 0 500 260" aria-label="Special line properties"></svg>
-        <p class="formula" id="tri-prop-cap">If \(AD\) bisects \(\angle BAC\), then \(\angle BAD = \angle CAD\).</p>
-      </section>
+      <div class="lab active" id="lab-lines">
+        <p class="part-title">Lab 1 · Special lines &amp; centres</p>
+        <section class="block">
+          <h2>Four special lines → four centres</h2>
+          <p class="hint">All lines are drawn solid. Medians mark equal halves on the opposite side; altitudes show a right-angle symbol at the foot.</p>
+          <div class="tool-toggle-row" id="tri-preset-btns"></div>
+          <div class="tool-toggle-row" id="tri-mode-btns"></div>
+          <svg class="lab-svg" id="tri-svg" viewBox="0 0 500 340" aria-label="Special lines and centres"></svg>
+          <div class="badge-row" id="tri-type-badges"></div>
+          <p class="formula" id="tri-caption"></p>
+          <div class="note-box" id="tri-placement"></div>
+        </section>
+        <section class="block">
+          <h2>Quick checks</h2>
+          <p class="hint">Centroid ratio: on median \(AD\), \(AG:GD = 2:1\). If \(AG = 10\) cm, find \(GD\).</p>
+          <div class="task-box">
+            <div class="count-row">
+              <input id="tri-check-in" type="text" autocomplete="off" placeholder="GD = ? cm">
+              <button class="btn" type="button" id="tri-check-btn">Check</button>
+            </div>
+            <p class="feedback" id="tri-check-fb">Use the 2:1 ratio from vertex to mid-point.</p>
+          </div>
+          <p class="hint" style="margin-top:16px">Ch 28 E Q19 — which centres may lie <em>outside</em> an obtuse triangle?</p>
+          <div class="task-box">
+            <div class="count-row">
+              <button class="btn" type="button" data-mc="C">Circumcentre &amp; orthocentre</button>
+              <button class="btn" type="button" id="tri-mc-check">Check</button>
+            </div>
+            <p class="feedback" id="tri-mc-fb">In-centre and centroid always lie inside.</p>
+          </div>
+        </section>
+      </div>
 
-      <p class="part-title">Part 3 · Quick checks</p>
-      <section class="block">
-        <h2>3. Centroid ratio</h2>
-        <p class="hint">On median \(AD\), the centroid \(G\) divides \(AG : GD = 2 : 1\). If \(AG = 10\) cm, find \(GD\).</p>
-        <div class="task-box">
-          <div class="count-row">
-            <label for="tri-check-in">\(GD\) =</label>
-            <input id="tri-check-in" type="text" autocomplete="off" placeholder="cm">
-            <button class="btn" type="button" id="tri-check-btn">Check</button>
-            <button class="btn" type="button" id="tri-check-reset">Reset</button>
+      <div class="lab" id="lab-cong">
+        <p class="part-title">Lab 2 · Congruent triangles</p>
+        <section class="block">
+          <h2>SSS · SAS · ASA · AAS · RHS</h2>
+          <p class="hint">Tick marks show equal lengths; arc marks show equal angles. Pick a condition to see what must match.</p>
+          <div class="tool-toggle-row" id="cong-mode-btns"></div>
+          <svg class="lab-svg" id="cong-svg" viewBox="0 0 520 280" aria-label="Congruence lab"></svg>
+          <p class="formula" id="cong-caption"></p>
+        </section>
+      </div>
+
+      <div class="lab" id="lab-angles">
+        <p class="part-title">Lab 3 · Angle pairs (parallel lines)</p>
+        <section class="block">
+          <h2>Corresponding · alternate · interior on same side</h2>
+          <p class="hint">Two parallel lines cut by a transversal — highlighted angles share the chosen relationship.</p>
+          <div class="tool-toggle-row" id="ang-mode-btns"></div>
+          <svg class="lab-svg" id="ang-svg" viewBox="0 0 520 300" aria-label="Angle pairs lab"></svg>
+          <p class="formula" id="ang-caption"></p>
+        </section>
+      </div>
+
+      <div class="lab" id="lab-sim">
+        <p class="part-title">Lab 4 · Similar triangles</p>
+        <section class="block">
+          <h2>AAA · three sides proportional · two sides + included angle</h2>
+          <p class="hint">Similar triangles have equal angles and proportional sides. Adjust the scale factor \(k\).</p>
+          <div class="tool-toggle-row" id="sim-mode-btns"></div>
+          <div class="slider-row">
+            <label for="sim-k">Scale factor \(k\)</label>
+            <input id="sim-k" type="range" min="0.5" max="1.5" step="0.1" value="1">
+            <span id="sim-k-val">1.0</span>
           </div>
-          <p class="feedback" id="tri-check-fb">Use the \(2:1\) ratio from vertex to mid-point.</p>
-        </div>
-      </section>
-      <section class="block">
-        <h2>4. Which centres may lie outside?</h2>
-        <p class="hint">(Ch 28 E Q19) In an obtuse-angled triangle, which centres can lie <em>outside</em> the triangle?</p>
-        <div class="task-box">
-          <div class="count-row">
-            <button class="btn" type="button" data-mc="A">In-centre &amp; circumcentre</button>
-            <button class="btn" type="button" data-mc="B">In-centre &amp; centroid</button>
-            <button class="btn" type="button" data-mc="C">Circumcentre &amp; orthocentre</button>
-            <button class="btn" type="button" data-mc="D">Orthocentre &amp; centroid</button>
-          </div>
-          <button class="btn" type="button" id="tri-mc-check" style="margin-top:10px">Check</button>
-          <p class="feedback" id="tri-mc-fb">In-centre and centroid always lie inside.</p>
-        </div>
-      </section>
+          <svg class="lab-svg" id="sim-svg" viewBox="0 0 520 300" aria-label="Similarity lab"></svg>
+          <p class="formula" id="sim-caption"></p>
+        </section>
+      </div>
     </section>
     <section id="panel-comics" class="jm-panel hidden">
       <section class="block">
@@ -94,8 +114,8 @@
   </main>
   <script defer src="https://cdn.jsdelivr.net/npm/katex@0.16.11/dist/katex.min.js"></script>
   <script defer src="https://cdn.jsdelivr.net/npm/katex@0.16.11/dist/contrib/auto-render.min.js"></script>
-  <script defer src="../../shared/jm-tabs.js?v=20260729-jm28"></script>
-  <script defer src="triangle-centres-tools.js?v=20260729-jm28"></script>
+  <script defer src="../../shared/jm-tabs.js?v=20260729-jm28b"></script>
+  <script defer src="triangle-centres-tools.js?v=20260729-jm28b"></script>
   <script>
     document.addEventListener("DOMContentLoaded", function () {
       if (window.initJmTabs) window.initJmTabs();

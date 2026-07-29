@@ -172,3 +172,14 @@ section.block h2 { margin: 0 0 8px; font-size: 18px; line-height: 1.35; }
 }
 .data-chip:hover { background: rgba(190, 18, 60, .1); border-color: var(--bad); color: var(--bad); }
 .bar-chart { width: 100%; max-width: 520px; height: 120px; margin: 12px auto 0; display: block; }
+.subnav {
+  display: flex; flex-wrap: wrap; gap: 8px; margin: 0 0 16px; align-items: center;
+}
+.subnav .chip {
+  background: var(--surface); border: 1px solid var(--line); color: var(--muted);
+  font: inherit; font-weight: 600; padding: 8px 14px; border-radius: 10px;
+  cursor: pointer; font-size: 14px;
+}
+.subnav .chip.active { color: #fff; background: var(--accent); border-color: var(--accent); }
+.lab { display: none; }
+.lab.active { display: block; }
