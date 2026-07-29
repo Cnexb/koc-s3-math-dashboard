@@ -353,11 +353,11 @@
         <p class="hint" id="prod-guide" style="margin:0">Double-click each block to split it into factors of \(x\).</p>
         <div class="count-row">
           <label for="prod-count">How many \(x\)?</label>
-          <input id="prod-count" type="number" min="1" max="20" disabled>
-          <button class="btn" type="button" id="prod-check" disabled>Check</button>
+          <input id="prod-count" type="number" min="1" max="20">
+          <button class="btn" type="button" id="prod-check">Check</button>
           <button class="btn" type="button" id="prod-reset">Reset</button>
         </div>
-        <p class="feedback" id="fb-prod">Expand both blocks first.</p>
+        <p class="feedback" id="fb-prod">Answer the question above.</p>
       </div>
       <p class="formula formula-locked" id="formula-prod">\[ x^{2}\times x^{3}=x^{2+3}=x^{5} \]</p>
     </section>
@@ -393,7 +393,7 @@
           <button class="btn" type="button" id="quot-check">Check</button>
           <button class="btn" type="button" id="quot-reset">Reset</button>
         </div>
-        <p class="feedback" id="fb-quot">Answer the question above — you do not need to expand the blocks first.</p>
+        <p class="feedback" id="fb-quot">Answer the question above.</p>
       </div>
       <p class="formula formula-locked" id="formula-quot">\[ \frac{x^{5}}{x^{2}}=x^{5-2}=x^{3} \]</p>
     </section>
@@ -417,11 +417,11 @@
         <p class="hint" id="pow-guide" style="margin:0">Double-click each \(x^{2}\) block to turn it into \(x\times x\).</p>
         <div class="count-row">
           <label for="pow-count">How many \(x\)?</label>
-          <input id="pow-count" type="number" min="1" max="20" disabled>
-          <button class="btn" type="button" id="pow-check" disabled>Check</button>
+          <input id="pow-count" type="number" min="1" max="20">
+          <button class="btn" type="button" id="pow-check">Check</button>
           <button class="btn" type="button" id="pow-reset">Reset</button>
         </div>
-        <p class="feedback" id="fb-pow">Expand all three blocks first.</p>
+        <p class="feedback" id="fb-pow">Answer the question above.</p>
       </div>
       <p class="formula formula-locked" id="formula-pow">\[ (x^{2})^{3}=x^{2}\times x^{2}\times x^{2}=x^{6}=x^{2\times 3} \]</p>
     </section>
@@ -605,21 +605,21 @@
       renderKatex(document.getElementById("prod-stage"));
       const input = document.getElementById("prod-count");
       const check = document.getElementById("prod-check");
-      input.value = ""; input.disabled = true; check.disabled = true;
+      input.value = "";
+      input.disabled = false;
+      check.disabled = false;
       const g = document.getElementById("prod-guide");
       g.innerHTML = "Double-click each block to split it into factors of \\(x\\).";
       renderKatex(g);
       const fb = document.getElementById("fb-prod");
       fb.className = "feedback";
-      fb.textContent = "Expand both blocks first.";
+      fb.textContent = "Answer the question above.";
       lockFormula("formula-prod");
     }
     function updateProdReady() {
       const both = document.getElementById("block-x2").classList.contains("open")
         && document.getElementById("block-x3").classList.contains("open");
       if (!both) return;
-      document.getElementById("prod-count").disabled = false;
-      document.getElementById("prod-check").disabled = false;
       const g = document.getElementById("prod-guide");
       g.innerHTML = "Count every \\(x\\). How many factors in total?";
       renderKatex(g);
@@ -687,7 +687,7 @@
       renderKatex(g);
       const fb = document.getElementById("fb-quot");
       fb.className = "feedback";
-      fb.innerHTML = "Answer the question above — you do not need to expand the blocks first.";
+      fb.textContent = "Answer the question above.";
       renderKatex(fb);
       document.getElementById("quot-count").value = "";
       lockFormula("formula-quot");
@@ -810,20 +810,20 @@
       renderKatex(document.getElementById("pow-stage"));
       const input = document.getElementById("pow-count");
       const check = document.getElementById("pow-check");
-      input.value = ""; input.disabled = true; check.disabled = true;
+      input.value = "";
+      input.disabled = false;
+      check.disabled = false;
       const g = document.getElementById("pow-guide");
       g.innerHTML = "Double-click each \\(x^{2}\\) block to turn it into \\(x\\times x\\).";
       renderKatex(g);
       const fb = document.getElementById("fb-pow");
       fb.className = "feedback";
-      fb.textContent = "Expand all three blocks first.";
+      fb.textContent = "Answer the question above.";
       lockFormula("formula-pow");
     }
     function updatePowReady() {
       const all = ["pow-a", "pow-b", "pow-c"].every((id) => document.getElementById(id).classList.contains("open"));
       if (!all) return;
-      document.getElementById("pow-count").disabled = false;
-      document.getElementById("pow-check").disabled = false;
       const g = document.getElementById("pow-guide");
       g.innerHTML = "Count every \\(x\\). How many factors in total?";
       renderKatex(g);
