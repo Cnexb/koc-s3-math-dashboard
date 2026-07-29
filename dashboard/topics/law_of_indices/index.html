@@ -726,13 +726,16 @@
       });
     }
     function cleanupTimes(row) {
-      [...row.querySelectorAll(".times-sign")].forEach((node) => {
-        const prev = node.previousElementSibling;
-        const next = node.nextElementSibling;
-        const prevOk = prev && prev.classList.contains("tiny-x") && !prev.classList.contains("gone");
-        const nextOk = next && next.classList.contains("tiny-x") && !next.classList.contains("gone");
-        node.style.display = prevOk && nextOk ? "" : "none";
-      });
+      row.querySelectorAll(".times-sign").forEach((t) => t.remove());
+      const visible = [...row.querySelectorAll(".tiny-x")].filter((x) => !x.classList.contains("gone"));
+      for (let i = 0; i < visible.length - 1; i++) {
+        const t = document.createElement("span");
+        t.className = "times-sign";
+        t.style.fontSize = "16px";
+        t.innerHTML = "\\(\\times\\)";
+        visible[i].insertAdjacentElement("afterend", t);
+      }
+      renderKatex(row);
     }
     function expandIntoRow(block, row, color, side) {
       if (block.classList.contains("open") || block.style.display === "none") return;
