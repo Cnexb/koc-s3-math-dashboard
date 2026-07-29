@@ -275,11 +275,28 @@
     .bit-row.compact .bit-toggle { width: 34px; height: 42px; border-radius: 9px; }
     .bit-row.compact .bit-pv { font-size: 11px; min-height: 18px; }
     .bit-row.compact .bit-digit { font-size: 14px; }
-    .bin-power-panel {
+    .bin-ladder-panel {
       margin-top: 14px; padding: 12px 14px; border-radius: 12px;
       border: 1px solid var(--line); background: #f8fafc;
     }
-    .bin-power-panel .chip-ex { margin-bottom: 10px; }
+    .ladder-steps {
+      display: flex; flex-wrap: wrap; gap: 5px; max-height: 68px; overflow-y: auto;
+      margin: 8px 0; padding: 6px; border-radius: 8px;
+      background: #fff; border: 1px solid var(--line);
+    }
+    .ladder-step-chip {
+      font-size: 12px; padding: 3px 8px; border-radius: 6px;
+      background: #eef2f7; border: 1px solid var(--line); white-space: nowrap;
+    }
+    .ladder-remainders {
+      display: flex; align-items: center; flex-wrap: wrap; gap: 6px;
+      font-size: 13px; margin-bottom: 8px;
+    }
+    .ladder-remainders .rem-digits {
+      font-family: ui-monospace, monospace; font-weight: 700;
+      padding: 2px 8px; border-radius: 6px; background: #fff;
+      border: 1px solid var(--line);
+    }
     .sort-area { display: flex; flex-direction: column; gap: 10px; margin-top: 8px; }
     .sort-pool {
       display: flex; flex-wrap: wrap; gap: 8px; min-height: 52px; padding: 10px;
@@ -289,18 +306,20 @@
     .sort-slots-row {
       display: grid; grid-template-columns: repeat(3, 1fr); gap: 8px;
     }
+    .sort-slot-wrap {
+      display: flex; flex-direction: column; gap: 6px; min-width: 0;
+    }
+    .sort-slot-label {
+      font-size: 10px; font-weight: 700; letter-spacing: .05em;
+      text-transform: uppercase; color: var(--muted); text-align: center;
+      line-height: 1.2;
+    }
     .sort-slot {
       min-height: 56px; padding: 8px; border-radius: 10px;
       border: 1px dashed rgba(2, 132, 199, .35); background: var(--surface-2);
       display: flex; align-items: center; justify-content: center;
       transition: border-color .15s, background .15s;
     }
-    .sort-slot::before {
-      content: attr(data-label); position: absolute; margin-top: -38px;
-      font-size: 10px; font-weight: 700; letter-spacing: .05em;
-      text-transform: uppercase; color: var(--muted);
-    }
-    .sort-slot-wrap { position: relative; padding-top: 18px; }
     .sort-slot.drag-over { border-color: var(--accent); background: rgba(2, 132, 199, .08); }
     .sort-card {
       border: 1px solid var(--line); border-radius: 10px; background: #fff;
@@ -656,16 +675,21 @@
             <button class="btn" type="button" id="bin-random">Random</button>
             <button class="btn" type="button" id="bin-clear">Clear all</button>
           </div>
-          <div class="bin-power-panel">
-            <p class="hint" style="margin:0 0 8px">Turn on bits to match:</p>
-            <div class="chip-ex" id="bin-power-expr">\(2^{6} + 2^{5} + 2^{1}\)</div>
-            <div class="stage" style="padding:8px 0"><div id="bin-power-row"></div></div>
-            <div class="count-row">
-              <button class="btn" type="button" id="bin-power-check">Check</button>
-              <button class="btn" type="button" id="bin-power-reset">New expression</button>
+          <div class="bin-ladder-panel">
+            <p class="hint" style="margin:0 0 6px">Divide-by-\(2\) method: stack remainders bottom-up to get binary.</p>
+            <p class="hint" style="margin:0 0 8px">Convert: <strong id="bin-ladder-target">\(35_{(10)}\)</strong></p>
+            <div class="ladder-steps" id="bin-ladder-steps"></div>
+            <div class="ladder-remainders">
+              <span>Remainders (bottom-up):</span>
+              <span class="rem-digits" id="bin-ladder-digits">—</span>
             </div>
-            <p class="feedback" id="fb-bin-power">Flip bits to match the expression, then Check.</p>
-            <p class="formula formula-locked" id="formula-bin-power">\[ 2^{6}+2^{5}+2^{1} = 1100010_{(2)} \]</p>
+            <div class="count-row">
+              <button class="btn" type="button" id="bin-ladder-step">Divide by 2</button>
+              <button class="btn" type="button" id="bin-ladder-check">Check</button>
+              <button class="btn" type="button" id="bin-ladder-reset">New number</button>
+            </div>
+            <p class="feedback" id="fb-bin-ladder">Click “Divide by 2” for each step.</p>
+            <p class="formula formula-locked" id="formula-bin-ladder">\[ 35_{(10)} = 100011_{(2)} \]</p>
           </div>
         </section>
 
@@ -708,9 +732,9 @@
           <div class="sort-area">
             <div class="sort-pool" id="bin-order-pool"></div>
             <div class="sort-slots-row" id="bin-order-slots">
-              <div class="sort-slot-wrap"><div class="sort-slot" data-slot="0" data-label="1st (smallest)"></div></div>
-              <div class="sort-slot-wrap"><div class="sort-slot" data-slot="1" data-label="2nd"></div></div>
-              <div class="sort-slot-wrap"><div class="sort-slot" data-slot="2" data-label="3rd (largest)"></div></div>
+              <div class="sort-slot-wrap"><span class="sort-slot-label">1st (smallest)</span><div class="sort-slot" data-slot="0"></div></div>
+              <div class="sort-slot-wrap"><span class="sort-slot-label">2nd</span><div class="sort-slot" data-slot="1"></div></div>
+              <div class="sort-slot-wrap"><span class="sort-slot-label">3rd (largest)</span><div class="sort-slot" data-slot="2"></div></div>
             </div>
           </div>
           <div class="task-box">
@@ -730,7 +754,7 @@
 
   <script defer src="https://cdn.jsdelivr.net/npm/katex@0.16.11/dist/katex.min.js"></script>
   <script defer src="https://cdn.jsdelivr.net/npm/katex@0.16.11/dist/contrib/auto-render.min.js"></script>
-  <script defer src="law-of-indices-binary.js?v=20260729-bin2"></script>
+  <script defer src="law-of-indices-binary.js?v=20260729-bin3"></script>
   <script>
     function renderKatex(root) {
       if (!window.renderMathInElement) return;

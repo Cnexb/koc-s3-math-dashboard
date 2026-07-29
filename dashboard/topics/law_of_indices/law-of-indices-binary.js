@@ -3,7 +3,6 @@
   "use strict";
 
   const BIT_COUNT = 10;
-  const POWER_BIT_COUNT = 8;
 
   function ri(lo, hi) {
     return lo + Math.floor(Math.random() * (hi - lo + 1));
@@ -37,16 +36,6 @@
     return n;
   }
 
-  function denaryToBits(n, width) {
-    width = width || BIT_COUNT;
-    const bits = new Array(width).fill(0);
-    for (let i = width - 1; i >= 0 && n > 0; i--) {
-      bits[i] = n % 2;
-      n = Math.floor(n / 2);
-    }
-    return bits;
-  }
-
   function bitsToBinaryString(bits) {
     return bits.map(String).join("");
   }
@@ -61,6 +50,16 @@
     }
     if (!terms.length) return "\\(0\\)";
     return "\\(" + terms.join(" + ") + "\\)";
+  }
+
+  function divideBy2Steps(n) {
+    const steps = [];
+    let q = n;
+    while (q > 0) {
+      steps.push({ q: Math.floor(q / 2), r: q % 2, n: q });
+      q = Math.floor(q / 2);
+    }
+    return steps;
   }
 
   function renderKatexIn(el) {
@@ -163,33 +162,18 @@
     return el && el.closest ? el.closest(".sort-slot, .sort-pool") : null;
   }
 
-  function genPowerChallenge() {
-    const count = ri(3, 4);
-    const pool = shuffle([0, 1, 2, 3, 4, 5, 6, 7]).slice(0, count);
-    pool.sort(function (a, b) {
-      return b - a;
-    });
-    const sum = pool.reduce(function (s, e) {
-      return s + Math.pow(2, e);
-    }, 0);
-    const label =
-      "\\(" +
-      pool
-        .map(function (e) {
-          return "2^{" + e + "}";
-        })
-        .join(" + ") +
-      "\\)";
-    return {
-      label: label,
-      bits: denaryToBits(sum, POWER_BIT_COUNT),
-      sum: sum,
-      formula:
-        pool.map(function (e) { return "2^{" + e + "}"; }).join("+") +
-        " = " +
-        denaryToBinaryString(sum) +
-        "_{(2)}",
-    };
+  function genLadderNumber() {
+    return ri(25, 380);
+  }
+
+  function genMatchTarget(recent) {
+    let t;
+    let tries = 0;
+    do {
+      t = ri(20, 450);
+      tries++;
+    } while (recent.indexOf(t) >= 0 && tries < 30);
+    return t;
   }
 
   function genArithQuestion() {
@@ -212,14 +196,7 @@
       binA: binA,
       binB: binB,
       answer: answer,
-      qHtml:
-        "\\(" +
-        binA +
-        "_{(2)} " +
-        opSym +
-        " " +
-        binB +
-        "_{(2)}\\)",
+      qHtml: "\\(" + binA + "_{(2)} " + opSym + " " + binB + "_{(2)}\\)",
       stepsHtml:
         "\\(" +
         binA +
@@ -250,10 +227,12 @@
     const sorted = values.slice().sort(function (a, b) {
       return a - b;
     });
+    const binaryCount = ri(1, 2);
+    const binaryIdx = shuffle([0, 1, 2]).slice(0, binaryCount);
     const cards = values.map(function (v, i) {
-      const asBinary = Math.random() < 0.55;
+      const asBinary = binaryIdx.indexOf(i) >= 0;
       return {
-        id: "c" + i + "_" + v,
+        id: "c" + i + "_" + v + "_" + Date.now(),
         value: v,
         label: asBinary
           ? "\\(" + denaryToBinaryString(v) + "_{(2)}\\)"
@@ -265,8 +244,6 @@
     shuffle(cards);
     return { cards: cards, sorted: sorted };
   }
-
-  const MATCH_TARGETS = [20, 35, 114, 127, 316];
 
   function initBinaryLab() {
     const root = document.getElementById("lab-binary");
@@ -306,88 +283,135 @@
       syncPlay();
     });
 
-    let powerChallenge = genPowerChallenge();
-    const powerBits = new Array(POWER_BIT_COUNT).fill(0);
-    const powerRow = document.getElementById("bin-power-row");
-    const powerExpr = document.getElementById("bin-power-expr");
-    const fbPower = document.getElementById("fb-bin-power");
-    const formulaPower = document.getElementById("formula-bin-power");
+    let ladderN = genLadderNumber();
+    let ladderStep = 0;
+    let ladderDigits = [];
+    const ladderTarget = document.getElementById("bin-ladder-target");
+    const ladderSteps = document.getElementById("bin-ladder-steps");
+    const ladderDigitsEl = document.getElementById("bin-ladder-digits");
+    const fbLadder = document.getElementById("fb-bin-ladder");
+    const formulaLadder = document.getElementById("formula-bin-ladder");
 
-    function showPowerChallenge() {
-      powerChallenge = genPowerChallenge();
-      powerBits.fill(0);
-      powerExpr.innerHTML = powerChallenge.label;
-      buildBitRow(powerRow, powerBits, null, true);
-      fbPower.className = "feedback";
-      fbPower.textContent = "Flip bits to match the expression, then Check.";
-      formulaPower.innerHTML = "\\[ " + powerChallenge.formula + " \\]";
-      if (window.lockFormula) window.lockFormula("formula-bin-power");
-      renderKatexIn(powerExpr.parentElement);
+    function syncLadderRemainders() {
+      if (!ladderDigits.length) {
+        ladderDigitsEl.textContent = "—";
+        return;
+      }
+      ladderDigitsEl.textContent = ladderDigits.slice().reverse().join("");
     }
 
-    document.getElementById("bin-power-check").addEventListener("click", function () {
-      const ok = powerChallenge.bits.every(function (b, i) {
-        return b === powerBits[i];
-      });
-      const got = bitsToDenary(powerBits);
-      if (ok) {
-        fbPower.className = "feedback ok";
-        fbPower.innerHTML =
-          "Correct — \\(" +
-          bitsToBinaryString(powerBits) +
-          "_{(2)} = " +
-          got +
-          "_{(10)}\\).";
-        if (window.revealFormula) window.revealFormula("formula-bin-power");
-      } else {
-        fbPower.className = "feedback bad";
-        fbPower.innerHTML =
-          "Not quite — answer: \\(" +
-          bitsToBinaryString(powerChallenge.bits) +
-          "_{(2)} = " +
-          powerChallenge.sum +
-          "_{(10)}\\). Each \\(2^{n}\\) turns on one bit.";
-        if (window.revealFormula) window.revealFormula("formula-bin-power");
-      }
-      renderKatexIn(fbPower);
-    });
-    document.getElementById("bin-power-reset").addEventListener("click", showPowerChallenge);
-    showPowerChallenge();
+    function resetLadder() {
+      ladderN = genLadderNumber();
+      ladderStep = 0;
+      ladderDigits = [];
+      ladderTarget.innerHTML = "\\(" + ladderN + "_{(10)}\\)";
+      ladderSteps.innerHTML = "";
+      syncLadderRemainders();
+      fbLadder.className = "feedback";
+      fbLadder.textContent = "Click “Divide by 2” for each step. Stack remainders bottom-up.";
+      formulaLadder.innerHTML =
+        "\\[ " + ladderN + "_{(10)} = " + denaryToBinaryString(ladderN) + "_{(2)} \\]";
+      if (window.lockFormula) window.lockFormula("formula-bin-ladder");
+      renderKatexIn(ladderTarget.parentElement);
+    }
 
-    let matchIdx = 0;
+    document.getElementById("bin-ladder-step").addEventListener("click", function () {
+      const steps = divideBy2Steps(ladderN);
+      if (ladderStep >= steps.length) {
+        fbLadder.className = "feedback warn";
+        fbLadder.textContent = "Ladder complete — read remainders bottom-up, then Check.";
+        return;
+      }
+      const s = steps[ladderStep];
+      ladderDigits.push(s.r);
+      const chip = document.createElement("span");
+      chip.className = "ladder-step-chip";
+      chip.innerHTML = "\\(" + s.n + "\\div2=" + s.q + "\\,r" + s.r + "\\)";
+      ladderSteps.appendChild(chip);
+      renderKatexIn(chip);
+      ladderStep++;
+      syncLadderRemainders();
+      if (ladderStep >= steps.length) {
+        fbLadder.className = "feedback";
+        fbLadder.innerHTML =
+          "Done — binary: \\(" +
+          ladderDigits.slice().reverse().join("") +
+          "_{(2)}\\). Click Check.";
+        renderKatexIn(fbLadder);
+      }
+    });
+
+    document.getElementById("bin-ladder-check").addEventListener("click", function () {
+      const expected = denaryToBinaryString(ladderN);
+      const built = ladderDigits.slice().reverse().join("");
+      if (built === expected) {
+        fbLadder.className = "feedback ok";
+        fbLadder.innerHTML =
+          "Correct — \\(" + ladderN + "_{(10)} = " + expected + "_{(2)}\\).";
+        if (window.revealFormula) window.revealFormula("formula-bin-ladder");
+      } else {
+        fbLadder.className = "feedback bad";
+        fbLadder.innerHTML =
+          "Answer — \\(" +
+          ladderN +
+          "_{(10)} = " +
+          expected +
+          "_{(2)}\\). You built \\(" +
+          (built || "?") +
+          "_{(2)}\\).";
+        if (window.revealFormula) window.revealFormula("formula-bin-ladder");
+      }
+      renderKatexIn(fbLadder);
+    });
+    document.getElementById("bin-ladder-reset").addEventListener("click", resetLadder);
+    resetLadder();
+
+    let matchTarget = genMatchTarget([]);
+    const recentMatch = [matchTarget];
     let matchStreak = 0;
     const matchBits = new Array(BIT_COUNT).fill(0);
     const matchRow = document.getElementById("bin-match-row");
-    const matchTarget = document.getElementById("bin-match-target");
+    const matchTargetEl = document.getElementById("bin-match-target");
     const fbMatch = document.getElementById("fb-bin-match");
+    const formulaMatch = document.getElementById("formula-bin-match");
 
     function showMatchChallenge() {
-      const t = MATCH_TARGETS[matchIdx % MATCH_TARGETS.length];
-      matchTarget.innerHTML = "\\(" + t + "_{(10)}\\)";
+      matchTargetEl.innerHTML = "\\(" + matchTarget + "_{(10)}\\)";
       matchBits.fill(0);
       buildBitRow(matchRow, matchBits);
       fbMatch.className = "feedback";
       fbMatch.textContent = "Flip bits to match the target, then Check.";
+      formulaMatch.innerHTML =
+        "\\[ " +
+        matchTarget +
+        "_{(10)} = " +
+        denaryToBinaryString(matchTarget) +
+        "_{(2)} \\]";
       if (window.lockFormula) window.lockFormula("formula-bin-match");
-      renderKatexIn(matchTarget.parentElement);
+      renderKatexIn(matchTargetEl.parentElement);
+    }
+
+    function nextMatchTarget() {
+      matchTarget = genMatchTarget(recentMatch);
+      recentMatch.push(matchTarget);
+      if (recentMatch.length > 12) recentMatch.shift();
     }
 
     document.getElementById("bin-match-check").addEventListener("click", function () {
-      const target = MATCH_TARGETS[matchIdx % MATCH_TARGETS.length];
       const got = bitsToDenary(matchBits);
-      if (got === target) {
+      if (got === matchTarget) {
         matchStreak++;
         fbMatch.className = "feedback ok";
         fbMatch.innerHTML =
           "Correct — \\(" +
-          target +
+          matchTarget +
           "_{(10)} = " +
           bitsToBinaryString(matchBits) +
           "_{(2)}\\). Streak: " +
           matchStreak +
           ".";
         if (window.revealFormula) window.revealFormula("formula-bin-match");
-        matchIdx++;
+        nextMatchTarget();
         setTimeout(showMatchChallenge, 1400);
       } else {
         matchStreak = 0;
@@ -396,16 +420,16 @@
           "Your bits give \\(" +
           got +
           "_{(10)}\\). Answer: \\(" +
-          target +
+          matchTarget +
           "_{(10)} = " +
-          denaryToBinaryString(target) +
+          denaryToBinaryString(matchTarget) +
           "_{(2)}\\).";
       }
       renderKatexIn(fbMatch);
     });
     document.getElementById("bin-match-reset").addEventListener("click", function () {
       matchStreak = 0;
-      matchIdx = ri(0, MATCH_TARGETS.length - 1);
+      nextMatchTarget();
       showMatchChallenge();
     });
     showMatchChallenge();
@@ -463,6 +487,8 @@
       btn.innerHTML = card.label;
       btn.addEventListener("pointerdown", function (e) {
         e.preventDefault();
+        const originPool = orderPlacements.pool.slice();
+        const originSlots = orderPlacements.slots.slice();
         ghostDrag(
           btn,
           e,
@@ -482,20 +508,27 @@
             if (!moved) return;
             const hit = slotUnder(ev);
             const cardId = card.id;
-            orderPlacements.pool = orderPlacements.pool.filter(function (id) {
+            let newPool = orderPlacements.pool.filter(function (id) {
               return id !== cardId;
             });
-            orderPlacements.slots = orderPlacements.slots.map(function (id) {
+            let newSlots = orderPlacements.slots.map(function (id) {
               return id === cardId ? null : id;
             });
             if (hit && hit.classList.contains("sort-slot")) {
               const slotIdx = Number(hit.dataset.slot);
-              const displaced = orderPlacements.slots[slotIdx];
-              if (displaced) orderPlacements.pool.push(displaced);
-              orderPlacements.slots[slotIdx] = cardId;
+              const displaced = newSlots[slotIdx];
+              if (displaced) newPool.push(displaced);
+              newSlots[slotIdx] = cardId;
             } else if (hit && hit.classList.contains("sort-pool")) {
-              orderPlacements.pool.push(cardId);
+              newPool.push(cardId);
+            } else {
+              orderPlacements.pool = originPool;
+              orderPlacements.slots = originSlots;
+              renderOrder();
+              return;
             }
+            orderPlacements.pool = newPool;
+            orderPlacements.slots = newSlots;
             renderOrder();
           }
         );
@@ -531,10 +564,7 @@
       };
       fbOrder.className = "feedback";
       fbOrder.textContent = "Drag cards into the slots left-to-right (smallest first).";
-      formulaOrder.innerHTML =
-        "\\[ " +
-        orderQ.sorted.join(" < ") +
-        " \\]";
+      formulaOrder.innerHTML = "\\[ " + orderQ.sorted.join(" < ") + " \\]";
       if (window.lockFormula) window.lockFormula("formula-bin-order");
       renderOrder();
     }
