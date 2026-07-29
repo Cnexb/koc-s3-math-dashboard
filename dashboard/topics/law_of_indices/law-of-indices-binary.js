@@ -234,6 +234,7 @@
       return {
         id: "c" + i + "_" + v + "_" + Date.now(),
         value: v,
+        asBinary: asBinary,
         label: asBinary
           ? "\\(" + denaryToBinaryString(v) + "_{(2)}\\)"
           : "\\(" + v + "_{(10)}\\)",
@@ -578,19 +579,18 @@
         values.every(function (v, i) {
           return v === orderQ.sorted[i];
         });
-      const steps =
-        orderQ.cards
-          .slice()
-          .sort(function (a, b) {
-            return a.value - b.value;
-          })
-          .map(function (c) {
-            return c.binaryLabel + "=" + c.denaryLabel;
-          })
-          .join(", ") +
-        " \\(\\Rightarrow\\) \\(" +
-        orderQ.sorted.join(" < ") +
-        "\\)";
+      const conversions = orderQ.cards
+        .filter(function (c) {
+          return c.asBinary;
+        })
+        .map(function (c) {
+          return c.binaryLabel + "=" + c.denaryLabel;
+        })
+        .join(", ");
+      const orderStr = "\\(" + orderQ.sorted.join(" < ") + "\\)";
+      const steps = conversions
+        ? conversions + " \\(\\Rightarrow\\) " + orderStr
+        : orderStr;
       fbOrder.className = ok ? "feedback ok" : "feedback bad";
       fbOrder.innerHTML = (ok ? "Correct — " : "Answer — ") + steps + ".";
       if (window.revealFormula) window.revealFormula("formula-bin-order");

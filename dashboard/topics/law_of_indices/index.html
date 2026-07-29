@@ -295,13 +295,14 @@
       margin: 0 0 6px; font-size: 13px;
     }
     .ladder-binary-row {
-      max-height: none; min-height: 36px;
+      max-height: none; min-height: 48px;
+      align-items: center; justify-content: center;
     }
-    .ladder-binary-chip {
-      font-size: 12px; padding: 3px 10px; min-height: 28px;
-      display: inline-flex; align-items: center; justify-content: center;
+    .ladder-binary-result {
+      width: 100%; text-align: center; padding: 10px 12px;
+      font-size: 1.35em; font-weight: 700;
     }
-    .ladder-binary-chip .katex { font-size: 1em; }
+    .ladder-binary-result .katex { font-size: 1.15em; }
     .sort-area { display: flex; flex-direction: column; gap: 10px; margin-top: 8px; }
     .sort-pool {
       display: flex; flex-wrap: wrap; gap: 8px; min-height: 52px; padding: 10px;
@@ -688,7 +689,7 @@
             <div class="ladder-remainders">
               <p class="hint">Binary (read remainders bottom-up):</p>
               <div class="ladder-steps ladder-binary-row">
-                <span class="ladder-step-chip ladder-binary-chip" id="bin-ladder-digits">—</span>
+                <div class="ladder-binary-result" id="bin-ladder-digits">—</div>
               </div>
             </div>
             <div class="count-row">
@@ -761,7 +762,7 @@
 
   <script defer src="https://cdn.jsdelivr.net/npm/katex@0.16.11/dist/katex.min.js"></script>
   <script defer src="https://cdn.jsdelivr.net/npm/katex@0.16.11/dist/contrib/auto-render.min.js"></script>
-  <script defer src="law-of-indices-binary.js?v=20260729-bin4"></script>
+  <script defer src="law-of-indices-binary.js?v=20260729-bin5"></script>
   <script>
     function renderKatex(root) {
       if (!window.renderMathInElement) return;
