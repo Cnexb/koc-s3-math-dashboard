@@ -3,6 +3,21 @@
   "use strict";
 
   const BIT_COUNT = 10;
+  const POWER_BIT_COUNT = 8;
+
+  function ri(lo, hi) {
+    return lo + Math.floor(Math.random() * (hi - lo + 1));
+  }
+
+  function shuffle(arr) {
+    for (let i = arr.length - 1; i > 0; i--) {
+      const j = Math.floor(Math.random() * (i + 1));
+      const t = arr[i];
+      arr[i] = arr[j];
+      arr[j] = t;
+    }
+    return arr;
+  }
 
   function denaryToBinaryString(n) {
     if (n === 0) return "0";
@@ -48,16 +63,6 @@
     return "\\(" + terms.join(" + ") + "\\)";
   }
 
-  function divideBy2Steps(n) {
-    const steps = [];
-    let q = n;
-    while (q > 0) {
-      steps.push({ q: Math.floor(q / 2), r: q % 2, n: q });
-      q = Math.floor(q / 2);
-    }
-    return steps;
-  }
-
   function renderKatexIn(el) {
     if (window.renderMathInElement && el) {
       window.renderMathInElement(el, {
@@ -69,10 +74,10 @@
     }
   }
 
-  function buildBitRow(container, bits, onChange) {
+  function buildBitRow(container, bits, onChange, compact) {
     container.innerHTML = "";
     const wrap = document.createElement("div");
-    wrap.className = "bit-row";
+    wrap.className = "bit-row" + (compact ? " compact" : "");
     bits.forEach(function (bit, i) {
       const col = document.createElement("div");
       col.className = "bit-col";
@@ -111,39 +116,157 @@
     }
   }
 
+  function ghostDrag(sourceEl, e, onMove, onDrop) {
+    const ghost = document.createElement("div");
+    ghost.className = "drag-ghost";
+    ghost.innerHTML = sourceEl.innerHTML;
+    const sx = e.clientX;
+    const sy = e.clientY;
+    let moved = false;
+    ghost.style.left = sx + "px";
+    ghost.style.top = sy + "px";
+    document.body.appendChild(ghost);
+    sourceEl.classList.add("dragging");
+
+    function mv(ev) {
+      if (Math.abs(ev.clientX - sx) > 4 || Math.abs(ev.clientY - sy) > 4) moved = true;
+      ghost.style.left = ev.clientX + "px";
+      ghost.style.top = ev.clientY + "px";
+      if (onMove) onMove(ev, moved);
+    }
+
+    function cleanup() {
+      window.removeEventListener("pointermove", mv);
+      window.removeEventListener("pointerup", up);
+      window.removeEventListener("pointercancel", cn);
+      ghost.remove();
+      sourceEl.classList.remove("dragging");
+    }
+
+    function up(ev) {
+      cleanup();
+      onDrop(ev, moved);
+    }
+
+    function cn(ev) {
+      cleanup();
+      onDrop(ev, true);
+    }
+
+    window.addEventListener("pointermove", mv);
+    window.addEventListener("pointerup", up);
+    window.addEventListener("pointercancel", cn);
+  }
+
+  function slotUnder(ev) {
+    const el = document.elementFromPoint(ev.clientX, ev.clientY);
+    return el && el.closest ? el.closest(".sort-slot, .sort-pool") : null;
+  }
+
+  function genPowerChallenge() {
+    const count = ri(3, 4);
+    const pool = shuffle([0, 1, 2, 3, 4, 5, 6, 7]).slice(0, count);
+    pool.sort(function (a, b) {
+      return b - a;
+    });
+    const sum = pool.reduce(function (s, e) {
+      return s + Math.pow(2, e);
+    }, 0);
+    const label =
+      "\\(" +
+      pool
+        .map(function (e) {
+          return "2^{" + e + "}";
+        })
+        .join(" + ") +
+      "\\)";
+    return {
+      label: label,
+      bits: denaryToBits(sum, POWER_BIT_COUNT),
+      sum: sum,
+      formula:
+        pool.map(function (e) { return "2^{" + e + "}"; }).join("+") +
+        " = " +
+        denaryToBinaryString(sum) +
+        "_{(2)}",
+    };
+  }
+
+  function genArithQuestion() {
+    const isAdd = Math.random() < 0.5;
+    let a = ri(25, 110);
+    let b = ri(12, 75);
+    if (!isAdd && b >= a) {
+      const t = a;
+      a = b + ri(5, 30);
+      b = t;
+    }
+    const binA = denaryToBinaryString(a);
+    const binB = denaryToBinaryString(b);
+    const answer = isAdd ? a + b : a - b;
+    const opSym = isAdd ? "+" : "-";
+    return {
+      isAdd: isAdd,
+      a: a,
+      b: b,
+      binA: binA,
+      binB: binB,
+      answer: answer,
+      qHtml:
+        "\\(" +
+        binA +
+        "_{(2)} " +
+        opSym +
+        " " +
+        binB +
+        "_{(2)}\\)",
+      stepsHtml:
+        "\\(" +
+        binA +
+        "_{(2)}=" +
+        a +
+        "\\), \\(" +
+        binB +
+        "_{(2)}=" +
+        b +
+        "\\), \\(" +
+        a +
+        opSym +
+        b +
+        "=" +
+        answer +
+        "_{(10)}\\)",
+      formula: a + " " + opSym + " " + b + " = " + answer + "_{(10)}",
+    };
+  }
+
+  function genOrderQuestion() {
+    const values = [];
+    while (values.length < 3) {
+      const v = ri(18, 115);
+      if (values.indexOf(v) >= 0) continue;
+      values.push(v);
+    }
+    const sorted = values.slice().sort(function (a, b) {
+      return a - b;
+    });
+    const cards = values.map(function (v, i) {
+      const asBinary = Math.random() < 0.55;
+      return {
+        id: "c" + i + "_" + v,
+        value: v,
+        label: asBinary
+          ? "\\(" + denaryToBinaryString(v) + "_{(2)}\\)"
+          : "\\(" + v + "_{(10)}\\)",
+        denaryLabel: "\\(" + v + "_{(10)}\\)",
+        binaryLabel: "\\(" + denaryToBinaryString(v) + "_{(2)}\\)",
+      };
+    });
+    shuffle(cards);
+    return { cards: cards, sorted: sorted };
+  }
+
   const MATCH_TARGETS = [20, 35, 114, 127, 316];
-  const POWER_CHALLENGES = [
-    { label: "\\(2^{6} + 2^{5} + 2^{1}\\)", bits: denaryToBits(98) },
-    { label: "\\(2^{6} + 2^{4} + 2^{3} + 2^{1}\\)", bits: denaryToBits(90) },
-    { label: "\\(128 + 32 + 16 + 1\\)", bits: denaryToBits(177) },
-  ];
-  const QUIZ_ITEMS = [
-    {
-      q: "Convert \\(110101_{(2)}\\) to a denary number.",
-      choices: ["43", "53", "63", "107"],
-      answer: 1,
-    },
-    {
-      q: "Convert \\(101011_{(2)}\\) to a denary number.",
-      choices: ["35", "43", "53", "126"],
-      answer: 1,
-    },
-    {
-      q: "What is the place value of the digit \\(0\\) in \\(10111_{(2)}\\)?",
-      choices: ["\\(2^{0}\\)", "\\(2^{1}\\)", "\\(2^{2}\\)", "\\(2^{3}\\)"],
-      answer: 3,
-    },
-    {
-      q: "\\(110101_{(2)} + 1101011_{(2)}\\) in denary equals:",
-      choices: ["150", "160", "170", "107"],
-      answer: 1,
-    },
-    {
-      q: "Which is smallest?",
-      choices: ["\\(28_{(10)}\\)", "\\(110111_{(2)}\\)", "\\(111001_{(2)}\\)"],
-      answer: 0,
-    },
-  ];
 
   function initBinaryLab() {
     const root = document.getElementById("lab-binary");
@@ -182,6 +305,54 @@
       buildBitRow(playRow, playBits, syncPlay);
       syncPlay();
     });
+
+    let powerChallenge = genPowerChallenge();
+    const powerBits = new Array(POWER_BIT_COUNT).fill(0);
+    const powerRow = document.getElementById("bin-power-row");
+    const powerExpr = document.getElementById("bin-power-expr");
+    const fbPower = document.getElementById("fb-bin-power");
+    const formulaPower = document.getElementById("formula-bin-power");
+
+    function showPowerChallenge() {
+      powerChallenge = genPowerChallenge();
+      powerBits.fill(0);
+      powerExpr.innerHTML = powerChallenge.label;
+      buildBitRow(powerRow, powerBits, null, true);
+      fbPower.className = "feedback";
+      fbPower.textContent = "Flip bits to match the expression, then Check.";
+      formulaPower.innerHTML = "\\[ " + powerChallenge.formula + " \\]";
+      if (window.lockFormula) window.lockFormula("formula-bin-power");
+      renderKatexIn(powerExpr.parentElement);
+    }
+
+    document.getElementById("bin-power-check").addEventListener("click", function () {
+      const ok = powerChallenge.bits.every(function (b, i) {
+        return b === powerBits[i];
+      });
+      const got = bitsToDenary(powerBits);
+      if (ok) {
+        fbPower.className = "feedback ok";
+        fbPower.innerHTML =
+          "Correct — \\(" +
+          bitsToBinaryString(powerBits) +
+          "_{(2)} = " +
+          got +
+          "_{(10)}\\).";
+        if (window.revealFormula) window.revealFormula("formula-bin-power");
+      } else {
+        fbPower.className = "feedback bad";
+        fbPower.innerHTML =
+          "Not quite — answer: \\(" +
+          bitsToBinaryString(powerChallenge.bits) +
+          "_{(2)} = " +
+          powerChallenge.sum +
+          "_{(10)}\\). Each \\(2^{n}\\) turns on one bit.";
+        if (window.revealFormula) window.revealFormula("formula-bin-power");
+      }
+      renderKatexIn(fbPower);
+    });
+    document.getElementById("bin-power-reset").addEventListener("click", showPowerChallenge);
+    showPowerChallenge();
 
     let matchIdx = 0;
     let matchStreak = 0;
@@ -224,286 +395,182 @@
         fbMatch.innerHTML =
           "Your bits give \\(" +
           got +
-          "_{(10)}\\). Try the largest \\(2^{n}\\) that fits in \\(" +
+          "_{(10)}\\). Answer: \\(" +
           target +
-          "\\).";
+          "_{(10)} = " +
+          denaryToBinaryString(target) +
+          "_{(2)}\\).";
       }
       renderKatexIn(fbMatch);
     });
     document.getElementById("bin-match-reset").addEventListener("click", function () {
       matchStreak = 0;
+      matchIdx = ri(0, MATCH_TARGETS.length - 1);
       showMatchChallenge();
     });
     showMatchChallenge();
 
-    let powerIdx = 0;
-    const powerBits = new Array(BIT_COUNT).fill(0);
-    const powerRow = document.getElementById("bin-power-row");
-    const powerExpr = document.getElementById("bin-power-expr");
-    const fbPower = document.getElementById("fb-bin-power");
+    let arithQ = genArithQuestion();
+    const arithQEl = document.getElementById("bin-arith-q");
+    const arithInput = document.getElementById("bin-arith-input");
+    const fbArith = document.getElementById("fb-bin-arith");
+    const formulaArith = document.getElementById("formula-bin-arith");
 
-    function showPowerChallenge() {
-      const ch = POWER_CHALLENGES[powerIdx % POWER_CHALLENGES.length];
-      powerExpr.innerHTML = ch.label;
-      powerBits.fill(0);
-      buildBitRow(powerRow, powerBits);
-      fbPower.className = "feedback";
-      fbPower.textContent = "Flip bits to match the expression, then Check.";
-      if (window.lockFormula) window.lockFormula("formula-bin-power");
-      renderKatexIn(powerExpr.parentElement);
+    function showArithQuestion() {
+      arithQ = genArithQuestion();
+      arithQEl.innerHTML = arithQ.qHtml;
+      arithInput.value = "";
+      fbArith.className = "feedback";
+      fbArith.textContent = "Answer the question above.";
+      formulaArith.innerHTML = "\\[ " + arithQ.formula + " \\]";
+      if (window.lockFormula) window.lockFormula("formula-bin-arith");
+      renderKatexIn(arithQEl.parentElement);
     }
 
-    document.getElementById("bin-power-check").addEventListener("click", function () {
-      const ch = POWER_CHALLENGES[powerIdx % POWER_CHALLENGES.length];
-      const ok = ch.bits.every(function (b, i) {
-        return b === powerBits[i];
-      });
-      if (ok) {
-        fbPower.className = "feedback ok";
-        fbPower.innerHTML =
-          "Correct — \\(" +
-          bitsToBinaryString(powerBits) +
-          "_{(2)} = " +
-          bitsToDenary(powerBits) +
-          "_{(10)}\\).";
-        if (window.revealFormula) window.revealFormula("formula-bin-power");
-        powerIdx++;
-        setTimeout(showPowerChallenge, 1400);
-      } else {
-        fbPower.className = "feedback bad";
-        fbPower.innerHTML =
-          "Each \\(2^{n}\\) term turns on one bit. Compare with the playground above.";
-      }
-      renderKatexIn(fbPower);
-    });
-    document.getElementById("bin-power-reset").addEventListener("click", showPowerChallenge);
-    showPowerChallenge();
-
-    let ladderN = 316;
-    let ladderStep = 0;
-    let ladderDigits = [];
-    const ladderTarget = document.getElementById("bin-ladder-target");
-    const ladderTable = document.getElementById("bin-ladder-table");
-    const fbLadder = document.getElementById("fb-bin-ladder");
-
-    function resetLadder() {
-      ladderN = [316, 35, 20, 127][Math.floor(Math.random() * 4)];
-      ladderStep = 0;
-      ladderDigits = [];
-      ladderTarget.innerHTML = "\\(" + ladderN + "_{(10)}\\)";
-      ladderTable.innerHTML = "";
-      fbLadder.className = "feedback";
-      fbLadder.textContent = "Click “Divide by 2” for each step. Stack remainders to build binary.";
-      if (window.lockFormula) window.lockFormula("formula-bin-ladder");
-      renderKatexIn(ladderTarget.parentElement);
+    function showArithFeedback(ok) {
+      fbArith.className = ok ? "feedback ok" : "feedback bad";
+      fbArith.innerHTML =
+        (ok ? "Correct — " : "Not quite — ") + arithQ.stepsHtml + ".";
+      if (window.revealFormula) window.revealFormula("formula-bin-arith");
+      renderKatexIn(fbArith);
     }
 
-    document.getElementById("bin-ladder-step").addEventListener("click", function () {
-      const steps = divideBy2Steps(ladderN);
-      if (ladderStep >= steps.length) {
-        fbLadder.className = "feedback warn";
-        fbLadder.textContent = "Ladder complete — read remainders bottom-up, then Check.";
-        return;
-      }
-      const s = steps[ladderStep];
-      ladderDigits.push(s.r);
-      const row = document.createElement("div");
-      row.className = "ladder-row";
-      row.innerHTML =
-        "\\(" + s.n + " \\div 2 = " + s.q + "\\) remainder \\(" + s.r + "\\)";
-      ladderTable.appendChild(row);
-      renderKatexIn(row);
-      ladderStep++;
-      if (ladderStep >= steps.length) {
-        fbLadder.className = "feedback";
-        fbLadder.innerHTML =
-          "Remainders (bottom-up): \\(" +
-          ladderDigits.slice().reverse().join("") +
-          "_{(2)}\\). Click Check.";
-        renderKatexIn(fbLadder);
-      }
+    document.getElementById("bin-arith-check").addEventListener("click", function () {
+      const val = Number(arithInput.value);
+      showArithFeedback(val === arithQ.answer);
     });
+    document.getElementById("bin-arith-reset").addEventListener("click", showArithQuestion);
+    showArithQuestion();
 
-    document.getElementById("bin-ladder-check").addEventListener("click", function () {
-      const expected = denaryToBinaryString(ladderN);
-      const built = ladderDigits.slice().reverse().join("");
-      if (built === expected) {
-        fbLadder.className = "feedback ok";
-        fbLadder.innerHTML =
-          "Correct — \\(" + ladderN + "_{(10)} = " + expected + "_{(2)}\\).";
-        if (window.revealFormula) window.revealFormula("formula-bin-ladder");
-      } else {
-        fbLadder.className = "feedback bad";
-        fbLadder.innerHTML =
-          "You built \\(" +
-          built +
-          "_{(2)}\\). Read remainders from last division to first.";
-      }
-      renderKatexIn(fbLadder);
-    });
-    document.getElementById("bin-ladder-reset").addEventListener("click", resetLadder);
-    resetLadder();
-
-    document.getElementById("bin-add-check").addEventListener("click", function () {
-      const fb = document.getElementById("fb-bin-add");
-      const val = Number(document.getElementById("bin-add-input").value);
-      if (val === 160) {
-        fb.className = "feedback ok";
-        fb.innerHTML =
-          "Correct — \\(110101_{(2)}=53\\), \\(1101011_{(2)}=107\\), \\(53+107=160\\).";
-        if (window.revealFormula) window.revealFormula("formula-bin-add");
-      } else {
-        fb.className = "feedback bad";
-        fb.innerHTML = "Convert each binary number to denary first, then add.";
-      }
-      renderKatexIn(fb);
-    });
-    document.getElementById("bin-add-reset").addEventListener("click", function () {
-      document.getElementById("bin-add-input").value = "";
-      document.getElementById("fb-bin-add").className = "feedback";
-      document.getElementById("fb-bin-add").textContent = "Answer the question above.";
-      if (window.lockFormula) window.lockFormula("formula-bin-add");
-    });
-
-    document.getElementById("bin-sub-check").addEventListener("click", function () {
-      const fb = document.getElementById("fb-bin-sub");
-      const val = Number(document.getElementById("bin-sub-input").value);
-      if (val === 76) {
-        fb.className = "feedback ok";
-        fb.innerHTML =
-          "Correct — \\(1010111_{(2)}=87\\), \\(1011_{(2)}=11\\), \\(87-11=76_{(10)}\\).";
-        if (window.revealFormula) window.revealFormula("formula-bin-sub");
-      } else {
-        fb.className = "feedback bad";
-        fb.innerHTML = "Convert each binary number to denary, then subtract.";
-      }
-      renderKatexIn(fb);
-    });
-    document.getElementById("bin-sub-reset").addEventListener("click", function () {
-      document.getElementById("bin-sub-input").value = "";
-      document.getElementById("fb-bin-sub").className = "feedback";
-      document.getElementById("fb-bin-sub").textContent = "Answer the question above.";
-      if (window.lockFormula) window.lockFormula("formula-bin-sub");
-    });
-
-    const orderCards = [
-      { id: "a", label: "\\(28_{(10)}\\)", value: 28 },
-      { id: "b", label: "\\(110111_{(2)}\\)", value: 55 },
-      { id: "c", label: "\\(111001_{(2)}\\)", value: 57 },
-    ];
-    let orderSlots = [];
+    let orderQ = genOrderQuestion();
+    let orderPlacements = { pool: [], slots: [null, null, null] };
     const orderPool = document.getElementById("bin-order-pool");
-    const orderRow = document.getElementById("bin-order-slots");
+    const orderSlotEls = document.querySelectorAll("#bin-order-slots .sort-slot");
+    const fbOrder = document.getElementById("fb-bin-order");
+    const formulaOrder = document.getElementById("formula-bin-order");
+
+    function cardById(id) {
+      return orderQ.cards.find(function (c) {
+        return c.id === id;
+      });
+    }
+
+    function makeSortCard(card) {
+      const btn = document.createElement("button");
+      btn.type = "button";
+      btn.className = "sort-card";
+      btn.dataset.id = card.id;
+      btn.innerHTML = card.label;
+      btn.addEventListener("pointerdown", function (e) {
+        e.preventDefault();
+        ghostDrag(
+          btn,
+          e,
+          function (ev) {
+            document.querySelectorAll(".sort-slot.drag-over").forEach(function (n) {
+              n.classList.remove("drag-over");
+            });
+            const hit = slotUnder(ev);
+            if (hit && hit.classList.contains("sort-slot")) {
+              hit.classList.add("drag-over");
+            }
+          },
+          function (ev, moved) {
+            document.querySelectorAll(".sort-slot.drag-over").forEach(function (n) {
+              n.classList.remove("drag-over");
+            });
+            if (!moved) return;
+            const hit = slotUnder(ev);
+            const cardId = card.id;
+            orderPlacements.pool = orderPlacements.pool.filter(function (id) {
+              return id !== cardId;
+            });
+            orderPlacements.slots = orderPlacements.slots.map(function (id) {
+              return id === cardId ? null : id;
+            });
+            if (hit && hit.classList.contains("sort-slot")) {
+              const slotIdx = Number(hit.dataset.slot);
+              const displaced = orderPlacements.slots[slotIdx];
+              if (displaced) orderPlacements.pool.push(displaced);
+              orderPlacements.slots[slotIdx] = cardId;
+            } else if (hit && hit.classList.contains("sort-pool")) {
+              orderPlacements.pool.push(cardId);
+            }
+            renderOrder();
+          }
+        );
+      });
+      return btn;
+    }
 
     function renderOrder() {
       orderPool.innerHTML = "";
-      orderRow.innerHTML = "";
-      orderCards.forEach(function (card) {
-        const btn = document.createElement("button");
-        btn.type = "button";
-        btn.className = "sort-card";
-        btn.dataset.id = card.id;
-        btn.innerHTML = card.label;
-        btn.addEventListener("click", function () {
-          const idx = orderSlots.indexOf(card.id);
-          if (idx >= 0) {
-            orderSlots.splice(idx, 1);
-          } else if (orderSlots.length < 3) {
-            orderSlots.push(card.id);
-          }
-          renderOrder();
-        });
-        if (orderSlots.indexOf(card.id) < 0) orderPool.appendChild(btn);
-        else orderRow.appendChild(btn);
+      orderSlotEls.forEach(function (slot, i) {
+        slot.innerHTML = "";
+        slot.classList.remove("drag-over");
+        const id = orderPlacements.slots[i];
+        if (id) {
+          const card = cardById(id);
+          if (card) slot.appendChild(makeSortCard(card));
+        }
+      });
+      orderPlacements.pool.forEach(function (id) {
+        const card = cardById(id);
+        if (card) orderPool.appendChild(makeSortCard(card));
       });
       renderKatexIn(document.getElementById("bin-order-wrap"));
     }
 
-    renderOrder();
-
-    document.getElementById("bin-order-check").addEventListener("click", function () {
-      const fb = document.getElementById("fb-bin-order");
-      const values = orderSlots.map(function (id) {
-        return orderCards.find(function (c) {
-          return c.id === id;
-        }).value;
-      });
-      const sorted = values.slice().sort(function (a, b) {
-        return a - b;
-      });
-      const ok =
-        orderSlots.length === 3 &&
-        values.every(function (v, i) {
-          return v === sorted[i];
-        });
-      if (ok) {
-        fb.className = "feedback ok";
-        fb.innerHTML = "Correct ascending order: \\(28 < 55 < 57\\).";
-        if (window.revealFormula) window.revealFormula("formula-bin-order");
-      } else {
-        fb.className = "feedback bad";
-        fb.innerHTML = "Convert each to denary, then compare.";
-      }
-      renderKatexIn(fb);
-    });
-    document.getElementById("bin-order-reset").addEventListener("click", function () {
-      orderSlots = [];
-      renderOrder();
-      document.getElementById("fb-bin-order").className = "feedback";
-      document.getElementById("fb-bin-order").textContent =
-        "Click cards to place them left-to-right (smallest first).";
+    function resetOrderQuestion() {
+      orderQ = genOrderQuestion();
+      orderPlacements = {
+        pool: orderQ.cards.map(function (c) {
+          return c.id;
+        }),
+        slots: [null, null, null],
+      };
+      fbOrder.className = "feedback";
+      fbOrder.textContent = "Drag cards into the slots left-to-right (smallest first).";
+      formulaOrder.innerHTML =
+        "\\[ " +
+        orderQ.sorted.join(" < ") +
+        " \\]";
       if (window.lockFormula) window.lockFormula("formula-bin-order");
-    });
-
-    let quizIdx = 0;
-    let quizScore = 0;
-    const quizQ = document.getElementById("bin-quiz-q");
-    const quizChoices = document.getElementById("bin-quiz-choices");
-    const quizProg = document.getElementById("bin-quiz-prog");
-    const fbQuiz = document.getElementById("fb-bin-quiz");
-
-    function showQuiz() {
-      if (quizIdx >= QUIZ_ITEMS.length) {
-        quizQ.innerHTML = "Done!";
-        quizChoices.innerHTML = "";
-        fbQuiz.className = "feedback ok";
-        fbQuiz.textContent = "Score: " + quizScore + " / " + QUIZ_ITEMS.length;
-        return;
-      }
-      const item = QUIZ_ITEMS[quizIdx];
-      quizQ.innerHTML = item.q;
-      quizChoices.innerHTML = "";
-      quizProg.textContent = "Question " + (quizIdx + 1) + " of " + QUIZ_ITEMS.length;
-      item.choices.forEach(function (choice, ci) {
-        const btn = document.createElement("button");
-        btn.type = "button";
-        btn.className = "btn quiz-opt";
-        btn.innerHTML = choice;
-        btn.addEventListener("click", function () {
-          if (ci === item.answer) {
-            quizScore++;
-            fbQuiz.className = "feedback ok";
-            fbQuiz.textContent = "Correct!";
-          } else {
-            fbQuiz.className = "feedback bad";
-            fbQuiz.textContent = "Not quite — try the next one.";
-          }
-          quizIdx++;
-          setTimeout(showQuiz, 700);
-        });
-        quizChoices.appendChild(btn);
-      });
-      fbQuiz.className = "feedback";
-      fbQuiz.textContent = "";
-      renderKatexIn(document.getElementById("bin-quiz-wrap"));
+      renderOrder();
     }
 
-    document.getElementById("bin-quiz-reset").addEventListener("click", function () {
-      quizIdx = 0;
-      quizScore = 0;
-      showQuiz();
+    document.getElementById("bin-order-check").addEventListener("click", function () {
+      const values = orderPlacements.slots.map(function (id) {
+        return id ? cardById(id).value : null;
+      });
+      const filled = values.every(function (v) {
+        return v !== null;
+      });
+      const ok =
+        filled &&
+        values.every(function (v, i) {
+          return v === orderQ.sorted[i];
+        });
+      const steps =
+        orderQ.cards
+          .slice()
+          .sort(function (a, b) {
+            return a.value - b.value;
+          })
+          .map(function (c) {
+            return c.binaryLabel + "=" + c.denaryLabel;
+          })
+          .join(", ") +
+        " \\(\\Rightarrow\\) \\(" +
+        orderQ.sorted.join(" < ") +
+        "\\)";
+      fbOrder.className = ok ? "feedback ok" : "feedback bad";
+      fbOrder.innerHTML = (ok ? "Correct — " : "Answer — ") + steps + ".";
+      if (window.revealFormula) window.revealFormula("formula-bin-order");
+      renderKatexIn(fbOrder);
     });
-    showQuiz();
+    document.getElementById("bin-order-reset").addEventListener("click", resetOrderQuestion);
+    resetOrderQuestion();
 
     renderKatexIn(root);
   }
