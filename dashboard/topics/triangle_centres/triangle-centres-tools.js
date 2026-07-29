@@ -94,6 +94,16 @@
   var drag = null;
   var angDrag = null;
   var matchDrag = null;
+  var matchOverlay = false;
+  var matchReveal = -1; // -1 = show all matching parts in cong mode
+
+  var PAIR_COLORS = [
+    { fill: "rgba(56,189,248,.5)", stroke: "#38bdf8", text: "#7dd3fc" },
+    { fill: "rgba(251,191,36,.5)", stroke: "#fbbf24", text: "#fcd34d" },
+    { fill: "rgba(167,139,250,.5)", stroke: "#a78bfa", text: "#c4b5fd" },
+    { fill: "rgba(52,211,153,.5)", stroke: "#34d399", text: "#6ee7b7" },
+  ];
+
 
   // Transversal endpoints for Lab 2 (parallel lines at fixed y)
   var angY1 = 90;
@@ -697,6 +707,14 @@
       (V.x + r * Math.cos(a1)) + " " + (V.y + r * Math.sin(a1)) + " Z";
   }
 
+  function drawParallelArrow(svg, y, x) {
+    // Arrowhead → along the parallel line
+    svg.appendChild(E("polyline", {
+      points: (x - 9) + "," + (y - 7) + " " + (x + 5) + "," + y + " " + (x - 9) + "," + (y + 7),
+      fill: "none", stroke: "#94a3b8", "stroke-width": 2, "stroke-linejoin": "round",
+    }));
+  }
+
   function renderAngles() {
     var svg = document.getElementById("ang-svg");
     if (!svg) return;
@@ -704,11 +722,8 @@
     var x0 = 40, x1 = 480;
     svg.appendChild(seg({ x: x0, y: angY1 }, { x: x1, y: angY1 }, INK, 2.2));
     svg.appendChild(seg({ x: x0, y: angY2 }, { x: x1, y: angY2 }, INK, 2.2));
-    // parallel marks (two ticks on each line)
-    [angY1, angY2].forEach(function (y) {
-      svg.appendChild(seg({ x: 95, y: y - 7 }, { x: 105, y: y + 7 }, MUTED, 1.5));
-      svg.appendChild(seg({ x: 102, y: y - 7 }, { x: 112, y: y + 7 }, MUTED, 1.5));
-    });
+    drawParallelArrow(svg, angY1, 100);
+    drawParallelArrow(svg, angY2, 100);
 
     var T1 = angT[0];
     var T2 = angT[1];
@@ -723,12 +738,11 @@
     svg.appendChild(dot(Q, "#94a3b8", 4));
 
     function anglesAt(alongTrans) {
-      var aE = 0;
-      var aW = Math.PI;
-      var aDown = Math.atan2(alongTrans.y, alongTrans.x);
-      var aUp = Math.atan2(-alongTrans.y, -alongTrans.x);
       var rays = [
-        { a: aE }, { a: aW }, { a: aDown }, { a: aUp },
+        { a: 0 },
+        { a: Math.PI },
+        { a: Math.atan2(alongTrans.y, alongTrans.x) },
+        { a: Math.atan2(-alongTrans.y, -alongTrans.x) },
       ];
       rays.forEach(function (r) {
         while (r.a < 0) r.a += Math.PI * 2;
@@ -779,7 +793,7 @@
     addWedges(P, wP, true, 0);
     addWedges(Q, wQ, false, 4);
 
-    var hiSet = {};
+    var pairs = [];
     var pairNote = "";
 
     if (angMode === "corr") {
@@ -787,57 +801,54 @@
         if (!a.isUpper) return;
         labeled.forEach(function (b) {
           if (b.isUpper) return;
-          if (a.left === b.left && a.above === b.above) {
-            hiSet[a.id] = true;
-            hiSet[b.id] = true;
-          }
+          if (a.left === b.left && a.above === b.above) pairs.push([a, b]);
         });
       });
-      pairNote = "Highlighted pairs are equal (corresponding angles).";
+      pairNote = "Same colour = one corresponding pair (equal angles).";
     } else if (angMode === "alt") {
       labeled.forEach(function (a) {
         if (!a.interior || !a.isUpper) return;
         labeled.forEach(function (b) {
           if (!b.interior || b.isUpper) return;
-          if (a.left !== b.left) {
-            hiSet[a.id] = true;
-            hiSet[b.id] = true;
-          }
+          if (a.left !== b.left) pairs.push([a, b]);
         });
       });
-      pairNote = "Highlighted pairs are equal (alternate interior angles).";
+      pairNote = "Same colour = one alternate-interior pair (equal angles).";
     } else {
       labeled.forEach(function (a) {
         if (!a.interior || !a.isUpper) return;
         labeled.forEach(function (b) {
           if (!b.interior || b.isUpper) return;
-          if (a.left === b.left) {
-            hiSet[a.id] = true;
-            hiSet[b.id] = true;
-          }
+          if (a.left === b.left) pairs.push([a, b]);
         });
       });
-      pairNote = "Highlighted pairs add to 180° (interior angles on the same side).";
+      pairNote = "Same colour = one co-interior pair (angles add to 180°).";
     }
 
+    var colorById = {};
+    pairs.forEach(function (pair, pi) {
+      var col = PAIR_COLORS[pi % PAIR_COLORS.length];
+      colorById[pair[0].id] = col;
+      colorById[pair[1].id] = col;
+    });
+
     labeled.forEach(function (L, idx) {
-      var on = !!hiSet[L.id];
+      var col = colorById[L.id];
       svg.appendChild(E("path", {
         d: wedgePath(L.V, L.w.a0, L.w.a1, 22),
-        fill: on ? "rgba(251,191,36,.45)" : "rgba(148,163,184,.12)",
-        stroke: on ? MARK : "rgba(148,163,184,.35)",
-        "stroke-width": on ? 1.8 : 1,
+        fill: col ? col.fill : "rgba(148,163,184,.10)",
+        stroke: col ? col.stroke : "rgba(148,163,184,.3)",
+        "stroke-width": col ? 2 : 1,
       }));
       var tEl = E("text", {
         x: L.labelPos.x, y: L.labelPos.y + 4,
-        fill: on ? MARK : MUTED,
+        fill: col ? col.text : MUTED,
         "font-size": 13, "font-weight": 700, "text-anchor": "middle",
       });
       tEl.textContent = String(idx + 1);
       svg.appendChild(tEl);
     });
 
-    // Drag handles
     angT.forEach(function (p, i) {
       svg.appendChild(dot(p, ACCENT, 8));
       var h = E("circle", { cx: p.x, cy: p.y, r: 16, fill: "transparent", "data-ang": i });
@@ -850,22 +861,48 @@
     if (note) note.textContent = pairNote + " Drag the blue endpoints to change the transversal.";
   }
 
-  function matchSecondTriangle(A, k) {
-    // Place DEF to the right, scaled by k about its own centroid-ish base
-    var ox = 300;
-    var oy = 230;
-    return [
-      { x: ox, y: oy },
-      { x: ox + (A[1].x - A[0].x) * k, y: oy + (A[1].y - A[0].y) * k },
-      { x: ox + (A[2].x - A[0].x) * k, y: oy + (A[2].y - A[0].y) * k },
-    ];
+  function placeShapeInBox(shape, box) {
+    var xs = shape.map(function (p) { return p.x; });
+    var ys = shape.map(function (p) { return p.y; });
+    var minX = Math.min.apply(null, xs);
+    var maxX = Math.max.apply(null, xs);
+    var minY = Math.min.apply(null, ys);
+    var maxY = Math.max.apply(null, ys);
+    var w = Math.max(maxX - minX, 1);
+    var h = Math.max(maxY - minY, 1);
+    var s = Math.min((box.w - 20) / w, (box.h - 20) / h);
+    var cx = (minX + maxX) / 2;
+    var cy = (minY + maxY) / 2;
+    var bx = box.x + box.w / 2;
+    var by = box.y + box.h / 2;
+    return shape.map(function (p) {
+      return { x: bx + (p.x - cx) * s, y: by + (p.y - cy) * s };
+    });
   }
 
-  function drawTri(g, v, labels) {
-    g.appendChild(E("polygon", {
+  function matchSecondTriangle(A, k) {
+    var shape = [
+      { x: 0, y: 0 },
+      { x: (A[1].x - A[0].x) * k, y: (A[1].y - A[0].y) * k },
+      { x: (A[2].x - A[0].x) * k, y: (A[2].y - A[0].y) * k },
+    ];
+    return placeShapeInBox(shape, { x: 270, y: 25, w: 230, h: 270 });
+  }
+
+  function matchFirstTriangle(A) {
+    return placeShapeInBox(A, { x: 20, y: 25, w: 230, h: 270 });
+  }
+
+  function drawTri(g, v, labels, opt) {
+    opt = opt || {};
+    var attrs = {
       points: v.map(function (p) { return p.x + "," + p.y; }).join(" "),
-      fill: "rgba(56,189,248,.12)", stroke: INK, "stroke-width": SW,
-    }));
+      fill: opt.fill || "rgba(56,189,248,.12)",
+      stroke: opt.stroke || INK,
+      "stroke-width": opt.sw || SW,
+    };
+    if (opt.dash) attrs["stroke-dasharray"] = opt.dash;
+    g.appendChild(E("polygon", attrs));
     var c = triCenter(v);
     labels.forEach(function (L, i) {
       g.appendChild(dot(v[i], "#94a3b8", 6));
@@ -873,64 +910,132 @@
     });
   }
 
-  function applyMatchMarks(svg, A, D, kind, cond) {
+  function sideRatioLabel(g, p, q, text, col) {
+    var m = mid(p, q);
+    var n = perp(unit(p, q));
+    var t = E("text", {
+      x: m.x + n.x * 14, y: m.y + n.y * 14 + 4,
+      fill: col || "#f472b6", "font-size": 13, "font-weight": 700, "text-anchor": "middle",
+    });
+    t.textContent = text;
+    g.appendChild(t);
+  }
+
+  function congPartsList(cond) {
+    if (cond === "SSS") return ["side AB≅DE", "side BC≅EF", "side CA≅FD"];
+    if (cond === "SAS") return ["side AB≅DE", "∠B≅∠E", "side BC≅EF"];
+    if (cond === "ASA") return ["∠B≅∠E", "side BC≅EF", "∠C≅∠F"];
+    if (cond === "AAS") return ["∠A≅∠D", "∠B≅∠E", "side AB≅DE"];
+    if (cond === "RHS") return ["right ∠ at A,D", "hypotenuse BC≅EF", "side AC≅DF"];
+    return [];
+  }
+
+  function applyMatchMarks(svg, A, D, kind, cond, revealCount) {
     if (kind === "cong") {
+      var parts = [];
       if (cond === "SSS") {
-        [[0, 1], [1, 2], [2, 0]].forEach(function (s, i) {
-          svg.appendChild(sideHashes(A[s[0]], A[s[1]], i + 1, TICK));
-          svg.appendChild(sideHashes(D[s[0]], D[s[1]], i + 1, TICK));
-        });
+        parts = [
+          function () {
+            svg.appendChild(sideHashes(A[0], A[1], 1, TICK));
+            svg.appendChild(sideHashes(D[0], D[1], 1, TICK));
+          },
+          function () {
+            svg.appendChild(sideHashes(A[1], A[2], 2, TICK));
+            svg.appendChild(sideHashes(D[1], D[2], 2, TICK));
+          },
+          function () {
+            svg.appendChild(sideHashes(A[2], A[0], 3, TICK));
+            svg.appendChild(sideHashes(D[2], D[0], 3, TICK));
+          },
+        ];
       } else if (cond === "SAS") {
-        svg.appendChild(sideHashes(A[0], A[1], 1, TICK));
-        svg.appendChild(sideHashes(A[1], A[2], 2, TICK));
-        svg.appendChild(sideHashes(D[0], D[1], 1, TICK));
-        svg.appendChild(sideHashes(D[1], D[2], 2, TICK));
-        svg.appendChild(outwardArcs(A[1], A[0], A[2], 1, 20));
-        svg.appendChild(outwardArcs(D[1], D[0], D[2], 1, 20));
+        parts = [
+          function () {
+            svg.appendChild(sideHashes(A[0], A[1], 1, TICK));
+            svg.appendChild(sideHashes(D[0], D[1], 1, TICK));
+          },
+          function () {
+            svg.appendChild(outwardArcs(A[1], A[0], A[2], 1, 20));
+            svg.appendChild(outwardArcs(D[1], D[0], D[2], 1, 20));
+          },
+          function () {
+            svg.appendChild(sideHashes(A[1], A[2], 2, TICK));
+            svg.appendChild(sideHashes(D[1], D[2], 2, TICK));
+          },
+        ];
       } else if (cond === "ASA") {
-        svg.appendChild(sideHashes(A[1], A[2], 1, TICK));
-        svg.appendChild(sideHashes(D[1], D[2], 1, TICK));
-        svg.appendChild(outwardArcs(A[1], A[0], A[2], 1, 20));
-        svg.appendChild(outwardArcs(A[2], A[1], A[0], 2, 18));
-        svg.appendChild(outwardArcs(D[1], D[0], D[2], 1, 20));
-        svg.appendChild(outwardArcs(D[2], D[1], D[0], 2, 18));
+        parts = [
+          function () {
+            svg.appendChild(outwardArcs(A[1], A[0], A[2], 1, 20));
+            svg.appendChild(outwardArcs(D[1], D[0], D[2], 1, 20));
+          },
+          function () {
+            svg.appendChild(sideHashes(A[1], A[2], 1, TICK));
+            svg.appendChild(sideHashes(D[1], D[2], 1, TICK));
+          },
+          function () {
+            svg.appendChild(outwardArcs(A[2], A[1], A[0], 2, 18));
+            svg.appendChild(outwardArcs(D[2], D[1], D[0], 2, 18));
+          },
+        ];
       } else if (cond === "AAS") {
-        svg.appendChild(sideHashes(A[0], A[1], 1, TICK));
-        svg.appendChild(sideHashes(D[0], D[1], 1, TICK));
-        svg.appendChild(outwardArcs(A[0], A[1], A[2], 1, 20));
-        svg.appendChild(outwardArcs(A[1], A[0], A[2], 2, 18));
-        svg.appendChild(outwardArcs(D[0], D[1], D[2], 1, 20));
-        svg.appendChild(outwardArcs(D[1], D[0], D[2], 2, 18));
+        parts = [
+          function () {
+            svg.appendChild(outwardArcs(A[0], A[1], A[2], 1, 20));
+            svg.appendChild(outwardArcs(D[0], D[1], D[2], 1, 20));
+          },
+          function () {
+            svg.appendChild(outwardArcs(A[1], A[0], A[2], 2, 18));
+            svg.appendChild(outwardArcs(D[1], D[0], D[2], 2, 18));
+          },
+          function () {
+            svg.appendChild(sideHashes(A[0], A[1], 1, TICK));
+            svg.appendChild(sideHashes(D[0], D[1], 1, TICK));
+          },
+        ];
       } else if (cond === "RHS") {
-        // Force right angle look at A/D by mark only (triangle may not be right — reset on RHS pick)
-        svg.appendChild(rightAngle(A[0], A[1], A[2], 12));
-        svg.appendChild(rightAngle(D[0], D[1], D[2], 12));
-        svg.appendChild(sideHashes(A[1], A[2], 1, TICK));
-        svg.appendChild(sideHashes(D[1], D[2], 1, TICK));
-        svg.appendChild(sideHashes(A[0], A[2], 2, TICK));
-        svg.appendChild(sideHashes(D[0], D[2], 2, TICK));
+        parts = [
+          function () {
+            svg.appendChild(rightAngle(A[0], A[1], A[2], 12));
+            svg.appendChild(rightAngle(D[0], D[1], D[2], 12));
+          },
+          function () {
+            svg.appendChild(sideHashes(A[1], A[2], 1, TICK));
+            svg.appendChild(sideHashes(D[1], D[2], 1, TICK));
+          },
+          function () {
+            svg.appendChild(sideHashes(A[0], A[2], 2, TICK));
+            svg.appendChild(sideHashes(D[0], D[2], 2, TICK));
+          },
+        ];
       }
-    } else {
-      if (cond === "AAA") {
-        [A, D].forEach(function (t) {
-          [0, 1, 2].forEach(function (i) {
-            svg.appendChild(outwardArcs(t[i], t[(i + 2) % 3], t[(i + 1) % 3], i + 1, 14));
-          });
-        });
-      } else if (cond === "3sides") {
-        [[0, 1], [1, 2], [2, 0]].forEach(function (s, i) {
-          svg.appendChild(sideHashes(A[s[0]], A[s[1]], i + 1, TICK));
-          svg.appendChild(sideHashes(D[s[0]], D[s[1]], i + 1, TICK));
-        });
-      } else {
-        svg.appendChild(sideHashes(A[0], A[1], 1, TICK));
-        svg.appendChild(sideHashes(A[1], A[2], 2, TICK));
-        svg.appendChild(sideHashes(D[0], D[1], 1, TICK));
-        svg.appendChild(sideHashes(D[1], D[2], 2, TICK));
-        svg.appendChild(outwardArcs(A[1], A[0], A[2], 1, 20));
-        svg.appendChild(outwardArcs(D[1], D[0], D[2], 1, 20));
-      }
+      var n = revealCount < 0 ? parts.length : Math.min(revealCount, parts.length);
+      for (var i = 0; i < n; i++) parts[i]();
+      return parts.length;
     }
+
+    // Similarity — proportional, NOT equal: use labels a/ka etc., never equality ticks
+    if (cond === "AAA") {
+      [A, D].forEach(function (t) {
+        [0, 1, 2].forEach(function (i) {
+          svg.appendChild(outwardArcs(t[i], t[(i + 2) % 3], t[(i + 1) % 3], i + 1, 14));
+        });
+      });
+    } else if (cond === "3sides") {
+      var names = ["a", "b", "c"];
+      [[0, 1], [1, 2], [2, 0]].forEach(function (s, i) {
+        sideRatioLabel(svg, A[s[0]], A[s[1]], names[i], "#f472b6");
+        sideRatioLabel(svg, D[s[0]], D[s[1]], "k·" + names[i], "#f472b6");
+      });
+    } else {
+      sideRatioLabel(svg, A[0], A[1], "a", "#f472b6");
+      sideRatioLabel(svg, A[1], A[2], "b", "#f472b6");
+      sideRatioLabel(svg, D[0], D[1], "k·a", "#f472b6");
+      sideRatioLabel(svg, D[1], D[2], "k·b", "#f472b6");
+      svg.appendChild(outwardArcs(A[1], A[0], A[2], 1, 20));
+      svg.appendChild(outwardArcs(D[1], D[0], D[2], 1, 20));
+    }
+    return 0;
   }
 
   function renderMatch() {
@@ -939,21 +1044,36 @@
     clr(svg);
 
     var k = matchKind === "cong" ? 1 : simK;
-    var A = matchA;
+    var rawA = matchA;
     if (congMode === "RHS" && matchKind === "cong") {
-      // Snap to a clear right triangle for RHS
-      A = [{ x: 70, y: 230 }, { x: 210, y: 230 }, { x: 70, y: 90 }];
+      rawA = [{ x: 70, y: 230 }, { x: 210, y: 230 }, { x: 70, y: 90 }];
     }
-    var D = matchSecondTriangle(A, k);
-    drawTri(svg, A, ["A", "B", "C"]);
-    drawTri(svg, D, ["D", "E", "F"]);
+
+    var A;
+    var D;
+    if (matchKind === "cong" && matchOverlay) {
+      A = placeShapeInBox(rawA, { x: 120, y: 30, w: 280, h: 260 });
+      D = A.map(function (p) { return { x: p.x + 0.01, y: p.y + 0.01 }; });
+      drawTri(svg, A, ["A", "B", "C"], { fill: "rgba(56,189,248,.18)" });
+      drawTri(svg, D, ["D", "E", "F"], {
+        fill: "rgba(251,191,36,.12)",
+        stroke: MARK,
+        sw: 2,
+        dash: "7 5",
+      });
+    } else {
+      // Left triangle stays as dragged; right is fitted so k=1.5 never clips
+      A = rawA;
+      D = matchSecondTriangle(rawA, k);
+      drawTri(svg, A, ["A", "B", "C"]);
+      drawTri(svg, D, ["D", "E", "F"]);
+    }
 
     var cond = matchKind === "cong" ? congMode : simMode;
-    applyMatchMarks(svg, A, D, matchKind, cond);
+    var totalParts = applyMatchMarks(svg, A, D, matchKind, cond, matchReveal);
 
-    // Drag handles on ABC only (not when RHS snap unless we allow)
-    if (!(matchKind === "cong" && congMode === "RHS")) {
-      matchA.forEach(function (v, i) {
+    if (!(matchKind === "cong" && congMode === "RHS") && !matchOverlay) {
+      A.forEach(function (v, i) {
         var h = E("circle", { cx: v.x, cy: v.y, r: 16, fill: "transparent", "data-match": i });
         h.style.cursor = "grab";
         svg.appendChild(h);
@@ -964,17 +1084,71 @@
     var list = matchKind === "cong" ? CONG : SIM;
     var item = list.find(function (c) { return c.id === cond; });
     renderMixed(document.getElementById("match-caption"), item ? item.cap : "");
+
     var note = document.getElementById("match-note");
     if (note) {
-      note.textContent = matchKind === "cong"
-        ? "△ABC " + sym + " △DEF when the highlighted parts match. Drag A, B, C to reshape."
-        : "△ABC " + sym + " △DEF with scale factor k = " + k.toFixed(1) + ". Drag A, B, C; adjust k with the slider.";
+      if (matchKind === "cong") {
+        var parts = congPartsList(cond);
+        var shown = matchReveal < 0 ? parts.length : Math.min(matchReveal, parts.length);
+        note.textContent = "△ABC " + sym + " △DEF. Showing " + shown + "/" + parts.length +
+          " required matches" + (shown ? ": " + parts.slice(0, shown).join("; ") : "") +
+          ". Use Reveal next / Show all, or Overlay to stack the triangles.";
+      } else {
+        note.textContent = "△ABC " + sym + " △DEF with scale factor k = " + k.toFixed(1) +
+          ". Side labels show ratios (a with k·a) — not equal lengths. Drag A, B, C; adjust k.";
+      }
     }
 
     var kRow = document.getElementById("match-k-row");
-    if (kRow) kRow.hidden = matchKind !== "sim";
+    if (kRow) kRow.style.display = matchKind === "sim" ? "flex" : "none";
     var kv = document.getElementById("match-k-val");
     if (kv) kv.textContent = simK.toFixed(1);
+
+    var hint = document.getElementById("match-drag-hint");
+    if (hint) {
+      hint.textContent = matchKind === "cong"
+        ? (matchOverlay
+          ? "Overlay on — dashed △DEF sits on △ABC (same size). Drag A/B/C still reshapes both."
+          : "Drag A, B or C. Reveal matching parts step by step, or Overlay to stack △DEF on △ABC.")
+        : "Drag A, B or C — △DEF scales by k and stays inside the canvas.";
+    }
+
+    refreshMatchExtraBtns(totalParts);
+  }
+
+  function refreshMatchExtraBtns(totalParts) {
+    var row = document.getElementById("match-extra-btns");
+    if (!row) return;
+    row.innerHTML = "";
+    if (matchKind !== "cong") return;
+
+    function addBtn(label, active, fn) {
+      var b = document.createElement("button");
+      b.type = "button";
+      b.className = "btn" + (active ? " active" : "");
+      b.textContent = label;
+      b.addEventListener("click", fn);
+      row.appendChild(b);
+    }
+
+    addBtn("Reveal next", false, function () {
+      var max = totalParts || congPartsList(congMode).length;
+      if (matchReveal < 0) matchReveal = 0;
+      matchReveal = Math.min(max, matchReveal + 1);
+      renderMatch();
+    });
+    addBtn("Show all", matchReveal < 0, function () {
+      matchReveal = -1;
+      renderMatch();
+    });
+    addBtn("Clear marks", matchReveal === 0, function () {
+      matchReveal = 0;
+      renderMatch();
+    });
+    addBtn(matchOverlay ? "Side by side" : "Overlay ≅", matchOverlay, function () {
+      matchOverlay = !matchOverlay;
+      renderMatch();
+    });
   }
 
   function refreshMatchCondBtns() {
@@ -983,11 +1157,13 @@
     bindBtns("match-cond-btns", items, active, function (id) {
       if (matchKind === "cong") {
         congMode = id;
+        matchReveal = -1;
         if (id === "RHS") {
           matchA = [{ x: 70, y: 230 }, { x: 210, y: 230 }, { x: 70, y: 90 }];
         }
       } else {
         simMode = id;
+        matchOverlay = false;
       }
       renderMatch();
     });
@@ -1067,6 +1243,8 @@
     bindBtns("ang-mode-btns", ANG, angMode, function (id) { angMode = id; renderAngles(); });
     bindBtns("match-kind-btns", MATCH_KINDS, matchKind, function (id) {
       matchKind = id;
+      matchOverlay = false;
+      matchReveal = -1;
       refreshMatchCondBtns();
       renderMatch();
     });
@@ -1116,8 +1294,8 @@
     matchSvg.addEventListener("pointermove", function (e) {
       if (matchDrag == null) return;
       var p = pt(e, matchSvg);
-      matchA[matchDrag].x = Math.max(30, Math.min(250, p.x));
-      matchA[matchDrag].y = Math.max(40, Math.min(270, p.y));
+      matchA[matchDrag].x = Math.max(35, Math.min(245, p.x));
+      matchA[matchDrag].y = Math.max(35, Math.min(295, p.y));
       renderMatch();
     });
     matchSvg.addEventListener("pointerup", function () { matchDrag = null; });

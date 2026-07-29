@@ -8,7 +8,7 @@
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
   <link href="https://fonts.googleapis.com/css2?family=Hanken+Grotesk:wght@400;600;700&display=swap" rel="stylesheet">
   <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/katex@0.16.11/dist/katex.min.css">
-  <link rel="stylesheet" href="../../shared/jm-lesson.css?v=20260729-jm28g">
+  <link rel="stylesheet" href="../../shared/jm-lesson.css?v=20260729-jm28h">
   <style>
     body { margin:0; min-height:100vh; color:var(--text); font-family:"Hanken Grotesk",system-ui,sans-serif;
       background:linear-gradient(180deg,#f8fafc,#f1f5f9); user-select:none; }
@@ -68,13 +68,14 @@
           <p class="hint">Switch between congruence and similarity. Drag vertices of △ABC; △DEF follows. Markings show what must match for each condition.</p>
           <div class="tool-toggle-row" id="match-kind-btns"></div>
           <div class="tool-toggle-row" id="match-cond-btns"></div>
-          <div class="slider-row" id="match-k-row" hidden>
+          <div class="tool-toggle-row" id="match-extra-btns"></div>
+          <div class="slider-row" id="match-k-row" style="display:none">
             <label for="match-k">Scale factor \(k\)</label>
             <input id="match-k" type="range" min="0.5" max="1.5" step="0.1" value="0.8">
             <span id="match-k-val">0.8</span>
           </div>
           <p class="split-hint" id="match-drag-hint">Drag A, B or C — the second triangle updates with you.</p>
-          <svg class="lab-svg" id="match-svg" viewBox="0 0 520 300" aria-label="Congruence and similarity lab"></svg>
+          <svg class="lab-svg" id="match-svg" viewBox="0 0 520 320" aria-label="Congruence and similarity lab"></svg>
           <p class="formula" id="match-caption"></p>
           <div class="note-box" id="match-note"></div>
         </section>
@@ -89,8 +90,8 @@
   </main>
   <script defer src="https://cdn.jsdelivr.net/npm/katex@0.16.11/dist/katex.min.js"></script>
   <script defer src="https://cdn.jsdelivr.net/npm/katex@0.16.11/dist/contrib/auto-render.min.js"></script>
-  <script defer src="../../shared/jm-tabs.js?v=20260729-jm28g"></script>
-  <script defer src="triangle-centres-tools.js?v=20260729-jm28g"></script>
+  <script defer src="../../shared/jm-tabs.js?v=20260729-jm28h"></script>
+  <script defer src="triangle-centres-tools.js?v=20260729-jm28h"></script>
   <script>
     document.addEventListener("DOMContentLoaded", function () {
       if (window.initJmTabs) window.initJmTabs();
