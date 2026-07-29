@@ -239,6 +239,66 @@
       margin: 8px 0; text-align: center; font-size: 1.2em; color: var(--text);
     }
     .panel .line.accent { color: var(--accent); }
+
+    /* ── Binary lab ── */
+    .bit-row {
+      display: flex; flex-wrap: wrap; gap: 8px; justify-content: center;
+      width: 100%;
+    }
+    .bit-col { display: flex; flex-direction: column; align-items: center; gap: 6px; }
+    .bit-pv { font-size: 13px; color: var(--muted); min-height: 22px; }
+    .bit-toggle {
+      width: 44px; height: 52px; border-radius: 12px; border: 2px solid var(--line);
+      background: #e2e8f0; cursor: pointer; display: flex; flex-direction: column;
+      align-items: center; justify-content: center; gap: 4px; transition: all .15s;
+      padding: 4px;
+    }
+    .bit-toggle.on {
+      background: linear-gradient(145deg, #fde047, #f59e0b);
+      border-color: #d97706; box-shadow: 0 0 12px rgba(245, 158, 11, .45);
+    }
+    .bit-bulb {
+      width: 14px; height: 14px; border-radius: 50%; background: #94a3b8;
+      transition: background .15s, box-shadow .15s;
+    }
+    .bit-toggle.on .bit-bulb {
+      background: #fff; box-shadow: 0 0 8px #fff, 0 0 14px #fbbf24;
+    }
+    .bit-digit { font-size: 16px; font-weight: 700; color: var(--text); }
+    .bin-readout {
+      margin-top: 12px; padding: 12px; border-radius: 10px;
+      background: #f8fafc; border: 1px solid var(--line); text-align: center;
+      font-size: 15px; line-height: 1.6;
+    }
+    .bin-readout .bin-str { font-weight: 700; font-family: ui-monospace, monospace; }
+    .ladder-table { margin-top: 10px; display: flex; flex-direction: column; gap: 6px; }
+    .ladder-row {
+      padding: 8px 12px; border-radius: 8px; background: #fff;
+      border: 1px solid var(--line); font-size: 15px;
+    }
+    .sort-area { display: flex; flex-direction: column; gap: 10px; margin-top: 8px; }
+    .sort-pool, .sort-slots {
+      display: flex; flex-wrap: wrap; gap: 8px; min-height: 48px; padding: 10px;
+      border-radius: 10px; border: 1px dashed rgba(2, 132, 199, .35);
+      background: var(--surface-2);
+    }
+    .sort-slots::before {
+      content: "Smallest → largest"; display: block; width: 100%;
+      font-size: 11px; font-weight: 700; letter-spacing: .06em;
+      text-transform: uppercase; color: var(--muted); margin-bottom: 4px;
+    }
+    .sort-card {
+      border: 1px solid var(--line); border-radius: 10px; background: #fff;
+      padding: 10px 14px; font: inherit; font-weight: 600; cursor: pointer;
+      transition: border-color .15s, transform .1s;
+    }
+    .sort-card:hover { border-color: var(--accent); transform: translateY(-1px); }
+    .quiz-opt { margin: 4px 6px 4px 0; }
+    .quiz-choices { display: flex; flex-wrap: wrap; gap: 6px; margin-top: 10px; }
+    .streak-badge {
+      display: inline-block; margin-left: 8px; padding: 2px 8px; border-radius: 999px;
+      background: rgba(21, 128, 61, .12); color: var(--good); font-size: 12px; font-weight: 700;
+    }
   </style>
 </head>
 <body>
@@ -515,7 +575,173 @@
     </section>
       </div>
 
-      <div class="lab" id="lab-binary"></div>
+      <div class="lab" id="lab-binary">
+        <p class="lead">Base 2 uses powers of \(2\) as place values — the same indices you met in the Powers lab. Flip bits, match targets, and try worksheet-style challenges.</p>
+
+        <p class="part-title">Part 1 · Base 2 and place value</p>
+        <section class="block">
+          <h2>1. From indices to binary</h2>
+          <p class="hint">Each binary digit is a coefficient times a power of \(2\).</p>
+          <div class="step-frame" data-stepper="binary-intro">
+            <button class="nav-btn prev" type="button" aria-label="Previous">←</button>
+            <div class="step-body">
+              <div class="step-panel active" data-step="0">
+                <div class="step-label">Step 1 / 4</div>
+                <p class="step-title">Denary expanded form</p>
+                <div class="step-examples">
+                  <div class="chip-ex">\(763_{(10)} = 7\times10^{2} + 6\times10^{1} + 3\times10^{0}\)</div>
+                </div>
+              </div>
+              <div class="step-panel" data-step="1">
+                <div class="step-label">Step 2 / 4</div>
+                <p class="step-title">Binary is base \(2\)</p>
+                <div class="step-examples">
+                  <div class="chip-ex">\(11_{(2)} = 1\times2^{1} + 1\times2^{0} = 3_{(10)}\)</div>
+                  <div class="chip-ex">\(100_{(2)} = 1\times2^{2} = 4_{(10)}\)</div>
+                </div>
+              </div>
+              <div class="step-panel" data-step="2">
+                <div class="step-label">Step 3 / 4</div>
+                <p class="step-title">Only digits \(0\) and \(1\)</p>
+                <p class="step-text">Each place is either “on” (\(1\)) or “off” (\(0\)) — like light bulbs in a row.</p>
+              </div>
+              <div class="step-panel" data-step="3">
+                <div class="step-label">Step 4 / 4</div>
+                <p class="step-title">Place value of a digit</p>
+                <p class="step-math">\[ \text{In } 10111_{(2)}, \text{ the } 0 \text{ has place value } 2^{3} \]</p>
+              </div>
+            </div>
+            <button class="nav-btn next" type="button" aria-label="Next">→</button>
+          </div>
+          <div class="step-dots" data-dots="binary-intro"><span class="on"></span><span></span><span></span><span></span></div>
+        </section>
+
+        <p class="part-title">Part 2 · Bit flip playground</p>
+        <section class="block">
+          <h2>2. Flip the bits</h2>
+          <p class="hint">Click a bulb to toggle \(0\leftrightarrow1\). Watch the expanded form and denary value update live.</p>
+          <div class="stage" id="bin-play-stage">
+            <div id="bin-play-row"></div>
+          </div>
+          <div class="bin-readout">
+            <div>Binary: <span class="bin-str" id="bin-read-binary">1(2)</span></div>
+            <div id="bin-read-denary">\(= 1_{(10)}\)</div>
+            <div id="bin-read-expanded">\(1 \times 2^{0}\)</div>
+          </div>
+          <div class="count-row">
+            <button class="btn" type="button" id="bin-random">Random</button>
+            <button class="btn" type="button" id="bin-clear">Clear all</button>
+          </div>
+        </section>
+
+        <p class="part-title">Part 3 · Challenges</p>
+        <section class="block">
+          <h2>3A. Match the denary number</h2>
+          <p class="hint">Flip bits until your binary equals the target.</p>
+          <p class="hint">Target: <strong id="bin-match-target">\(35_{(10)}\)</strong></p>
+          <div class="stage"><div id="bin-match-row"></div></div>
+          <div class="task-box">
+            <div class="count-row">
+              <button class="btn" type="button" id="bin-match-check">Check</button>
+              <button class="btn" type="button" id="bin-match-reset">New target</button>
+            </div>
+            <p class="feedback" id="fb-bin-match">Flip bits to match the target, then Check.</p>
+          </div>
+          <p class="formula formula-locked" id="formula-bin-match">\[ 35_{(10)} = 100011_{(2)} \]</p>
+        </section>
+
+        <section class="block">
+          <h2>3B. Build from powers of \(2\)</h2>
+          <p class="hint">Turn on the bits that match the expression.</p>
+          <p class="hint" id="bin-power-expr">\(2^{6} + 2^{5} + 2^{1}\)</p>
+          <div class="stage"><div id="bin-power-row"></div></div>
+          <div class="task-box">
+            <div class="count-row">
+              <button class="btn" type="button" id="bin-power-check">Check</button>
+              <button class="btn" type="button" id="bin-power-reset">Next</button>
+            </div>
+            <p class="feedback" id="fb-bin-power">Flip bits to match the expression, then Check.</p>
+          </div>
+          <p class="formula formula-locked" id="formula-bin-power">\[ 2^{6}+2^{5}+2^{1} = 1100010_{(2)} \]</p>
+        </section>
+
+        <section class="block">
+          <h2>3C. Divide-by-\(2\) ladder</h2>
+          <p class="hint">Convert denary to binary: divide by \(2\), stack remainders bottom-up.</p>
+          <p class="hint">Convert: <strong id="bin-ladder-target">\(316_{(10)}\)</strong></p>
+          <div class="ladder-table" id="bin-ladder-table"></div>
+          <div class="task-box">
+            <div class="count-row">
+              <button class="btn" type="button" id="bin-ladder-step">Divide by 2</button>
+              <button class="btn" type="button" id="bin-ladder-check">Check</button>
+              <button class="btn" type="button" id="bin-ladder-reset">New number</button>
+            </div>
+            <p class="feedback" id="fb-bin-ladder">Click “Divide by 2” for each step.</p>
+          </div>
+          <p class="formula formula-locked" id="formula-bin-ladder">\[ 316_{(10)} = 100111100_{(2)} \]</p>
+        </section>
+
+        <p class="part-title">Part 4 · Add, subtract, order &amp; quiz</p>
+        <section class="block">
+          <h2>4A. Binary addition (denary answer)</h2>
+          <p class="hint">\(110101_{(2)} + 1101011_{(2)}\) — convert each to denary, then add.</p>
+          <div class="task-box">
+            <div class="count-row">
+              <label for="bin-add-input">Answer (denary):</label>
+              <input id="bin-add-input" type="number" min="0">
+              <button class="btn" type="button" id="bin-add-check">Check</button>
+              <button class="btn" type="button" id="bin-add-reset">Reset</button>
+            </div>
+            <p class="feedback" id="fb-bin-add">Answer the question above.</p>
+          </div>
+          <p class="formula formula-locked" id="formula-bin-add">\[ 53 + 107 = 160_{(10)} \]</p>
+        </section>
+
+        <section class="block">
+          <h2>4B. Binary subtraction (denary answer)</h2>
+          <p class="hint">\(1010111_{(2)} - 1011_{(2)}\)</p>
+          <div class="task-box">
+            <div class="count-row">
+              <label for="bin-sub-input">Answer (denary):</label>
+              <input id="bin-sub-input" type="number">
+              <button class="btn" type="button" id="bin-sub-check">Check</button>
+              <button class="btn" type="button" id="bin-sub-reset">Reset</button>
+            </div>
+            <p class="feedback" id="fb-bin-sub">Answer the question above.</p>
+          </div>
+          <p class="formula formula-locked" id="formula-bin-sub">\[ 87 - 11 = 76_{(10)} \]</p>
+        </section>
+
+        <section class="block" id="bin-order-wrap">
+          <h2>4C. Order smallest to largest</h2>
+          <p class="hint">Click cards to place them in the row (ascending denary value).</p>
+          <div class="sort-area">
+            <div class="sort-pool" id="bin-order-pool"></div>
+            <div class="sort-slots" id="bin-order-slots"></div>
+          </div>
+          <div class="task-box">
+            <div class="count-row">
+              <button class="btn" type="button" id="bin-order-check">Check</button>
+              <button class="btn" type="button" id="bin-order-reset">Reset</button>
+            </div>
+            <p class="feedback" id="fb-bin-order">Click cards to place them left-to-right (smallest first).</p>
+          </div>
+          <p class="formula formula-locked" id="formula-bin-order">\[ 28 < 55 < 57 \]</p>
+        </section>
+
+        <section class="block" id="bin-quiz-wrap">
+          <h2>4D. Quick quiz</h2>
+          <p class="hint" id="bin-quiz-prog">Question 1 of 5</p>
+          <p class="hint" id="bin-quiz-q"></p>
+          <div class="quiz-choices" id="bin-quiz-choices"></div>
+          <div class="task-box">
+            <div class="count-row">
+              <button class="btn" type="button" id="bin-quiz-reset">Restart quiz</button>
+            </div>
+            <p class="feedback" id="fb-bin-quiz"></p>
+          </div>
+        </section>
+      </div>
     </section>
 
     <section id="panel-comics" class="mode-panel hidden"></section>
@@ -523,6 +749,7 @@
 
   <script defer src="https://cdn.jsdelivr.net/npm/katex@0.16.11/dist/katex.min.js"></script>
   <script defer src="https://cdn.jsdelivr.net/npm/katex@0.16.11/dist/contrib/auto-render.min.js"></script>
+  <script defer src="law-of-indices-binary.js?v=20260729-bin"></script>
   <script>
     function renderKatex(root) {
       if (!window.renderMathInElement) return;
@@ -849,6 +1076,10 @@
     });
     document.getElementById("pow-reset").addEventListener("click", resetPow);
 
+    window.initStepper = initStepper;
+    window.revealFormula = revealFormula;
+    window.lockFormula = lockFormula;
+
     function showTab(name) {
       document.querySelectorAll(".tab").forEach((btn) => {
         btn.classList.toggle("active", btn.dataset.tab === name);
@@ -856,7 +1087,10 @@
       document.querySelectorAll(".mode-panel").forEach((panel) => {
         panel.classList.toggle("hidden", panel.id !== "panel-" + name);
       });
-      if (name === "tools") renderKatex(document.getElementById("lab-powers"));
+      if (name === "tools") {
+        const activeLab = document.querySelector(".lab.active");
+        if (activeLab) renderKatex(activeLab);
+      }
     }
     function showLab(name) {
       showTab("tools");
@@ -867,7 +1101,8 @@
         lab.classList.toggle("active", lab.id === "lab-" + name);
       });
       history.replaceState(null, "", "#" + name);
-      if (name === "powers") renderKatex(document.getElementById("lab-powers"));
+      const labEl = document.getElementById("lab-" + name);
+      if (labEl) renderKatex(labEl);
     }
     document.querySelectorAll(".tab").forEach((btn) => {
       btn.addEventListener("click", () => {
@@ -889,6 +1124,7 @@
       resetProd();
       resetQuot();
       resetPow();
+      if (window.initBinaryLab) window.initBinaryLab();
       const hash = (location.hash || "").replace("#", "");
       if (hash === "comics") showTab("comics");
       else if (hash === "binary") showLab("binary");
