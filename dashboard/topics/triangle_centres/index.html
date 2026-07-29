@@ -8,12 +8,17 @@
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
   <link href="https://fonts.googleapis.com/css2?family=Hanken+Grotesk:wght@400;600;700&display=swap" rel="stylesheet">
   <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/katex@0.16.11/dist/katex.min.css">
-  <link rel="stylesheet" href="../../shared/jm-lesson.css?v=20260729-jm">
+  <link rel="stylesheet" href="../../shared/jm-lesson.css?v=20260729-jm28">
   <style>
     body { margin:0; min-height:100vh; color:var(--text); font-family:"Hanken Grotesk",system-ui,sans-serif;
       background:linear-gradient(180deg,#f8fafc,#f1f5f9); user-select:none; }
     h1 { margin:0 0 8px; font-size:clamp(26px,4vw,36px); }
     .lead { margin:0 0 18px; color:var(--muted); font-size:15px; line-height:1.55; }
+    .note-box {
+      margin-top: 12px; padding: 12px 14px; border-radius: 12px;
+      border: 1px solid rgba(2,132,199,.25); background: rgba(2,132,199,.06);
+      font-size: 14px; line-height: 1.55; color: var(--text);
+    }
   </style>
 </head>
 <body>
@@ -21,23 +26,40 @@
     <a class="jm-back" href="../../s3.html#lessons">← S3 Lessons</a>
     <p class="jm-eyebrow">JM28 · Lesson 28</p>
     <h1>Special Line and Centres in Triangles</h1>
-    <p class="lead">Drag the vertices, then switch views to see medians, the centroid ratio, and other special lines.</p>
+    <p class="lead">Four special lines — altitude, median, angle bisector and perpendicular bisector — meet at the orthocentre, centroid, in-centre and circumcentre.</p>
     <nav class="jm-tabs" aria-label="Lesson sections">
       <button class="jm-tab active" type="button" data-tab="tools">Interactive Tools</button>
       <button class="jm-tab" type="button" data-tab="comics">Comics</button>
     </nav>
     <section id="panel-tools" class="jm-panel">
-      <p class="part-title">Part 1 · Triangle explorer</p>
+      <p class="part-title">Part 1 · Special lines &amp; centres</p>
       <section class="block">
-        <h2>1. Special lines &amp; centres</h2>
-        <p class="hint">Drag A, B or C to reshape the triangle. Pick a view — the centroid splits each median in ratio \(2:1\).</p>
+        <h2>1. Line → centre explorer</h2>
+        <p class="hint">Pick a special line. Its three lines concur at the matching centre — \(H\), \(G\), \(I\) or \(O\). Try the triangle presets (acute / right / obtuse / isosceles / equilateral).</p>
+        <div class="tool-toggle-row" id="tri-preset-btns"></div>
         <div class="tool-toggle-row" id="tri-mode-btns"></div>
         <svg class="lab-svg" id="tri-svg" viewBox="0 0 500 340" aria-label="Triangle centres lab"></svg>
-        <p class="formula" id="tri-caption">Medians meet at the centroid \(G\).</p>
+        <div class="badge-row" id="tri-type-badges"></div>
+        <p class="formula" id="tri-caption">Altitudes meet at the orthocentre \(H\).</p>
+        <div class="note-box" id="tri-placement"></div>
       </section>
+
+      <p class="part-title">Part 2 · Properties (worksheet A–D)</p>
       <section class="block">
-        <h2>2. Ratio challenge</h2>
-        <p class="hint">On median \(AD\), if \(AG = 10\) cm, how long is \(GD\)?</p>
+        <h2>2. Angle bisector &amp; perpendicular bisector</h2>
+        <p class="hint">An <strong>angle bisector</strong> splits the angle into two equal parts. A <strong>perpendicular bisector</strong> is perpendicular to a side and passes through its mid-point — any point on it is equidistant from the end-points.</p>
+        <div class="tool-toggle-row" id="tri-prop-btns">
+          <button class="btn active" type="button" data-prop="bisect">Angle bisector property</button>
+          <button class="btn" type="button" data-prop="perp">Perp. bisector property</button>
+        </div>
+        <svg class="lab-svg" id="tri-prop-svg" viewBox="0 0 500 260" aria-label="Special line properties"></svg>
+        <p class="formula" id="tri-prop-cap">If \(AD\) bisects \(\angle BAC\), then \(\angle BAD = \angle CAD\).</p>
+      </section>
+
+      <p class="part-title">Part 3 · Quick checks</p>
+      <section class="block">
+        <h2>3. Centroid ratio</h2>
+        <p class="hint">On median \(AD\), the centroid \(G\) divides \(AG : GD = 2 : 1\). If \(AG = 10\) cm, find \(GD\).</p>
         <div class="task-box">
           <div class="count-row">
             <label for="tri-check-in">\(GD\) =</label>
@@ -45,21 +67,35 @@
             <button class="btn" type="button" id="tri-check-btn">Check</button>
             <button class="btn" type="button" id="tri-check-reset">Reset</button>
           </div>
-          <p class="feedback" id="tri-check-fb">Use the \(2:1\) ratio from vertex to midpoint.</p>
+          <p class="feedback" id="tri-check-fb">Use the \(2:1\) ratio from vertex to mid-point.</p>
+        </div>
+      </section>
+      <section class="block">
+        <h2>4. Which centres may lie outside?</h2>
+        <p class="hint">(Ch 28 E Q19) In an obtuse-angled triangle, which centres can lie <em>outside</em> the triangle?</p>
+        <div class="task-box">
+          <div class="count-row">
+            <button class="btn" type="button" data-mc="A">In-centre &amp; circumcentre</button>
+            <button class="btn" type="button" data-mc="B">In-centre &amp; centroid</button>
+            <button class="btn" type="button" data-mc="C">Circumcentre &amp; orthocentre</button>
+            <button class="btn" type="button" data-mc="D">Orthocentre &amp; centroid</button>
+          </div>
+          <button class="btn" type="button" id="tri-mc-check" style="margin-top:10px">Check</button>
+          <p class="feedback" id="tri-mc-fb">In-centre and centroid always lie inside.</p>
         </div>
       </section>
     </section>
     <section id="panel-comics" class="jm-panel hidden">
-      <div id="comics-subnav"></div>
-      <div id="comics-stage"></div>
+      <section class="block">
+        <h2>Comics</h2>
+        <p class="hint">Comics for this topic are coming soon.</p>
+      </section>
     </section>
   </main>
   <script defer src="https://cdn.jsdelivr.net/npm/katex@0.16.11/dist/katex.min.js"></script>
   <script defer src="https://cdn.jsdelivr.net/npm/katex@0.16.11/dist/contrib/auto-render.min.js"></script>
-  <script defer src="../../shared/jm-tabs.js?v=20260729-jm"></script>
-  <script defer src="../../shared/jm-comics-engine.js?v=20260729-jm"></script>
-  <script defer src="triangle-centres-tools.js?v=20260729-jm"></script>
-  <script defer src="triangle-centres-comics.js?v=20260729-jm"></script>
+  <script defer src="../../shared/jm-tabs.js?v=20260729-jm28"></script>
+  <script defer src="triangle-centres-tools.js?v=20260729-jm28"></script>
   <script>
     document.addEventListener("DOMContentLoaded", function () {
       if (window.initJmTabs) window.initJmTabs();
