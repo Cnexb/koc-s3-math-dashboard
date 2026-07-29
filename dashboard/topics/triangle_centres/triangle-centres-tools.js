@@ -274,6 +274,24 @@
     return t;
   }
 
+  function centreLabel(g, p, v, text, col) {
+    var c = triCenter(v);
+    var best = c;
+    var bestScore = -Infinity;
+    [c].concat(v).forEach(function (avoid) {
+      var dx = p.x - avoid.x;
+      var dy = p.y - avoid.y;
+      var d = Math.hypot(dx, dy) || 1;
+      var score = d;
+      if (Math.abs(dx) + Math.abs(dy) < 8) score -= 40;
+      if (score > bestScore) {
+        bestScore = score;
+        best = avoid;
+      }
+    });
+    g.appendChild(labelAway(p, best, text, col, 24));
+  }
+
   function vertexLabels(g, v) {
     var c = triCenter(v);
     ["A", "B", "C"].forEach(function (name, i) {
@@ -288,14 +306,6 @@
       if (Math.abs(angles[i] - 90) < 3.5) return i;
     }
     return -1;
-  }
-
-  function drawRightAngleAtVertex(g, v) {
-    var ri = rightAngleVertexIndex(v);
-    if (ri < 0) return;
-    var prev = v[(ri + 2) % 3];
-    var next = v[(ri + 1) % 3];
-    g.appendChild(rightAngle(v[ri], prev, next, 11));
   }
 
   function sideMarkPlan(kind, sides) {
@@ -315,6 +325,13 @@
       return plan;
     }
     return plan;
+  }
+
+  function sideTickLevels(v, kind) {
+    var sides = sideLengths(v);
+    if (kind === "equilateral") return [1, 1, 1];
+    if (kind === "isosceles") return sideMarkPlan(kind, sides);
+    return SIDE_TICKS.slice();
   }
 
   function drawSideEqualityMarks(g, v, kind) {
@@ -407,7 +424,15 @@
     drawTriOutline(svg, verts);
     drawSideEqualityMarks(svg, verts, kind);
 
-    if (kind === "right") drawRightAngleAtVertex(svg, verts);
+    if (kind === "right") {
+      var raSize = mode === "bisector" ? 8 : 11;
+      var ri = rightAngleVertexIndex(verts);
+      if (ri >= 0) {
+        var prev = verts[(ri + 2) % 3];
+        var next = verts[(ri + 1) % 3];
+        svg.appendChild(rightAngle(verts[ri], prev, next, raSize));
+      }
+    }
 
     if (mode === "altitude") {
       var H = orthocentre(verts);
@@ -416,6 +441,7 @@
         var B = verts[(i + 1) % 3];
         var C = verts[(i + 2) % 3];
         var F = foot(v, B, C);
+        viewPts.push(F);
         var end = H || F;
         var tip = extendThrough(v, end, H ? 18 : 0);
         svg.appendChild(seg(v, tip, ACCENT));
@@ -424,7 +450,7 @@
       });
       if (H) {
         svg.appendChild(dot(H, "#2dd4bf", 6));
-        svg.appendChild(labelAway(H, c, "H", "#2dd4bf", 22));
+        centreLabel(svg, H, verts, "H", "#2dd4bf");
       }
       setPlacement("altitude", kind, H, verts);
     }
@@ -432,19 +458,20 @@
     if (mode === "median") {
       var G = centroid(verts);
       viewPts.push(G);
+      var sideTicks = sideTickLevels(verts, kind);
       verts.forEach(function (v, i) {
         var opp = [(i + 1) % 3, (i + 2) % 3];
         var p1 = verts[opp[0]];
         var p2 = verts[opp[1]];
+        var sideIdx = opp[0];
         var M = mid(p1, p2);
-        var tickLevel = SIDE_TICKS[i];
         svg.appendChild(seg(v, M, ACCENT));
         svg.appendChild(dot(M, MUTED, 3.5));
-        svg.appendChild(medianHalfMarks(p1, M, p2, tickLevel));
+        svg.appendChild(medianHalfMarks(p1, M, p2, sideTicks[sideIdx]));
         if (i === 0) svg.appendChild(labelAway(M, c, "D", MUTED, 16));
       });
       svg.appendChild(dot(G, MARK, 6));
-      svg.appendChild(labelAway(G, c, "G", MARK, 22));
+      centreLabel(svg, G, verts, "G", MARK);
       setPlacement("median", kind, G, verts);
     }
 
@@ -460,13 +487,14 @@
         svg.appendChild(outwardArcs(v, I, C, arcPlan[i], 16));
       });
       svg.appendChild(dot(I, "#a78bfa", 6));
-      svg.appendChild(labelAway(I, c, "I", "#a78bfa", 22));
+      centreLabel(svg, I, verts, "I", "#a78bfa");
       setPlacement("bisector", kind, I, verts);
     }
 
     if (mode === "perp") {
       var O = circumcentre(verts);
       if (O) viewPts.push(O);
+      var sideTicks = sideTickLevels(verts, kind);
       [[0, 1], [1, 2], [2, 0]].forEach(function (pair, idx) {
         var p1 = verts[pair[0]];
         var p2 = verts[pair[1]];
@@ -479,11 +507,11 @@
         svg.appendChild(seg(near, far, "#f87171"));
         svg.appendChild(dot(M, MUTED, 3.5));
         svg.appendChild(rightAngle(M, p1, p2, 10));
-        svg.appendChild(medianHalfMarks(p1, M, p2, SIDE_TICKS[idx]));
+        svg.appendChild(medianHalfMarks(p1, M, p2, sideTicks[idx]));
       });
       if (O) {
         svg.appendChild(dot(O, "#f87171", 6));
-        svg.appendChild(labelAway(O, c, "O", "#f87171", 22));
+        centreLabel(svg, O, verts, "O", "#f87171");
       }
       setPlacement("perp", kind, O, verts);
     }
