@@ -3,7 +3,7 @@
 (function () {
   "use strict";
 
-  const COMIC_ASSET_V = "20260727a";
+  const COMIC_ASSET_V = "20260729a";
 
   const COMICS = [
     {
@@ -11,7 +11,31 @@
       title: "Enter Solid City",
       chapter: "Ch.1 · Page 1 · Pyramids & cones",
       image: "comics/01-enter-solid-city.png?v=" + COMIC_ASSET_V,
-      checks: [],
+      checks: [
+        {
+          id: "c1q1",
+          prompt:
+            "A right pyramid has base area B = $24$ cm² and perpendicular height h = $9$ cm. What is its volume?",
+          choices: [
+            "72\\text{ cm}^3",
+            "216\\text{ cm}^3",
+            "24\\text{ cm}^3",
+            "108\\text{ cm}^3",
+          ],
+          answer: 0,
+          explain:
+            "V(pyramid) = (1/3)Bh = (1/3) × 24 × 9 = 72 cm³. Do not forget the one-third.",
+        },
+        {
+          id: "c1q2",
+          prompt:
+            "A cone has radius r = $4$ cm and height h = $9$ cm. What is its volume? (Leave π in the answer.)",
+          choices: ["48\\pi", "144\\pi", "36\\pi", "16\\pi"],
+          answer: 0,
+          explain:
+            "V(cone) = (1/3)πr²h = (1/3)π(16)(9) = 48π. A cone uses the same one-third factor as a pyramid.",
+        },
+      ],
     },
     {
       id: "why-one-third",
@@ -22,8 +46,13 @@
         {
           id: "c2q1",
           prompt:
-            "A square pyramid has base area B = 36 cm² and perpendicular height h = 10 cm. What is its volume?",
-          choices: ["120 cm³", "360 cm³", "180 cm³", "36 cm³"],
+            "A square pyramid has base area B = $36$ cm² and perpendicular height h = $10$ cm. What is its volume?",
+          choices: [
+            "120\\text{ cm}^3",
+            "360\\text{ cm}^3",
+            "180\\text{ cm}^3",
+            "36\\text{ cm}^3",
+          ],
           answer: 0,
           explain:
             "V(pyramid) = (1/3)Bh = (1/3) × 36 × 10 = 120 cm³. Do not forget the one-third.",
@@ -31,8 +60,8 @@
         {
           id: "c2q2",
           prompt:
-            "A cone has radius r = 3 and height h = 7. What is its volume? (Leave π in the answer.)",
-          choices: ["21π", "63π", "7π", "9π"],
+            "A cone has radius r = $3$ cm and height h = $7$ cm. What is its volume? (Leave π in the answer.)",
+          choices: ["21\\pi", "63\\pi", "7\\pi", "9\\pi"],
           answer: 0,
           explain:
             "A cone is a circular-base pyramid: V = (1/3)πr²h = (1/3)π(9)(7) = 21π.",
@@ -44,7 +73,36 @@
       title: "Every Solid Is Born Flat",
       chapter: "Ch.1 · Page 3 · Nets & total surface area",
       image: "comics/03-every-solid-born-flat.png?v=" + COMIC_ASSET_V,
-      checks: [],
+      checks: [
+        {
+          id: "c3q1",
+          prompt:
+            "A cube has edge length $4$ cm. What is its total surface area?",
+          choices: [
+            "96\\text{ cm}^2",
+            "16\\text{ cm}^2",
+            "64\\text{ cm}^2",
+            "24\\text{ cm}^2",
+          ],
+          answer: 0,
+          explain:
+            "TSA(cube) = 6 × (edge)² = 6 × 16 = 96 cm². A cube has six identical square faces.",
+        },
+        {
+          id: "c3q2",
+          prompt:
+            "An open-top box is a rectangular prism with length $5$ cm, width $3$ cm and height $2$ cm. What is its total surface area?",
+          choices: [
+            "47\\text{ cm}^2",
+            "62\\text{ cm}^2",
+            "32\\text{ cm}^2",
+            "15\\text{ cm}^2",
+          ],
+          answer: 0,
+          explain:
+            "Open top means five faces: base 5×3 = 15; two 5×2 faces = 20; two 3×2 faces = 12. Total = 47 cm².",
+        },
+      ],
     },
     {
       id: "net-maternity-ward",
@@ -55,20 +113,30 @@
         {
           id: "c4q1",
           prompt:
-            "A right prism has base area B = 20, base perimeter P = 18 and height h = 5. What is its total surface area?",
-          choices: ["130", "90", "110", "40"],
+            "A right prism has base area B = $20$ cm², base perimeter P = $18$ cm and height h = $5$ cm. What is its total surface area?",
+          choices: [
+            "130\\text{ cm}^2",
+            "90\\text{ cm}^2",
+            "110\\text{ cm}^2",
+            "40\\text{ cm}^2",
+          ],
           answer: 0,
           explain:
-            "TSA(right prism) = 2B + Ph = 2(20) + 18(5) = 40 + 90 = 130.",
+            "TSA(right prism) = 2B + Ph = 2(20) + 18(5) = 40 + 90 = 130 cm².",
         },
         {
           id: "c4q2",
           prompt:
-            "A regular pyramid has base area B = 36, base perimeter P = 24 and slant height ℓ = 10. What is its total surface area?",
-          choices: ["156", "120", "240", "96"],
+            "A regular pyramid has base area B = $36$ cm², base perimeter P = $24$ cm and slant height ℓ = $10$ cm. What is its total surface area?",
+          choices: [
+            "156\\text{ cm}^2",
+            "120\\text{ cm}^2",
+            "240\\text{ cm}^2",
+            "96\\text{ cm}^2",
+          ],
           answer: 0,
           explain:
-            "Lateral area = (1/2)Pℓ = (1/2)(24)(10) = 120. TSA = B + (1/2)Pℓ = 36 + 120 = 156.",
+            "Lateral area = (1/2)Pℓ = (1/2)(24)(10) = 120. TSA = B + (1/2)Pℓ = 36 + 120 = 156 cm².",
         },
       ],
     },
@@ -81,8 +149,8 @@
         {
           id: "c5q1",
           prompt:
-            "A sphere has radius r = 3. What is its volume? (Leave π in the answer.)",
-          choices: ["36π", "12π", "9π", "4π"],
+            "A sphere has radius r = $3$ cm. What is its volume? (Leave π in the answer.)",
+          choices: ["36\\pi", "12\\pi", "9\\pi", "4\\pi"],
           answer: 0,
           explain:
             "V(sphere) = (4/3)πr³ = (4/3)π(27) = 36π.",
@@ -90,8 +158,8 @@
         {
           id: "c5q2",
           prompt:
-            "A solid hemisphere has radius r = 6. What is its volume? (Leave π in the answer.)",
-          choices: ["144π", "288π", "72π", "216π"],
+            "A solid hemisphere has radius r = $6$ cm. What is its volume? (Leave π in the answer.)",
+          choices: ["144\\pi", "288\\pi", "72\\pi", "216\\pi"],
           answer: 0,
           explain:
             "V(hemisphere) = (2/3)πr³ = (2/3)π(216) = 144π. (Half of a sphere of the same radius.)",
@@ -107,8 +175,8 @@
         {
           id: "c6q1",
           prompt:
-            "A sphere has radius r = 2. What is its surface area? (Leave π in the answer.)",
-          choices: ["16π", "8π", "4π", "32π/3"],
+            "A sphere has radius r = $2$ cm. What is its surface area? (Leave π in the answer.)",
+          choices: ["16\\pi", "8\\pi", "4\\pi", "32\\pi/3"],
           answer: 0,
           explain:
             "SA(sphere) = 4πr² = 4π(4) = 16π. (About four great circles of area πr².)",
@@ -116,8 +184,8 @@
         {
           id: "c6q2",
           prompt:
-            "A solid hemisphere has radius r = 5. What is its total surface area (curved surface + flat circular face)? (Leave π in the answer.)",
-          choices: ["75π", "50π", "25π", "100π"],
+            "A solid hemisphere has radius r = $5$ cm. What is its total surface area? (Leave π in the answer.)",
+          choices: ["75\\pi", "50\\pi", "25\\pi", "100\\pi"],
           answer: 0,
           explain:
             "Curved SA = 2πr² = 50π; flat base = πr² = 25π. Total = 3πr² = 75π.",
@@ -125,6 +193,29 @@
       ],
     },
   ];
+
+  function renderMixedTex(el, text) {
+    if (!text) return;
+    if (!window.katex || !/\$[^$]+\$/.test(text)) {
+      el.textContent = text;
+      return;
+    }
+    el.textContent = "";
+    text.split(/(\$[^$]+\$)/).forEach(function (part) {
+      if (!part) return;
+      if (part.charAt(0) === "$" && part.charAt(part.length - 1) === "$") {
+        const span = document.createElement("span");
+        try {
+          katex.render(part.slice(1, -1), span, { throwOnError: false });
+        } catch (e) {
+          span.textContent = part;
+        }
+        el.appendChild(span);
+      } else {
+        el.appendChild(document.createTextNode(part));
+      }
+    });
+  }
 
   function renderMaybeTex(el, text) {
     if (text.indexOf("\\") >= 0 && window.katex) {
@@ -135,7 +226,7 @@
         /* fall through */
       }
     }
-    el.textContent = text;
+    renderMixedTex(el, text);
   }
 
   function initComics() {
@@ -250,7 +341,7 @@
       num.textContent = qi + 1 + ".";
       const prompt = document.createElement("div");
       prompt.className = "quiz-prompt";
-      prompt.textContent = q.prompt;
+      renderMixedTex(prompt, q.prompt);
       head.appendChild(num);
       head.appendChild(prompt);
       if (answered) {
