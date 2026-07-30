@@ -314,7 +314,7 @@
       { x: 90, y: 270 }, { x: 420, y: 270 }, { x: 420, y: 80 }, { x: 90, y: 80 },
     ],
     square: [
-      { x: 120, y: 290 }, { x: 380, y: 290 }, { x: 380, y: 70 }, { x: 120, y: 70 },
+      { x: 130, y: 300 }, { x: 390, y: 300 }, { x: 390, y: 40 }, { x: 130, y: 40 },
     ],
   };
 
@@ -330,16 +330,13 @@
     var allSidesEq = eqAB_AD && eqAB_BC && eqBC_CD && eqAB_DC;
     var angA = angleAt(D, A, B), angB = angleAt(A, B, C), angC = angleAt(B, C, D), angD = angleAt(C, D, A);
     var all90 = [angA, angB, angC, angD].every(function (a) { return nearly(a, 90, EPS_ANG); });
-    var rightCount = [angA, angB, angC, angD].filter(function (a) { return nearly(a, 90, EPS_ANG); }).length;
-    // Right angles ⇒ opposite sides // (rectangle / square)
-    if (all90 || rightCount >= 3) {
+    // Adjacent sides nearly ⊥ (same idea as all ~90°, no parallel forcing)
+    if (!all90 && isPerp(A, B, B, C) && isPerp(B, C, C, D) && isPerp(C, D, D, A) && isPerp(D, A, A, B)) {
       all90 = true;
-      parAB_DC = true;
-      parAD_BC = true;
     }
-    // Adjacent sides nearly ⊥ also helps
-    if (isPerp(A, B, B, C) && isPerp(B, C, C, D) && isPerp(C, D, D, A) && isPerp(D, A, A, B)) {
-      all90 = true;
+    // True rectangle/square: all right angles + opposite sides equal ⇒ both pairs //
+    // Do NOT force // from angles alone (that made “3 equal sides + ~90°” look like a rectangle).
+    if (all90 && eqAB_DC && eqAD_BC) {
       parAB_DC = true;
       parAD_BC = true;
     }
@@ -349,11 +346,14 @@
     var Oac = mid(A, C), Obd = mid(B, D);
     var diagsBisect = dist(Oac, Obd) < 16;
 
+    // //gram needs both pairs // and opposite sides equal (avoids tolerance mismatch)
+    var isPara = bothPar && eqAB_DC && eqAD_BC;
+
     var names = { square: false, rectangle: false, rhombus: false, parallelogram: false, trapezium: false, quad: true };
     if (onePar) names.trapezium = true;
-    if (bothPar) {
+    if (isPara) {
       names.parallelogram = true;
-      if (allSidesEq || (eqAB_DC && eqAD_BC && eqAB_AD)) names.rhombus = true;
+      if (allSidesEq || eqAB_AD) names.rhombus = true;
       if (all90) names.rectangle = true;
       if (names.rhombus && names.rectangle) names.square = true;
     }
