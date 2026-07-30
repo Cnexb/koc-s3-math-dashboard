@@ -47,8 +47,8 @@
     right: [{ x: 100, y: 300 }, { x: 380, y: 300 }, { x: 100, y: 95 }],
     // Isosceles right at A: AB = AC, ∠A = 90°
     isoscelesRight: [{ x: 100, y: 300 }, { x: 320, y: 300 }, { x: 100, y: 80 }],
-    // Obtuse isosceles at A: AB = AC, ∠A > 90°
-    obtuse: [{ x: 250, y: 200 }, { x: 100, y: 300 }, { x: 400, y: 300 }],
+    // Scalene obtuse at A; H and O clear of vertices in fixed box
+    obtuse: [{ x: 170, y: 220 }, { x: 400, y: 300 }, { x: 140, y: 60 }],
     // AC = BC (isosceles at C), acute
     isosceles: [{ x: 150, y: 300 }, { x: 350, y: 300 }, { x: 250, y: 85 }],
     equilateral: [{ x: 130, y: 300 }, { x: 370, y: 300 }, { x: 250, y: 92.2 }],
@@ -636,7 +636,6 @@
     }
 
     if (mode === "altitude") {
-      drawSideEqualityMarks(svg, verts);
       var H = orthocentre(verts);
       var altLines = [];
       verts.forEach(function (v, i) {
@@ -661,6 +660,7 @@
         svg.appendChild(dot(F, MUTED, 3.5));
         svg.appendChild(rightAngle(F, v, B, 10));
       });
+      drawSideEqualityMarks(svg, verts);
       if (H) {
         svg.appendChild(dot(H, "#2dd4bf", 6));
         centreLabel(svg, H, verts, "H", "#2dd4bf", altLines);
@@ -692,7 +692,6 @@
     }
 
     if (mode === "bisector") {
-      drawSideEqualityMarks(svg, verts);
       var I = incentre(verts);
       var arcPlan = angleArcPlan(verts);
       var bisLines = [];
@@ -703,6 +702,11 @@
         var tip = extendThrough(v, hit, 14);
         svg.appendChild(seg(v, tip, I_LINE));
         bisLines.push([v, tip]);
+      });
+      drawSideEqualityMarks(svg, verts);
+      verts.forEach(function (v, i) {
+        var B = verts[(i + 1) % 3];
+        var C = verts[(i + 2) % 3];
         svg.appendChild(bisectorArcMarks(v, B, C, I, arcPlan[i], 16));
       });
       svg.appendChild(dot(I, I_COLOR, 7));
