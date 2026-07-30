@@ -9,9 +9,10 @@
   var MARK = "#fbbf24";
   var TICK = "#f87171";
   var VIOLET = "#a78bfa";
-  var EPS_PAR = 0.20;
-  var EPS_LEN = 7;    // tighter equal-length
-  var EPS_ANG = 11;
+  var EPS_PAR = 0.08;  // ~4.6° — tougher, closer to JM28 feel
+  var EPS_LEN_REL = 0.04; // 4% of average length (like triangle centres)
+  var EPS_ANG = 6;
+
 
 
   var LABS = [
@@ -55,12 +56,20 @@
     var mag = (Math.hypot(u.x, u.y) * Math.hypot(v.x, v.y)) || 1;
     return cross / mag < EPS_PAR;
   }
-  function isEqualLen(a, b, c, d) { return Math.abs(dist(a, b) - dist(c, d)) < EPS_LEN; }
+  function isEqualLen(a, b, c, d) {
+    var l1 = dist(a, b), l2 = dist(c, d);
+    var avg = (l1 + l2) / 2 || 1;
+    return Math.abs(l1 - l2) < avg * EPS_LEN_REL;
+  }
   function isPerp(a, b, c, d) {
     var u = sub(b, a), v = sub(d, c);
     var dot = Math.abs(u.x * v.x + u.y * v.y);
     var mag = (Math.hypot(u.x, u.y) * Math.hypot(v.x, v.y)) || 1;
-    return dot / mag < EPS_PAR; // |cos| small ⇒ near 90°
+    return dot / mag < EPS_PAR;
+  }
+  function lensClose(l1, l2) {
+    var avg = (l1 + l2) / 2 || 1;
+    return Math.abs(l1 - l2) < avg * EPS_LEN_REL;
   }
   function angleAt(prev, cur, next) {
     var u = unit(cur, prev), v = unit(cur, next);
@@ -169,8 +178,8 @@
   }
 
   /** Cluster segments by length; return tick count per index (0 = no mark). */
-  function equalTickGroups(segs, eps) {
-    eps = eps == null ? EPS_LEN : eps;
+  function equalTickGroups(segs, epsRel) {
+    epsRel = epsRel == null ? EPS_LEN_REL : epsRel;
     var n = segs.length;
     var parent = [];
     for (var i = 0; i < n; i++) parent[i] = i;
@@ -181,7 +190,8 @@
     }
     for (var i = 0; i < n; i++) {
       for (var j = i + 1; j < n; j++) {
-        if (Math.abs(segs[i].len - segs[j].len) < eps) uni(i, j);
+        var avg = (segs[i].len + segs[j].len) / 2 || 1;
+        if (Math.abs(segs[i].len - segs[j].len) < avg * epsRel) uni(i, j);
       }
     }
     var groups = {};
@@ -900,23 +910,19 @@
 
     var dAB = dist(P0[0], P0[1]), dBC = dist(P0[1], P0[2]);
     var dDE = dist(P1[0], P1[1]), dEF = dist(P1[1], P1[2]);
-    var equalLeft = Math.abs(dAB - dBC) < 8;
-    var equalRight = Math.abs(dDE - dEF) < 8;
-    var midY = Math.abs((thmY[1] - thmY[0]) - (thmY[2] - thmY[1])) < 6;
+    var equalLeft = lensClose(dAB, dBC);
+    var equalRight = lensClose(dDE, dEF);
 
     if (thmMode === "intercept") {
       if (equalLeft) {
-        svg.appendChild(tickMark(P0[0], P0[1], 1, ACCENT));
-        svg.appendChild(tickMark(P0[1], P0[2], 1, ACCENT));
+        svg.appendChild(tickMark(P0[0], P0[1], 1, ACCENT, 0.5));
+        svg.appendChild(tickMark(P0[1], P0[2], 1, ACCENT, 0.5));
       }
       if (equalRight) {
-        svg.appendChild(tickMark(P1[0], P1[1], 1, VIOLET));
-        svg.appendChild(tickMark(P1[1], P1[2], 1, VIOLET));
+        svg.appendChild(tickMark(P1[0], P1[1], 1, VIOLET, 0.5));
+        svg.appendChild(tickMark(P1[1], P1[2], 1, VIOLET, 0.5));
       }
-      // segment BE (middle //)
-      svg.appendChild(seg(P0[1], P1[1], MARK, 2));
     } else {
-      // Mid-pt. thm. view: treat △ACF? Use apex = intersection of transversals
       var den = (L0[1].x - L0[0].x) * (L1[1].y - L1[0].y) - (L0[1].y - L0[0].y) * (L1[1].x - L1[0].x);
       var apex = null;
       if (Math.abs(den) > 1e-6) {
@@ -924,25 +930,14 @@
         apex = { x: L0[0].x + t * (L0[1].x - L0[0].x), y: L0[0].y + t * (L0[1].y - L0[0].y) };
       }
       if (apex && apex.y < thmY[0] - 5 && apex.x > 20 && apex.x < 500) {
-        svg.appendChild(E("circle", { cx: apex.x, cy: apex.y, r: 6, fill: MARK, stroke: "#0f172a", "stroke-width": 1.5 }));
+        svg.appendChild(E("circle", { cx: apex.x, cy: apex.y, r: 5, fill: INK, stroke: MARK, "stroke-width": 1.5 }));
         svg.appendChild(labelAt(apex, "P", 8, -8, MARK));
-        // midpoints of PC and PF? Use mid of PA-PC along left: B is mid of AC when equal spacing
-        svg.appendChild(seg(P0[0], P1[0], "#64748b", 1.5));
-        svg.appendChild(seg(P0[2], P1[2], INK, 3));
-        svg.appendChild(seg(P0[1], P1[1], GOOD, 3.5));
-        svg.appendChild(parallelArrows(P0[1], P1[1], 1));
-        svg.appendChild(parallelArrows(P0[2], P1[2], 1));
-        if (equalLeft || midY) {
-          svg.appendChild(tickMark(P0[0], P0[1], 1, ACCENT));
-          svg.appendChild(tickMark(P0[1], P0[2], 1, ACCENT));
-          svg.appendChild(tickMark(P1[0], P1[1], 1, VIOLET));
-          svg.appendChild(tickMark(P1[1], P1[2], 1, VIOLET));
-        }
-      } else {
-        svg.appendChild(seg(P0[1], P1[1], GOOD, 3));
-        svg.appendChild(seg(P0[2], P1[2], INK, 3));
-        svg.appendChild(parallelArrows(P0[1], P1[1], 1));
-        svg.appendChild(parallelArrows(P0[2], P1[2], 1));
+      }
+      if (equalLeft && equalRight) {
+        svg.appendChild(tickMark(P0[0], P0[1], 1, ACCENT, 0.5));
+        svg.appendChild(tickMark(P0[1], P0[2], 1, ACCENT, 0.5));
+        svg.appendChild(tickMark(P1[0], P1[1], 1, VIOLET, 0.5));
+        svg.appendChild(tickMark(P1[1], P1[2], 1, VIOLET, 0.5));
       }
     }
 
@@ -964,12 +959,12 @@
       renderMixed(document.getElementById("thm-caption"),
         "Intercept thm.: if \\(AB = BC\\) on one transversal, then \\(DE = EF\\) on the other.");
       renderMixed(document.getElementById("thm-note"),
-        "Space the three // lines so blue intercepts match (drag gold handles). Purple intercepts become equal too. Reason: **[intercept thm.]**. Notation: lines are **//**, not ∥.");
+        "Drag near the left end of each green line to move it. Drag blue/purple end-handles to tilt the transversals. When blue intercepts match, purple intercepts match too. Reason: **[intercept thm.]**");
     } else {
       renderMixed(document.getElementById("thm-caption"),
-        "Mid-pt. thm.: segment joining mid-points is // to the third side and half as long.");
+        "Mid-pt. thm.: when \\(B\\), \\(E\\) are mid-points, \\(BE\\)//\\(CF\\) and \\(BE = \\dfrac{1}{2}CF\\).");
       renderMixed(document.getElementById("thm-note"),
-        "Make \\(AB = BC\\) and \\(DE = EF\\) (middle // line through the mid-points). Then \\(BE\\)//\\(CF\\) and \\(BE = \\dfrac{1}{2}CF\\). Example: \\(DE\\)//\\(BC\\), \\(DE = \\dfrac{1}{2}BC\\). Reason: **[mid-pt. thm.]**");
+        "Space the three // lines evenly so \\(AB = BC\\) and \\(DE = EF\\). Then the middle intercept is // to the bottom one and half as long. Reason: **[mid-pt. thm.]** Example: \\(DE\\)//\\(BC\\), \\(DE = \\dfrac{1}{2}BC\\).");
     }
   }
 
