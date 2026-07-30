@@ -146,6 +146,22 @@
   /* ─────────────────────────── games tab ─────────────────────────── */
   let activeGameMode = "mart";
 
+  function applyGameSymbols() {
+    // Force Unicode labels via JS escapes so HTML encoding never garbles them.
+    const labels = { "/": "\u00F7", "*": "\u00D7", "-": "\u2212", BK: "\u232B" };
+    document.querySelectorAll("#pg-calc-keys .pg-calc-key[data-k]").forEach((btn) => {
+      const sym = labels[btn.dataset.k];
+      if (sym) {
+        btn.textContent = sym;
+        btn.classList.add("sym");
+      }
+    });
+    const dpadHtml = '<span class="pg-sym">\u2191/\u2193 highlight</span>';
+    document.querySelectorAll(".pg-dpad > span:first-child").forEach((el) => {
+      el.outerHTML = dpadHtml;
+    });
+  }
+
   function showGameMode(mode) {
     activeGameMode = mode || "mart";
     const mart = document.getElementById("game-mart");
@@ -158,19 +174,22 @@
     if (bank) bank.classList.toggle("hidden", activeGameMode !== "bank");
     if (window.PctMartGame) window.PctMartGame.hide();
     if (window.PctBankGame) window.PctBankGame.hide();
+    const arrowHint =
+      '<span class="pg-sym">\u2191/\u2193 highlight</span> | Enter confirm | pocket calc for working';
     if (activeGameMode === "bank") {
       if (window.PctBankGame) window.PctBankGame.show();
       if (window.PctCalc) window.PctCalc.setTip("bank");
-      if (hint) hint.innerHTML = "City Bank &mdash; simple vs compound interest.<br>&uarr; &darr; highlight | Enter confirm | pocket calc for working";
+      if (hint) hint.innerHTML = "City Bank &mdash; simple vs compound interest.<br>" + arrowHint;
     } else {
       if (window.PctMartGame) window.PctMartGame.show();
       if (window.PctCalc) window.PctCalc.setTip("mart");
-      if (hint) hint.innerHTML = "Super Mart &mdash; profit, discount &amp; marked price.<br>&uarr; &darr; highlight | Enter confirm | pocket calc for working";
+      if (hint) hint.innerHTML = "Super Mart &mdash; profit, discount &amp; marked price.<br>" + arrowHint;
     }
   }
 
   function initGames() {
     if (window.initPctCalculator) window.initPctCalculator();
+    applyGameSymbols();
     document.querySelectorAll("[data-game]").forEach((b) => {
       b.addEventListener("click", () => showGameMode(b.dataset.game));
     });

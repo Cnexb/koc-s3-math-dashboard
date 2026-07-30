@@ -348,6 +348,7 @@
       slides: document.getElementById("panel-slides"),
       tools: document.getElementById("panel-tools"),
       game: document.getElementById("panel-game"),
+      comics: document.getElementById("panel-comics"),
       quiz: document.getElementById("panel-quiz"),
     };
     tabs.forEach((t) => t.addEventListener("click", () => {

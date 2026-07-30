@@ -3,20 +3,20 @@
 <head>
   <meta charset="utf-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>Percentages ??KOC S3 Math</title>
+  <title>Percentages — KOC S3 Math</title>
   <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/katex@0.16.11/dist/katex.min.css" crossorigin="anonymous">
   <script defer src="https://cdn.jsdelivr.net/npm/katex@0.16.11/dist/katex.min.js" crossorigin="anonymous"></script>
   <link href="https://fonts.googleapis.com/css2?family=Hanken+Grotesk:wght@400;600;700&family=JetBrains+Mono:wght@400;700&display=swap" rel="stylesheet">
   <link href="https://fonts.googleapis.com/css2?family=Press+Start+2P&display=swap" rel="stylesheet">
-  <link rel="stylesheet" href="../../shared/topic-shell.css?v=20260725-fixes6">
+  <link rel="stylesheet" href="../../shared/topic-shell.css?v=20260725-fixes7">
   <script defer src="../../shared/deck-touch-nav.js?v=20260725-fixes6"></script>
   <script defer src="../../shared/phone-compact.js?v=20260711-phone"></script>
-  <script defer src="../../shared/embed-nav.js?v=20260730-gallery"></script>
+  <script defer src="../../shared/embed-nav.js?v=20260710-deck-16x9"></script>
   <script defer src="percentage-game-engine.js?v=20260719-hold"></script>
-  <script defer src="percentage-calc.js"></script>
+  <script defer src="percentage-calc.js?v=20260725-fixes7"></script>
   <script defer src="percentage-game.js"></script>
   <script defer src="percentage-bank-game.js"></script>
-  <script defer src="percentage-tools.js?v=20260725-fixes6"></script>
+  <script defer src="percentage-tools.js?v=20260725-fixes8"></script>
   <script defer src="percentage-quiz.js?v=20260725-fixes6"></script>
   <script defer src="percentage-comics.js?v=20260725-comics-imgs"></script>
   <style>
@@ -47,7 +47,7 @@
       font-size: 14px; transition: all .15s; }
     .chip:hover { color: var(--ink); }
     .chip.active { color: #06283d; background: var(--a); border-color: var(--a); }
-    /* Tab 1: slide deck ??height from topic-shell.css */
+    /* Tab 1: slide deck — height from topic-shell.css */
     .deck-wrap { background: #000; border: 1px solid var(--line); border-radius: 12px; overflow: hidden; }
     .hint { color: var(--dim); font-size: 13px; text-align: center; margin-top: 10px; }
     /* placeholder */
@@ -174,7 +174,7 @@
     .gb-title-start.blink { opacity: 1; animation: pgblink 1s step-end infinite; }
     @keyframes pgblink { 50% { opacity: 0; } }
 
-    /* choice menu ??boxed JRPG style, not a plain > list */
+    /* choice menu — boxed JRPG style, not a plain > list */
     .pg-choices {
       margin: 0 14px 14px;
       padding: 12px;
@@ -351,13 +351,17 @@
       color: #5a6648;
     }
 
-    .pg-sym, .pg-calc-key.op {
-      font-family: "JetBrains Mono", "Segoe UI Symbol", "Apple Symbols", sans-serif;
+    .pg-sym,
+    .pg-calc-key.op,
+    .pg-calc-key.sym {
+      font-family: "JetBrains Mono", "Segoe UI Symbol", "Apple Symbols", "Noto Sans Symbols 2", sans-serif !important;
       font-weight: 700;
+      letter-spacing: 0;
     }
     .pg-sym { font-size: 12px; }
-    .pg-calc-key.op { font-size: 13px; }
-    .pg-dpad span { background: #7a8668; border: 2px solid #5a6648; border-radius: 4px; padding: 6px 10px; }
+    .pg-calc-key.op,
+    .pg-calc-key.sym { font-size: 14px; }
+    .pg-dpad > span { background: #7a8668; border: 2px solid #5a6648; border-radius: 4px; padding: 6px 10px; }
     @media (max-width: 520px) {
       #pg-text, #bg-text, .pg-dialog-text, .pg-opt-label { font-size: 11px; }
       .pg-opt { font-size: 11px; padding: 12px 12px; }
@@ -377,7 +381,7 @@
       .pg-layout { grid-template-columns: 1fr; }
     }
 
-    /* pocket calculator ??same DMG palette */
+    /* pocket calculator — same DMG palette */
     .pg-calc {
       background: linear-gradient(180deg, #b8c4a8 0%, #9aab88 100%);
       border-radius: 20px;
@@ -603,7 +607,7 @@
     <div class="topic-headings">
       <div class="topic-brand">Uni<span class="plus">+</span> | Mathematics</div>
       <h1>Percentages</h1>
-      <span class="crumb">KOC S3 Math | Summer 2026 | L04?? Percentages</span>
+      <span class="crumb">KOC S3 Math | Summer 2026 | L04–6 Percentages</span>
     </div>
   </header>
 
@@ -625,6 +629,8 @@
       <button class="chip" data-deck="../../slides/percentage/profit-loss/index.html">Profit &amp; discount</button>
       <button class="chip" data-deck="../../slides/percentage/interest/index.html">Simple &amp; compound interest</button>
       <button class="chip" data-deck="../../slides/percentage/tax/index.html">Progressive salaries tax</button>
+      <button class="chip" data-deck="../../slides/percentage/rainfall-change/index.html?v=20260725-persist">Rainfall changes</button>
+      <button class="chip" data-deck="../../slides/percentage/salary-checkpoint/index.html?v=20260725-persist">Checkpoint 2 · Work backwards</button>
     </div>
     <div class="deck-slideshow">
       <button type="button" class="deck-nav-btn deck-prev" id="deck-prev" aria-label="Previous slide">&larr;</button>
@@ -638,7 +644,7 @@
     <p class="hint hint-deck-phone">Tap the &larr; and &rarr; buttons below the slide. Each slide builds the idea step by step.</p>
   </section>
 
-  <!-- TAB 2: interactive tool ??simple vs compound interest vs compound interest -->
+  <!-- TAB 2: interactive tool — simple vs compound interest vs compound interest -->
   <section id="panel-tools" class="panel hidden">
     <div class="it-wrap">
       <div class="subnav">
@@ -649,17 +655,17 @@
         <div class="it-field p">
           <label>Principal (starting coins) <span class="v" id="it-pv">$5</span></label>
           <input id="it-p" class="it-range" type="range" min="1" max="10" step="1" value="5">
-          <span class="it-hint-mini">Drag: 1??0 coins</span>
+          <span class="it-hint-mini">Drag: 1–10 coins</span>
         </div>
         <div class="it-field r">
           <label>Interest rate per year <span class="v" id="it-rv">10%</span></label>
           <input id="it-r" class="it-range" type="range" min="5" max="30" step="5" value="10">
-          <span class="it-hint-mini">Drag: 5%??0%</span>
+          <span class="it-hint-mini">Drag: 5%–30%</span>
         </div>
         <div class="it-field t">
           <label>Time <span class="v" id="it-tv">4 yr</span></label>
           <input id="it-t" class="it-range" type="range" min="1" max="5" step="1" value="4">
-          <span class="it-hint-mini">Drag: 1?? years</span>
+          <span class="it-hint-mini">Drag: 1–5 years</span>
         </div>
       </div>
 
@@ -673,7 +679,7 @@
         <div class="lane simple">
           <div class="lane-head">
             <h3>Simple interest</h3>
-            <span class="sub" style="margin:0">principal is set aside ??only it earns each year</span>
+            <span class="sub" style="margin:0">principal is set aside — only it earns each year</span>
             <span class="tot" id="it-simple-tot">$0</span>
           </div>
           <svg id="it-simple" viewBox="0 0 700 300" role="img" aria-label="simple interest timeline"></svg>
@@ -681,7 +687,7 @@
         <div class="lane compound">
           <div class="lane-head">
             <h3>Compound interest</h3>
-            <span class="sub" style="margin:0">interest joins the pile, so it earns too ??it snowballs</span>
+            <span class="sub" style="margin:0">interest joins the pile, so it earns too — it snowballs</span>
             <span class="tot" id="it-compound-tot">$0</span>
           </div>
           <svg id="it-compound" viewBox="0 0 700 300" role="img" aria-label="compound interest timeline"></svg>
@@ -732,7 +738,7 @@
                 <span id="pg-chapter">SC 01</span>
               </div>
               <div class="pg-dpad">
-                <span><span class="pg-sym">&uarr;</span> <span class="pg-sym">&darr;</span> highlight</span>
+                <span class="pg-sym">&#x2191;/&#x2193; highlight</span>
                 <span>Enter confirm</span>
               </div>
               <div class="pg-controls">
@@ -759,7 +765,7 @@
                 <span id="bg-chapter">SC 01</span>
               </div>
               <div class="pg-dpad">
-                <span><span class="pg-sym">&uarr;</span> <span class="pg-sym">&darr;</span> highlight</span>
+                <span class="pg-sym">&#x2191;/&#x2193; highlight</span>
                 <span>Enter confirm</span>
               </div>
               <div class="pg-controls">
@@ -777,21 +783,21 @@
           </div>
           <div class="pg-calc-keys" id="pg-calc-keys">
             <button type="button" class="pg-calc-key fn" data-k="C">C</button>
-            <button type="button" class="pg-calc-key fn" data-k="BK">DEL</button>
+            <button type="button" class="pg-calc-key fn sym" data-k="BK">&#x232B;</button>
             <button type="button" class="pg-calc-key fn" data-k="(">(</button>
             <button type="button" class="pg-calc-key fn" data-k=")">)</button>
             <button type="button" class="pg-calc-key" data-k="7">7</button>
             <button type="button" class="pg-calc-key" data-k="8">8</button>
             <button type="button" class="pg-calc-key" data-k="9">9</button>
-            <button type="button" class="pg-calc-key op" data-k="/">&divide;</button>
+            <button type="button" class="pg-calc-key op" data-k="/">&#x00F7;</button>
             <button type="button" class="pg-calc-key" data-k="4">4</button>
             <button type="button" class="pg-calc-key" data-k="5">5</button>
             <button type="button" class="pg-calc-key" data-k="6">6</button>
-            <button type="button" class="pg-calc-key op" data-k="*">&times;</button>
+            <button type="button" class="pg-calc-key op" data-k="*">&#x00D7;</button>
             <button type="button" class="pg-calc-key" data-k="1">1</button>
             <button type="button" class="pg-calc-key" data-k="2">2</button>
             <button type="button" class="pg-calc-key" data-k="3">3</button>
-            <button type="button" class="pg-calc-key op" data-k="-">&minus;</button>
+            <button type="button" class="pg-calc-key op" data-k="-">&#x2212;</button>
             <button type="button" class="pg-calc-key" data-k="0">0</button>
             <button type="button" class="pg-calc-key" data-k=".">.</button>
             <button type="button" class="pg-calc-key fn" data-k="%">%</button>
@@ -807,7 +813,7 @@
       </div>
       <p class="pg-hint" id="pg-hint">
         Retro RPG adventures about percentages &amp; interest.<br>
-        <span class="pg-sym">&uarr;</span> <span class="pg-sym">&darr;</span> highlight | Enter confirm | pocket calc for working
+        <span class="pg-sym">&#x2191;/&#x2193; highlight</span> | Enter confirm | pocket calc for working
       </p>
     </div>
   </section>
@@ -828,89 +834,89 @@
       <div class="summary-stage" id="summary-stage">
         <div class="summary-set" data-summary-set="style-1">
           <figure class="summary-slide active">
-            <img src="summary/big/style-1/summary-1.png?v=20260709e" alt="Percentages summary ??Style 1, page 1" loading="lazy"
+            <img src="summary/big/style-1/summary-1.png?v=20260709e" alt="Percentages summary — Style 1, page 1" loading="lazy"
                  onerror="this.hidden=true;this.parentElement.querySelector('.summary-placeholder').hidden=false">
-            <div class="summary-placeholder" hidden>Page 1 ??drop image at <code>summary/big/style-1/summary-1.png</code></div>
+            <div class="summary-placeholder" hidden>Page 1 — drop image at <code>summary/big/style-1/summary-1.png</code></div>
           </figure>
           <figure class="summary-slide">
-            <img src="summary/big/style-1/summary-2.png?v=20260709e" alt="Percentages summary ??Style 1, page 2" loading="lazy"
+            <img src="summary/big/style-1/summary-2.png?v=20260709e" alt="Percentages summary — Style 1, page 2" loading="lazy"
                  onerror="this.hidden=true;this.parentElement.querySelector('.summary-placeholder').hidden=false">
-            <div class="summary-placeholder" hidden>Page 2 ??drop image at <code>summary/big/style-1/summary-2.png</code></div>
+            <div class="summary-placeholder" hidden>Page 2 — drop image at <code>summary/big/style-1/summary-2.png</code></div>
           </figure>
         </div>
         <div class="summary-set hidden" data-summary-set="style-2">
           <figure class="summary-slide active">
-            <img src="summary/big/style-2/summary-1.png?v=20260709e" alt="Percentages summary ??Style 2, page 1" loading="lazy"
+            <img src="summary/big/style-2/summary-1.png?v=20260709e" alt="Percentages summary — Style 2, page 1" loading="lazy"
                  onerror="this.hidden=true;this.parentElement.querySelector('.summary-placeholder').hidden=false">
-            <div class="summary-placeholder" hidden>Page 1 ??drop image at <code>summary/big/style-2/summary-1.png</code></div>
+            <div class="summary-placeholder" hidden>Page 1 — drop image at <code>summary/big/style-2/summary-1.png</code></div>
           </figure>
           <figure class="summary-slide">
-            <img src="summary/big/style-2/summary-2.png?v=20260709e" alt="Percentages summary ??Style 2, page 2" loading="lazy"
+            <img src="summary/big/style-2/summary-2.png?v=20260709e" alt="Percentages summary — Style 2, page 2" loading="lazy"
                  onerror="this.hidden=true;this.parentElement.querySelector('.summary-placeholder').hidden=false">
-            <div class="summary-placeholder" hidden>Page 2 ??drop image at <code>summary/big/style-2/summary-2.png</code></div>
+            <div class="summary-placeholder" hidden>Page 2 — drop image at <code>summary/big/style-2/summary-2.png</code></div>
           </figure>
         </div>
         <div class="summary-set hidden" data-summary-set="style-3">
           <figure class="summary-slide active">
-            <img src="summary/big/style-3/summary-1.png?v=20260709e" alt="Percentages summary ??Style 3, page 1" loading="lazy"
+            <img src="summary/big/style-3/summary-1.png?v=20260709e" alt="Percentages summary — Style 3, page 1" loading="lazy"
                  onerror="this.hidden=true;this.parentElement.querySelector('.summary-placeholder').hidden=false">
-            <div class="summary-placeholder" hidden>Page 1 ??drop image at <code>summary/big/style-3/summary-1.png</code></div>
+            <div class="summary-placeholder" hidden>Page 1 — drop image at <code>summary/big/style-3/summary-1.png</code></div>
           </figure>
           <figure class="summary-slide">
-            <img src="summary/big/style-3/summary-2.png?v=20260709e" alt="Percentages summary ??Style 3, page 2" loading="lazy"
+            <img src="summary/big/style-3/summary-2.png?v=20260709e" alt="Percentages summary — Style 3, page 2" loading="lazy"
                  onerror="this.hidden=true;this.parentElement.querySelector('.summary-placeholder').hidden=false">
-            <div class="summary-placeholder" hidden>Page 2 ??drop image at <code>summary/big/style-3/summary-2.png</code></div>
+            <div class="summary-placeholder" hidden>Page 2 — drop image at <code>summary/big/style-3/summary-2.png</code></div>
           </figure>
         </div>
         <div class="summary-set hidden" data-summary-set="cards">
           <figure class="summary-slide active">
-            <img src="summary/cards/summary-3.png?v=20260709e" alt="Percentages small cards ??page 1" loading="lazy"
+            <img src="summary/cards/summary-3.png?v=20260709e" alt="Percentages small cards — page 1" loading="lazy"
                  onerror="this.hidden=true;this.parentElement.querySelector('.summary-placeholder').hidden=false">
-            <div class="summary-placeholder" hidden>Page 1 ??drop image at <code>summary/cards/summary-3.png</code></div>
+            <div class="summary-placeholder" hidden>Page 1 — drop image at <code>summary/cards/summary-3.png</code></div>
           </figure>
           <figure class="summary-slide">
-            <img src="summary/cards/summary-4.png?v=20260709e" alt="Percentages small cards ??page 2" loading="lazy"
+            <img src="summary/cards/summary-4.png?v=20260709e" alt="Percentages small cards — page 2" loading="lazy"
                  onerror="this.hidden=true;this.parentElement.querySelector('.summary-placeholder').hidden=false">
-            <div class="summary-placeholder" hidden>Page 2 ??drop image at <code>summary/cards/summary-4.png</code></div>
+            <div class="summary-placeholder" hidden>Page 2 — drop image at <code>summary/cards/summary-4.png</code></div>
           </figure>
           <figure class="summary-slide">
-            <img src="summary/cards/summary-5.png?v=20260709e" alt="Percentages small cards ??page 3" loading="lazy"
+            <img src="summary/cards/summary-5.png?v=20260709e" alt="Percentages small cards — page 3" loading="lazy"
                  onerror="this.hidden=true;this.parentElement.querySelector('.summary-placeholder').hidden=false">
-            <div class="summary-placeholder" hidden>Page 3 ??drop image at <code>summary/cards/summary-5.png</code></div>
+            <div class="summary-placeholder" hidden>Page 3 — drop image at <code>summary/cards/summary-5.png</code></div>
           </figure>
           <figure class="summary-slide">
-            <img src="summary/cards/summary-6.png?v=20260709e" alt="Percentages small cards ??page 4" loading="lazy"
+            <img src="summary/cards/summary-6.png?v=20260709e" alt="Percentages small cards — page 4" loading="lazy"
                  onerror="this.hidden=true;this.parentElement.querySelector('.summary-placeholder').hidden=false">
-            <div class="summary-placeholder" hidden>Page 4 ??drop image at <code>summary/cards/summary-6.png</code></div>
+            <div class="summary-placeholder" hidden>Page 4 — drop image at <code>summary/cards/summary-6.png</code></div>
           </figure>
           <figure class="summary-slide">
-            <img src="summary/cards/summary-7.png?v=20260709e" alt="Percentages small cards ??page 5" loading="lazy"
+            <img src="summary/cards/summary-7.png?v=20260709e" alt="Percentages small cards — page 5" loading="lazy"
                  onerror="this.hidden=true;this.parentElement.querySelector('.summary-placeholder').hidden=false">
-            <div class="summary-placeholder" hidden>Page 5 ??drop image at <code>summary/cards/summary-7.png</code></div>
+            <div class="summary-placeholder" hidden>Page 5 — drop image at <code>summary/cards/summary-7.png</code></div>
           </figure>
           <figure class="summary-slide">
-            <img src="summary/cards/summary-8.png?v=20260709e" alt="Percentages small cards ??page 6" loading="lazy"
+            <img src="summary/cards/summary-8.png?v=20260709e" alt="Percentages small cards — page 6" loading="lazy"
                  onerror="this.hidden=true;this.parentElement.querySelector('.summary-placeholder').hidden=false">
-            <div class="summary-placeholder" hidden>Page 6 ??drop image at <code>summary/cards/summary-8.png</code></div>
+            <div class="summary-placeholder" hidden>Page 6 — drop image at <code>summary/cards/summary-8.png</code></div>
           </figure>
           <figure class="summary-slide">
-            <img src="summary/cards/summary-9.png?v=20260709e" alt="Percentages small cards ??page 7" loading="lazy"
+            <img src="summary/cards/summary-9.png?v=20260709e" alt="Percentages small cards — page 7" loading="lazy"
                  onerror="this.hidden=true;this.parentElement.querySelector('.summary-placeholder').hidden=false">
-            <div class="summary-placeholder" hidden>Page 7 ??drop image at <code>summary/cards/summary-9.png</code></div>
+            <div class="summary-placeholder" hidden>Page 7 — drop image at <code>summary/cards/summary-9.png</code></div>
           </figure>
         </div>
       </div>
       <button type="button" class="summary-arrow" id="summary-next" aria-label="Next page">&rarr;</button>
     </div>
     <p class="summary-meta">Page <b id="summary-page-num">1</b> of <b id="summary-page-total">2</b></p>
-    <p class="hint">L04?? Percentages ??pick Summary (Style 1??) or Small Cards, then use &larr; &rarr; or the arrows to switch pages.</p>
+    <p class="hint">L04–6 Percentages — pick Summary (Style 1–3) or Small Cards, then use &larr; &rarr; or the arrows to switch pages.</p>
   </section>
 
   <!-- TAB: comics story + concept checks (separate from quiz DB) -->
   <section id="panel-comics" class="panel hidden">
     <div class="subnav" id="comics-subnav"></div>
     <div id="comics-stage"></div>
-    <p class="hint">Read the comic page, then answer the two concept checks below. Answers stay on this tab only ??they do not affect the Quiz.</p>
+    <p class="hint">Read the comic page, then answer the two concept checks below. Answers stay on this tab only — they do not affect the Quiz.</p>
   </section>
 
   <!-- TAB 5: quiz -->
@@ -926,7 +932,7 @@
         <button type="button" class="quiz-nav-btn primary" id="quiz-next">Next</button>
       </div>
     </div>
-    <p class="hint">Pre S3 L04?? Percentage Quiz ??answer each question, use Next to move on. Submit on Q8 to see all results.</p>
+    <p class="hint">Pre S3 L04–6 Percentage Quiz — answer each question, use Next to move on. Submit on Q8 to see all results.</p>
   </section>
 
 
