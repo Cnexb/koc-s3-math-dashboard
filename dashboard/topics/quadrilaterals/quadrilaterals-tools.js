@@ -910,8 +910,11 @@
 
     var dAB = dist(P0[0], P0[1]), dBC = dist(P0[1], P0[2]);
     var dDE = dist(P1[0], P1[1]), dEF = dist(P1[1], P1[2]);
+    var dAD = dist(P0[0], P1[0]), dBE = dist(P0[1], P1[1]), dCF = dist(P0[2], P1[2]);
     var equalLeft = lensClose(dAB, dBC);
     var equalRight = lensClose(dDE, dEF);
+    var midOk = equalLeft && equalRight;
+    var halfOk = midOk && Math.abs(dBE * 2 - dCF) < ((dBE * 2 + dCF) / 2 || 1) * EPS_LEN_REL;
 
     if (thmMode === "intercept") {
       if (equalLeft) {
@@ -923,17 +926,26 @@
         svg.appendChild(tickMark(P1[1], P1[2], 1, VIOLET, 0.5));
       }
     } else {
+      // Mid-pt. thm.: show intercepts AD, BE, CF on the three // lines
+      // (do not add extra // arrows — each green line already has one)
+      svg.appendChild(seg(P0[0], P1[0], midOk ? MARK : INK, midOk ? 2.4 : 1.8));
+      svg.appendChild(seg(P0[1], P1[1], midOk ? MARK : INK, midOk ? 3 : 2.2));
+      svg.appendChild(seg(P0[2], P1[2], midOk ? MARK : INK, midOk ? 3 : 2.2));
+
       var den = (L0[1].x - L0[0].x) * (L1[1].y - L1[0].y) - (L0[1].y - L0[0].y) * (L1[1].x - L1[0].x);
       var apex = null;
       if (Math.abs(den) > 1e-6) {
         var t = ((L1[0].x - L0[0].x) * (L1[1].y - L1[0].y) - (L1[0].y - L0[0].y) * (L1[1].x - L1[0].x)) / den;
         apex = { x: L0[0].x + t * (L0[1].x - L0[0].x), y: L0[0].y + t * (L0[1].y - L0[0].y) };
       }
+      // P = meeting point of the two transversals = vertex of △PCF (mid-pt. thm. triangle)
       if (apex && apex.y < thmY[0] - 5 && apex.x > 20 && apex.x < 500) {
+        svg.appendChild(dashedSeg(apex, P0[0], ACCENT, 1.6));
+        svg.appendChild(dashedSeg(apex, P1[0], VIOLET, 1.6));
         svg.appendChild(E("circle", { cx: apex.x, cy: apex.y, r: 5, fill: INK, stroke: MARK, "stroke-width": 1.5 }));
-        svg.appendChild(labelAt(apex, "P", 8, -8, MARK));
+        svg.appendChild(labelAt(apex, "P", 8, -10, MARK));
       }
-      if (equalLeft && equalRight) {
+      if (midOk) {
         svg.appendChild(tickMark(P0[0], P0[1], 1, ACCENT, 0.5));
         svg.appendChild(tickMark(P0[1], P0[2], 1, ACCENT, 0.5));
         svg.appendChild(tickMark(P1[0], P1[1], 1, VIOLET, 0.5));
@@ -943,12 +955,23 @@
 
     var row = document.getElementById("thm-measures");
     row.innerHTML = "";
-    [
-      "\\(AB=" + fmt(dAB / 20, 1) + "\\)",
-      "\\(BC=" + fmt(dBC / 20, 1) + "\\)",
-      "\\(DE=" + fmt(dDE / 20, 1) + "\\)",
-      "\\(EF=" + fmt(dEF / 20, 1) + "\\)",
-    ].forEach(function (t) {
+    var chips = thmMode === "midpt"
+      ? [
+          "\\(AD=" + fmt(dAD / 20, 1) + "\\)",
+          "\\(BE=" + fmt(dBE / 20, 1) + "\\)",
+          "\\(CF=" + fmt(dCF / 20, 1) + "\\)",
+          "\\(AB=" + fmt(dAB / 20, 1) + "\\)",
+          "\\(BC=" + fmt(dBC / 20, 1) + "\\)",
+          "\\(DE=" + fmt(dDE / 20, 1) + "\\)",
+          "\\(EF=" + fmt(dEF / 20, 1) + "\\)",
+        ]
+      : [
+          "\\(AB=" + fmt(dAB / 20, 1) + "\\)",
+          "\\(BC=" + fmt(dBC / 20, 1) + "\\)",
+          "\\(DE=" + fmt(dDE / 20, 1) + "\\)",
+          "\\(EF=" + fmt(dEF / 20, 1) + "\\)",
+        ];
+    chips.forEach(function (t) {
       var c = document.createElement("span");
       c.className = "measure-chip";
       row.appendChild(c);
@@ -962,9 +985,11 @@
         "Drag near the left end of each green line to move it. Drag blue/purple end-handles to tilt the transversals. When blue intercepts match, purple intercepts match too. Reason: **[intercept thm.]**");
     } else {
       renderMixed(document.getElementById("thm-caption"),
-        "Mid-pt. thm.: when \\(B\\), \\(E\\) are mid-points, \\(BE\\)//\\(CF\\) and \\(BE = \\dfrac{1}{2}CF\\).");
+        halfOk
+          ? "Mid-pt. thm.: \\(B\\), \\(E\\) are mid-points ⇒ \\(BE\\)//\\(CF\\) and \\(BE = \\dfrac{1}{2}CF\\)."
+          : "Mid-pt. thm.: when \\(B\\), \\(E\\) are mid-points of \\(PC\\), \\(PF\\), then \\(BE\\)//\\(CF\\) and \\(BE = \\dfrac{1}{2}CF\\).");
       renderMixed(document.getElementById("thm-note"),
-        "Space the three // lines evenly so \\(AB = BC\\) and \\(DE = EF\\). Then the middle intercept is // to the bottom one and half as long. Reason: **[mid-pt. thm.]** Example: \\(DE\\)//\\(BC\\), \\(DE = \\dfrac{1}{2}BC\\).");
+        "**P** is where the two transversals meet — the vertex of △\\(PCF\\). Space the // lines so \\(AB = BC\\) and \\(DE = EF\\) (mid-points). Watch \\(AD\\), \\(BE\\), \\(CF\\): then \\(BE\\)//\\(CF\\) and \\(BE = \\dfrac{1}{2}CF\\). Reason: **[mid-pt. thm.]**");
     }
   }
 
