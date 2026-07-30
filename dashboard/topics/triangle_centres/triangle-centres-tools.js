@@ -43,12 +43,24 @@
   var PRESETS = {
     // Scalene acute: three different side lengths, all angles < 90°
     acute: [{ x: 55, y: 320 }, { x: 440, y: 300 }, { x: 200, y: 55 }],
+    // Scalene right at A: AB ≠ AC
     right: [{ x: 100, y: 300 }, { x: 380, y: 300 }, { x: 100, y: 95 }],
-    // Obtuse at A; H well clear of A; O well clear of midpoints (both in fixed box)
-    obtuse: [{ x: 170, y: 220 }, { x: 400, y: 300 }, { x: 140, y: 60 }],
-    // AC = BC (isosceles at C)
+    // Isosceles right at A: AB = AC, ∠A = 90°
+    isoscelesRight: [{ x: 100, y: 300 }, { x: 320, y: 300 }, { x: 100, y: 80 }],
+    // Obtuse isosceles at A: AB = AC, ∠A > 90°
+    obtuse: [{ x: 250, y: 200 }, { x: 100, y: 300 }, { x: 400, y: 300 }],
+    // AC = BC (isosceles at C), acute
     isosceles: [{ x: 150, y: 300 }, { x: 350, y: 300 }, { x: 250, y: 85 }],
     equilateral: [{ x: 130, y: 300 }, { x: 370, y: 300 }, { x: 250, y: 92.2 }],
+  };
+
+  var PRESET_LABELS = {
+    acute: "Acute",
+    right: "Right",
+    isoscelesRight: "Isosceles right",
+    obtuse: "Obtuse",
+    isosceles: "Isosceles",
+    equilateral: "Equilateral",
   };
 
   var PAD = 28;
@@ -497,7 +509,13 @@
     var loc = centreLocationWord(modeId, kind, centreP, v);
     var parts = [names[modeId] + " may lie inside (acute), on (right), or outside (obtuse)."];
     if (kind === "equilateral") parts.push("Equilateral triangle: all four centres coincide.");
-    else if (kind === "isosceles") parts.push("Isosceles triangle: all four centres lie on the axis of symmetry.");
+    else if (isIsoscelesShape(v) && kind === "right") {
+      parts.push("Isosceles right triangle: equal legs; circumcentre is the mid-point of the hypotenuse.");
+    } else if (isIsoscelesShape(v) && kind === "obtuse") {
+      parts.push("Isosceles obtuse triangle: equal legs; the obtuse angle is between them.");
+    } else if (isIsoscelesShape(v)) {
+      parts.push("Isosceles triangle: all four centres lie on the axis of symmetry.");
+    }
     parts.push("Currently: " + loc + ".");
     el.textContent = parts.join(" ");
   }
@@ -1317,7 +1335,7 @@
       b.type = "button";
       b.className = "btn" + (name === activePreset ? " active" : "");
       b.dataset.preset = name;
-      b.textContent = name.charAt(0).toUpperCase() + name.slice(1);
+      b.textContent = PRESET_LABELS[name] || name.charAt(0).toUpperCase() + name.slice(1);
       b.addEventListener("click", function () {
         activePreset = name;
         verts = PRESETS[name].map(function (v) { return { x: v.x, y: v.y }; });
