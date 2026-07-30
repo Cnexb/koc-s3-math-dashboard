@@ -1125,7 +1125,10 @@
       { id: "SAS", abbr: "[SAS]", desc: "Two sides and included angle equal ⇒ congruent.", draw: "SAS" },
       { id: "ASA", abbr: "[ASA]", desc: "Two angles and included side equal ⇒ congruent.", draw: "ASA" },
       { id: "SSS", abbr: "[SSS]", desc: "Three sides equal ⇒ congruent.", draw: "SSS" },
-      { id: "corrS", abbr: "[corr. sides, ≅ △s]", desc: "Corresponding sides of congruent triangles are equal.", draw: "ASA" },
+      { id: "AAS", abbr: "[AAS]", desc: "Two angles and a non-included side equal ⇒ congruent.", draw: "AAS" },
+      { id: "RHS", abbr: "[RHS]", desc: "Right angle, hypotenuse and one other side equal ⇒ congruent.", draw: "RHS" },
+      { id: "corrS", abbr: "[corr. sides, ≅ △s]", desc: "Corresponding sides of congruent triangles are equal.", draw: "corrS", row: 2 },
+      { id: "corrA", abbr: "[corr. ∠s, ≅ △s]", desc: "Corresponding angles of congruent triangles are equal.", draw: "corrA", row: 2 },
     ],
   };
 
@@ -1239,7 +1242,10 @@
     SAS: { steps: ["Two sides and the included angle equal ⇒ △s congruent. **[SAS]**"] },
     ASA: { steps: ["Two angles and the included side equal ⇒ △s congruent. **[ASA]**"] },
     SSS: { steps: ["Three sides equal ⇒ △s congruent. **[SSS]**"] },
+    AAS: { steps: ["Two angles and a non-included side equal ⇒ △s congruent. **[AAS]**"] },
+    RHS: { steps: ["Right angle, hypotenuse and one other side equal ⇒ △s congruent. **[RHS]**"] },
     corrS: { steps: ["After congruence, matching sides are equal. **[corr. sides, ≅ △s]**"] },
+    corrA: { steps: ["After congruence, matching angles are equal. **[corr. ∠s, ≅ △s]**"] },
   };
 
   function drawReasonFigure(svg, drawId) {
@@ -1263,10 +1269,15 @@
 
     if (drawId === "paraSides" || drawId === "proveSides") {
       poly([A, B, C, D]); outline([A, B, C, D]);
-      svg.appendChild(parallelSlash(A, B, 1)); svg.appendChild(parallelSlash(D, C, 1));
-      svg.appendChild(parallelSlash(A, D, 2)); svg.appendChild(parallelSlash(B, C, 2));
-      svg.appendChild(tickMark(A, B, 1)); svg.appendChild(tickMark(D, C, 1));
-      svg.appendChild(tickMark(A, D, 2)); svg.appendChild(tickMark(B, C, 2));
+      // // at t=0.32, ticks at t=0.58 — no overlap
+      svg.appendChild(parallelArrows(A, B, 1, GOOD, 0.32));
+      svg.appendChild(parallelArrows(D, C, 1, GOOD, 0.32));
+      svg.appendChild(parallelArrows(A, D, 2, GOOD, 0.32));
+      svg.appendChild(parallelArrows(B, C, 2, GOOD, 0.32));
+      svg.appendChild(tickMark(A, B, 1, TICK, 0.58));
+      svg.appendChild(tickMark(D, C, 1, TICK, 0.58));
+      svg.appendChild(tickMark(A, D, 2, TICK, 0.58));
+      svg.appendChild(tickMark(B, C, 2, TICK, 0.58));
       labs([A, B, C, D], ["A", "B", "C", "D"]);
     } else if (drawId === "paraAng") {
       poly([A, B, C, D]); outline([A, B, C, D]);
@@ -1284,14 +1295,15 @@
       labs([A, B, C, D], ["A", "B", "C", "D"]);
     } else if (drawId === "prove2") {
       poly([A, B, C, D]); outline([A, B, C, D]);
-      svg.appendChild(seg(A, B, INK, SW)); svg.appendChild(seg(D, C, INK, SW));
-      svg.appendChild(parallelArrows(A, B, 1)); svg.appendChild(parallelArrows(D, C, 1));
-      svg.appendChild(tickMark(A, B, 1)); svg.appendChild(tickMark(D, C, 1));
+      svg.appendChild(parallelArrows(A, B, 1, GOOD, 0.32));
+      svg.appendChild(parallelArrows(D, C, 1, GOOD, 0.32));
+      svg.appendChild(tickMark(A, B, 1, TICK, 0.58));
+      svg.appendChild(tickMark(D, C, 1, TICK, 0.58));
       labs([A, B, C, D], ["A", "B", "C", "D"]);
     } else if (drawId === "rhombus") {
       var R = [{ x: 210, y: 50 }, { x: 340, y: 150 }, { x: 210, y: 250 }, { x: 80, y: 150 }];
       poly(R); outline(R);
-      R.forEach(function (_, i) { svg.appendChild(tickMark(R[i], R[(i + 1) % 4], 1)); });
+      R.forEach(function (_, i) { svg.appendChild(tickMark(R[i], R[(i + 1) % 4], 1, TICK, 0.5)); });
       svg.appendChild(seg(R[0], R[2], ACCENT)); svg.appendChild(seg(R[1], R[3], ACCENT));
       svg.appendChild(rightAngleMark(mid(R[0], R[2]), R[0], R[1], 10));
       labs(R, ["A", "B", "C", "D"]);
@@ -1306,65 +1318,150 @@
     } else if (drawId === "trap") {
       var T = [{ x: 130, y: 80 }, { x: 300, y: 80 }, { x: 360, y: 230 }, { x: 70, y: 230 }];
       poly(T); outline(T);
-      svg.appendChild(parallelSlash(T[0], T[1], 1)); svg.appendChild(parallelSlash(T[3], T[2], 1));
+      svg.appendChild(parallelArrows(T[0], T[1], 1, GOOD, 0.4));
+      svg.appendChild(parallelArrows(T[3], T[2], 1, GOOD, 0.4));
       labs(T, ["A", "B", "C", "D"]);
     } else if (drawId === "midpt" || drawId === "convMid") {
-      var TA = { x: 60, y: 250 }, TB = { x: 360, y: 250 }, TC = { x: 210, y: 50 };
+      // Standard: A apex, B C base; D, E mid-points of AB, AC; DE // BC
+      var TA = { x: 210, y: 45 }, TB = { x: 55, y: 255 }, TC = { x: 365, y: 255 };
       var TD = mid(TA, TB), TE = mid(TA, TC);
-      if (drawId === "convMid") TE = lerp(TA, TC, 0.5);
       poly([TA, TB, TC]);
-      svg.appendChild(seg(TA, TB, INK, 3)); svg.appendChild(seg(TB, TC, INK)); svg.appendChild(seg(TC, TA, INK));
-      svg.appendChild(seg(TD, TE, GOOD, 3.5));
-      svg.appendChild(parallelSlash(TD, TE, 1));
-      svg.appendChild(parallelSlash(TA, TB, 1));
-      svg.appendChild(tickMark(TA, TD, 1)); svg.appendChild(tickMark(TD, TB, 1));
-      svg.appendChild(tickMark(TA, TE, 2)); svg.appendChild(tickMark(TE, TC, 2));
-      [["A", TA], ["B", TB], ["C", TC], ["D", TD], ["E", TE]].forEach(function (L) {
-        svg.appendChild(E("circle", { cx: L[1].x, cy: L[1].y, r: 5, fill: L[0] === "D" || L[0] === "E" ? GOOD : MARK, stroke: "#0f172a", "stroke-width": 1.5 }));
-        svg.appendChild(labelAt(L[1], L[0], 8, -8));
+      svg.appendChild(seg(TA, TB, INK, SW));
+      svg.appendChild(seg(TB, TC, INK, SW));
+      svg.appendChild(seg(TC, TA, INK, SW));
+      svg.appendChild(seg(TD, TE, INK, SW)); // DE stays white
+      svg.appendChild(parallelArrows(TD, TE, 1, GOOD, 0.5));
+      svg.appendChild(parallelArrows(TB, TC, 1, GOOD, 0.5)); // BC gets // too
+      svg.appendChild(tickMark(TA, TD, 1, TICK, 0.5));
+      svg.appendChild(tickMark(TD, TB, 1, TICK, 0.5));
+      svg.appendChild(tickMark(TA, TE, 2, TICK, 0.5));
+      svg.appendChild(tickMark(TE, TC, 2, TICK, 0.5));
+      [
+        ["A", TA, 0, -14],
+        ["B", TB, -14, 14],
+        ["C", TC, 8, 14],
+        ["D", TD, -18, 4],
+        ["E", TE, 10, 4],
+      ].forEach(function (L) {
+        svg.appendChild(E("circle", {
+          cx: L[1].x, cy: L[1].y, r: 5,
+          fill: L[0] === "D" || L[0] === "E" ? GOOD : MARK,
+          stroke: "#0f172a", "stroke-width": 1.5,
+        }));
+        svg.appendChild(labelAt(L[1], L[0], L[2], L[3]));
       });
     } else if (drawId === "intercept") {
       [80, 150, 220].forEach(function (y) {
         svg.appendChild(E("line", { x1: 40, y1: y, x2: 380, y2: y, stroke: GOOD, "stroke-width": 3 }));
+        svg.appendChild(parallelArrows({ x: 60, y: y }, { x: 100, y: y }, 1, GOOD));
       });
       svg.appendChild(seg({ x: 100, y: 40 }, { x: 140, y: 260 }, ACCENT, 2.5));
       svg.appendChild(seg({ x: 300, y: 40 }, { x: 340, y: 260 }, VIOLET, 2.5));
       var ys = [80, 150, 220];
-      var L = [{ x: 100, y: 40 }, { x: 140, y: 260 }];
-      var R = [{ x: 300, y: 40 }, { x: 340, y: 260 }];
+      var Li = [{ x: 100, y: 40 }, { x: 140, y: 260 }];
+      var Ri = [{ x: 300, y: 40 }, { x: 340, y: 260 }];
       ys.forEach(function (y, i) {
-        var p = hitY(L[0], L[1], y), q = hitY(R[0], R[1], y);
+        var p = hitY(Li[0], Li[1], y), q = hitY(Ri[0], Ri[1], y);
         svg.appendChild(E("circle", { cx: p.x, cy: p.y, r: 4, fill: ACCENT }));
         svg.appendChild(E("circle", { cx: q.x, cy: q.y, r: 4, fill: VIOLET }));
         svg.appendChild(labelAt(p, "ABC"[i], -14, -4, ACCENT));
         svg.appendChild(labelAt(q, "DEF"[i], 8, -4, VIOLET));
       });
-      var pA = hitY(L[0], L[1], 80), pB = hitY(L[0], L[1], 150), pC = hitY(L[0], L[1], 220);
+      var pA = hitY(Li[0], Li[1], 80), pB = hitY(Li[0], Li[1], 150), pC = hitY(Li[0], Li[1], 220);
       svg.appendChild(tickMark(pA, pB, 1, ACCENT)); svg.appendChild(tickMark(pB, pC, 1, ACCENT));
     } else if (drawId === "alt" || drawId === "corr" || drawId === "int") {
       svg.appendChild(E("line", { x1: 40, y1: 100, x2: 380, y2: 100, stroke: GOOD, "stroke-width": 3 }));
       svg.appendChild(E("line", { x1: 40, y1: 220, x2: 380, y2: 220, stroke: GOOD, "stroke-width": 3 }));
-      svg.appendChild(seg({ x: 120, y: 40 }, { x: 300, y: 280 }, ACCENT, 2.5));
-      var hit1 = hitY({ x: 120, y: 40 }, { x: 300, y: 280 }, 100);
-      var hit2 = hitY({ x: 120, y: 40 }, { x: 300, y: 280 }, 220);
-      svg.appendChild(angleArc(hit1, { x: 380, y: 100 }, { x: 300, y: 280 }, 22, VIOLET));
-      svg.appendChild(angleArc(hit2, { x: 40, y: 220 }, { x: 120, y: 40 }, 22, VIOLET));
+      svg.appendChild(parallelArrows({ x: 70, y: 100 }, { x: 110, y: 100 }, 1, GOOD));
+      svg.appendChild(parallelArrows({ x: 70, y: 220 }, { x: 110, y: 220 }, 1, GOOD));
+      var T1 = { x: 120, y: 40 }, T2 = { x: 300, y: 280 };
+      svg.appendChild(seg(T1, T2, ACCENT, 2.5));
+      var H1 = hitY(T1, T2, 100), H2 = hitY(T1, T2, 220);
+      var right1 = { x: H1.x + 80, y: H1.y }, left1 = { x: H1.x - 80, y: H1.y };
+      var right2 = { x: H2.x + 80, y: H2.y }, left2 = { x: H2.x - 80, y: H2.y };
+      var down1 = T2, up2 = T1;
+      if (drawId === "corr") {
+        // F-shape: same side of transversal, both “below-right” of their intersection
+        svg.appendChild(angleArc(H1, right1, down1, 24, VIOLET));
+        svg.appendChild(angleArc(H2, right2, down1, 24, VIOLET));
+      } else if (drawId === "alt") {
+        // Z-shape: alternate interior (right below top, left above bottom)
+        svg.appendChild(angleArc(H1, right1, down1, 24, VIOLET));
+        svg.appendChild(angleArc(H2, left2, up2, 24, VIOLET));
+      } else {
+        // C-shape: consecutive interior (both right side, between the // lines)
+        svg.appendChild(angleArc(H1, right1, down1, 24, VIOLET));
+        svg.appendChild(angleArc(H2, right2, up2, 24, VIOLET));
+      }
     } else {
-      // SAS/ASA/SSS small triangles
-      var U = [{ x: 70, y: 220 }, { x: 180, y: 220 }, { x: 110, y: 80 }];
-      var V = [{ x: 240, y: 220 }, { x: 350, y: 220 }, { x: 300, y: 90 }];
+      // Congruence: identical triangles (exact translate)
+      var U0 = { x: 55, y: 230 }, U1 = { x: 175, y: 230 }, U2 = { x: 95, y: 85 };
+      var dx = 175;
+      var V0 = { x: U0.x + dx, y: U0.y }, V1 = { x: U1.x + dx, y: U1.y }, V2 = { x: U2.x + dx, y: U2.y };
+      var U = [U0, U1, U2], V = [V0, V1, V2];
+      if (drawId === "RHS") {
+        // Right-angled at U0 / V0
+        U0 = { x: 60, y: 230 }; U1 = { x: 180, y: 230 }; U2 = { x: 60, y: 90 };
+        V0 = { x: U0.x + dx, y: U0.y }; V1 = { x: U1.x + dx, y: U1.y }; V2 = { x: U2.x + dx, y: U2.y };
+        U = [U0, U1, U2]; V = [V0, V1, V2];
+      }
       poly(U); poly(V, "rgba(167,139,250,.12)");
       outline(U); outline(V);
-      svg.appendChild(tickMark(U[0], U[1], 1)); svg.appendChild(tickMark(V[0], V[1], 1));
-      if (drawId !== "ASA") {
-        svg.appendChild(tickMark(U[1], U[2], 2)); svg.appendChild(tickMark(V[1], V[2], 2));
-      }
-      if (drawId === "SSS" || drawId === "SAS") {
-        svg.appendChild(tickMark(U[2], U[0], 3)); svg.appendChild(tickMark(V[2], V[0], 3));
-      }
-      if (drawId === "SAS" || drawId === "ASA") {
-        svg.appendChild(angleArc(U[0], U[1], U[2], 20, MARK));
-        svg.appendChild(angleArc(V[0], V[1], V[2], 20, MARK));
+
+      if (drawId === "SAS") {
+        // two sides + included ∠ at U0
+        svg.appendChild(tickMark(U0, U1, 1, TICK, 0.5));
+        svg.appendChild(tickMark(V0, V1, 1, TICK, 0.5));
+        svg.appendChild(tickMark(U0, U2, 2, TICK, 0.5));
+        svg.appendChild(tickMark(V0, V2, 2, TICK, 0.5));
+        svg.appendChild(angleArc(U0, U1, U2, 22, MARK));
+        svg.appendChild(angleArc(V0, V1, V2, 22, MARK));
+      } else if (drawId === "ASA") {
+        // ∠ at U0, included side U0U1, ∠ at U1
+        svg.appendChild(angleArc(U0, U1, U2, 22, MARK));
+        svg.appendChild(angleArc(V0, V1, V2, 22, MARK));
+        svg.appendChild(tickMark(U0, U1, 1, TICK, 0.5));
+        svg.appendChild(tickMark(V0, V1, 1, TICK, 0.5));
+        svg.appendChild(angleArc(U1, U0, U2, 22, VIOLET));
+        svg.appendChild(angleArc(V1, V0, V2, 22, VIOLET));
+      } else if (drawId === "SSS") {
+        svg.appendChild(tickMark(U0, U1, 1, TICK, 0.5));
+        svg.appendChild(tickMark(V0, V1, 1, TICK, 0.5));
+        svg.appendChild(tickMark(U1, U2, 2, TICK, 0.5));
+        svg.appendChild(tickMark(V1, V2, 2, TICK, 0.5));
+        svg.appendChild(tickMark(U2, U0, 3, TICK, 0.5));
+        svg.appendChild(tickMark(V2, V0, 3, TICK, 0.5));
+      } else if (drawId === "AAS") {
+        // ∠ U0, ∠ U2, non-included side U0U1
+        svg.appendChild(angleArc(U0, U1, U2, 22, MARK));
+        svg.appendChild(angleArc(V0, V1, V2, 22, MARK));
+        svg.appendChild(angleArc(U2, U0, U1, 22, VIOLET));
+        svg.appendChild(angleArc(V2, V0, V1, 22, VIOLET));
+        svg.appendChild(tickMark(U0, U1, 1, TICK, 0.5));
+        svg.appendChild(tickMark(V0, V1, 1, TICK, 0.5));
+      } else if (drawId === "RHS") {
+        svg.appendChild(rightAngleMark(U0, U1, U2));
+        svg.appendChild(rightAngleMark(V0, V1, V2));
+        svg.appendChild(tickMark(U1, U2, 2, TICK, 0.5)); // hypotenuse
+        svg.appendChild(tickMark(V1, V2, 2, TICK, 0.5));
+        svg.appendChild(tickMark(U0, U1, 1, TICK, 0.5)); // leg
+        svg.appendChild(tickMark(V0, V1, 1, TICK, 0.5));
+      } else if (drawId === "corrS") {
+        // only corresponding sides — no angles
+        svg.appendChild(tickMark(U0, U1, 1, TICK, 0.5));
+        svg.appendChild(tickMark(V0, V1, 1, TICK, 0.5));
+        svg.appendChild(tickMark(U1, U2, 2, TICK, 0.5));
+        svg.appendChild(tickMark(V1, V2, 2, TICK, 0.5));
+        svg.appendChild(tickMark(U2, U0, 3, TICK, 0.5));
+        svg.appendChild(tickMark(V2, V0, 3, TICK, 0.5));
+      } else if (drawId === "corrA") {
+        // only corresponding angles — no side ticks
+        svg.appendChild(angleArc(U0, U1, U2, 22, MARK));
+        svg.appendChild(angleArc(V0, V1, V2, 22, MARK));
+        svg.appendChild(angleArc(U1, U0, U2, 22, VIOLET, true));
+        svg.appendChild(angleArc(V1, V0, V2, 22, VIOLET, true));
+        svg.appendChild(angleArc(U2, U0, U1, 18, ACCENT));
+        svg.appendChild(angleArc(V2, V0, V1, 18, ACCENT));
       }
     }
   }
@@ -1378,10 +1475,17 @@
     var grid = document.getElementById("reason-grid");
     var list = REASONS[reasonCat] || [];
     grid.innerHTML = "";
+    grid.className = "reason-grid" + (reasonCat === "cong" ? " cong-grid" : "");
+    var seenRow2 = false;
     list.forEach(function (r, i) {
       var b = document.createElement("button");
       b.type = "button";
-      b.className = "reason-card" + (reasonActive === i ? " active" : "");
+      var rowCls = "";
+      if (r.row === 2) {
+        rowCls = " row2" + (!seenRow2 ? " row2-start" : "");
+        seenRow2 = true;
+      }
+      b.className = "reason-card" + rowCls + (reasonActive === i ? " active" : "");
       b.innerHTML = '<span class="abbr"></span><span class="desc"></span>';
       b.querySelector(".abbr").textContent = r.abbr;
       renderMixed(b.querySelector(".desc"), r.desc);

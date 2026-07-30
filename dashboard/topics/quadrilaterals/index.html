@@ -8,7 +8,7 @@
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
   <link href="https://fonts.googleapis.com/css2?family=Hanken+Grotesk:wght@400;600;700&display=swap" rel="stylesheet">
   <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/katex@0.16.11/dist/katex.min.css">
-  <link rel="stylesheet" href="../../shared/jm-lesson.css?v=20260730-jm29i">
+  <link rel="stylesheet" href="../../shared/jm-lesson.css?v=20260730-jm29j">
   <style>
     body { margin:0; min-height:100vh; color:var(--text); font-family:"Hanken Grotesk",system-ui,sans-serif;
       background:
@@ -35,6 +35,24 @@
     .reason-grid {
       display:grid; grid-template-columns:repeat(auto-fit,minmax(200px,1fr));
       gap:10px; margin-top:10px;
+    }
+    .reason-grid.cong-grid {
+      grid-template-columns:repeat(5, minmax(120px, 1fr));
+    }
+    .reason-grid.cong-grid .reason-card.row2 {
+      grid-column: span 1;
+    }
+    .reason-grid.cong-grid .reason-card.row2:first-of-type,
+    .reason-grid.cong-grid .reason-card.row2-start {
+      grid-column: 1;
+    }
+    @media (max-width:900px) {
+      .reason-grid.cong-grid { grid-template-columns:repeat(3, minmax(120px, 1fr)); }
+      .reason-grid.cong-grid .reason-card.row2-start { grid-column: 1; }
+    }
+    @media (max-width:600px) {
+      .reason-grid.cong-grid { grid-template-columns:1fr; }
+      .reason-grid.cong-grid .reason-card.row2-start { grid-column: auto; }
     }
     .reason-card {
       padding:12px 14px; border-radius:12px; border:1px solid var(--line);
@@ -154,8 +172,8 @@
   </main>
   <script defer src="https://cdn.jsdelivr.net/npm/katex@0.16.11/dist/katex.min.js"></script>
   <script defer src="https://cdn.jsdelivr.net/npm/katex@0.16.11/dist/contrib/auto-render.min.js"></script>
-  <script defer src="../../shared/jm-tabs.js?v=20260730-jm29i"></script>
-  <script defer src="quadrilaterals-tools.js?v=20260730-jm29i"></script>
+  <script defer src="../../shared/jm-tabs.js?v=20260730-jm29j"></script>
+  <script defer src="quadrilaterals-tools.js?v=20260730-jm29j"></script>
   <script>
     document.addEventListener("DOMContentLoaded", function () {
       if (window.initJmTabs) window.initJmTabs();
