@@ -40,6 +40,16 @@
     return bits.map(String).join("");
   }
 
+  function bitCountForTarget(n) {
+    if (n <= 0) return 1;
+    return denaryToBinaryString(n).length;
+  }
+
+  function bitsToBinaryStringTrimmed(bits) {
+    const trimmed = bitsToBinaryString(bits).replace(/^0+/, "");
+    return trimmed || "0";
+  }
+
   function expandedFormHtml(bits, base) {
     base = base || 2;
     const terms = [];
@@ -106,7 +116,7 @@
 
   function updateBitReadout(bits, targets) {
     const den = bitsToDenary(bits);
-    const binStr = bitsToBinaryString(bits);
+    const binStr = bitsToBinaryStringTrimmed(bits);
     if (targets.binary) targets.binary.textContent = binStr + "(2)";
     if (targets.denary) targets.denary.innerHTML = "\\(= " + den + "_{(10)}\\)";
     if (targets.expanded) targets.expanded.innerHTML = expandedFormHtml(bits);
@@ -362,7 +372,8 @@
 
     function showMatchChallenge() {
       matchTargetEl.innerHTML = "\\(" + matchTarget + "_{(10)}\\)";
-      matchBits.fill(0);
+      matchBits.length = 0;
+      for (let i = 0; i < bitCountForTarget(matchTarget); i++) matchBits.push(0);
       buildBitRow(matchRow, matchBits);
       fbMatch.className = "feedback";
       fbMatch.textContent = "Flip bits to match the target, then Check.";
@@ -391,13 +402,11 @@
           "Correct — \\(" +
           matchTarget +
           "_{(10)} = " +
-          bitsToBinaryString(matchBits) +
+          denaryToBinaryString(matchTarget) +
           "_{(2)}\\). Streak: " +
           matchStreak +
           ".";
         if (window.revealFormula) window.revealFormula("formula-bin-match");
-        nextMatchTarget();
-        setTimeout(showMatchChallenge, 1400);
       } else {
         matchStreak = 0;
         fbMatch.className = "feedback bad";
