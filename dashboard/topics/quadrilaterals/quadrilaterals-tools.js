@@ -214,11 +214,12 @@
 
   function outwardLabel(p, centroid, name, distPx) {
     var u = unit(centroid, p);
-    var d = distPx == null ? 22 : distPx;
-    var dx = u.x * d + (Math.abs(u.x) < 0.25 ? (p.x < centroid.x ? -12 : 12) : 0);
-    var dy = u.y * d + (Math.abs(u.y) < 0.25 ? (p.y < centroid.y ? -14 : 16) : 0);
-    dx += u.x * 6;
-    dy += u.y * 6;
+    var d = distPx == null ? 15 : distPx;
+    var dx = u.x * d;
+    var dy = u.y * d;
+    // Tiny nudge off the stroke when the ray is almost axis-aligned
+    if (Math.abs(u.x) < 0.2) dx += p.x < centroid.x ? -3 : 3;
+    if (Math.abs(u.y) < 0.2) dy += p.y < centroid.y ? -3 : 5;
     return labelAt(p, name, dx, dy);
   }
 
@@ -1272,7 +1273,7 @@
       var cen = { x: cx / pts.length, y: cy / pts.length };
       pts.forEach(function (p, i) {
         svg.appendChild(E("circle", { cx: p.x, cy: p.y, r: 5, fill: MARK, stroke: "#0f172a", "stroke-width": 1.5 }));
-        svg.appendChild(outwardLabel(p, cen, names[i], 26));
+        svg.appendChild(outwardLabel(p, cen, names[i], 14));
       });
     }
 
@@ -1355,7 +1356,7 @@
         }));
         var cen = { x: (TA.x + TB.x + TC.x) / 3, y: (TA.y + TB.y + TC.y) / 3 };
         // Push D,E slightly farther so ticks / DE don't cover letters
-        svg.appendChild(outwardLabel(L[1], cen, L[0], L[0] === "D" || L[0] === "E" ? 30 : 24));
+        svg.appendChild(outwardLabel(L[1], cen, L[0], L[0] === "D" || L[0] === "E" ? 18 : 14));
       });
     } else if (drawId === "intercept") {
       [80, 150, 220].forEach(function (y) {
