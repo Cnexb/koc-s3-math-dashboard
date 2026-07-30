@@ -860,11 +860,58 @@
     });
   }
 
+  function thmApexPoint() {
+    var L0 = thmLinePts(0), L1 = thmLinePts(1);
+    var den = (L0[1].x - L0[0].x) * (L1[1].y - L1[0].y) - (L0[1].y - L0[0].y) * (L1[1].x - L1[0].x);
+    if (Math.abs(den) < 1e-6) return null;
+    var t = ((L1[0].x - L0[0].x) * (L1[1].y - L1[0].y) - (L1[0].y - L0[0].y) * (L1[1].x - L1[0].x)) / den;
+    return { x: L0[0].x + t * (L0[1].x - L0[0].x), y: L0[0].y + t * (L0[1].y - L0[0].y) };
+  }
+
+  /** Place horizontals (and transversals if needed) so the active theorem holds. */
+  function snapThmCondition() {
+    // Stable outer // lines with room for a middle
+    thmY[0] = 90;
+    thmY[2] = 300;
+
+    if (thmMode === "intercept") {
+      // AB = BC (and DE = EF) when // lines are equally spaced in y
+      thmY[1] = (thmY[0] + thmY[2]) / 2;
+    } else {
+      // Mid-pt: need P above the figure, then middle // through mid-points of PC, PF
+      var apex = thmApexPoint();
+      var needFresh = !(apex && apex.y < thmY[0] - 8 && apex.x > 40 && apex.x < 480);
+      if (needFresh) {
+        // Two transversals that meet at a clear vertex P above AD
+        thmT[0] = { top: 200, bot: 110 };
+        thmT[1] = { top: 320, bot: 410 };
+        apex = thmApexPoint();
+      }
+      if (apex) {
+        var midY = (apex.y + thmY[2]) / 2;
+        // Keep top // above the mid-line so A,D sit between P and the mid-points
+        if (midY - thmY[0] < 35) thmY[0] = Math.max(55, midY - 45);
+        if (thmY[2] - midY < 35) thmY[2] = Math.min(330, midY + 45);
+        thmY[1] = clamp(midY, thmY[0] + 35, thmY[2] - 35);
+      } else {
+        thmY[1] = (thmY[0] + thmY[2]) / 2;
+      }
+    }
+    renderThm();
+  }
+
   function renderThm() {
     makeButtons(document.getElementById("thm-mode-btns"), [
       { id: "midpt", label: "Mid-pt. thm." },
       { id: "intercept", label: "Intercept thm." },
     ], thmMode, function (id) { thmMode = id; renderThm(); });
+
+    var snapBtn = document.getElementById("thm-snap-btn");
+    if (snapBtn) {
+      snapBtn.textContent = thmMode === "midpt"
+        ? "Fit: PB = BC, PE = EF"
+        : "Fit: AB = BC";
+    }
 
     var svg = document.getElementById("thm-svg");
     if (!svg) return;
@@ -1007,6 +1054,11 @@
   function bindThm() {
     var svg = document.getElementById("thm-svg");
     if (!svg) return;
+    var snapBtn = document.getElementById("thm-snap-btn");
+    if (snapBtn && !snapBtn.dataset.bound) {
+      snapBtn.dataset.bound = "1";
+      snapBtn.addEventListener("click", function () { snapThmCondition(); });
+    }
     svg.addEventListener("pointerdown", function (e) {
       var key = e.target.dataset.drag;
       if (key == null) return;
