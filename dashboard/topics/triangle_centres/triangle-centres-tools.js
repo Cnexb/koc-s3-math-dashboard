@@ -45,8 +45,6 @@
     acute: [{ x: 55, y: 320 }, { x: 440, y: 300 }, { x: 200, y: 55 }],
     // Scalene right at A: AB ≠ AC
     right: [{ x: 100, y: 300 }, { x: 380, y: 300 }, { x: 100, y: 95 }],
-    // Isosceles right at A: AB = AC, ∠A = 90°
-    isoscelesRight: [{ x: 100, y: 300 }, { x: 320, y: 300 }, { x: 100, y: 80 }],
     // Scalene obtuse at A; H and O clear of vertices in fixed box
     obtuse: [{ x: 170, y: 220 }, { x: 400, y: 300 }, { x: 140, y: 60 }],
     // AC = BC (isosceles at C), acute
@@ -57,7 +55,6 @@
   var PRESET_LABELS = {
     acute: "Acute",
     right: "Right",
-    isoscelesRight: "Isosceles right",
     obtuse: "Obtuse",
     isosceles: "Isosceles",
     equilateral: "Equilateral",
