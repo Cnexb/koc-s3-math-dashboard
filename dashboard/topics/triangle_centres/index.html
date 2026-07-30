@@ -8,7 +8,7 @@
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
   <link href="https://fonts.googleapis.com/css2?family=Hanken+Grotesk:wght@400;600;700&display=swap" rel="stylesheet">
   <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/katex@0.16.11/dist/katex.min.css">
-  <link rel="stylesheet" href="../../shared/jm-lesson.css?v=20260729-jm28i">
+  <link rel="stylesheet" href="../../shared/jm-lesson.css?v=20260730-jm28j">
   <style>
     body { margin:0; min-height:100vh; color:var(--text); font-family:"Hanken Grotesk",system-ui,sans-serif;
       background:linear-gradient(180deg,#f8fafc,#f1f5f9); user-select:none; }
@@ -40,11 +40,9 @@
         <section class="block">
           <h2>Four special lines → four centres</h2>
           <p class="hint">All construction lines are solid. Medians use tick marks on equal halves; altitudes show a right-angle symbol at the foot; angle bisectors use outward arc marks. Drag vertices to explore.</p>
-          <p class="split-hint">Shape presets (click to load):</p>
           <div class="tool-toggle-row" id="tri-preset-btns"></div>
           <div class="tool-toggle-row" id="tri-mode-btns"></div>
           <svg class="lab-svg" id="tri-svg" viewBox="0 0 500 400" aria-label="Special lines and centres"></svg>
-          <p class="split-hint" style="margin-top:10px;margin-bottom:4px">Detected from the current shape:</p>
           <div class="badge-row" id="tri-type-badges"></div>
           <p class="formula" id="tri-caption"></p>
           <div class="note-box" id="tri-placement"></div>
@@ -55,7 +53,7 @@
         <p class="part-title">Lab 2 · Angle pairs (parallel lines)</p>
         <section class="block">
           <h2>Corresponding · alternate · interior on same side</h2>
-          <p class="hint">Two parallel lines cut by a transversal. Drag the blue handles to move the transversal; pick a relationship to highlight matching angles.</p>
+          <p class="hint">Two parallel lines cut by a transversal. Drag the blue handles <strong>left/right</strong> only to tilt the transversal; pick a relationship to highlight matching angles.</p>
           <div class="tool-toggle-row" id="ang-mode-btns"></div>
           <svg class="lab-svg" id="ang-svg" viewBox="0 0 520 320" aria-label="Angle pairs lab"></svg>
           <p class="formula" id="ang-caption"></p>
@@ -92,8 +90,8 @@
   </main>
   <script defer src="https://cdn.jsdelivr.net/npm/katex@0.16.11/dist/katex.min.js"></script>
   <script defer src="https://cdn.jsdelivr.net/npm/katex@0.16.11/dist/contrib/auto-render.min.js"></script>
-  <script defer src="../../shared/jm-tabs.js?v=20260729-jm28i"></script>
-  <script defer src="triangle-centres-tools.js?v=20260730-ticks-mid"></script>
+  <script defer src="../../shared/jm-tabs.js?v=20260730-jm28j"></script>
+  <script defer src="triangle-centres-tools.js?v=20260730-jm28j"></script>
   <script>
     document.addEventListener("DOMContentLoaded", function () {
       if (window.initJmTabs) window.initJmTabs();

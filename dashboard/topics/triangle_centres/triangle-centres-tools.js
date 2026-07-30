@@ -43,11 +43,10 @@
   var PRESETS = {
     // Scalene acute: three different side lengths, all angles < 90°
     acute: [{ x: 55, y: 320 }, { x: 440, y: 300 }, { x: 200, y: 55 }],
-    // Scalene right at A: AB ≠ AC (直角但不等腰)
     right: [{ x: 100, y: 300 }, { x: 380, y: 300 }, { x: 100, y: 95 }],
     // Obtuse at A; H well clear of A; O well clear of midpoints (both in fixed box)
     obtuse: [{ x: 170, y: 220 }, { x: 400, y: 300 }, { x: 140, y: 60 }],
-    // AC = BC (isosceles at C), acute
+    // AC = BC (isosceles at C)
     isosceles: [{ x: 150, y: 300 }, { x: 350, y: 300 }, { x: 250, y: 85 }],
     equilateral: [{ x: 130, y: 300 }, { x: 370, y: 300 }, { x: 250, y: 92.2 }],
   };
@@ -106,10 +105,12 @@
   ];
 
 
-  // Transversal endpoints for Lab 2 (parallel lines at fixed y)
+  // Transversal endpoints for Lab 2 — handles move horizontally only (fixed y)
   var angY1 = 90;
   var angY2 = 230;
-  var angT = [{ x: 110, y: 30 }, { x: 410, y: 290 }];
+  var angTTopY = 30;
+  var angTBotY = 290;
+  var angT = [{ x: 110, y: angTTopY }, { x: 410, y: angTBotY }];
 
   // Draggable left triangle for Lab 3
   var matchA = [{ x: 70, y: 230 }, { x: 200, y: 230 }, { x: 110, y: 80 }];
@@ -311,70 +312,17 @@
     return Math.acos(Math.max(-1, Math.min(1, dotp / m))) * 180 / Math.PI;
   }
 
-  function sideEqTol(v) {
-    var sides = sideLengths(v);
-    var avg = (sides[0] + sides[1] + sides[2]) / 3;
-    return avg * 0.04;
-  }
-
-  /** True when all three sides are within tolerance (handles a≈b, a≈c but b≉c). */
-  function isEquilateralSides(v) {
-    var sides = sideLengths(v);
-    var tol = sideEqTol(v);
-    var maxS = Math.max(sides[0], sides[1], sides[2]);
-    var minS = Math.min(sides[0], sides[1], sides[2]);
-    return maxS - minS < tol;
-  }
-
-  /**
-   * Best equal-side pair [i,j] within tol, or null.
-   * Prefers the closest pair so near-equilateral noise does not mark three sides differently.
-   */
-  function bestEqualSidePair(v) {
-    if (isEquilateralSides(v)) return null;
-    var sides = sideLengths(v);
-    var tol = sideEqTol(v);
-    var best = null;
-    var bestDiff = Infinity;
-    [[0, 1], [1, 2], [0, 2]].forEach(function (pr) {
-      var d = Math.abs(sides[pr[0]] - sides[pr[1]]);
-      if (d < tol && d < bestDiff) {
-        bestDiff = d;
-        best = pr;
-      }
-    });
-    return best;
-  }
-
-  /** All active type badges (e.g. right + isosceles for 等腰直角三角形). */
-  function triangleTags(v) {
+  function triangleKind(v) {
     var angles = [0, 1, 2].map(function (i) { return angleAt(v, i); });
     var maxA = Math.max.apply(null, angles);
-    var tags = [];
-    if (isEquilateralSides(v)) {
-      tags.push("equilateral");
-      return tags;
-    }
-    if (Math.abs(maxA - 90) < 3.5) tags.push("right");
-    else if (maxA > 90) tags.push("obtuse");
-    else tags.push("acute");
-    if (bestEqualSidePair(v)) tags.push("isosceles");
-    return tags;
-  }
-
-  /** Primary kind for construction notes / mode logic. */
-  function triangleKind(v) {
-    var tags = triangleTags(v);
-    if (tags.indexOf("equilateral") >= 0) return "equilateral";
-    if (tags.indexOf("right") >= 0) return "right";
-    if (tags.indexOf("obtuse") >= 0) return "obtuse";
-    if (tags.indexOf("isosceles") >= 0) return "isosceles";
+    var sides = sideLengths(v).slice().sort(function (a, b) { return a - b; });
+    var avg = (sides[0] + sides[1] + sides[2]) / 3;
+    var eqTol = avg * 0.04;
+    if (Math.abs(sides[0] - sides[1]) < eqTol && Math.abs(sides[1] - sides[2]) < eqTol) return "equilateral";
+    if (Math.abs(maxA - 90) < 3.5) return "right";
+    if (maxA > 90) return "obtuse";
+    if (Math.abs(sides[0] - sides[1]) < eqTol || Math.abs(sides[1] - sides[2]) < eqTol) return "isosceles";
     return "acute";
-  }
-
-  function isIsoscelesShape(v) {
-    var tags = triangleTags(v);
-    return tags.indexOf("isosceles") >= 0 || tags.indexOf("equilateral") >= 0;
   }
 
   function pointInTri(p, v) {
@@ -460,37 +408,50 @@
   }
 
   /** Side equality ticks for isosceles (equal legs) / equilateral (all three). */
-  function equalSideTickPlan(v) {
-    if (isEquilateralSides(v)) return [1, 1, 1];
-    var pair = bestEqualSidePair(v);
-    if (!pair) return [0, 0, 0];
+  function equalSideTickPlan(v, kind) {
+    if (kind === "equilateral") return [1, 1, 1];
+    var sides = sideLengths(v);
+    var avg = (sides[0] + sides[1] + sides[2]) / 3;
+    var tol = avg * 0.04;
     var plan = [0, 0, 0];
-    plan[pair[0]] = 1;
-    plan[pair[1]] = 1;
+    var pairs = [[0, 1], [1, 2], [0, 2]];
+    var tick = 1;
+    pairs.forEach(function (pr) {
+      if (Math.abs(sides[pr[0]] - sides[pr[1]]) < tol) {
+        if (!plan[pr[0]]) plan[pr[0]] = tick;
+        if (!plan[pr[1]]) plan[pr[1]] = tick;
+        tick++;
+      }
+    });
     return plan;
   }
 
   /**
    * Half-tick plan for median / perp bisector:
    * - scalene: 1,2,3 (different sides ≠)
-   * - isosceles (incl. isosceles-right): equal sides share the same count
+   * - isosceles: equal legs share a count; base halves also marked (different count)
    * - equilateral: all 1
    */
-  function halfTickPlan(v) {
-    if (isEquilateralSides(v)) return [1, 1, 1];
-    var pair = bestEqualSidePair(v);
-    if (!pair) return SIDE_TICKS.slice();
-    var plan = [0, 0, 0];
-    plan[pair[0]] = 1;
-    plan[pair[1]] = 1;
-    var other = 3 - pair[0] - pair[1];
-    plan[other] = 2;
-    return plan;
+  function halfTickPlan(v, kind) {
+    if (kind === "equilateral") return [1, 1, 1];
+    if (kind === "isosceles") {
+      var sides = sideLengths(v);
+      var avg = (sides[0] + sides[1] + sides[2]) / 3;
+      var tol = avg * 0.04;
+      var plan = [0, 0, 0];
+      // Mark equal legs with 2; the remaining base with 1
+      if (Math.abs(sides[1] - sides[2]) < tol) { plan[1] = 2; plan[2] = 2; plan[0] = 1; }
+      else if (Math.abs(sides[0] - sides[2]) < tol) { plan[0] = 2; plan[2] = 2; plan[1] = 1; }
+      else if (Math.abs(sides[0] - sides[1]) < tol) { plan[0] = 2; plan[1] = 2; plan[2] = 1; }
+      else return SIDE_TICKS.slice();
+      return plan;
+    }
+    return SIDE_TICKS.slice();
   }
 
-  function drawSideEqualityMarks(g, v) {
-    if (!isIsoscelesShape(v)) return;
-    var plan = equalSideTickPlan(v);
+  function drawSideEqualityMarks(g, v, kind) {
+    if (kind !== "isosceles" && kind !== "equilateral") return;
+    var plan = equalSideTickPlan(v, kind);
     [0, 1, 2].forEach(function (i) {
       if (!plan[i]) return;
       var j = (i + 1) % 3;
@@ -505,34 +466,17 @@
     else g.appendChild(dashedSeg(C, F, "#94a3b8", 1.8));
   }
 
-  /**
-   * Arc-count plan per vertex A,B,C for equal-angle marks.
-   * Rule: the two angles that touch the unique side WITHOUT an equal-tick
-   * (the base) are the equal base angles; the apex gets a different count.
-   * Equilateral: all three angles use the same mark.
-   * Scalene: all three angles use different marks.
-   */
-  function angleArcPlan(v) {
-    if (isEquilateralSides(v)) return [1, 1, 1];
-
-    var sidePlan = equalSideTickPlan(v);
-    // Isosceles: exactly one unmarked side = base; its two endpoints are equal angles
-    var marked = 0;
-    var base = -1;
-    for (var i = 0; i < 3; i++) {
-      if (sidePlan[i]) marked++;
-      else base = i;
+  function angleArcPlan(kind, v) {
+    if (kind === "equilateral") return [1, 1, 1];
+    if (kind === "isosceles") {
+      var sides = sideLengths(v);
+      var avg = (sides[0] + sides[1] + sides[2]) / 3;
+      var tol = avg * 0.04;
+      if (Math.abs(sides[1] - sides[2]) < tol) return [2, 2, 1];
+      if (Math.abs(sides[0] - sides[2]) < tol) return [2, 1, 2];
+      if (Math.abs(sides[0] - sides[1]) < tol) return [1, 2, 2];
+      return [1, 1, 1];
     }
-    if (marked === 2 && base >= 0) {
-      var plan = [1, 1, 1];
-      var apex = (base + 2) % 3;
-      plan[base] = 2;
-      plan[(base + 1) % 3] = 2;
-      plan[apex] = 1;
-      return plan;
-    }
-
-    // Scalene (or unknown): three different marks
     return ANGLE_ARCS.slice();
   }
 
@@ -553,11 +497,7 @@
     var loc = centreLocationWord(modeId, kind, centreP, v);
     var parts = [names[modeId] + " may lie inside (acute), on (right), or outside (obtuse)."];
     if (kind === "equilateral") parts.push("Equilateral triangle: all four centres coincide.");
-    else if (isIsoscelesShape(v) && kind === "right") {
-      parts.push("Isosceles right triangle: equal legs; circumcentre is the mid-point of the hypotenuse.");
-    } else if (isIsoscelesShape(v)) {
-      parts.push("Isosceles triangle: all four centres lie on the axis of symmetry.");
-    }
+    else if (kind === "isosceles") parts.push("Isosceles triangle: all four centres lie on the axis of symmetry.");
     parts.push("Currently: " + loc + ".");
     el.textContent = parts.join(" ");
   }
@@ -621,7 +561,7 @@
     }
 
     if (mode === "altitude") {
-      drawSideEqualityMarks(svg, verts);
+      drawSideEqualityMarks(svg, verts, kind);
       var H = orthocentre(verts);
       var altLines = [];
       verts.forEach(function (v, i) {
@@ -655,7 +595,7 @@
 
     if (mode === "median") {
       var G = centroid(verts);
-      var sideTicks = halfTickPlan(verts);
+      var sideTicks = halfTickPlan(verts, kind);
       var medLines = [];
       verts.forEach(function (v, i) {
         var opp = [(i + 1) % 3, (i + 2) % 3];
@@ -677,9 +617,9 @@
     }
 
     if (mode === "bisector") {
-      drawSideEqualityMarks(svg, verts);
+      drawSideEqualityMarks(svg, verts, kind);
       var I = incentre(verts);
-      var arcPlan = angleArcPlan(verts);
+      var arcPlan = angleArcPlan(kind, verts);
       var bisLines = [];
       verts.forEach(function (v, i) {
         var B = verts[(i + 1) % 3];
@@ -697,7 +637,7 @@
 
     if (mode === "perp") {
       var O = circumcentre(verts);
-      var sideTicks = halfTickPlan(verts);
+      var sideTicks = halfTickPlan(verts, kind);
       var perpLines = [];
       [[0, 1], [1, 2], [2, 0]].forEach(function (pair, idx) {
         var p1 = verts[pair[0]];
@@ -736,11 +676,10 @@
 
     var badges = document.getElementById("tri-type-badges");
     badges.innerHTML = "";
-    var tags = triangleTags(verts);
     ["Acute", "Right", "Obtuse", "Isosceles", "Equilateral"].forEach(function (name) {
       var b = document.createElement("span");
       var key = name.toLowerCase();
-      b.className = "badge" + (tags.indexOf(key) >= 0 ? " on" : "");
+      b.className = "badge" + (kind === key ? " on" : "");
       b.textContent = name;
       badges.appendChild(b);
     });
@@ -921,7 +860,7 @@
 
     renderMixed(document.getElementById("ang-caption"), ANG.find(function (a) { return a.id === angMode; }).cap);
     var note = document.getElementById("ang-note");
-    if (note) note.textContent = pairNote + " Drag the blue endpoints to change the transversal.";
+    if (note) note.textContent = pairNote + " Drag the blue handles left/right to tilt the transversal.";
   }
 
   function shapeFrom(A) {
@@ -1427,7 +1366,9 @@
       if (angDrag == null) return;
       var p = pt(e, angSvg);
       angT[angDrag].x = Math.max(40, Math.min(480, p.x));
-      angT[angDrag].y = Math.max(20, Math.min(300, p.y));
+      // Keep each handle on its own horizontal — never cross the // lines
+      angT[0].y = angTTopY;
+      angT[1].y = angTBotY;
       renderAngles();
     });
     angSvg.addEventListener("pointerup", function () { angDrag = null; });
