@@ -9,9 +9,10 @@
   var MARK = "#fbbf24";
   var TICK = "#f87171";
   var VIOLET = "#a78bfa";
-  var EPS_PAR = 0.22;   // ~13° — looser // detection
-  var EPS_LEN = 18;
-  var EPS_ANG = 12;
+  var EPS_PAR = 0.18;
+  var EPS_LEN = 8;    // stricter equal-length
+  var EPS_ANG = 10;
+
 
   var LABS = [
     { id: "detect", label: "Shape detector" },
@@ -128,28 +129,53 @@
     });
   }
 
-  function tickMark(a, b, n, color) {
+  /** Outward unit normal from segment AB relative to interior point inside. */
+  function outwardNrm(a, b, inside) {
+    var u = unit(a, b), n = perp(u);
+    var m = mid(a, b);
+    var toIn = sub(inside, m);
+    if (n.x * toIn.x + n.y * toIn.y > 0) n = scale(n, -1);
+    return n;
+  }
+
+  function dashedSeg(a, b, col, w) {
+    return E("line", {
+      x1: a.x, y1: a.y, x2: b.x, y2: b.y,
+      stroke: col || "#fb923c", "stroke-width": w || 2,
+      "stroke-dasharray": "7 5", "stroke-linecap": "round",
+    });
+  }
+
+  /**
+   * Equal-length ticks offset beside the edge (not on the stroke).
+   * n = tick count for this length group (1,2,3…).
+   */
+  function tickMark(a, b, n, color, offsetNrm) {
     var g = E("g", {});
-    var m = mid(a, b), u = unit(a, b), nrm = perp(u);
-    var count = Math.max(1, Math.min(2, n || 1)); // only 1 or 2 ticks
+    var u = unit(a, b);
+    var nrm = offsetNrm || perp(u);
+    var count = Math.max(1, n || 1);
+    var m = add(mid(a, b), scale(nrm, 11));
     for (var k = 0; k < count; k++) {
       var c = add(m, scale(u, (k - (count - 1) / 2) * 6));
-      g.appendChild(seg(add(c, scale(nrm, 7)), add(c, scale(nrm, -7)), color || TICK, 2));
+      g.appendChild(seg(add(c, scale(nrm, 5)), add(c, scale(nrm, -5)), color || TICK, 2.2));
     }
     return g;
   }
 
-  /** Arrowhead // marks: n=1 single chevron, n=2 double chevron on the side. */
-  function parallelArrows(a, b, n, color) {
+  /** Arrowhead // marks offset beside the edge. */
+  function parallelArrows(a, b, n, color, offsetNrm) {
     var g = E("g", {});
-    var m = mid(a, b), u = unit(a, b), nrm = perp(u);
+    var u = unit(a, b);
+    var nrm = offsetNrm || perp(u);
     var col = color || GOOD;
     var count = Math.max(1, Math.min(2, n || 1));
+    var m = add(mid(a, b), scale(nrm, 12));
     for (var set = 0; set < count; set++) {
-      var base = add(m, scale(u, (set - (count - 1) / 2) * 11));
+      var base = add(m, scale(u, (set - (count - 1) / 2) * 12));
       var tip = add(base, scale(u, 7));
-      var left = add(add(base, scale(u, -3)), scale(nrm, 6));
-      var right = add(add(base, scale(u, -3)), scale(nrm, -6));
+      var left = add(add(base, scale(u, -4)), scale(nrm, 5));
+      var right = add(add(base, scale(u, -4)), scale(nrm, -5));
       g.appendChild(E("polygon", {
         points: [tip, left, right].map(function (p) { return p.x + "," + p.y; }).join(" "),
         fill: col,
@@ -157,8 +183,37 @@
     }
     return g;
   }
-  // alias used by older call sites during edit
   function parallelSlash(a, b, n, color) { return parallelArrows(a, b, n, color); }
+
+  /**
+   * Cluster segments by length; return map id → tickCount.
+   * Only groups with ≥2 members get ticks. Tick numbers 1,2,3… are unique per length.
+   */
+  function lengthTickMap(items) {
+    // items: [{ id, len }]
+    var used = [];
+    items.forEach(function (it) {
+      var g = null;
+      for (var i = 0; i < used.length; i++) {
+        if (Math.abs(used[i].len - it.len) < EPS_LEN) { g = used[i]; break; }
+      }
+      if (!g) {
+        g = { len: it.len, ids: [] };
+        used.push(g);
+      }
+      g.ids.push(it.id);
+      // keep running mean
+      g.len = (g.len * (g.ids.length - 1) + it.len) / g.ids.length;
+    });
+    var map = {};
+    var tick = 1;
+    used.forEach(function (g) {
+      if (g.ids.length < 2) return;
+      g.ids.forEach(function (id) { map[id] = tick; });
+      tick++;
+    });
+    return map;
+  }
 
   function angleArc(vertex, pA, pB, r, color, doubles) {
     var g = E("g", {});
@@ -233,9 +288,25 @@
   /* ═══════════════════════════════════════════════════════════
      LAB 1 — Free-drag detector
      ═══════════════════════════════════════════════════════════ */
-  var verts = [
-    { x: 110, y: 250 }, { x: 360, y: 250 }, { x: 420, y: 90 }, { x: 160, y: 90 },
-  ];
+  var PRESETS = {
+    parallelogram: [
+      { x: 90, y: 300 }, { x: 340, y: 300 }, { x: 430, y: 80 }, { x: 180, y: 80 },
+    ],
+    trapezium: [
+      { x: 90, y: 300 }, { x: 420, y: 300 }, { x: 360, y: 90 }, { x: 150, y: 90 },
+    ],
+    rhombus: [
+      { x: 260, y: 320 }, { x: 430, y: 190 }, { x: 260, y: 60 }, { x: 90, y: 190 },
+    ],
+    rectangle: [
+      { x: 90, y: 290 }, { x: 420, y: 290 }, { x: 420, y: 90 }, { x: 90, y: 90 },
+    ],
+    square: [
+      { x: 130, y: 300 }, { x: 390, y: 300 }, { x: 390, y: 80 }, { x: 130, y: 80 },
+    ],
+  };
+  var verts = PRESETS.parallelogram.map(function (p) { return { x: p.x, y: p.y }; });
+  var detPreset = "parallelogram";
   var detDrag = null;
   var proveReasonId = null;
   var proveStep = 0;
@@ -324,25 +395,29 @@
     rhombus: {
       title: "Rhombus",
       list: [
-        "A parallelogram with **all four sides equal**.",
-        "Diagonals are perpendicular bisectors of each other.",
-        "Diagonals bisect the vertex angles.",
+        "All four sides equal.",
+        "Diagonals are perpendicular to each other.",
+        "Diagonals bisect the interior angles.",
+        "Also a parallelogram (opp. sides //, diags. bisect each other).",
         "Reason: **[property of rhombus]**",
       ],
     },
     rectangle: {
       title: "Rectangle",
       list: [
-        "A parallelogram with all angles \\(90^\\circ\\).",
+        "All interior angles are \\(90^\\circ\\).",
         "Diagonals are equal in length.",
+        "Also a parallelogram (opp. sides // and equal).",
         "Reason: **[property of rectangle]**",
       ],
     },
     square: {
       title: "Square",
       list: [
-        "A rectangle with equal sides — or a rhombus with right angles.",
-        "Has every property of parallelogram, rectangle and rhombus.",
+        "All sides equal.",
+        "Diagonals are perpendicular to each other.",
+        "Angle between each diagonal and a side is \\(45^\\circ\\).",
+        "All angles \\(90^\\circ\\) — also a rectangle and a rhombus.",
         "Reason: **[property of square]**",
       ],
     },
@@ -473,72 +548,131 @@
     clr(svg);
     var info = analyseQuad(verts);
     var A = info.A, B = info.B, C = info.C, D = info.D;
+    var centroid = {
+      x: (A.x + B.x + C.x + D.x) / 4,
+      y: (A.y + B.y + C.y + D.y) / 4,
+    };
+    var O = mid(A, C);
+    var a1 = A, a2 = C, b1 = B, b2 = D;
+    var dd = (a2.x - a1.x) * (b2.y - b1.y) - (a2.y - a1.y) * (b2.x - b1.x);
+    if (Math.abs(dd) > 1e-6) {
+      var tt = ((b1.x - a1.x) * (b2.y - b1.y) - (b1.y - a1.y) * (b2.x - b1.x)) / dd;
+      O = { x: a1.x + tt * (a2.x - a1.x), y: a1.y + tt * (a2.y - a1.y) };
+    }
 
     svg.appendChild(E("polygon", {
       points: [A, B, C, D].map(function (p) { return p.x + "," + p.y; }).join(" "),
       fill: "rgba(56,189,248,.1)", stroke: "none",
     }));
 
-    var sides = [[A, B], [B, C], [C, D], [D, A]];
-    // Edges always white
-    sides.forEach(function (s) {
-      svg.appendChild(seg(s[0], s[1], INK, SW));
+    var sideDefs = [
+      { id: "AB", a: A, b: B },
+      { id: "BC", a: B, b: C },
+      { id: "CD", a: C, b: D },
+      { id: "DA", a: D, b: A },
+    ];
+    sideDefs.forEach(function (s) {
+      svg.appendChild(seg(s.a, s.b, INK, SW));
     });
 
-    // Arrowhead // marks: single on first pair, double on second
+    function sideOut(s) { return outwardNrm(s.a, s.b, centroid); }
+
+    // // arrowheads beside edges
     if (info.parAB_DC) {
-      svg.appendChild(parallelArrows(A, B, 1));
-      svg.appendChild(parallelArrows(D, C, 1));
+      svg.appendChild(parallelArrows(A, B, 1, GOOD, sideOut(sideDefs[0])));
+      svg.appendChild(parallelArrows(D, C, 1, GOOD, sideOut({ a: D, b: C })));
     }
     if (info.parAD_BC) {
-      svg.appendChild(parallelArrows(A, D, 2));
-      svg.appendChild(parallelArrows(B, C, 2));
+      svg.appendChild(parallelArrows(A, D, 2, GOOD, sideOut({ a: A, b: D })));
+      svg.appendChild(parallelArrows(B, C, 2, GOOD, sideOut(sideDefs[1])));
     }
 
-    // Equal-length ticks: never stack. All-equal → 1 tick each; else opp. pairs use 1 then 2.
-    if (info.allSidesEq) {
-      sides.forEach(function (s) { svg.appendChild(tickMark(s[0], s[1], 1)); });
-    } else {
-      if (info.eqAB_DC) {
-        svg.appendChild(tickMark(A, B, 1));
-        svg.appendChild(tickMark(D, C, 1));
+    // Build length groups: sides + (optional) diagonal halves / full diags
+    var lenItems = sideDefs.map(function (s) {
+      return { id: s.id, len: dist(s.a, s.b) };
+    });
+    var showDiags = info.names.parallelogram || info.names.rhombus || info.names.rectangle || info.names.square;
+    var diagsPerp = false;
+    if (showDiags) {
+      var uAC = sub(C, A), uBD = sub(D, B);
+      var mag = (Math.hypot(uAC.x, uAC.y) * Math.hypot(uBD.x, uBD.y)) || 1;
+      diagsPerp = Math.abs(uAC.x * uBD.x + uAC.y * uBD.y) / mag < EPS_PAR;
+    }
+    if (showDiags) {
+      // dashed diagonals for rhombus / square / rectangle notes
+      if (info.names.rhombus || info.names.square || info.names.rectangle) {
+        svg.appendChild(dashedSeg(A, C, "#fb923c", 2));
+        svg.appendChild(dashedSeg(B, D, "#fb923c", 2));
+      } else if (info.primary === "parallelogram") {
+        svg.appendChild(seg(A, C, ACCENT, 1.8));
+        svg.appendChild(seg(B, D, ACCENT, 1.8));
       }
-      if (info.eqAD_BC) {
-        svg.appendChild(tickMark(A, D, 2));
-        svg.appendChild(tickMark(B, C, 2));
+      if (info.diagsBisect) {
+        lenItems.push({ id: "AO", len: dist(A, O) });
+        lenItems.push({ id: "OC", len: dist(O, C) });
+        lenItems.push({ id: "BO", len: dist(B, O) });
+        lenItems.push({ id: "OD", len: dist(O, D) });
+      }
+      if (info.names.rectangle || info.names.square) {
+        // full diagonals equal — include as AC, BD if equal
+        lenItems.push({ id: "AC", len: dist(A, C) });
+        lenItems.push({ id: "BD", len: dist(B, D) });
       }
     }
 
-    // equal opposite angles (skip if right angles already shown)
-    if (info.oppAngEq && info.bothPar && !info.all90) {
-      svg.appendChild(angleArc(A, B, D, 26, VIOLET, false));
-      svg.appendChild(angleArc(C, B, D, 26, VIOLET, false));
-      svg.appendChild(angleArc(B, A, C, 22, MARK, true));
-      svg.appendChild(angleArc(D, A, C, 22, MARK, true));
-    }
+    var ticks = lengthTickMap(lenItems);
+    sideDefs.forEach(function (s) {
+      if (ticks[s.id]) svg.appendChild(tickMark(s.a, s.b, ticks[s.id], TICK, sideOut(s)));
+    });
+    if (ticks.AO) svg.appendChild(tickMark(A, O, ticks.AO, ACCENT, outwardNrm(A, O, B)));
+    if (ticks.OC) svg.appendChild(tickMark(O, C, ticks.OC, ACCENT, outwardNrm(O, C, B)));
+    if (ticks.BO) svg.appendChild(tickMark(B, O, ticks.BO, TICK, outwardNrm(B, O, A)));
+    if (ticks.OD) svg.appendChild(tickMark(O, D, ticks.OD, TICK, outwardNrm(O, D, A)));
+    // full diagonal equal marks (offset) — only if not already covered by halves
+    if (ticks.AC && !ticks.AO) svg.appendChild(tickMark(A, C, ticks.AC, "#fb923c", outwardNrm(A, C, B)));
+    if (ticks.BD && !ticks.BO) svg.appendChild(tickMark(B, D, ticks.BD, "#fb923c", outwardNrm(B, D, A)));
+
+    // Angles
     if (info.all90) {
-      svg.appendChild(rightAngleMark(A, D, B));
-      svg.appendChild(rightAngleMark(B, A, C));
-      svg.appendChild(rightAngleMark(C, B, D));
-      svg.appendChild(rightAngleMark(D, C, A));
+      svg.appendChild(rightAngleMark(A, D, B, 14));
+      svg.appendChild(rightAngleMark(B, A, C, 14));
+      svg.appendChild(rightAngleMark(C, B, D, 14));
+      svg.appendChild(rightAngleMark(D, C, A, 14));
+    } else if (info.oppAngEq && info.bothPar) {
+      svg.appendChild(angleArc(A, B, D, 28, VIOLET, false));
+      svg.appendChild(angleArc(C, B, D, 28, VIOLET, false));
+      svg.appendChild(angleArc(B, A, C, 24, MARK, true));
+      svg.appendChild(angleArc(D, A, C, 24, MARK, true));
     }
 
-    if (info.diagsBisect && info.primary === "parallelogram") {
-      var O = mid(A, C);
-      svg.appendChild(seg(A, C, ACCENT, 1.8));
-      svg.appendChild(seg(B, D, ACCENT, 1.8));
-      svg.appendChild(tickMark(A, O, 1, ACCENT));
-      svg.appendChild(tickMark(O, C, 1, ACCENT));
-      svg.appendChild(tickMark(B, O, 2, TICK));
-      svg.appendChild(tickMark(O, D, 2, TICK));
-      svg.appendChild(E("circle", { cx: O.x, cy: O.y, r: 3, fill: INK }));
-      svg.appendChild(labelAt(O, "O", 8, -8, INK));
+    // Diag intersection point + perpendicular mark (rhombus / square)
+    if (showDiags && (info.names.rhombus || info.names.square || info.primary === "parallelogram")) {
+      svg.appendChild(E("circle", { cx: O.x, cy: O.y, r: 3.5, fill: INK }));
+      var oLab = (info.names.rhombus || info.names.square) ? "E" : "O";
+      svg.appendChild(labelAt(O, oLab, 10, -10, INK));
+      if (diagsPerp && (info.names.rhombus || info.names.square)) {
+        // right-angle mark between diagonals at O
+        svg.appendChild(rightAngleMark(O, A, B, 11));
+      }
     }
 
+    // Rhombus / square: diagonals bisect vertex angles — show equal arcs at C
+    if (info.names.rhombus || info.names.square) {
+      svg.appendChild(angleArc(C, B, O, 20, TICK, false));
+      svg.appendChild(angleArc(C, D, O, 20, TICK, false));
+      // small tick on each arc via short marks — use double small arcs already as equal
+    }
+
+    // Vertex labels outside (away from edges)
     ["A", "B", "C", "D"].forEach(function (name, i) {
       svg.appendChild(handle(verts[i], i, INK));
-      var off = [{ x: -16, y: 18 }, { x: 10, y: 18 }, { x: 10, y: -10 }, { x: -16, y: -10 }][i];
-      svg.appendChild(labelAt(verts[i], name, off.x, off.y));
+      var outward = unit(centroid, verts[i]);
+      svg.appendChild(labelAt(
+        verts[i],
+        name,
+        outward.x * 18 + (outward.x > 0 ? 4 : -10),
+        outward.y * 16 + (outward.y > 0 ? 14 : -6)
+      ));
     });
 
     // badges
@@ -570,6 +704,23 @@
 
     renderProve(info);
     renderTable(info);
+    renderPresetBtns();
+  }
+
+  function renderPresetBtns() {
+    makeButtons(document.getElementById("det-preset-btns"), [
+      { id: "parallelogram", label: "Parallelogram" },
+      { id: "trapezium", label: "Trapezium" },
+      { id: "rhombus", label: "Rhombus" },
+      { id: "rectangle", label: "Rectangle" },
+      { id: "square", label: "Square" },
+    ], detPreset, function (id) {
+      detPreset = id;
+      verts = PRESETS[id].map(function (p) { return { x: p.x, y: p.y }; });
+      proveReasonId = null;
+      proveStep = 0;
+      renderDetect();
+    });
   }
 
   function isParSide(info, p, q) {
@@ -690,8 +841,9 @@
     svg.addEventListener("pointermove", function (e) {
       if (detDrag == null) return;
       var p = svgPt(svg, e);
-      verts[detDrag].x = clamp(p.x, 30, 470);
-      verts[detDrag].y = clamp(p.y, 30, 310);
+      verts[detDrag].x = clamp(p.x, 36, 484);
+      verts[detDrag].y = clamp(p.y, 36, 324);
+      detPreset = "";
       renderDetect();
     });
     svg.addEventListener("pointerup", function () { detDrag = null; });

@@ -8,7 +8,7 @@
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
   <link href="https://fonts.googleapis.com/css2?family=Hanken+Grotesk:wght@400;600;700&display=swap" rel="stylesheet">
   <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/katex@0.16.11/dist/katex.min.css">
-  <link rel="stylesheet" href="../../shared/jm-lesson.css?v=20260730-jm29c">
+  <link rel="stylesheet" href="../../shared/jm-lesson.css?v=20260730-jm29d">
   <style>
     body { margin:0; min-height:100vh; color:var(--text); font-family:"Hanken Grotesk",system-ui,sans-serif;
       background:
@@ -83,8 +83,9 @@
         <p class="part-title">Lab 1 · Shape detector &amp; prove</p>
         <section class="block">
           <h2>Drag any corner — what shape is it?</h2>
-          <p class="hint">Move A–D freely. Parallel sides get <strong>//</strong> marks; equal sides get tick marks; equal angles get arc marks. Matching name badges light up.</p>
-          <svg class="lab-svg" id="det-svg" viewBox="0 0 500 340" aria-label="Quadrilateral detector"></svg>
+          <p class="hint">Use a preset above the figure, or drag A–D. Marks sit beside the edges (not on them). Same tick count = same length group only.</p>
+          <div class="tool-toggle-row" id="det-preset-btns"></div>
+          <svg class="lab-svg" id="det-svg" viewBox="0 0 520 360" aria-label="Quadrilateral detector"></svg>
           <div class="badge-row" id="det-badges"></div>
           <p class="formula" id="det-caption"></p>
           <div class="note-box" id="det-props"></div>
@@ -150,8 +151,8 @@
   </main>
   <script defer src="https://cdn.jsdelivr.net/npm/katex@0.16.11/dist/katex.min.js"></script>
   <script defer src="https://cdn.jsdelivr.net/npm/katex@0.16.11/dist/contrib/auto-render.min.js"></script>
-  <script defer src="../../shared/jm-tabs.js?v=20260730-jm29c"></script>
-  <script defer src="quadrilaterals-tools.js?v=20260730-jm29c"></script>
+  <script defer src="../../shared/jm-tabs.js?v=20260730-jm29d"></script>
+  <script defer src="quadrilaterals-tools.js?v=20260730-jm29d"></script>
   <script>
     document.addEventListener("DOMContentLoaded", function () {
       if (window.initJmTabs) window.initJmTabs();
