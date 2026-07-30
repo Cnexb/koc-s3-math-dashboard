@@ -868,34 +868,31 @@
     return { x: L0[0].x + t * (L0[1].x - L0[0].x), y: L0[0].y + t * (L0[1].y - L0[0].y) };
   }
 
+  function lineXAtY(a, b, y) {
+    var t = (y - a.y) / ((b.y - a.y) || 1);
+    return a.x + (b.x - a.x) * t;
+  }
+
   /** Place horizontals (and transversals if needed) so the active theorem holds. */
   function snapThmCondition() {
-    // Stable outer // lines with room for a middle
-    thmY[0] = 90;
-    thmY[2] = 300;
-
     if (thmMode === "intercept") {
-      // AB = BC (and DE = EF) when // lines are equally spaced in y
+      // AB = BC (and DE = EF) when the three // lines are equally spaced in y
+      thmY[0] = 90;
+      thmY[2] = 300;
       thmY[1] = (thmY[0] + thmY[2]) / 2;
+      // Mild converging transversals so the figure stays readable
+      thmT[0] = { top: 150, bot: 120 };
+      thmT[1] = { top: 370, bot: 400 };
     } else {
-      // Mid-pt: need P above the figure, then middle // through mid-points of PC, PF
-      var apex = thmApexPoint();
-      var needFresh = !(apex && apex.y < thmY[0] - 8 && apex.x > 40 && apex.x < 480);
-      if (needFresh) {
-        // Two transversals that meet at a clear vertex P above AD
-        thmT[0] = { top: 200, bot: 110 };
-        thmT[1] = { top: 320, bot: 410 };
-        apex = thmApexPoint();
-      }
-      if (apex) {
-        var midY = (apex.y + thmY[2]) / 2;
-        // Keep top // above the mid-line so A,D sit between P and the mid-points
-        if (midY - thmY[0] < 35) thmY[0] = Math.max(55, midY - 45);
-        if (thmY[2] - midY < 35) thmY[2] = Math.min(330, midY + 45);
-        thmY[1] = clamp(midY, thmY[0] + 35, thmY[2] - 35);
-      } else {
-        thmY[1] = (thmY[0] + thmY[2]) / 2;
-      }
+      // Mid-pt: build △PCF with B, E exact mid-points on a // through them
+      var P = { x: 260, y: 28 };
+      var C = { x: 135, y: 310 };
+      var F = { x: 385, y: 310 };
+      thmY[2] = C.y;
+      thmY[1] = (P.y + C.y) / 2; // mid-points of PC, PF share this y
+      thmY[0] = (P.y + thmY[1]) / 2; // AD between P and BE
+      thmT[0] = { top: lineXAtY(P, C, 40), bot: lineXAtY(P, C, 350) };
+      thmT[1] = { top: lineXAtY(P, F, 40), bot: lineXAtY(P, F, 350) };
     }
     renderThm();
   }
