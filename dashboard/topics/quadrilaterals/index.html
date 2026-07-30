@@ -8,7 +8,7 @@
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
   <link href="https://fonts.googleapis.com/css2?family=Hanken+Grotesk:wght@400;600;700&display=swap" rel="stylesheet">
   <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/katex@0.16.11/dist/katex.min.css">
-  <link rel="stylesheet" href="../../shared/jm-lesson.css?v=20260730-jm29">
+  <link rel="stylesheet" href="../../shared/jm-lesson.css?v=20260730-jm29b">
   <style>
     body { margin:0; min-height:100vh; color:var(--text); font-family:"Hanken Grotesk",system-ui,sans-serif;
       background:
@@ -23,23 +23,6 @@
       border:1px solid rgba(2,132,199,.25); background:rgba(2,132,199,.06);
       font-size:14px; line-height:1.55; color:var(--text);
     }
-    .note-box .reason-tag {
-      display:inline-block; margin:2px 4px 2px 0; padding:2px 8px; border-radius:999px;
-      background:#e0f2fe; color:var(--glow); font-size:12px; font-weight:700;
-    }
-    .prop-grid {
-      display:grid; grid-template-columns:repeat(auto-fit,minmax(160px,1fr));
-      gap:8px; margin:10px 0 4px;
-    }
-    .prop-card {
-      text-align:left; padding:10px 12px; border-radius:12px; cursor:pointer;
-      border:1px solid var(--line); background:var(--surface-2); color:var(--text);
-      font:inherit; font-size:13px; font-weight:600; line-height:1.35;
-    }
-    .prop-card:hover { border-color:var(--accent); color:var(--accent); }
-    .prop-card.active { background:var(--accent); border-color:var(--accent); color:#fff; }
-    .prop-card .code { display:block; margin-top:4px; font-size:11px; font-weight:700;
-      letter-spacing:.04em; opacity:.85; }
     .diff-table { width:100%; border-collapse:collapse; margin-top:12px; font-size:13px; }
     .diff-table th, .diff-table td {
       border:1px solid var(--line); padding:8px 10px; text-align:center; vertical-align:middle;
@@ -48,39 +31,37 @@
     .diff-table td.yes { color:var(--good); font-weight:700; }
     .diff-table td.no { color:var(--muted); }
     .diff-table td.feat { text-align:left; font-weight:600; }
+    .diff-table tr.hl td { background:rgba(2,132,199,.1); }
     .reason-grid {
-      display:grid; grid-template-columns:repeat(auto-fit,minmax(220px,1fr));
+      display:grid; grid-template-columns:repeat(auto-fit,minmax(200px,1fr));
       gap:10px; margin-top:10px;
     }
     .reason-card {
       padding:12px 14px; border-radius:12px; border:1px solid var(--line);
       background:var(--surface-2); cursor:pointer; text-align:left;
-      font:inherit; color:var(--text); transition:border-color .15s, background .15s;
+      font:inherit; color:var(--text);
     }
-    .reason-card:hover, .reason-card.active {
-      border-color:var(--accent); background:#e0f2fe;
-    }
-    .reason-card .abbr {
-      display:block; color:var(--accent); font-weight:700; font-size:13px; margin-bottom:4px;
-    }
+    .reason-card:hover, .reason-card.active { border-color:var(--accent); background:#e0f2fe; }
+    .reason-card .abbr { display:block; color:var(--accent); font-weight:700; font-size:13px; margin-bottom:4px; }
     .reason-card .desc { font-size:13px; line-height:1.45; color:var(--muted); }
-    .family-svg-wrap { position:relative; }
-    .quiz-opts { display:flex; flex-direction:column; gap:8px; margin-top:8px; }
-    .quiz-opt {
-      display:flex; align-items:center; gap:10px; padding:10px 12px;
-      border:1px solid var(--line); border-radius:10px; cursor:pointer;
-      background:#fff; font-size:14px; text-align:left; font:inherit; color:var(--text);
-    }
-    .quiz-opt:hover { border-color:var(--accent); }
-    .quiz-opt.ok { border-color:var(--good); background:rgba(21,128,61,.08); }
-    .quiz-opt.bad { border-color:var(--bad); background:rgba(190,18,60,.06); }
-    .measure-row {
-      display:flex; flex-wrap:wrap; gap:8px; justify-content:center; margin-top:10px;
-    }
+    .measure-row { display:flex; flex-wrap:wrap; gap:8px; justify-content:center; margin-top:10px; }
     .measure-chip {
       padding:6px 12px; border-radius:999px; background:rgba(2,132,199,.1);
       border:1px solid rgba(2,132,199,.3); font-size:13px; font-weight:600;
     }
+    .prop-list { margin:10px 0 0; padding:0; list-style:none; }
+    .prop-list li {
+      padding:8px 12px; margin-bottom:6px; border-radius:10px;
+      background:var(--surface-2); border:1px solid var(--line); font-size:14px; line-height:1.45;
+    }
+    .prop-list li .code { color:var(--accent); font-weight:700; font-size:12px; }
+    .explain-split {
+      display:grid; grid-template-columns:1fr 1fr; gap:14px; margin-top:12px; align-items:start;
+    }
+    @media (max-width:700px) { .explain-split { grid-template-columns:1fr; } }
+    .explain-steps { font-size:14px; line-height:1.55; color:var(--text); }
+    .explain-steps ol { margin:8px 0 0; padding-left:1.2em; }
+    .explain-steps li { margin-bottom:6px; }
   </style>
 </head>
 <body>
@@ -88,7 +69,7 @@
     <a class="jm-back" href="../../s3.html#lessons">← S3 Lessons</a>
     <p class="jm-eyebrow">JM29 · Lesson 29</p>
     <h1>Quadrilaterals</h1>
-    <p class="lead">Explore parallelogram properties and proofs, the family of special quadrilaterals, mid-point &amp; intercept theorems, and the reason codes you write in exams.</p>
+    <p class="lead">Drag freely to classify shapes, explore mid-pt. &amp; intercept theorems, then tap a reason to see it in a figure.</p>
     <nav class="jm-tabs" aria-label="Lesson sections">
       <button class="jm-tab active" type="button" data-tab="tools">Interactive Tools</button>
       <button class="jm-tab" type="button" data-tab="comics">Comics</button>
@@ -97,126 +78,65 @@
     <section id="panel-tools" class="jm-panel">
       <div class="subnav" id="jm29-lab-nav" aria-label="Tool labs"></div>
 
-      <!-- Lab 1: Parallelogram -->
-      <div class="lab active" id="lab-para">
-        <p class="part-title">Lab 1 · Parallelogram</p>
+      <!-- Lab 1 -->
+      <div class="lab active" id="lab-detect">
+        <p class="part-title">Lab 1 · Shape detector &amp; prove</p>
         <section class="block">
-          <h2>Properties that always hold</h2>
-          <p class="hint">Drag vertices A–D. Tap a property to highlight it on the figure. Green sides = parallel pairs; tick marks = equal lengths.</p>
-          <div class="tool-toggle-row" id="para-preset-btns"></div>
-          <div class="prop-grid" id="para-prop-btns"></div>
-          <svg class="lab-svg" id="para-svg" viewBox="0 0 500 340" aria-label="Parallelogram properties"></svg>
-          <p class="formula" id="para-caption"></p>
-          <div class="note-box" id="para-note"></div>
+          <h2>Drag any corner — what shape is it?</h2>
+          <p class="hint">Move A–D freely. Parallel sides get <strong>//</strong> marks; equal sides get tick marks; equal angles get arc marks. Matching name badges light up.</p>
+          <svg class="lab-svg" id="det-svg" viewBox="0 0 500 340" aria-label="Quadrilateral detector"></svg>
+          <div class="badge-row" id="det-badges"></div>
+          <p class="formula" id="det-caption"></p>
+          <div class="note-box" id="det-props"></div>
         </section>
         <section class="block">
-          <h2>Why opposite sides are equal — a proof walk-through</h2>
-          <p class="hint">Start from the definition (both pairs of opposite sides parallel). Follow each step; congruence does the heavy lifting.</p>
+          <h2>How to prove this shape</h2>
+          <p class="hint">If more than one reason works, pick a button. Follow the steps.</p>
+          <div class="tool-toggle-row" id="prove-reason-btns"></div>
           <div class="step-frame">
-            <button class="nav-btn prev" type="button" id="proof-prev" aria-label="Previous step">‹</button>
-            <div class="step-body" id="proof-body"></div>
-            <button class="nav-btn next" type="button" id="proof-next" aria-label="Next step">›</button>
+            <button class="nav-btn prev" type="button" id="prove-prev" aria-label="Previous">‹</button>
+            <div class="step-body" id="prove-body"></div>
+            <button class="nav-btn next" type="button" id="prove-next" aria-label="Next">›</button>
           </div>
-          <div class="step-dots" id="proof-dots"></div>
-          <svg class="lab-svg" id="proof-svg" viewBox="0 0 500 280" aria-label="Parallelogram proof figure" style="margin-top:12px"></svg>
+          <div class="step-dots" id="prove-dots"></div>
         </section>
         <section class="block">
-          <h2>Four ways to prove a parallelogram</h2>
-          <p class="hint">Pick a condition. The figure shows what is given — if that holds, \(ABCD\) is a parallelogram.</p>
-          <div class="tool-toggle-row" id="prove-cond-btns"></div>
-          <svg class="lab-svg" id="prove-svg" viewBox="0 0 500 300" aria-label="Prove parallelogram"></svg>
-          <p class="formula" id="prove-caption"></p>
-          <div class="note-box" id="prove-note"></div>
-        </section>
-      </div>
-
-      <!-- Lab 2: Family -->
-      <div class="lab" id="lab-family">
-        <p class="part-title">Lab 2 · Trapezium · Rhombus · Rectangle · Square</p>
-        <section class="block">
-          <h2>Definitions &amp; differences</h2>
-          <p class="hint">Tap a shape in the family. Watch the figure morph and compare definitions side by side.</p>
-          <div class="tool-toggle-row" id="family-btns"></div>
-          <div class="family-svg-wrap">
-            <svg class="lab-svg" id="family-svg" viewBox="0 0 500 320" aria-label="Quadrilateral family"></svg>
-          </div>
-          <p class="formula" id="family-caption"></p>
-          <div class="note-box" id="family-note"></div>
+          <h2>Comparison table</h2>
+          <p class="hint">✓ = must be true for that shape. The row for your current detection is highlighted.</p>
           <div style="overflow-x:auto">
-            <table class="diff-table" id="family-table" aria-label="Property comparison"></table>
-          </div>
-        </section>
-        <section class="block">
-          <h2>Quick check — name that shape</h2>
-          <p class="hint" id="family-quiz-q"></p>
-          <div class="quiz-opts" id="family-quiz-opts"></div>
-          <p class="feedback" id="family-quiz-fb"></p>
-          <button class="btn" type="button" id="family-quiz-next" style="margin-top:8px">Next question</button>
-        </section>
-      </div>
-
-      <!-- Lab 3: Mid-point theorem -->
-      <div class="lab" id="lab-midpt">
-        <p class="part-title">Lab 3 · Mid-point theorem</p>
-        <section class="block">
-          <h2>Join the mid-points — what happens?</h2>
-          <p class="hint">Drag A, B, C. \(D\) and \(E\) are mid-points of \(AB\) and \(AC\). The mid-point theorem says \(DE \parallel BC\) and \(DE = \dfrac{1}{2}BC\).</p>
-          <div class="tool-toggle-row" id="mid-mode-btns"></div>
-          <svg class="lab-svg" id="mid-svg" viewBox="0 0 500 360" aria-label="Mid-point theorem"></svg>
-          <div class="measure-row" id="mid-measures"></div>
-          <p class="formula" id="mid-caption"></p>
-          <div class="note-box" id="mid-note"></div>
-        </section>
-        <section class="block">
-          <h2>Try it</h2>
-          <p class="hint">In \(\triangle ABC\), \(D\) and \(E\) are mid-points of \(AB\) and \(AC\). If \(BC = 12\), what is \(DE\)?</p>
-          <div class="task-box">
-            <div class="count-row">
-              <input id="mid-check-in" type="text" autocomplete="off" placeholder="DE = ?">
-              <button class="btn" type="button" id="mid-check-btn">Check</button>
-            </div>
-            <p class="feedback" id="mid-check-fb">Use mid-pt. thm.: \(DE = \dfrac{1}{2}BC\).</p>
+            <table class="diff-table" id="det-table" aria-label="Property comparison"></table>
           </div>
         </section>
       </div>
 
-      <!-- Lab 4: Intercept theorem -->
-      <div class="lab" id="lab-intercept">
-        <p class="part-title">Lab 4 · Intercept theorem</p>
+      <!-- Lab 2 -->
+      <div class="lab" id="lab-thm">
+        <p class="part-title">Lab 2 · Mid-pt. thm. &amp; Intercept thm.</p>
         <section class="block">
-          <h2>Equal intercepts on transversals</h2>
-          <p class="hint">Three parallel lines cut equal intercepts on one transversal. Drag the gold handles — intercepts on the other transversal stay equal. Reason: <span class="reason-tag">intercept thm.</span></p>
-          <div class="tool-toggle-row" id="int-mode-btns"></div>
-          <svg class="lab-svg" id="int-svg" viewBox="0 0 520 360" aria-label="Intercept theorem"></svg>
-          <div class="measure-row" id="int-measures"></div>
-          <p class="formula" id="int-caption"></p>
-          <div class="note-box" id="int-note"></div>
-        </section>
-        <section class="block">
-          <h2>Proportional form (inside a triangle)</h2>
-          <p class="hint">A line parallel to one side of a triangle divides the other two sides <strong>proportionally</strong>. Drag \(D\) on \(AB\); \(E\) moves so \(DE \parallel BC\).</p>
-          <svg class="lab-svg" id="prop-svg" viewBox="0 0 500 340" aria-label="Proportional intercepts"></svg>
-          <div class="measure-row" id="prop-measures"></div>
-          <p class="formula" id="prop-caption"></p>
+          <h2>Parallel lines playground</h2>
+          <p class="hint">Three horizontal // lines. Drag the gold handles to move them. Drag the blue / purple handles to tilt the two transversals — they always cut all three horizontals.</p>
+          <div class="tool-toggle-row" id="thm-mode-btns"></div>
+          <svg class="lab-svg" id="thm-svg" viewBox="0 0 520 380" aria-label="Mid-point and intercept theorems"></svg>
+          <div class="measure-row" id="thm-measures"></div>
+          <p class="formula" id="thm-caption"></p>
+          <div class="note-box" id="thm-note"></div>
         </section>
       </div>
 
-      <!-- Lab 5: Reasons -->
+      <!-- Lab 3 -->
       <div class="lab" id="lab-reasons">
-        <p class="part-title">Lab 5 · Useful reasons</p>
+        <p class="part-title">Lab 3 · Reason bank</p>
         <section class="block">
-          <h2>Reason bank for proofs</h2>
-          <p class="hint">Tap a reason to see when to use it. These short forms are what you write in brackets after each statement.</p>
+          <h2>Pick a reason — see it on a figure</h2>
+          <p class="hint">Tap a reason code. The frame shows a matching diagram and the wording you write in a proof.</p>
           <div class="tool-toggle-row" id="reason-cat-btns"></div>
           <div class="reason-grid" id="reason-grid"></div>
-          <div class="note-box" id="reason-detail">Pick a reason card above.</div>
-        </section>
-        <section class="block">
-          <h2>Match the reason</h2>
-          <p class="hint" id="reason-quiz-q"></p>
-          <div class="quiz-opts" id="reason-quiz-opts"></div>
-          <p class="feedback" id="reason-quiz-fb"></p>
-          <button class="btn" type="button" id="reason-quiz-next" style="margin-top:8px">Next question</button>
+          <div class="explain-split">
+            <svg class="lab-svg" id="reason-svg" viewBox="0 0 420 300" aria-label="Reason illustration"></svg>
+            <div class="explain-steps" id="reason-explain">
+              <p>Pick a reason card to see an explanation with a figure.</p>
+            </div>
+          </div>
         </section>
       </div>
     </section>
@@ -230,8 +150,8 @@
   </main>
   <script defer src="https://cdn.jsdelivr.net/npm/katex@0.16.11/dist/katex.min.js"></script>
   <script defer src="https://cdn.jsdelivr.net/npm/katex@0.16.11/dist/contrib/auto-render.min.js"></script>
-  <script defer src="../../shared/jm-tabs.js?v=20260730-jm29"></script>
-  <script defer src="quadrilaterals-tools.js?v=20260730-jm29"></script>
+  <script defer src="../../shared/jm-tabs.js?v=20260730-jm29b"></script>
+  <script defer src="quadrilaterals-tools.js?v=20260730-jm29b"></script>
   <script>
     document.addEventListener("DOMContentLoaded", function () {
       if (window.initJmTabs) window.initJmTabs();

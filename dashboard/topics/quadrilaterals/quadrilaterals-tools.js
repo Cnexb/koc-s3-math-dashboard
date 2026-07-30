@@ -4,18 +4,18 @@
   var NS = "http://www.w3.org/2000/svg";
   var SW = 2.5;
   var INK = "#e2e8f0";
-  var MUTED = "#94a3b8";
   var ACCENT = "#38bdf8";
   var GOOD = "#4ade80";
   var MARK = "#fbbf24";
   var TICK = "#f87171";
   var VIOLET = "#a78bfa";
+  var EPS_PAR = 0.09;
+  var EPS_LEN = 10;
+  var EPS_ANG = 7;
 
   var LABS = [
-    { id: "para", label: "Parallelogram" },
-    { id: "family", label: "Shape family" },
-    { id: "midpt", label: "Mid-pt. thm." },
-    { id: "intercept", label: "Intercept thm." },
+    { id: "detect", label: "Shape detector" },
+    { id: "thm", label: "Mid-pt. / Intercept" },
     { id: "reasons", label: "Reason bank" },
   ];
 
@@ -25,7 +25,7 @@
     Object.keys(attrs || {}).forEach(function (k) { el.setAttribute(k, attrs[k]); });
     return el;
   }
-  function clr(svg) { while (svg.firstChild) svg.removeChild(svg.firstChild); }
+  function clr(svg) { while (svg && svg.firstChild) svg.removeChild(svg.firstChild); }
   function dist(a, b) { return Math.hypot(a.x - b.x, a.y - b.y); }
   function mid(a, b) { return { x: (a.x + b.x) / 2, y: (a.y + b.y) / 2 }; }
   function add(a, b) { return { x: a.x + b.x, y: a.y + b.y }; }
@@ -36,14 +36,31 @@
     return { x: (b.x - a.x) / d, y: (b.y - a.y) / d };
   }
   function perp(v) { return { x: -v.y, y: v.x }; }
+  function clamp(n, lo, hi) { return Math.max(lo, Math.min(hi, n)); }
   function lerp(a, b, t) { return { x: a.x + (b.x - a.x) * t, y: a.y + (b.y - a.y) * t }; }
-  function clamp(v, lo, hi) { return Math.max(lo, Math.min(hi, v)); }
   function fmt(n, d) {
-    d = d == null ? 1 : d;
-    var p = Math.pow(10, d);
+    var p = Math.pow(10, d == null ? 1 : d);
     return String(Math.round(n * p) / p);
   }
-  function almost(a, b, eps) { return Math.abs(a - b) < (eps == null ? 1e-6 : eps); }
+
+  function slope(a, b) {
+    var dx = b.x - a.x;
+    if (Math.abs(dx) < 1e-6) return Infinity;
+    return (b.y - a.y) / dx;
+  }
+  function isParallel(a, b, c, d) {
+    var s1 = slope(a, b), s2 = slope(c, d);
+    if (s1 === Infinity && s2 === Infinity) return true;
+    if (s1 === Infinity || s2 === Infinity) return Math.abs((s1 === Infinity ? s2 : s1)) > 20;
+    return Math.abs(s1 - s2) < EPS_PAR;
+  }
+  function isEqualLen(a, b, c, d) { return Math.abs(dist(a, b) - dist(c, d)) < EPS_LEN; }
+  function angleAt(prev, cur, next) {
+    var u = unit(cur, prev), v = unit(cur, next);
+    var dot = clamp(u.x * v.x + u.y * v.y, -1, 1);
+    return Math.acos(dot) * 180 / Math.PI;
+  }
+  function nearly(a, b, eps) { return Math.abs(a - b) < (eps == null ? EPS_ANG : eps); }
 
   function renderMixed(el, text) {
     if (!el) return;
@@ -54,9 +71,7 @@
         var s = document.createElement("strong");
         s.textContent = part.slice(2, -2);
         el.appendChild(s);
-      } else {
-        el.appendChild(document.createTextNode(part));
-      }
+      } else el.appendChild(document.createTextNode(part));
     });
     if (window.renderMathInElement) {
       window.renderMathInElement(el, {
@@ -68,35 +83,20 @@
     }
   }
 
-  function setHtmlMath(el, html) {
-    if (!el) return;
-    el.innerHTML = html;
-    if (window.renderMathInElement) {
-      window.renderMathInElement(el, {
-        delimiters: [
-          { left: "\\(", right: "\\)", display: false },
-          { left: "\\[", right: "\\]", display: true },
-        ],
-      });
-    }
-  }
-
-  function svgPoint(svg, e) {
-    var r = svg.getBoundingClientRect();
-    var vb = svg.viewBox.baseVal;
+  function svgPt(svg, e) {
+    var r = svg.getBoundingClientRect(), vb = svg.viewBox.baseVal;
     return {
       x: (e.clientX - r.left) * (vb.width / r.width),
       y: (e.clientY - r.top) * (vb.height / r.height),
     };
   }
 
-  function seg(a, b, stroke, w) {
+  function seg(a, b, col, w) {
     return E("line", {
       x1: a.x, y1: a.y, x2: b.x, y2: b.y,
-      stroke: stroke || INK, "stroke-width": w || SW, "stroke-linecap": "round",
+      stroke: col || INK, "stroke-width": w || SW, "stroke-linecap": "round",
     });
   }
-
   function labelAt(p, text, dx, dy, fill) {
     var t = E("text", {
       x: p.x + (dx || 0), y: p.y + (dy || 0),
@@ -105,99 +105,73 @@
     t.textContent = text;
     return t;
   }
-
-  function handle(p, i, fill) {
+  function handle(p, key, fill) {
     var g = E("g", {});
     g.appendChild(E("circle", {
-      cx: p.x, cy: p.y, r: 8,
-      fill: fill || MARK, stroke: "#0f172a", "stroke-width": 2,
+      cx: p.x, cy: p.y, r: 8, fill: fill || MARK, stroke: "#0f172a", "stroke-width": 2,
     }));
     g.appendChild(E("circle", {
-      cx: p.x, cy: p.y, r: 18, fill: "transparent", "data-i": String(i),
+      cx: p.x, cy: p.y, r: 18, fill: "transparent", "data-drag": String(key),
     }));
     return g;
   }
 
   function tickMark(a, b, n, color) {
     var g = E("g", {});
-    var m = mid(a, b);
-    var u = unit(a, b);
-    var nrm = perp(u);
-    var len = 7;
+    var m = mid(a, b), u = unit(a, b), nrm = perp(u);
     for (var k = 0; k < n; k++) {
       var c = add(m, scale(u, (k - (n - 1) / 2) * 5));
-      var p1 = add(c, scale(nrm, len));
-      var p2 = add(c, scale(nrm, -len));
-      g.appendChild(seg(p1, p2, color || TICK, 2));
+      g.appendChild(seg(add(c, scale(nrm, 7)), add(c, scale(nrm, -7)), color || TICK, 2));
     }
     return g;
   }
 
-  function arrowMark(a, b, color) {
+  /** Slash-style // parallel marks (not vertical ||) */
+  function parallelSlash(a, b, n, color) {
     var g = E("g", {});
-    var m = mid(a, b);
-    var u = unit(a, b);
-    var nrm = perp(u);
-    var tip = add(m, scale(u, 6));
-    var left = add(add(m, scale(u, -4)), scale(nrm, 5));
-    var right = add(add(m, scale(u, -4)), scale(nrm, -5));
-    g.appendChild(E("polygon", {
-      points: [tip, left, right].map(function (p) { return p.x + "," + p.y; }).join(" "),
-      fill: color || GOOD,
-    }));
+    var m = mid(a, b), u = unit(a, b), nrm = perp(u);
+    var col = color || GOOD;
+    for (var set = 0; set < n; set++) {
+      var base = add(m, scale(u, (set - (n - 1) / 2) * 9));
+      // one slash leaning along the normal+tangent combo → looks like /
+      var p1 = add(add(base, scale(nrm, 8)), scale(u, -4));
+      var p2 = add(add(base, scale(nrm, -8)), scale(u, 4));
+      g.appendChild(seg(p1, p2, col, 2.5));
+    }
     return g;
   }
 
-  function parallelMarks(a, b, c, d, n) {
+  function angleArc(vertex, pA, pB, r, color, doubles) {
     var g = E("g", {});
-    g.appendChild(arrowMark(a, b, GOOD));
-    if (n > 1) {
-      var m1 = mid(a, b);
-      var u1 = unit(a, b);
-      var shift = scale(perp(u1), 0);
-      // second chevron slightly offset along the side
-      var a2 = add(a, scale(u1, 10));
-      var b2 = add(b, scale(u1, -10));
-      g.appendChild(arrowMark(a2, b2, GOOD));
+    var u = unit(vertex, pA), v = unit(vertex, pB);
+    var a1 = Math.atan2(u.y, u.x), a2 = Math.atan2(v.y, v.x);
+    var d = a2 - a1;
+    while (d <= -Math.PI) d += 2 * Math.PI;
+    while (d > Math.PI) d -= 2 * Math.PI;
+    var large = Math.abs(d) > Math.PI ? 1 : 0;
+    var sweep = d > 0 ? 1 : 0;
+    function arc(rad) {
+      var s = add(vertex, scale(u, rad));
+      var e = add(vertex, scale(v, rad));
+      return E("path", {
+        d: "M " + s.x + " " + s.y + " A " + rad + " " + rad + " 0 " + large + " " + sweep + " " + e.x + " " + e.y,
+        fill: "none", stroke: color || VIOLET, "stroke-width": 2.4,
+      });
     }
-    g.appendChild(arrowMark(c, d, GOOD));
-    if (n > 1) {
-      var u2 = unit(c, d);
-      var c2 = add(c, scale(u2, 10));
-      var d2 = add(d, scale(u2, -10));
-      g.appendChild(arrowMark(c2, d2, GOOD));
-    }
+    g.appendChild(arc(r));
+    if (doubles) g.appendChild(arc(r + 5));
     return g;
   }
 
   function rightAngleMark(corner, fromA, fromB, size) {
     size = size || 12;
-    var u = unit(corner, fromA);
-    var v = unit(corner, fromB);
+    var u = unit(corner, fromA), v = unit(corner, fromB);
     var p1 = add(corner, scale(u, size));
     var p2 = add(p1, scale(v, size));
     var p3 = add(corner, scale(v, size));
     return E("polyline", {
       points: [p1, p2, p3].map(function (p) { return p.x + "," + p.y; }).join(" "),
       fill: "none", stroke: MARK, "stroke-width": 2,
-    });
-  }
-
-  function angleArc(vertex, pA, pB, r, color) {
-    var u = unit(vertex, pA);
-    var v = unit(vertex, pB);
-    var a1 = Math.atan2(u.y, u.x);
-    var a2 = Math.atan2(v.y, v.x);
-    var d = a2 - a1;
-    while (d <= -Math.PI) d += 2 * Math.PI;
-    while (d > Math.PI) d -= 2 * Math.PI;
-    var large = Math.abs(d) > Math.PI ? 1 : 0;
-    var sweep = d > 0 ? 1 : 0;
-    var start = add(vertex, scale(u, r));
-    var end = add(vertex, scale(v, r));
-    return E("path", {
-      d: "M " + start.x + " " + start.y + " A " + r + " " + r + " 0 " + large + " " + sweep + " " + end.x + " " + end.y,
-      fill: "none", stroke: color || VIOLET, "stroke-width": 2.5,
     });
   }
 
@@ -209,11 +183,11 @@
       b.type = "button";
       b.className = "btn" + (it.id === activeId ? " active" : "");
       b.textContent = it.label;
+      b.disabled = !!it.disabled;
       b.addEventListener("click", function () { onClick(it.id); });
       row.appendChild(b);
     });
   }
-
   function makeChips(row, items, activeId, onClick) {
     if (!row) return;
     row.innerHTML = "";
@@ -227,109 +201,250 @@
     });
   }
 
-  /* ── Lab nav ─────────────────────────────────────────────── */
   function setActiveLab(id) {
-    var nav = document.getElementById("jm29-lab-nav");
-    makeChips(nav, LABS, id, setActiveLab);
+    makeChips(document.getElementById("jm29-lab-nav"), LABS, id, setActiveLab);
     document.querySelectorAll("#panel-tools .lab").forEach(function (lab) {
       lab.classList.toggle("active", lab.id === "lab-" + id);
     });
-    if (id === "para") { renderPara(); renderProof(); renderProve(); }
-    if (id === "family") { renderFamily(); }
-    if (id === "midpt") { renderMid(); }
-    if (id === "intercept") { renderInt(); renderProp(); }
-    if (id === "reasons") { renderReasons(); }
+    if (id === "detect") renderDetect();
+    if (id === "thm") renderThm();
+    if (id === "reasons") renderReasons();
   }
 
   /* ═══════════════════════════════════════════════════════════
-     LAB 1 — Parallelogram
+     LAB 1 — Free-drag detector
      ═══════════════════════════════════════════════════════════ */
-  var PARA_PRESETS = {
-    standard: [
-      { x: 110, y: 240 }, { x: 330, y: 240 }, { x: 400, y: 90 }, { x: 180, y: 90 },
-    ],
-    skewed: [
-      { x: 80, y: 250 }, { x: 300, y: 260 }, { x: 420, y: 80 }, { x: 200, y: 70 },
-    ],
-    tall: [
-      { x: 150, y: 280 }, { x: 320, y: 280 }, { x: 380, y: 60 }, { x: 210, y: 60 },
-    ],
+  var verts = [
+    { x: 110, y: 250 }, { x: 360, y: 250 }, { x: 420, y: 90 }, { x: 160, y: 90 },
+  ];
+  var detDrag = null;
+  var proveReasonId = null;
+  var proveStep = 0;
+
+  var SHAPE_ORDER = ["square", "rectangle", "rhombus", "parallelogram", "trapezium", "quad"];
+
+  function analyseQuad(v) {
+    var A = v[0], B = v[1], C = v[2], D = v[3];
+    var parAB_DC = isParallel(A, B, D, C);
+    var parAD_BC = isParallel(A, D, B, C);
+    var bothPar = parAB_DC && parAD_BC;
+    var onePar = (parAB_DC || parAD_BC) && !bothPar;
+    var eqAB_DC = isEqualLen(A, B, D, C);
+    var eqAD_BC = isEqualLen(A, D, B, C);
+    var eqAB_AD = isEqualLen(A, B, A, D);
+    var eqAB_BC = isEqualLen(A, B, B, C);
+    var eqBC_CD = isEqualLen(B, C, C, D);
+    var allSidesEq = eqAB_AD && eqAB_BC && eqBC_CD;
+    var angA = angleAt(D, A, B), angB = angleAt(A, B, C), angC = angleAt(B, C, D), angD = angleAt(C, D, A);
+    var all90 = [angA, angB, angC, angD].every(function (a) { return nearly(a, 90, 8); });
+    var oppAngEq = nearly(angA, angC) && nearly(angB, angD);
+    var Oac = mid(A, C), Obd = mid(B, D);
+    var diagsBisect = dist(Oac, Obd) < 12;
+
+    var names = { square: false, rectangle: false, rhombus: false, parallelogram: false, trapezium: false, quad: true };
+    if (onePar) names.trapezium = true;
+    if (bothPar) {
+      names.parallelogram = true;
+      if (allSidesEq || (eqAB_DC && eqAD_BC && eqAB_AD)) names.rhombus = true;
+      if (all90) names.rectangle = true;
+      if (names.rhombus && names.rectangle) names.square = true;
+      // also: parallelogram + all sides equal
+      if (bothPar && allSidesEq && all90) names.square = true;
+    }
+    // rhombus without detecting bothPar strictly but all sides equal + one pair // often //gram
+    if (allSidesEq && bothPar) names.rhombus = true;
+
+    var primary = "quad";
+    if (names.square) primary = "square";
+    else if (names.rectangle) primary = "rectangle";
+    else if (names.rhombus) primary = "rhombus";
+    else if (names.parallelogram) primary = "parallelogram";
+    else if (names.trapezium) primary = "trapezium";
+
+    return {
+      A: A, B: B, C: C, D: D,
+      parAB_DC: parAB_DC, parAD_BC: parAD_BC, bothPar: bothPar, onePar: onePar,
+      eqAB_DC: eqAB_DC, eqAD_BC: eqAD_BC, allSidesEq: allSidesEq,
+      angA: angA, angB: angB, angC: angC, angD: angD, all90: all90, oppAngEq: oppAngEq,
+      diagsBisect: diagsBisect, names: names, primary: primary,
+      sides: [dist(A, B), dist(B, C), dist(C, D), dist(D, A)],
+    };
+  }
+
+  var PROPS = {
+    quad: {
+      title: "General quadrilateral",
+      list: ["No special // or equal-side pattern detected — keep dragging."],
+    },
+    trapezium: {
+      title: "Trapezium",
+      list: [
+        "Exactly **one** pair of opposite sides //.",
+        "Co-interior angles between the // sides sum to \\(180^\\circ\\).",
+        "Reason: **[property of trapezium]**",
+      ],
+    },
+    parallelogram: {
+      title: "Parallelogram",
+      list: [
+        "Both pairs of opposite sides // (definition).",
+        "Opposite sides equal — **[opp. sides of //gram]**",
+        "Opposite angles equal — **[opp. ∠s of //gram]**",
+        "Diagonals bisect each other — **[diags. of //gram]**",
+      ],
+    },
+    rhombus: {
+      title: "Rhombus",
+      list: [
+        "A parallelogram with **all four sides equal**.",
+        "Diagonals are perpendicular bisectors of each other.",
+        "Diagonals bisect the vertex angles.",
+        "Reason: **[property of rhombus]**",
+      ],
+    },
+    rectangle: {
+      title: "Rectangle",
+      list: [
+        "A parallelogram with all angles \\(90^\\circ\\).",
+        "Diagonals are equal in length.",
+        "Reason: **[property of rectangle]**",
+      ],
+    },
+    square: {
+      title: "Square",
+      list: [
+        "A rectangle with equal sides — or a rhombus with right angles.",
+        "Has every property of parallelogram, rectangle and rhombus.",
+        "Reason: **[property of square]**",
+      ],
+    },
   };
 
-  var paraVerts = PARA_PRESETS.standard.map(function (p) { return { x: p.x, y: p.y }; });
-  var paraProp = "oppSides";
-  var paraDrag = null;
-
-  var PARA_PROPS = [
-    {
-      id: "oppSides",
-      label: "Opposite sides equal",
-      code: "[opp. sides of //gram]",
-      note: "In parallelogram \\(ABCD\\): \\(AB = CD\\) and \\(AD = BC\\). Write **[opp. sides of //gram]**.",
-    },
-    {
-      id: "oppAng",
-      label: "Opposite angles equal",
-      code: "[opp. ∠s of //gram]",
-      note: "\\(\\angle A = \\angle C\\) and \\(\\angle B = \\angle D\\). Consecutive angles are supplementary: \\(\\angle A + \\angle B = 180^\\circ\\) (int. ∠s, // lines).",
-    },
-    {
-      id: "diags",
-      label: "Diagonals bisect each other",
-      code: "[diags. of //gram]",
-      note: "Diagonals \\(AC\\) and \\(BD\\) meet at \\(O\\) with \\(AO = OC\\) and \\(BO = OD\\). Write **[diags. of //gram]**.",
-    },
-    {
-      id: "parallel",
-      label: "Opposite sides parallel",
-      code: "definition",
-      note: "**Definition:** a parallelogram has **both pairs** of opposite sides parallel: \\(AB \\parallel CD\\) and \\(AD \\parallel BC\\).",
-    },
-  ];
-
-  function forceParallelogram(verts, dragIndex) {
-    // ABCD is a parallelogram ⇔ A + C = B + D
-    var A = verts[0], B = verts[1], C = verts[2], D = verts[3];
-    if (dragIndex === 0) {
-      verts[3] = { x: A.x + C.x - B.x, y: A.y + C.y - B.y };
-    } else if (dragIndex === 1) {
-      verts[2] = { x: B.x + D.x - A.x, y: B.y + D.y - A.y };
-    } else if (dragIndex === 2) { // C moved → adjust D
-      verts[3] = { x: A.x + C.x - B.x, y: A.y + C.y - B.y };
-    } else if (dragIndex === 3) { // D moved → adjust C
-      verts[2] = { x: B.x + D.x - A.x, y: B.y + D.y - A.y };
+  /** Prove recipes keyed by primary shape */
+  function proveOptions(info) {
+    var p = info.primary;
+    if (p === "parallelogram") {
+      return [
+        {
+          id: "def",
+          label: "By definition (both //)",
+          steps: [
+            { t: "Observe both pairs", x: "From the figure, \\(AB\\)//\\(DC\\) and \\(AD\\)//\\(BC\\) (// marks)." },
+            { t: "Definition", x: "A quadrilateral with both pairs of opposite sides // is a parallelogram." },
+            { t: "Conclusion", x: "Therefore \\(ABCD\\) is a parallelogram." },
+          ],
+        },
+        {
+          id: "oppSides",
+          label: "[opp. sides equal]",
+          steps: [
+            { t: "Given", x: "Opposite sides equal: \\(AB = DC\\), \\(AD = BC\\) (tick marks)." },
+            { t: "Theorem", x: "A quadrilateral with both pairs of opposite sides equal is a parallelogram." },
+            { t: "Conclusion", x: "\\(ABCD\\) is a parallelogram. Reason: **[opp. sides equal]**" },
+          ],
+        },
+        {
+          id: "diags",
+          label: "[diags. bisect each other]",
+          steps: [
+            { t: "Diagonals", x: "Diagonals \\(AC\\), \\(BD\\) meet at their common mid-point (equal ticks on each half)." },
+            { t: "Theorem", x: "If the diagonals of a quadrilateral bisect each other, it is a parallelogram." },
+            { t: "Conclusion", x: "\\(ABCD\\) is a parallelogram. Reason: **[diags. bisect each other]**" },
+          ],
+        },
+        {
+          id: "onePair",
+          label: "[2 sides equal and //]",
+          steps: [
+            { t: "Given", x: "One pair of opposite sides is both equal and //, e.g. \\(AB = DC\\) and \\(AB\\)//\\(DC\\)." },
+            { t: "Theorem", x: "Then the quadrilateral is a parallelogram." },
+            { t: "Conclusion", x: "\\(ABCD\\) is a parallelogram. Reason: **[2 sides equal and //]**" },
+          ],
+        },
+      ];
     }
-    // clamp
-    verts.forEach(function (p) {
-      p.x = clamp(p.x, 40, 460);
-      p.y = clamp(p.y, 40, 300);
-    });
+    if (p === "rhombus") {
+      return [
+        {
+          id: "sides",
+          label: "//gram + equal sides",
+          steps: [
+            { t: "Parallelogram", x: "Both pairs of opposite sides // ⇒ \\(ABCD\\) is a parallelogram." },
+            { t: "Equal sides", x: "All four sides equal (same tick marks)." },
+            { t: "Definition", x: "A parallelogram with all sides equal is a rhombus." },
+            { t: "Conclusion", x: "\\(ABCD\\) is a rhombus. **[property of rhombus]**" },
+          ],
+        },
+      ];
+    }
+    if (p === "rectangle") {
+      return [
+        {
+          id: "right",
+          label: "//gram + right angles",
+          steps: [
+            { t: "Parallelogram", x: "Both pairs of opposite sides // ⇒ parallelogram." },
+            { t: "Right angles", x: "All interior angles are \\(90^\\circ\\) (right-angle marks)." },
+            { t: "Definition", x: "A parallelogram with four right angles is a rectangle." },
+            { t: "Conclusion", x: "\\(ABCD\\) is a rectangle. **[property of rectangle]**" },
+          ],
+        },
+      ];
+    }
+    if (p === "square") {
+      return [
+        {
+          id: "rectRhomb",
+          label: "Rectangle + equal sides",
+          steps: [
+            { t: "Rectangle", x: "Four right angles and opposite sides // ⇒ rectangle." },
+            { t: "Equal sides", x: "All sides equal ⇒ also a rhombus." },
+            { t: "Definition", x: "A rectangle with equal sides (or rhombus with right angles) is a square." },
+            { t: "Conclusion", x: "\\(ABCD\\) is a square. **[property of square]**" },
+          ],
+        },
+        {
+          id: "rhombRight",
+          label: "Rhombus + right angle",
+          steps: [
+            { t: "Rhombus", x: "All sides equal and opposite sides // ⇒ rhombus." },
+            { t: "Right angle", x: "One (hence all) angle is \\(90^\\circ\\)." },
+            { t: "Conclusion", x: "\\(ABCD\\) is a square. **[property of square]**" },
+          ],
+        },
+      ];
+    }
+    if (p === "trapezium") {
+      return [
+        {
+          id: "onePar",
+          label: "Exactly one pair //",
+          steps: [
+            { t: "Check //", x: "Exactly one pair of opposite sides is // (single // mark set)." },
+            { t: "Definition", x: "A quadrilateral with exactly one pair of // sides is a trapezium." },
+            { t: "Conclusion", x: "\\(ABCD\\) is a trapezium. **[property of trapezium]**" },
+          ],
+        },
+      ];
+    }
+    return [
+      {
+        id: "none",
+        label: "Keep exploring",
+        steps: [
+          { t: "Not special yet", x: "Drag vertices until a pair of sides becomes // or equal — badges will light up." },
+          { t: "Tip", x: "Try making both pairs // for a parallelogram, or all sides equal for a rhombus." },
+        ],
+      },
+    ];
   }
 
-  function renderParaProps() {
-    var grid = document.getElementById("para-prop-btns");
-    if (!grid) return;
-    grid.innerHTML = "";
-    PARA_PROPS.forEach(function (p) {
-      var b = document.createElement("button");
-      b.type = "button";
-      b.className = "prop-card" + (p.id === paraProp ? " active" : "");
-      b.innerHTML = p.label + '<span class="code">' + p.code + "</span>";
-      b.addEventListener("click", function () {
-        paraProp = p.id;
-        renderParaProps();
-        renderPara();
-      });
-      grid.appendChild(b);
-    });
-  }
-
-  function renderPara() {
-    var svg = document.getElementById("para-svg");
+  function renderDetect() {
+    var svg = document.getElementById("det-svg");
     if (!svg) return;
     clr(svg);
-    var A = paraVerts[0], B = paraVerts[1], C = paraVerts[2], D = paraVerts[3];
-    var O = mid(A, C);
+    var info = analyseQuad(verts);
+    var A = info.A, B = info.B, C = info.C, D = info.D;
 
     svg.appendChild(E("polygon", {
       points: [A, B, C, D].map(function (p) { return p.x + "," + p.y; }).join(" "),
@@ -337,126 +452,119 @@
     }));
 
     var sides = [[A, B], [B, C], [C, D], [D, A]];
+    var sidePar = [info.parAB_DC, info.parAD_BC, info.parAB_DC, info.parAD_BC];
     sides.forEach(function (s, i) {
-      var col = (paraProp === "parallel") ? GOOD : INK;
-      svg.appendChild(seg(s[0], s[1], col, paraProp === "parallel" ? 3.5 : SW));
+      svg.appendChild(seg(s[0], s[1], sidePar[i] ? GOOD : INK, sidePar[i] ? 3.5 : SW));
     });
 
-    if (paraProp === "parallel" || paraProp === "oppSides") {
-      svg.appendChild(parallelMarks(A, B, D, C, 1));
-      svg.appendChild(parallelMarks(A, D, B, C, 2));
+    if (info.parAB_DC) {
+      svg.appendChild(parallelSlash(A, B, 1));
+      svg.appendChild(parallelSlash(D, C, 1));
     }
-    if (paraProp === "oppSides") {
-      svg.appendChild(tickMark(A, B, 1));
-      svg.appendChild(tickMark(D, C, 1));
-      svg.appendChild(tickMark(A, D, 2));
-      svg.appendChild(tickMark(B, C, 2));
+    if (info.parAD_BC) {
+      svg.appendChild(parallelSlash(A, D, 2));
+      svg.appendChild(parallelSlash(B, C, 2));
     }
-    if (paraProp === "oppAng") {
-      svg.appendChild(angleArc(A, B, D, 28, VIOLET));
-      svg.appendChild(angleArc(C, B, D, 28, VIOLET));
-      svg.appendChild(angleArc(B, A, C, 22, MARK));
-      svg.appendChild(angleArc(D, A, C, 22, MARK));
+
+    // equal side ticks
+    if (info.eqAB_DC) { svg.appendChild(tickMark(A, B, 1)); svg.appendChild(tickMark(D, C, 1)); }
+    if (info.eqAD_BC) { svg.appendChild(tickMark(A, D, 2)); svg.appendChild(tickMark(B, C, 2)); }
+    if (info.allSidesEq) {
+      [0, 1, 2, 3].forEach(function (i) {
+        svg.appendChild(tickMark(sides[i][0], sides[i][1], 1));
+      });
     }
-    if (paraProp === "diags") {
-      svg.appendChild(seg(A, C, ACCENT, 2));
-      svg.appendChild(seg(B, D, ACCENT, 2));
+
+    // equal opposite angles
+    if (info.oppAngEq && info.bothPar) {
+      svg.appendChild(angleArc(A, B, D, 26, VIOLET, false));
+      svg.appendChild(angleArc(C, B, D, 26, VIOLET, false));
+      svg.appendChild(angleArc(B, A, C, 22, MARK, true));
+      svg.appendChild(angleArc(D, A, C, 22, MARK, true));
+    }
+    if (info.all90) {
+      svg.appendChild(rightAngleMark(A, D, B));
+      svg.appendChild(rightAngleMark(B, A, C));
+      svg.appendChild(rightAngleMark(C, B, D));
+      svg.appendChild(rightAngleMark(D, C, A));
+    }
+
+    if (info.diagsBisect && info.bothPar) {
+      var O = mid(A, C);
+      svg.appendChild(seg(A, C, ACCENT, 1.8));
+      svg.appendChild(seg(B, D, ACCENT, 1.8));
       svg.appendChild(tickMark(A, O, 1, ACCENT));
       svg.appendChild(tickMark(O, C, 1, ACCENT));
       svg.appendChild(tickMark(B, O, 2, TICK));
       svg.appendChild(tickMark(O, D, 2, TICK));
-      svg.appendChild(E("circle", { cx: O.x, cy: O.y, r: 5, fill: MARK }));
+      svg.appendChild(E("circle", { cx: O.x, cy: O.y, r: 4, fill: MARK }));
       svg.appendChild(labelAt(O, "O", 8, -8, MARK));
     }
 
     ["A", "B", "C", "D"].forEach(function (name, i) {
-      var p = paraVerts[i];
-      svg.appendChild(handle(p, i));
-      var off = [
-        { x: -18, y: 18 }, { x: 10, y: 18 }, { x: 10, y: -10 }, { x: -18, y: -10 },
-      ][i];
-      svg.appendChild(labelAt(p, name, off.x, off.y));
+      svg.appendChild(handle(verts[i], i));
+      var off = [{ x: -16, y: 18 }, { x: 10, y: 18 }, { x: 10, y: -10 }, { x: -16, y: -10 }][i];
+      svg.appendChild(labelAt(verts[i], name, off.x, off.y));
     });
 
-    var prop = PARA_PROPS.filter(function (p) { return p.id === paraProp; })[0];
-    renderMixed(document.getElementById("para-caption"), prop ? prop.label : "");
-    renderMixed(document.getElementById("para-note"), prop ? prop.note : "");
+    // badges
+    var badges = document.getElementById("det-badges");
+    badges.innerHTML = "";
+    [
+      { key: "trapezium", text: "Trapezium" },
+      { key: "parallelogram", text: "Parallelogram" },
+      { key: "rhombus", text: "Rhombus" },
+      { key: "rectangle", text: "Rectangle" },
+      { key: "square", text: "Square" },
+    ].forEach(function (L) {
+      var b = document.createElement("span");
+      b.className = "badge" + (info.names[L.key] ? " on" : "");
+      b.textContent = L.text;
+      badges.appendChild(b);
+    });
+
+    var P = PROPS[info.primary];
+    renderMixed(document.getElementById("det-caption"), P.title);
+    var propsEl = document.getElementById("det-props");
+    propsEl.innerHTML = "<ul class=\"prop-list\"></ul>";
+    var ul = propsEl.querySelector("ul");
+    P.list.forEach(function (line) {
+      var li = document.createElement("li");
+      ul.appendChild(li);
+      renderMixed(li, line);
+    });
+
+    renderProve(info);
+    renderTable(info);
   }
 
-  function bindParaDrag() {
-    var svg = document.getElementById("para-svg");
-    if (!svg) return;
-    svg.addEventListener("pointerdown", function (e) {
-      if (e.target.dataset.i != null) {
-        paraDrag = +e.target.dataset.i;
-        e.target.setPointerCapture(e.pointerId);
-      }
-    });
-    svg.addEventListener("pointermove", function (e) {
-      if (paraDrag == null) return;
-      var p = svgPoint(svg, e);
-      paraVerts[paraDrag].x = clamp(p.x, 40, 460);
-      paraVerts[paraDrag].y = clamp(p.y, 40, 300);
-      forceParallelogram(paraVerts, paraDrag);
-      renderPara();
-    });
-    svg.addEventListener("pointerup", function () { paraDrag = null; });
-    svg.addEventListener("pointercancel", function () { paraDrag = null; });
+  function isParSide(info, p, q) {
+    var A = info.A, B = info.B, C = info.C, D = info.D;
+    if ((p === A && q === B) || (p === B && q === A) || (p === D && q === C) || (p === C && q === D)) return info.parAB_DC;
+    if ((p === A && q === D) || (p === D && q === A) || (p === B && q === C) || (p === C && q === B)) return info.parAD_BC;
+    return false;
   }
 
-  /* Proof walk-through */
-  var proofStep = 0;
-  var PROOF_STEPS = [
-    {
-      label: "Step 1",
-      title: "Start from the definition",
-      text: "\\(ABCD\\) is a parallelogram, so \\(AB \\parallel DC\\) and \\(AD \\parallel BC\\).",
-      math: "",
-      draw: "base",
-    },
-    {
-      label: "Step 2",
-      title: "Draw diagonal \\(AC\\)",
-      text: "Join \\(A\\) to \\(C\\). Now we have \\(\\triangle ABC\\) and \\(\\triangle CDA\\).",
-      math: "",
-      draw: "diag",
-    },
-    {
-      label: "Step 3",
-      title: "Equal alternate angles",
-      text: "\\(AB \\parallel DC\\) with transversal \\(AC\\) ⇒ \\(\\angle BAC = \\angle DCA\\) (alt. ∠s, // lines). Similarly \\(\\angle BCA = \\angle DAC\\).",
-      math: "",
-      draw: "angles",
-    },
-    {
-      label: "Step 4",
-      title: "ASA congruence",
-      text: "In \\(\\triangle ABC\\) and \\(\\triangle CDA\\): two angles and the included side \\(AC\\) (common) are equal ⇒ \\(\\triangle ABC \\cong \\triangle CDA\\) (ASA).",
-      math: "",
-      draw: "cong",
-    },
-    {
-      label: "Step 5",
-      title: "Corresponding sides",
-      text: "Corresponding sides of congruent triangles: \\(AB = CD\\) and \\(AD = BC\\). Reason: **[opp. sides of //gram]** after the proof, or cite congruence.",
-      math: "\\(AB = CD,\\quad AD = BC\\)",
-      draw: "result",
-    },
-  ];
-
-  function renderProof() {
-    var body = document.getElementById("proof-body");
-    var dots = document.getElementById("proof-dots");
-    var svg = document.getElementById("proof-svg");
-    var prev = document.getElementById("proof-prev");
-    var next = document.getElementById("proof-next");
-    if (!body || !svg) return;
-
-    var S = PROOF_STEPS[proofStep];
+  function renderProve(info) {
+    var opts = proveOptions(info);
+    if (!opts.some(function (o) { return o.id === proveReasonId; })) {
+      proveReasonId = opts[0].id;
+      proveStep = 0;
+    }
+    makeButtons(document.getElementById("prove-reason-btns"), opts, proveReasonId, function (id) {
+      proveReasonId = id;
+      proveStep = 0;
+      renderDetect();
+    });
+    var recipe = opts.filter(function (o) { return o.id === proveReasonId; })[0] || opts[0];
+    var steps = recipe.steps;
+    proveStep = clamp(proveStep, 0, steps.length - 1);
+    var S = steps[proveStep];
+    var body = document.getElementById("prove-body");
     body.innerHTML = "";
     var lab = document.createElement("div");
     lab.className = "step-label";
-    lab.textContent = S.label + " of " + PROOF_STEPS.length;
+    lab.textContent = "Step " + (proveStep + 1) + " of " + steps.length;
     var title = document.createElement("p");
     title.className = "step-title";
     var text = document.createElement("p");
@@ -464,204 +572,19 @@
     body.appendChild(lab);
     body.appendChild(title);
     body.appendChild(text);
-    renderMixed(title, S.title);
-    renderMixed(text, S.text);
-    if (S.math) {
-      var m = document.createElement("p");
-      m.className = "step-math";
-      body.appendChild(m);
-      renderMixed(m, S.math);
-    }
+    renderMixed(title, S.t);
+    renderMixed(text, S.x);
 
+    var dots = document.getElementById("prove-dots");
     dots.innerHTML = "";
-    PROOF_STEPS.forEach(function (_, i) {
+    steps.forEach(function (_, i) {
       var d = document.createElement("span");
-      if (i === proofStep) d.className = "on";
+      if (i === proveStep) d.className = "on";
       dots.appendChild(d);
     });
-    prev.disabled = proofStep === 0;
-    next.disabled = proofStep === PROOF_STEPS.length - 1;
-
-    // Fixed nice parallelogram for proof
-    var A = { x: 120, y: 210 }, B = { x: 340, y: 210 }, C = { x: 400, y: 70 }, D = { x: 180, y: 70 };
-    clr(svg);
-    svg.appendChild(E("polygon", {
-      points: [A, B, C, D].map(function (p) { return p.x + "," + p.y; }).join(" "),
-      fill: "rgba(56,189,248,.08)", stroke: "none",
-    }));
-    svg.appendChild(seg(A, B, INK));
-    svg.appendChild(seg(B, C, INK));
-    svg.appendChild(seg(C, D, INK));
-    svg.appendChild(seg(D, A, INK));
-    if (S.draw !== "base") svg.appendChild(seg(A, C, ACCENT, 2.5));
-    if (S.draw === "angles" || S.draw === "cong" || S.draw === "result") {
-      svg.appendChild(angleArc(A, B, C, 26, VIOLET));
-      svg.appendChild(angleArc(C, D, A, 26, VIOLET));
-      svg.appendChild(angleArc(A, D, C, 36, MARK));
-      svg.appendChild(angleArc(C, B, A, 36, MARK));
-    }
-    if (S.draw === "cong" || S.draw === "result") {
-      svg.appendChild(tickMark(A, C, 1, ACCENT));
-    }
-    if (S.draw === "result") {
-      svg.appendChild(tickMark(A, B, 1));
-      svg.appendChild(tickMark(D, C, 1));
-      svg.appendChild(tickMark(A, D, 2));
-      svg.appendChild(tickMark(B, C, 2));
-    }
-    [["A", A, -16, 16], ["B", B, 8, 16], ["C", C, 8, -8], ["D", D, -16, -8]].forEach(function (L) {
-      svg.appendChild(E("circle", { cx: L[1].x, cy: L[1].y, r: 5, fill: MARK, stroke: "#0f172a", "stroke-width": 1.5 }));
-      svg.appendChild(labelAt(L[1], L[0], L[2], L[3]));
-    });
+    document.getElementById("prove-prev").disabled = proveStep === 0;
+    document.getElementById("prove-next").disabled = proveStep === steps.length - 1;
   }
-
-  /* Prove conditions */
-  var proveCond = "oppSidesEq";
-  var PROVE_CONDS = [
-    {
-      id: "oppSidesEq",
-      label: "Opp. sides equal",
-      cap: "If \\(AB = CD\\) and \\(AD = BC\\), then \\(ABCD\\) is a parallelogram.",
-      note: "Reason code: **[opp. sides equal]**. Both pairs of opposite sides equal ⇒ parallelogram.",
-      marks: "sides",
-    },
-    {
-      id: "oppAngEq",
-      label: "Opp. angles equal",
-      cap: "If \\(\\angle A = \\angle C\\) and \\(\\angle B = \\angle D\\), then \\(ABCD\\) is a parallelogram.",
-      note: "Reason code: **[opp. ∠s equal]**.",
-      marks: "angles",
-    },
-    {
-      id: "diagsBisect",
-      label: "Diags. bisect",
-      cap: "If diagonals bisect each other (\\(AO = OC\\), \\(BO = OD\\)), then \\(ABCD\\) is a parallelogram.",
-      note: "Reason code: **[diags. bisect each other]**.",
-      marks: "diags",
-    },
-    {
-      id: "onePair",
-      label: "One pair equal & //",
-      cap: "If one pair of opposite sides is both equal and parallel (e.g. \\(AB = DC\\) and \\(AB \\parallel DC\\)), then \\(ABCD\\) is a parallelogram.",
-      note: "Reason code: **[2 sides equal and //]**.",
-      marks: "onepair",
-    },
-  ];
-
-  function renderProve() {
-    makeButtons(document.getElementById("prove-cond-btns"), PROVE_CONDS, proveCond, function (id) {
-      proveCond = id;
-      renderProve();
-    });
-    var svg = document.getElementById("prove-svg");
-    if (!svg) return;
-    clr(svg);
-    var A = { x: 120, y: 230 }, B = { x: 340, y: 230 }, C = { x: 400, y: 80 }, D = { x: 180, y: 80 };
-    var O = mid(A, C);
-    var cond = PROVE_CONDS.filter(function (c) { return c.id === proveCond; })[0];
-
-    svg.appendChild(E("polygon", {
-      points: [A, B, C, D].map(function (p) { return p.x + "," + p.y; }).join(" "),
-      fill: "rgba(74,222,128,.1)", stroke: "none",
-    }));
-    svg.appendChild(seg(A, B, INK));
-    svg.appendChild(seg(B, C, INK));
-    svg.appendChild(seg(C, D, INK));
-    svg.appendChild(seg(D, A, INK));
-
-    if (cond.marks === "sides") {
-      svg.appendChild(tickMark(A, B, 1));
-      svg.appendChild(tickMark(D, C, 1));
-      svg.appendChild(tickMark(A, D, 2));
-      svg.appendChild(tickMark(B, C, 2));
-    }
-    if (cond.marks === "angles") {
-      svg.appendChild(angleArc(A, B, D, 28, VIOLET));
-      svg.appendChild(angleArc(C, B, D, 28, VIOLET));
-      svg.appendChild(angleArc(B, A, C, 22, MARK));
-      svg.appendChild(angleArc(D, A, C, 22, MARK));
-    }
-    if (cond.marks === "diags") {
-      svg.appendChild(seg(A, C, ACCENT));
-      svg.appendChild(seg(B, D, ACCENT));
-      svg.appendChild(tickMark(A, O, 1, ACCENT));
-      svg.appendChild(tickMark(O, C, 1, ACCENT));
-      svg.appendChild(tickMark(B, O, 2, TICK));
-      svg.appendChild(tickMark(O, D, 2, TICK));
-      svg.appendChild(E("circle", { cx: O.x, cy: O.y, r: 5, fill: MARK }));
-      svg.appendChild(labelAt(O, "O", 8, -8, MARK));
-    }
-    if (cond.marks === "onepair") {
-      svg.appendChild(seg(A, B, GOOD, 3.5));
-      svg.appendChild(seg(D, C, GOOD, 3.5));
-      svg.appendChild(tickMark(A, B, 1));
-      svg.appendChild(tickMark(D, C, 1));
-      svg.appendChild(parallelMarks(A, B, D, C, 1));
-    }
-
-    [["A", A, -16, 16], ["B", B, 8, 16], ["C", C, 8, -8], ["D", D, -16, -8]].forEach(function (L) {
-      svg.appendChild(E("circle", { cx: L[1].x, cy: L[1].y, r: 5, fill: MARK, stroke: "#0f172a", "stroke-width": 1.5 }));
-      svg.appendChild(labelAt(L[1], L[0], L[2], L[3]));
-    });
-
-    renderMixed(document.getElementById("prove-caption"), cond.cap);
-    renderMixed(document.getElementById("prove-note"), cond.note);
-  }
-
-  /* ═══════════════════════════════════════════════════════════
-     LAB 2 — Family
-     ═══════════════════════════════════════════════════════════ */
-  var familyId = "parallelogram";
-  var FAMILY = [
-    {
-      id: "trapezium",
-      label: "Trapezium",
-      def: "**Trapezium:** a quadrilateral with **exactly one** pair of parallel sides (the bases).",
-      extra: "Isosceles trapezium: non-parallel sides (legs) equal ⇒ base angles equal.",
-      verts: [{ x: 120, y: 80 }, { x: 380, y: 80 }, { x: 440, y: 250 }, { x: 60, y: 250 }],
-      parallel: [[0, 1]],
-    },
-    {
-      id: "parallelogram",
-      label: "Parallelogram",
-      def: "**Parallelogram:** a quadrilateral with **both pairs** of opposite sides parallel.",
-      extra: "Also: opp. sides equal, opp. ∠s equal, diags. bisect each other.",
-      verts: [{ x: 110, y: 240 }, { x: 330, y: 240 }, { x: 400, y: 90 }, { x: 180, y: 90 }],
-      parallel: [[0, 1], [1, 2]],
-    },
-    {
-      id: "rhombus",
-      label: "Rhombus",
-      def: "**Rhombus:** a parallelogram with **all four sides equal**.",
-      extra: "Diagonals are perpendicular bisectors of each other and bisect the vertex angles.",
-      verts: [{ x: 250, y: 60 }, { x: 400, y: 170 }, { x: 250, y: 280 }, { x: 100, y: 170 }],
-      parallel: [[0, 1], [1, 2]],
-      equalSides: true,
-      diagsPerp: true,
-    },
-    {
-      id: "rectangle",
-      label: "Rectangle",
-      def: "**Rectangle:** a parallelogram with **all interior angles** \\(90^\\circ\\).",
-      extra: "Diagonals are equal in length (\\(AC = BD\\)).",
-      verts: [{ x: 110, y: 90 }, { x: 390, y: 90 }, { x: 390, y: 250 }, { x: 110, y: 250 }],
-      parallel: [[0, 1], [1, 2]],
-      rightAngles: true,
-      equalDiags: true,
-    },
-    {
-      id: "square",
-      label: "Square",
-      def: "**Square:** a rectangle with equal sides — or a rhombus with right angles.",
-      extra: "Has every property of parallelogram, rectangle and rhombus.",
-      verts: [{ x: 150, y: 70 }, { x: 350, y: 70 }, { x: 350, y: 270 }, { x: 150, y: 270 }],
-      parallel: [[0, 1], [1, 2]],
-      equalSides: true,
-      rightAngles: true,
-      diagsPerp: true,
-      equalDiags: true,
-    },
-  ];
 
   var FAMILY_FEATURES = [
     { key: "onePara", label: "Exactly \\(1\\) pair //" },
@@ -673,7 +596,6 @@
     { key: "diagPerp", label: "Diags. ⊥" },
     { key: "diagEq", label: "Diags. equal" },
   ];
-
   var FAMILY_MATRIX = {
     trapezium: { onePara: 1, twoPara: 0, oppEq: 0, allEq: 0, all90: 0, diagBisect: 0, diagPerp: 0, diagEq: 0 },
     parallelogram: { onePara: 0, twoPara: 1, oppEq: 1, allEq: 0, all90: 0, diagBisect: 1, diagPerp: 0, diagEq: 0 },
@@ -681,535 +603,269 @@
     rectangle: { onePara: 0, twoPara: 1, oppEq: 1, allEq: 0, all90: 1, diagBisect: 1, diagPerp: 0, diagEq: 1 },
     square: { onePara: 0, twoPara: 1, oppEq: 1, allEq: 1, all90: 1, diagBisect: 1, diagPerp: 1, diagEq: 1 },
   };
+  var FAMILY_COLS = ["trapezium", "parallelogram", "rhombus", "rectangle", "square"];
+  var FAMILY_LABELS = { trapezium: "Trapezium", parallelogram: "Parallelogram", rhombus: "Rhombus", rectangle: "Rectangle", square: "Square" };
 
-  function renderFamily() {
-    makeButtons(document.getElementById("family-btns"), FAMILY, familyId, function (id) {
-      familyId = id;
-      renderFamily();
-    });
-    var shape = FAMILY.filter(function (s) { return s.id === familyId; })[0];
-    var svg = document.getElementById("family-svg");
-    if (!svg || !shape) return;
-    clr(svg);
-    var V = shape.verts;
-    svg.appendChild(E("polygon", {
-      points: V.map(function (p) { return p.x + "," + p.y; }).join(" "),
-      fill: "rgba(56,189,248,.12)", stroke: "none",
-    }));
-    for (var i = 0; i < 4; i++) {
-      svg.appendChild(seg(V[i], V[(i + 1) % 4], INK, 3));
-    }
-    // parallel marks
-    if (shape.parallel) {
-      shape.parallel.forEach(function (pair, idx) {
-        var i = pair[0], j = (pair[0] + 1) % 4;
-        var k = (pair[0] + 2) % 4, m = (pair[0] + 3) % 4;
-        if (pair[0] === 0) {
-          svg.appendChild(parallelMarks(V[0], V[1], V[3], V[2], 1));
-        } else {
-          svg.appendChild(parallelMarks(V[1], V[2], V[0], V[3], 2));
-        }
-      });
-    }
-    if (shape.equalSides) {
-      for (var s = 0; s < 4; s++) svg.appendChild(tickMark(V[s], V[(s + 1) % 4], 1));
-    }
-    if (shape.rightAngles) {
-      for (var r = 0; r < 4; r++) {
-        svg.appendChild(rightAngleMark(V[r], V[(r + 3) % 4], V[(r + 1) % 4], 14));
-      }
-    }
-    if (shape.diagsPerp || shape.equalDiags) {
-      svg.appendChild(seg(V[0], V[2], ACCENT, 2));
-      svg.appendChild(seg(V[1], V[3], ACCENT, 2));
-      var O = mid(V[0], V[2]);
-      if (shape.diagsPerp) svg.appendChild(rightAngleMark(O, V[0], V[1], 10));
-      if (shape.equalDiags) {
-        svg.appendChild(tickMark(V[0], V[2], 2, ACCENT));
-        svg.appendChild(tickMark(V[1], V[3], 2, ACCENT));
-      }
-    }
-    ["A", "B", "C", "D"].forEach(function (name, i) {
-      svg.appendChild(E("circle", { cx: V[i].x, cy: V[i].y, r: 6, fill: MARK, stroke: "#0f172a", "stroke-width": 1.5 }));
-      svg.appendChild(labelAt(V[i], name, i === 0 || i === 3 ? -16 : 8, i < 2 ? -10 : 18));
-    });
-
-    renderMixed(document.getElementById("family-caption"), shape.label);
-    renderMixed(document.getElementById("family-note"), shape.def + " " + shape.extra);
-
-    // comparison table
-    var table = document.getElementById("family-table");
-    if (table) {
-      var heads = ["Property"].concat(FAMILY.map(function (s) { return s.label; }));
-      var thead = "<tr>" + heads.map(function (h) { return "<th>" + h + "</th>"; }).join("") + "</tr>";
-      var rows = FAMILY_FEATURES.map(function (f) {
-        var cells = FAMILY.map(function (s) {
-          var yes = FAMILY_MATRIX[s.id][f.key];
-          var hl = s.id === familyId ? " style=\"background:rgba(2,132,199,.12)\"" : "";
-          return "<td class=\"" + (yes ? "yes" : "no") + "\"" + hl + ">" + (yes ? "✓" : "—") + "</td>";
-        }).join("");
-        return "<tr><td class=\"feat\">" + f.label + "</td>" + cells + "</tr>";
+  function renderTable(info) {
+    var table = document.getElementById("det-table");
+    if (!table) return;
+    var hl = info.primary === "quad" ? "" : info.primary;
+    var head = "<tr><th>Property</th>" + FAMILY_COLS.map(function (c) {
+      return "<th>" + FAMILY_LABELS[c] + "</th>";
+    }).join("") + "</tr>";
+    var rows = FAMILY_FEATURES.map(function (f) {
+      return "<tr" + (hl ? "" : "") + " class=\"" + (hl ? "hl-check" : "") + "\" data-feat=\"" + f.key + "\"><td class=\"feat\">" + f.label + "</td>" +
+        FAMILY_COLS.map(function (c) {
+          var yes = FAMILY_MATRIX[c][f.key];
+          var cls = (c === hl ? " hl" : "");
+          return "<td class=\"" + (yes ? "yes" : "no") + (c === hl ? "\" style=\"background:rgba(2,132,199,.12)" : "") + "\">" + (yes ? "✓" : "—") + "</td>";
+        }).join("") + "</tr>";
+    }).join("");
+    // highlight whole column via row cells — also mark rows
+    table.innerHTML = head + FAMILY_FEATURES.map(function (f) {
+      var cells = FAMILY_COLS.map(function (c) {
+        var yes = FAMILY_MATRIX[c][f.key];
+        var style = c === hl ? " style=\"background:rgba(2,132,199,.12)\"" : "";
+        return "<td class=\"" + (yes ? "yes" : "no") + "\"" + style + ">" + (yes ? "✓" : "—") + "</td>";
       }).join("");
-      table.innerHTML = thead + rows;
-      if (window.renderMathInElement) {
-        window.renderMathInElement(table, {
-          delimiters: [{ left: "\\(", right: "\\)", display: false }],
-        });
-      }
+      return "<tr" + (hl ? " class=\"hl\"" : "") + "><td class=\"feat\">" + f.label + "</td>" + cells + "</tr>";
+    }).join("");
+    // Actually only highlight if primary matches a column — highlight those cells only, not all rows
+    table.innerHTML = head + FAMILY_FEATURES.map(function (f) {
+      var cells = FAMILY_COLS.map(function (c) {
+        var yes = FAMILY_MATRIX[c][f.key];
+        var style = c === hl ? " style=\"background:rgba(2,132,199,.12)\"" : "";
+        return "<td class=\"" + (yes ? "yes" : "no") + "\"" + style + ">" + (yes ? "✓" : "—") + "</td>";
+      }).join("");
+      return "<tr><td class=\"feat\">" + f.label + "</td>" + cells + "</tr>";
+    }).join("");
+    if (window.renderMathInElement) {
+      window.renderMathInElement(table, { delimiters: [{ left: "\\(", right: "\\)", display: false }] });
     }
   }
 
-  var FAMILY_QUIZ = [
-    {
-      q: "A quadrilateral has exactly one pair of parallel sides. What is it?",
-      opts: ["Parallelogram", "Trapezium", "Rhombus", "Rectangle"],
-      ans: 1,
-    },
-    {
-      q: "A parallelogram with all sides equal is a…",
-      opts: ["Rectangle", "Trapezium", "Rhombus", "Kite"],
-      ans: 2,
-    },
-    {
-      q: "A parallelogram with all angles \\(90^\\circ\\) is a…",
-      opts: ["Rhombus", "Trapezium", "Square", "Rectangle"],
-      ans: 3,
-    },
-    {
-      q: "Which shape has every property of both a rhombus and a rectangle?",
-      opts: ["Trapezium", "Parallelogram", "Square", "Kite"],
-      ans: 2,
-    },
-    {
-      q: "In a rhombus (that is not a square), the diagonals are…",
-      opts: ["Equal only", "Perpendicular bisectors of each other", "Never bisect", "Parallel"],
-      ans: 1,
-    },
-  ];
-  var familyQuizI = 0;
-  var familyQuizLocked = false;
-
-  function renderFamilyQuiz() {
-    var Q = FAMILY_QUIZ[familyQuizI % FAMILY_QUIZ.length];
-    renderMixed(document.getElementById("family-quiz-q"), Q.q);
-    var opts = document.getElementById("family-quiz-opts");
-    var fb = document.getElementById("family-quiz-fb");
-    familyQuizLocked = false;
-    fb.className = "feedback";
-    fb.textContent = "";
-    opts.innerHTML = "";
-    Q.opts.forEach(function (text, i) {
-      var b = document.createElement("button");
-      b.type = "button";
-      b.className = "quiz-opt";
-      b.textContent = text;
-      b.addEventListener("click", function () {
-        if (familyQuizLocked) return;
-        familyQuizLocked = true;
-        if (i === Q.ans) {
-          b.classList.add("ok");
-          fb.className = "feedback ok";
-          renderMixed(fb, "Correct!");
-        } else {
-          b.classList.add("bad");
-          opts.children[Q.ans].classList.add("ok");
-          fb.className = "feedback bad";
-          renderMixed(fb, "Not quite — the answer is **" + Q.opts[Q.ans] + "**.");
-        }
-      });
-      opts.appendChild(b);
-    });
-  }
-
-  /* ═══════════════════════════════════════════════════════════
-     LAB 3 — Mid-point theorem
-     ═══════════════════════════════════════════════════════════ */
-  var midVerts = [
-    { x: 80, y: 300 }, { x: 420, y: 300 }, { x: 260, y: 60 },
-  ];
-  var midMode = "theorem";
-  var midDrag = null;
-
-  function renderMid() {
-    makeButtons(document.getElementById("mid-mode-btns"), [
-      { id: "theorem", label: "Mid-pt. thm." },
-      { id: "converse", label: "Converse" },
-      { id: "both", label: "Both mid-pts → //gram" },
-    ], midMode, function (id) { midMode = id; renderMid(); });
-
-    var svg = document.getElementById("mid-svg");
-    if (!svg) return;
-    clr(svg);
-    var A = midVerts[0], B = midVerts[1], C = midVerts[2];
-    var D = mid(A, B);
-    var E = mid(A, C);
-    var F = mid(B, C);
-
-    svg.appendChild(E("polygon", {
-      points: [A, B, C].map(function (p) { return p.x + "," + p.y; }).join(" "),
-      fill: "rgba(56,189,248,.1)", stroke: "none",
-    }));
-    svg.appendChild(seg(A, B, INK));
-    svg.appendChild(seg(B, C, INK, 3.5));
-    svg.appendChild(seg(C, A, INK));
-
-    // mid-point ticks
-    svg.appendChild(tickMark(A, D, 1));
-    svg.appendChild(tickMark(D, B, 1));
-    svg.appendChild(tickMark(A, E, 2));
-    svg.appendChild(tickMark(E, C, 2));
-
-    if (midMode === "theorem" || midMode === "converse") {
-      svg.appendChild(seg(D, E, GOOD, 3.5));
-      svg.appendChild(parallelMarks(D, E, B, C, 1));
-    }
-    if (midMode === "both") {
-      svg.appendChild(seg(D, E, GOOD, 3));
-      svg.appendChild(seg(E, F, VIOLET, 3));
-      svg.appendChild(seg(F, D, MARK, 3));
-      svg.appendChild(E("polygon", {
-        points: [D, F, E].map(function (p) { return p.x + "," + p.y; }).join(" "),
-        fill: "rgba(167,139,250,.15)", stroke: "none",
-      }));
-      // DEFE is varignon - actually DEF midpoints form medial triangle
-      svg.appendChild(labelAt(F, "F", 8, 16, MARK));
-      svg.appendChild(E("circle", { cx: F.x, cy: F.y, r: 6, fill: MARK, stroke: "#0f172a", "stroke-width": 1.5 }));
-    }
-
-    [["D", D, -4, 20], ["E", E, -18, -6]].forEach(function (L) {
-      svg.appendChild(E("circle", { cx: L[1].x, cy: L[1].y, r: 6, fill: GOOD, stroke: "#0f172a", "stroke-width": 1.5 }));
-      svg.appendChild(labelAt(L[1], L[0], L[2], L[3], GOOD));
-    });
-
-    ["A", "B", "C"].forEach(function (name, i) {
-      svg.appendChild(handle(midVerts[i], i));
-      var off = [{ x: -16, y: 18 }, { x: 8, y: 18 }, { x: -6, y: -12 }][i];
-      svg.appendChild(labelAt(midVerts[i], name, off.x, off.y));
-    });
-
-    var de = dist(D, E), bc = dist(B, C);
-    var row = document.getElementById("mid-measures");
-    if (row) {
-      row.innerHTML = "";
-      [
-        "\\(BC = " + fmt(bc / 20, 1) + "\\) (units)",
-        "\\(DE = " + fmt(de / 20, 1) + "\\)",
-        "\\(DE / BC = " + fmt(de / bc, 2) + "\\)",
-      ].forEach(function (t) {
-        var c = document.createElement("span");
-        c.className = "measure-chip";
-        c.textContent = t;
-        row.appendChild(c);
-      });
-      if (window.renderMathInElement) {
-        window.renderMathInElement(row, {
-          delimiters: [{ left: "\\(", right: "\\)", display: false }],
-        });
-      }
-    }
-
-    if (midMode === "theorem") {
-      renderMixed(document.getElementById("mid-caption"),
-        "Mid-point theorem: \\(DE \\parallel BC\\) and \\(DE = \\dfrac{1}{2}BC\\).");
-      renderMixed(document.getElementById("mid-note"),
-        "If \\(D\\), \\(E\\) are mid-points of \\(AB\\), \\(AC\\), then the segment joining them is parallel to the third side and half as long. Reason: **[mid-pt. thm.]**");
-    } else if (midMode === "converse") {
-      renderMixed(document.getElementById("mid-caption"),
-        "Converse: if \\(D\\) is mid-point of \\(AB\\) and \\(DE \\parallel BC\\) meeting \\(AC\\) at \\(E\\), then \\(E\\) is mid-point of \\(AC\\).");
-      renderMixed(document.getElementById("mid-note"),
-        "Reason: **[converse of mid-pt. thm.]**. Useful when a line through a mid-point is parallel to a side.");
-    } else {
-      renderMixed(document.getElementById("mid-caption"),
-        "The three mid-points \\(D\\), \\(E\\), \\(F\\) form the medial triangle; each side is parallel to a side of \\(\\triangle ABC\\) and half as long.");
-      renderMixed(document.getElementById("mid-note"),
-        "The three mid-points give three applications of **[mid-pt. thm.]**. Perimeter of the medial triangle = \\(\\dfrac{1}{2}\\) of the perimeter of \\(\\triangle ABC\\).");
-    }
-  }
-
-  function bindMidDrag() {
-    var svg = document.getElementById("mid-svg");
+  function bindDetect() {
+    var svg = document.getElementById("det-svg");
     if (!svg) return;
     svg.addEventListener("pointerdown", function (e) {
-      if (e.target.dataset.i != null) {
-        midDrag = +e.target.dataset.i;
+      if (e.target.dataset.drag != null) {
+        detDrag = +e.target.dataset.drag;
         e.target.setPointerCapture(e.pointerId);
       }
     });
     svg.addEventListener("pointermove", function (e) {
-      if (midDrag == null) return;
-      var p = svgPoint(svg, e);
-      midVerts[midDrag].x = clamp(p.x, 40, 460);
-      midVerts[midDrag].y = clamp(p.y, 40, 330);
-      renderMid();
+      if (detDrag == null) return;
+      var p = svgPt(svg, e);
+      verts[detDrag].x = clamp(p.x, 30, 470);
+      verts[detDrag].y = clamp(p.y, 30, 310);
+      renderDetect();
     });
-    svg.addEventListener("pointerup", function () { midDrag = null; });
-    svg.addEventListener("pointercancel", function () { midDrag = null; });
+    svg.addEventListener("pointerup", function () { detDrag = null; });
+    svg.addEventListener("pointercancel", function () { detDrag = null; });
+    document.getElementById("prove-prev").addEventListener("click", function () {
+      if (proveStep > 0) { proveStep--; renderDetect(); }
+    });
+    document.getElementById("prove-next").addEventListener("click", function () {
+      proveStep++;
+      renderDetect();
+    });
   }
 
   /* ═══════════════════════════════════════════════════════════
-     LAB 4 — Intercept theorem
+     LAB 2 — Mid-pt / Intercept (3 horizontals + 2 transversals)
      ═══════════════════════════════════════════════════════════ */
-  var intMode = "equal";
-  // Three horizontal parallels at y positions; two transversals
-  var intY = [80, 180, 280];
-  var intDrag = null; // index into intY
-  // Transversal 1: x = 100 + t*20 roughly — use two lines from top
-  var intT1 = [{ x: 90, y: 40 }, { x: 150, y: 330 }];
-  var intT2 = [{ x: 380, y: 40 }, { x: 440, y: 330 }];
+  var thmMode = "midpt";
+  var thmY = [90, 190, 300];
+  // Each transversal: top handle (x at y≈40) and bottom handle (x at y≈350)
+  var thmT = [
+    { top: 120, bot: 160 },
+    { top: 380, bot: 420 },
+  ];
+  var thmDrag = null; // { kind:'y'|'t', i, which }
 
-  function lineIntersectY(p1, p2, y) {
-    var t = (y - p1.y) / (p2.y - p1.y);
+  function thmLinePts(ti) {
+    return [
+      { x: thmT[ti].top, y: 40 },
+      { x: thmT[ti].bot, y: 350 },
+    ];
+  }
+  function hitY(p1, p2, y) {
+    var t = (y - p1.y) / ((p2.y - p1.y) || 1);
     return { x: p1.x + (p2.x - p1.x) * t, y: y };
   }
 
-  function renderInt() {
-    makeButtons(document.getElementById("int-mode-btns"), [
-      { id: "equal", label: "Equal intercepts" },
-      { id: "ratio", label: "Proportional intercepts" },
-    ], intMode, function (id) { intMode = id; renderInt(); });
+  function ensureTransversalSpan() {
+    // Keep top above first parallel and bottom below last so they always cut all three
+    // Handles already at y=40 and y=350; horizontals between 70–320 — OK by construction.
+    // Also keep the two transversals from becoming nearly horizontal.
+    thmT.forEach(function (t) {
+      t.top = clamp(t.top, 40, 480);
+      t.bot = clamp(t.bot, 40, 480);
+    });
+  }
 
-    var svg = document.getElementById("int-svg");
+  function renderThm() {
+    makeButtons(document.getElementById("thm-mode-btns"), [
+      { id: "midpt", label: "Mid-pt. thm." },
+      { id: "intercept", label: "Intercept thm." },
+    ], thmMode, function (id) { thmMode = id; renderThm(); });
+
+    var svg = document.getElementById("thm-svg");
     if (!svg) return;
     clr(svg);
+    ensureTransversalSpan();
 
-    // Draw three parallels
-    intY.forEach(function (y, i) {
+    // three horizontals
+    thmY.forEach(function (y, i) {
       svg.appendChild(E("line", {
-        x1: 40, y1: y, x2: 500, y2: y,
+        x1: 30, y1: y, x2: 490, y2: y,
         stroke: GOOD, "stroke-width": 3, "stroke-linecap": "round",
       }));
-      // drag handle on left
+      svg.appendChild(parallelSlash({ x: 60, y: y }, { x: 100, y: y }, 1, GOOD));
       svg.appendChild(E("circle", {
-        cx: 55, cy: y, r: 8, fill: MARK, stroke: "#0f172a", "stroke-width": 2,
-        "data-y": String(i),
+        cx: 48, cy: y, r: 8, fill: MARK, stroke: "#0f172a", "stroke-width": 2, "data-drag": "y" + i,
       }));
       svg.appendChild(E("circle", {
-        cx: 55, cy: y, r: 18, fill: "transparent", "data-y": String(i),
+        cx: 48, cy: y, r: 18, fill: "transparent", "data-drag": "y" + i,
       }));
     });
 
-    // Transversals
-    svg.appendChild(seg(intT1[0], intT1[1], ACCENT, 2.5));
-    svg.appendChild(seg(intT2[0], intT2[1], VIOLET, 2.5));
+    var L0 = thmLinePts(0), L1 = thmLinePts(1);
+    // extend transversals fully across view but keep handles
+    svg.appendChild(seg(L0[0], L0[1], ACCENT, 2.6));
+    svg.appendChild(seg(L1[0], L1[1], VIOLET, 2.6));
 
-    var pts1 = intY.map(function (y) { return lineIntersectY(intT1[0], intT1[1], y); });
-    var pts2 = intY.map(function (y) { return lineIntersectY(intT2[0], intT2[1], y); });
+    var P0 = thmY.map(function (y) { return hitY(L0[0], L0[1], y); });
+    var P1 = thmY.map(function (y) { return hitY(L1[0], L1[1], y); });
 
-    pts1.forEach(function (p, i) {
+    var names0 = ["A", "B", "C"], names1 = ["D", "E", "F"];
+    P0.forEach(function (p, i) {
       svg.appendChild(E("circle", { cx: p.x, cy: p.y, r: 5, fill: ACCENT }));
-      svg.appendChild(labelAt(p, String.fromCharCode(65 + i), -16, -6, ACCENT));
+      svg.appendChild(labelAt(p, names0[i], -16, -6, ACCENT));
     });
-    pts2.forEach(function (p, i) {
+    P1.forEach(function (p, i) {
       svg.appendChild(E("circle", { cx: p.x, cy: p.y, r: 5, fill: VIOLET }));
-      svg.appendChild(labelAt(p, String.fromCharCode(68 + i), 8, -6, VIOLET));
+      svg.appendChild(labelAt(p, names1[i], 8, -6, VIOLET));
     });
 
-    // Intercept length marks
-    var dAB = dist(pts1[0], pts1[1]), dBC = dist(pts1[1], pts1[2]);
-    var dDE = dist(pts2[0], pts2[1]), dEF = dist(pts2[1], pts2[2]);
+    // transversal handles
+    svg.appendChild(handle(L0[0], "t0top", ACCENT));
+    svg.appendChild(handle(L0[1], "t0bot", ACCENT));
+    svg.appendChild(handle(L1[0], "t1top", VIOLET));
+    svg.appendChild(handle(L1[1], "t1bot", VIOLET));
 
-    if (intMode === "equal") {
-      // Force equal spacing visually when in equal mode — already user-controlled;
-      // show ticks if nearly equal
-      svg.appendChild(tickMark(pts1[0], pts1[1], 1, ACCENT));
-      svg.appendChild(tickMark(pts1[1], pts1[2], 1, ACCENT));
-      svg.appendChild(tickMark(pts2[0], pts2[1], 1, VIOLET));
-      svg.appendChild(tickMark(pts2[1], pts2[2], 1, VIOLET));
-    }
+    var dAB = dist(P0[0], P0[1]), dBC = dist(P0[1], P0[2]);
+    var dDE = dist(P1[0], P1[1]), dEF = dist(P1[1], P1[2]);
+    var equalLeft = Math.abs(dAB - dBC) < 8;
+    var equalRight = Math.abs(dDE - dEF) < 8;
+    var midY = Math.abs((thmY[1] - thmY[0]) - (thmY[2] - thmY[1])) < 6;
 
-    var row = document.getElementById("int-measures");
-    if (row) {
-      row.innerHTML = "";
-      [
-        "\\(AB = " + fmt(dAB / 20, 1) + "\\)",
-        "\\(BC = " + fmt(dBC / 20, 1) + "\\)",
-        "\\(DE = " + fmt(dDE / 20, 1) + "\\)",
-        "\\(EF = " + fmt(dEF / 20, 1) + "\\)",
-      ].forEach(function (t) {
-        var c = document.createElement("span");
-        c.className = "measure-chip";
-        c.textContent = t;
-        row.appendChild(c);
-      });
-      if (window.renderMathInElement) {
-        window.renderMathInElement(row, {
-          delimiters: [{ left: "\\(", right: "\\)", display: false }],
-        });
+    if (thmMode === "intercept") {
+      if (equalLeft) {
+        svg.appendChild(tickMark(P0[0], P0[1], 1, ACCENT));
+        svg.appendChild(tickMark(P0[1], P0[2], 1, ACCENT));
       }
-    }
-
-    if (intMode === "equal") {
-      renderMixed(document.getElementById("int-caption"),
-        "If parallels cut equal intercepts on one transversal (\\(AB = BC\\)), they cut equal intercepts on any other (\\(DE = EF\\)).");
-      renderMixed(document.getElementById("int-note"),
-        "Drag the gold handles so \\(AB = BC\\). Watch \\(DE\\) and \\(EF\\) match. Reason: **[intercept thm.]**. (Space the parallels evenly along the blue transversal.)");
+      if (equalRight) {
+        svg.appendChild(tickMark(P1[0], P1[1], 1, VIOLET));
+        svg.appendChild(tickMark(P1[1], P1[2], 1, VIOLET));
+      }
+      // segment BE (middle //)
+      svg.appendChild(seg(P0[1], P1[1], MARK, 2));
     } else {
-      renderMixed(document.getElementById("int-caption"),
-        "More generally: \\(\\dfrac{AB}{BC} = \\dfrac{DE}{EF}\\) when the three lines are parallel.");
-      renderMixed(document.getElementById("int-note"),
-        "The ratios of corresponding intercepts are equal. Move the parallels to unequal spacing and compare the ratios.");
+      // Mid-pt. thm. view: treat △ACF? Use apex = intersection of transversals
+      var den = (L0[1].x - L0[0].x) * (L1[1].y - L1[0].y) - (L0[1].y - L0[0].y) * (L1[1].x - L1[0].x);
+      var apex = null;
+      if (Math.abs(den) > 1e-6) {
+        var t = ((L1[0].x - L0[0].x) * (L1[1].y - L1[0].y) - (L1[0].y - L0[0].y) * (L1[1].x - L1[0].x)) / den;
+        apex = { x: L0[0].x + t * (L0[1].x - L0[0].x), y: L0[0].y + t * (L0[1].y - L0[0].y) };
+      }
+      if (apex && apex.y < thmY[0] - 5 && apex.x > 20 && apex.x < 500) {
+        svg.appendChild(E("circle", { cx: apex.x, cy: apex.y, r: 6, fill: MARK, stroke: "#0f172a", "stroke-width": 1.5 }));
+        svg.appendChild(labelAt(apex, "P", 8, -8, MARK));
+        // midpoints of PC and PF? Use mid of PA-PC along left: B is mid of AC when equal spacing
+        svg.appendChild(seg(P0[0], P1[0], "#64748b", 1.5));
+        svg.appendChild(seg(P0[2], P1[2], INK, 3));
+        svg.appendChild(seg(P0[1], P1[1], GOOD, 3.5));
+        svg.appendChild(parallelSlash(P0[1], P1[1], 1));
+        svg.appendChild(parallelSlash(P0[2], P1[2], 1));
+        if (equalLeft || midY) {
+          svg.appendChild(tickMark(P0[0], P0[1], 1, ACCENT));
+          svg.appendChild(tickMark(P0[1], P0[2], 1, ACCENT));
+          svg.appendChild(tickMark(P1[0], P1[1], 1, VIOLET));
+          svg.appendChild(tickMark(P1[1], P1[2], 1, VIOLET));
+        }
+      } else {
+        svg.appendChild(seg(P0[1], P1[1], GOOD, 3));
+        svg.appendChild(seg(P0[2], P1[2], INK, 3));
+        svg.appendChild(parallelSlash(P0[1], P1[1], 1));
+        svg.appendChild(parallelSlash(P0[2], P1[2], 1));
+      }
+    }
+
+    var row = document.getElementById("thm-measures");
+    row.innerHTML = "";
+    [
+      "\\(AB=" + fmt(dAB / 20, 1) + "\\)",
+      "\\(BC=" + fmt(dBC / 20, 1) + "\\)",
+      "\\(DE=" + fmt(dDE / 20, 1) + "\\)",
+      "\\(EF=" + fmt(dEF / 20, 1) + "\\)",
+    ].forEach(function (t) {
+      var c = document.createElement("span");
+      c.className = "measure-chip";
+      row.appendChild(c);
+      renderMixed(c, t);
+    });
+
+    if (thmMode === "intercept") {
+      renderMixed(document.getElementById("thm-caption"),
+        "Intercept thm.: if \\(AB = BC\\) on one transversal, then \\(DE = EF\\) on the other.");
+      renderMixed(document.getElementById("thm-note"),
+        "Space the three // lines so blue intercepts match (drag gold handles). Purple intercepts become equal too. Reason: **[intercept thm.]**. Notation: lines are **//**, not ∥.");
+    } else {
+      renderMixed(document.getElementById("thm-caption"),
+        "Mid-pt. thm.: segment joining mid-points is // to the third side and half as long.");
+      renderMixed(document.getElementById("thm-note"),
+        "Make \\(AB = BC\\) and \\(DE = EF\\) (middle // line through the mid-points). Then \\(BE\\)//\\(CF\\) and \\(BE = \\dfrac{1}{2}CF\\). Example: \\(DE\\)//\\(BC\\), \\(DE = \\dfrac{1}{2}BC\\). Reason: **[mid-pt. thm.]**");
     }
   }
 
-  function bindIntDrag() {
-    var svg = document.getElementById("int-svg");
+  function bindThm() {
+    var svg = document.getElementById("thm-svg");
     if (!svg) return;
     svg.addEventListener("pointerdown", function (e) {
-      if (e.target.dataset.y != null) {
-        intDrag = +e.target.dataset.y;
-        e.target.setPointerCapture(e.pointerId);
-      }
+      var key = e.target.dataset.drag;
+      if (key == null) return;
+      thmDrag = key;
+      e.target.setPointerCapture(e.pointerId);
     });
     svg.addEventListener("pointermove", function (e) {
-      if (intDrag == null) return;
-      var p = svgPoint(svg, e);
-      var y = clamp(p.y, 50, 330);
-      // keep order
-      if (intDrag === 0) y = Math.min(y, intY[1] - 30);
-      if (intDrag === 1) y = clamp(y, intY[0] + 30, intY[2] - 30);
-      if (intDrag === 2) y = Math.max(y, intY[1] + 30);
-      intY[intDrag] = y;
-      renderInt();
-    });
-    svg.addEventListener("pointerup", function () { intDrag = null; });
-    svg.addEventListener("pointercancel", function () { intDrag = null; });
-  }
-
-  // Proportional form in a triangle
-  var propVerts = [
-    { x: 80, y: 300 }, { x: 420, y: 300 }, { x: 250, y: 50 },
-  ];
-  var propT = 0.45; // D divides CA? D on AB, E on AC
-  var propDrag = null;
-
-  function renderProp() {
-    var svg = document.getElementById("prop-svg");
-    if (!svg) return;
-    clr(svg);
-    var A = propVerts[2], B = propVerts[0], C = propVerts[1]; // A top, B left, C right
-    // remap: use midVerts style A=left base, B=right base, C=apex
-    A = propVerts[0];
-    B = propVerts[1];
-    C = propVerts[2];
-
-    var D = lerp(A, C, propT); // on AC? Wait user said D on AB
-    // D on AB, E on AC with DE // BC
-    D = lerp(A, B, propT);
-    var E = lerp(A, C, propT); // same ratio ⇒ DE // BC by similar / intercept
-
-    svg.appendChild(E("polygon", {
-      points: [A, B, C].map(function (p) { return p.x + "," + p.y; }).join(" "),
-      fill: "rgba(56,189,248,.08)", stroke: "none",
-    }));
-    svg.appendChild(seg(A, B, INK));
-    svg.appendChild(seg(B, C, INK, 3));
-    svg.appendChild(seg(C, A, INK));
-    svg.appendChild(seg(D, E, GOOD, 3.5));
-    svg.appendChild(parallelMarks(D, E, B, C, 1));
-
-    svg.appendChild(E("circle", { cx: D.x, cy: D.y, r: 7, fill: MARK, stroke: "#0f172a", "stroke-width": 2 }));
-    svg.appendChild(E("circle", { cx: D.x, cy: D.y, r: 18, fill: "transparent", "data-d": "1" }));
-    svg.appendChild(E("circle", { cx: E.x, cy: E.y, r: 6, fill: GOOD, stroke: "#0f172a", "stroke-width": 1.5 }));
-    svg.appendChild(labelAt(D, "D", -14, 18, MARK));
-    svg.appendChild(labelAt(E, "E", 8, -8, GOOD));
-
-    ["A", "B", "C"].forEach(function (name, i) {
-      var p = propVerts[i];
-      svg.appendChild(E("circle", { cx: p.x, cy: p.y, r: 6, fill: MARK, stroke: "#0f172a", "stroke-width": 1.5 }));
-      var off = [{ x: -16, y: 18 }, { x: 8, y: 18 }, { x: -6, y: -12 }][i];
-      svg.appendChild(labelAt(p, name, off.x, off.y));
-    });
-
-    var AD = dist(A, D), DB = dist(D, B), AE = dist(A, E), EC = dist(E, C);
-    var row = document.getElementById("prop-measures");
-    if (row) {
-      row.innerHTML = "";
-      [
-        "\\(\\dfrac{AD}{DB} = " + fmt(AD / DB, 2) + "\\)",
-        "\\(\\dfrac{AE}{EC} = " + fmt(AE / EC, 2) + "\\)",
-        "\\(\\dfrac{AD}{AB} = " + fmt(AD / dist(A, B), 2) + "\\)",
-      ].forEach(function (t) {
-        var c = document.createElement("span");
-        c.className = "measure-chip";
-        c.textContent = t;
-        row.appendChild(c);
-      });
-      if (window.renderMathInElement) {
-        window.renderMathInElement(row, {
-          delimiters: [{ left: "\\(", right: "\\)", display: false }],
-        });
+      if (!thmDrag) return;
+      var p = svgPt(svg, e);
+      if (thmDrag.charAt(0) === "y") {
+        var i = +thmDrag.slice(1);
+        var y = clamp(p.y, 60, 330);
+        if (i === 0) y = Math.min(y, thmY[1] - 35);
+        if (i === 1) y = clamp(y, thmY[0] + 35, thmY[2] - 35);
+        if (i === 2) y = Math.max(y, thmY[1] + 35);
+        thmY[i] = y;
+      } else if (thmDrag.indexOf("t0") === 0) {
+        if (thmDrag.indexOf("top") >= 0) thmT[0].top = clamp(p.x, 40, 480);
+        else thmT[0].bot = clamp(p.x, 40, 480);
+      } else if (thmDrag.indexOf("t1") === 0) {
+        if (thmDrag.indexOf("top") >= 0) thmT[1].top = clamp(p.x, 40, 480);
+        else thmT[1].bot = clamp(p.x, 40, 480);
       }
-    }
-    renderMixed(document.getElementById("prop-caption"),
-      "Since \\(DE \\parallel BC\\): \\(\\dfrac{AD}{DB} = \\dfrac{AE}{EC}\\). Drag \\(D\\) along \\(AB\\).");
-  }
-
-  function bindPropDrag() {
-    var svg = document.getElementById("prop-svg");
-    if (!svg) return;
-    svg.addEventListener("pointerdown", function (e) {
-      if (e.target.dataset.d != null) {
-        propDrag = true;
-        e.target.setPointerCapture(e.pointerId);
-      }
+      renderThm();
     });
-    svg.addEventListener("pointermove", function (e) {
-      if (!propDrag) return;
-      var p = svgPoint(svg, e);
-      var A = propVerts[0], B = propVerts[1];
-      var ab = sub(B, A);
-      var len2 = ab.x * ab.x + ab.y * ab.y;
-      var t = ((p.x - A.x) * ab.x + (p.y - A.y) * ab.y) / len2;
-      propT = clamp(t, 0.15, 0.85);
-      renderProp();
-    });
-    svg.addEventListener("pointerup", function () { propDrag = false; });
-    svg.addEventListener("pointercancel", function () { propDrag = false; });
+    svg.addEventListener("pointerup", function () { thmDrag = null; });
+    svg.addEventListener("pointercancel", function () { thmDrag = null; });
   }
 
   /* ═══════════════════════════════════════════════════════════
-     LAB 5 — Reasons
+     LAB 3 — Reason bank + explainer frame
      ═══════════════════════════════════════════════════════════ */
   var reasonCat = "quad";
   var reasonActive = null;
-
-  var REASONS = {
-    quad: [
-      { abbr: "[opp. sides of //gram]", desc: "Opposite sides of a parallelogram are equal.", eg: "From \\(ABCD\\) //gram ⇒ \\(AB = CD\\)." },
-      { abbr: "[opp. ∠s of //gram]", desc: "Opposite angles of a parallelogram are equal.", eg: "\\(\\angle ABC = \\angle ADC\\)." },
-      { abbr: "[diags. of //gram]", desc: "Diagonals of a parallelogram bisect each other.", eg: "\\(AO = OC\\), \\(BO = OD\\)." },
-      { abbr: "[opp. sides equal]", desc: "Both pairs of opposite sides equal ⇒ parallelogram.", eg: "Prove condition." },
-      { abbr: "[opp. ∠s equal]", desc: "Both pairs of opposite angles equal ⇒ parallelogram.", eg: "Prove condition." },
-      { abbr: "[diags. bisect each other]", desc: "Diagonals bisect each other ⇒ parallelogram.", eg: "Prove condition." },
-      { abbr: "[2 sides equal and //]", desc: "One pair of opposite sides equal and parallel ⇒ parallelogram.", eg: "Prove condition." },
-      { abbr: "[property of rhombus]", desc: "All sides equal; diagonals ⊥ and bisect angles.", eg: "In a rhombus, \\(AC \\perp BD\\)." },
-      { abbr: "[property of rectangle]", desc: "All angles \\(90^\\circ\\); diagonals equal.", eg: "\\(AC = BD\\)." },
-      { abbr: "[property of square]", desc: "All sides equal and all angles \\(90^\\circ\\).", eg: "Combines rhombus + rectangle." },
-      { abbr: "[property of trapezium]", desc: "Exactly one pair of parallel sides; use co-interior angles with the bases.", eg: "\\(\\angle A + \\angle D = 180^\\circ\\) if \\(AD \\parallel BC\\)." },
-      { abbr: "[property of isos. trapezium]", desc: "Legs equal ⇒ base angles equal.", eg: "\\(AB = DC\\) in isos. trap. \\(ABCD\\) with \\(AD \\parallel BC\\)." },
-    ],
-    thm: [
-      { abbr: "[mid-pt. thm.]", desc: "Segment joining mid-points of two sides is // to the third side and half as long.", eg: "\\(DE \\parallel BC\\), \\(DE = \\dfrac{1}{2}BC\\)." },
-      { abbr: "[converse of mid-pt. thm.]", desc: "Line through mid-point // to a side meets the third side at its mid-point.", eg: "\\(D\\) mid of \\(AB\\), \\(DE \\parallel BC\\) ⇒ \\(E\\) mid of \\(AC\\)." },
-      { abbr: "[intercept thm.]", desc: "Parallels that cut equal intercepts on one transversal cut equal intercepts on any other.", eg: "Also: line // to one side of a △ divides the other two sides proportionally." },
-    ],
-    parallel: [
-      { abbr: "[alt. ∠s, // lines]", desc: "Alternate interior angles are equal.", eg: "Z-shape." },
-      { abbr: "[corr. ∠s, // lines]", desc: "Corresponding angles are equal.", eg: "F-shape." },
-      { abbr: "[int. ∠s, // lines]", desc: "Consecutive interior angles sum to \\(180^\\circ\\).", eg: "C-shape / co-interior." },
-      { abbr: "[sides opp. eq. ∠s]", desc: "In a triangle, sides opposite equal angles are equal.", eg: "Isosceles △." },
-      { abbr: "[base ∠s, isos. △]", desc: "Base angles of an isosceles triangle are equal.", eg: "\\(AB = AC\\) ⇒ \\(\\angle B = \\angle C\\)." },
-    ],
-    cong: [
-      { abbr: "[SAS]", desc: "Two sides and included angle equal ⇒ congruent.", eg: "" },
-      { abbr: "[ASA]", desc: "Two angles and included side equal ⇒ congruent.", eg: "" },
-      { abbr: "[SSS]", desc: "Three sides equal ⇒ congruent.", eg: "" },
-      { abbr: "[AAS]", desc: "Two angles and a non-included side equal ⇒ congruent.", eg: "" },
-      { abbr: "[RHS]", desc: "Right angle, hypotenuse and one side equal ⇒ congruent.", eg: "" },
-      { abbr: "[corr. sides, ≅ △s]", desc: "Corresponding sides of congruent triangles are equal.", eg: "" },
-      { abbr: "[corr. ∠s, ≅ △s]", desc: "Corresponding angles of congruent triangles are equal.", eg: "" },
-    ],
-  };
 
   var REASON_CATS = [
     { id: "quad", label: "Quadrilaterals" },
@@ -1218,6 +874,277 @@
     { id: "cong", label: "Congruence" },
   ];
 
+  var REASONS = {
+    quad: [
+      { id: "oppSides", abbr: "[opp. sides of //gram]", desc: "Opposite sides of a parallelogram are equal.", draw: "paraSides" },
+      { id: "oppAng", abbr: "[opp. ∠s of //gram]", desc: "Opposite angles of a parallelogram are equal.", draw: "paraAng" },
+      { id: "diags", abbr: "[diags. of //gram]", desc: "Diagonals of a parallelogram bisect each other.", draw: "paraDiags" },
+      { id: "proveSides", abbr: "[opp. sides equal]", desc: "Both pairs of opposite sides equal ⇒ parallelogram.", draw: "proveSides" },
+      { id: "proveDiags", abbr: "[diags. bisect each other]", desc: "Diagonals bisect each other ⇒ parallelogram.", draw: "proveDiags" },
+      { id: "prove2", abbr: "[2 sides equal and //]", desc: "One pair of opposite sides equal and // ⇒ parallelogram.", draw: "prove2" },
+      { id: "rhombus", abbr: "[property of rhombus]", desc: "All sides equal; diagonals ⊥ each other.", draw: "rhombus" },
+      { id: "rectangle", abbr: "[property of rectangle]", desc: "All angles \\(90^\\circ\\); diagonals equal.", draw: "rectangle" },
+      { id: "square", abbr: "[property of square]", desc: "Equal sides and right angles.", draw: "square" },
+      { id: "trap", abbr: "[property of trapezium]", desc: "Exactly one pair of // sides.", draw: "trap" },
+    ],
+    thm: [
+      { id: "midpt", abbr: "[mid-pt. thm.]", desc: "Segment joining mid-points of two sides is // to the third side and half as long.", draw: "midpt" },
+      { id: "convMid", abbr: "[converse of mid-pt. thm.]", desc: "Line through a mid-point // to a side meets the third side at its mid-point.", draw: "convMid" },
+      { id: "intercept", abbr: "[intercept thm.]", desc: "Parallels cutting equal intercepts on one transversal cut equal intercepts on any other.", draw: "intercept" },
+    ],
+    parallel: [
+      { id: "alt", abbr: "[alt. ∠s, // lines]", desc: "Alternate interior angles are equal (Z-shape).", draw: "alt" },
+      { id: "corr", abbr: "[corr. ∠s, // lines]", desc: "Corresponding angles are equal (F-shape).", draw: "corr" },
+      { id: "int", abbr: "[int. ∠s, // lines]", desc: "Consecutive interior angles sum to \\(180^\\circ\\) (C-shape).", draw: "int" },
+    ],
+    cong: [
+      { id: "SAS", abbr: "[SAS]", desc: "Two sides and included angle equal ⇒ congruent.", draw: "SAS" },
+      { id: "ASA", abbr: "[ASA]", desc: "Two angles and included side equal ⇒ congruent.", draw: "ASA" },
+      { id: "SSS", abbr: "[SSS]", desc: "Three sides equal ⇒ congruent.", draw: "SSS" },
+      { id: "corrS", abbr: "[corr. sides, ≅ △s]", desc: "Corresponding sides of congruent triangles are equal.", draw: "ASA" },
+    ],
+  };
+
+  var REASON_EXPLAIN = {
+    oppSides: {
+      steps: [
+        "In //gram \\(ABCD\\), opposite sides are equal.",
+        "So \\(AB = CD\\) and \\(AD = BC\\).",
+        "Write **[opp. sides of //gram]** after the statement.",
+      ],
+    },
+    oppAng: {
+      steps: [
+        "Opposite angles of a //gram are equal: \\(\\angle A = \\angle C\\), \\(\\angle B = \\angle D\\).",
+        "Consecutive angles are supplementary (int. ∠s, // lines).",
+        "Reason: **[opp. ∠s of //gram]**",
+      ],
+    },
+    diags: {
+      steps: [
+        "Diagonals meet at \\(O\\) with \\(AO = OC\\) and \\(BO = OD\\).",
+        "Reason: **[diags. of //gram]**",
+      ],
+    },
+    proveSides: {
+      steps: [
+        "Given both pairs of opposite sides equal.",
+        "Conclude \\(ABCD\\) is a parallelogram.",
+        "Reason: **[opp. sides equal]**",
+      ],
+    },
+    proveDiags: {
+      steps: [
+        "Given diagonals bisect each other.",
+        "Conclude parallelogram.",
+        "Reason: **[diags. bisect each other]**",
+      ],
+    },
+    prove2: {
+      steps: [
+        "Given one pair of opposite sides equal and //, e.g. \\(AB = DC\\) and \\(AB\\)//\\(DC\\).",
+        "Conclude parallelogram.",
+        "Reason: **[2 sides equal and //]**",
+      ],
+    },
+    rhombus: {
+      steps: [
+        "All sides equal; diagonals are perpendicular.",
+        "Reason: **[property of rhombus]**",
+      ],
+    },
+    rectangle: {
+      steps: [
+        "All angles \\(90^\\circ\\); diagonals equal.",
+        "Reason: **[property of rectangle]**",
+      ],
+    },
+    square: {
+      steps: [
+        "Equal sides and four right angles.",
+        "Reason: **[property of square]**",
+      ],
+    },
+    trap: {
+      steps: [
+        "Exactly one pair of sides //.",
+        "Co-interior angles with the bases sum to \\(180^\\circ\\).",
+        "Reason: **[property of trapezium]**",
+      ],
+    },
+    midpt: {
+      steps: [
+        "\\(D\\), \\(E\\) mid-points of \\(AB\\), \\(AC\\).",
+        "Then \\(DE\\)//\\(BC\\) and \\(DE = \\dfrac{1}{2}BC\\).",
+        "Reason: **[mid-pt. thm.]**",
+      ],
+    },
+    convMid: {
+      steps: [
+        "\\(D\\) mid-point of \\(AB\\) and \\(DE\\)//\\(BC\\) meeting \\(AC\\) at \\(E\\).",
+        "Then \\(E\\) is mid-point of \\(AC\\).",
+        "Reason: **[converse of mid-pt. thm.]**",
+      ],
+    },
+    intercept: {
+      steps: [
+        "Three // lines cut equal intercepts on one transversal.",
+        "They cut equal intercepts on any other transversal.",
+        "Reason: **[intercept thm.]**",
+      ],
+    },
+    alt: {
+      steps: [
+        "Two // lines cut by a transversal.",
+        "Alternate interior angles are equal (Z).",
+        "Reason: **[alt. ∠s, // lines]**",
+      ],
+    },
+    corr: {
+      steps: [
+        "Corresponding angles are equal (F).",
+        "Reason: **[corr. ∠s, // lines]**",
+      ],
+    },
+    int: {
+      steps: [
+        "Interior angles on the same side of the transversal sum to \\(180^\\circ\\) (C).",
+        "Reason: **[int. ∠s, // lines]**",
+      ],
+    },
+    SAS: { steps: ["Two sides and the included angle equal ⇒ △s congruent. **[SAS]**"] },
+    ASA: { steps: ["Two angles and the included side equal ⇒ △s congruent. **[ASA]**"] },
+    SSS: { steps: ["Three sides equal ⇒ △s congruent. **[SSS]**"] },
+    corrS: { steps: ["After congruence, matching sides are equal. **[corr. sides, ≅ △s]**"] },
+  };
+
+  function drawReasonFigure(svg, drawId) {
+    clr(svg);
+    var A = { x: 90, y: 220 }, B = { x: 280, y: 220 }, C = { x: 330, y: 70 }, D = { x: 140, y: 70 };
+    function poly(pts, fill) {
+      svg.appendChild(E("polygon", {
+        points: pts.map(function (p) { return p.x + "," + p.y; }).join(" "),
+        fill: fill || "rgba(56,189,248,.1)", stroke: "none",
+      }));
+    }
+    function outline(pts) {
+      for (var i = 0; i < pts.length; i++) svg.appendChild(seg(pts[i], pts[(i + 1) % pts.length], INK));
+    }
+    function labs(pts, names) {
+      pts.forEach(function (p, i) {
+        svg.appendChild(E("circle", { cx: p.x, cy: p.y, r: 5, fill: MARK, stroke: "#0f172a", "stroke-width": 1.5 }));
+        svg.appendChild(labelAt(p, names[i], i === 0 || i === 3 ? -14 : 8, i < 2 ? 16 : -8));
+      });
+    }
+
+    if (drawId === "paraSides" || drawId === "proveSides") {
+      poly([A, B, C, D]); outline([A, B, C, D]);
+      svg.appendChild(parallelSlash(A, B, 1)); svg.appendChild(parallelSlash(D, C, 1));
+      svg.appendChild(parallelSlash(A, D, 2)); svg.appendChild(parallelSlash(B, C, 2));
+      svg.appendChild(tickMark(A, B, 1)); svg.appendChild(tickMark(D, C, 1));
+      svg.appendChild(tickMark(A, D, 2)); svg.appendChild(tickMark(B, C, 2));
+      labs([A, B, C, D], ["A", "B", "C", "D"]);
+    } else if (drawId === "paraAng") {
+      poly([A, B, C, D]); outline([A, B, C, D]);
+      svg.appendChild(angleArc(A, B, D, 28, VIOLET)); svg.appendChild(angleArc(C, B, D, 28, VIOLET));
+      svg.appendChild(angleArc(B, A, C, 22, MARK, true)); svg.appendChild(angleArc(D, A, C, 22, MARK, true));
+      labs([A, B, C, D], ["A", "B", "C", "D"]);
+    } else if (drawId === "paraDiags" || drawId === "proveDiags") {
+      poly([A, B, C, D]); outline([A, B, C, D]);
+      var O = mid(A, C);
+      svg.appendChild(seg(A, C, ACCENT)); svg.appendChild(seg(B, D, ACCENT));
+      svg.appendChild(tickMark(A, O, 1, ACCENT)); svg.appendChild(tickMark(O, C, 1, ACCENT));
+      svg.appendChild(tickMark(B, O, 2, TICK)); svg.appendChild(tickMark(O, D, 2, TICK));
+      svg.appendChild(E("circle", { cx: O.x, cy: O.y, r: 4, fill: MARK }));
+      svg.appendChild(labelAt(O, "O", 8, -8, MARK));
+      labs([A, B, C, D], ["A", "B", "C", "D"]);
+    } else if (drawId === "prove2") {
+      poly([A, B, C, D]); outline([A, B, C, D]);
+      svg.appendChild(seg(A, B, GOOD, 3.5)); svg.appendChild(seg(D, C, GOOD, 3.5));
+      svg.appendChild(parallelSlash(A, B, 1)); svg.appendChild(parallelSlash(D, C, 1));
+      svg.appendChild(tickMark(A, B, 1)); svg.appendChild(tickMark(D, C, 1));
+      labs([A, B, C, D], ["A", "B", "C", "D"]);
+    } else if (drawId === "rhombus") {
+      var R = [{ x: 210, y: 50 }, { x: 340, y: 150 }, { x: 210, y: 250 }, { x: 80, y: 150 }];
+      poly(R); outline(R);
+      R.forEach(function (_, i) { svg.appendChild(tickMark(R[i], R[(i + 1) % 4], 1)); });
+      svg.appendChild(seg(R[0], R[2], ACCENT)); svg.appendChild(seg(R[1], R[3], ACCENT));
+      svg.appendChild(rightAngleMark(mid(R[0], R[2]), R[0], R[1], 10));
+      labs(R, ["A", "B", "C", "D"]);
+    } else if (drawId === "rectangle" || drawId === "square") {
+      var S = drawId === "square"
+        ? [{ x: 120, y: 60 }, { x: 300, y: 60 }, { x: 300, y: 240 }, { x: 120, y: 240 }]
+        : [{ x: 90, y: 80 }, { x: 330, y: 80 }, { x: 330, y: 220 }, { x: 90, y: 220 }];
+      poly(S); outline(S);
+      S.forEach(function (_, i) { svg.appendChild(rightAngleMark(S[i], S[(i + 3) % 4], S[(i + 1) % 4])); });
+      if (drawId === "square") S.forEach(function (_, i) { svg.appendChild(tickMark(S[i], S[(i + 1) % 4], 1)); });
+      labs(S, ["A", "B", "C", "D"]);
+    } else if (drawId === "trap") {
+      var T = [{ x: 130, y: 80 }, { x: 300, y: 80 }, { x: 360, y: 230 }, { x: 70, y: 230 }];
+      poly(T); outline(T);
+      svg.appendChild(parallelSlash(T[0], T[1], 1)); svg.appendChild(parallelSlash(T[3], T[2], 1));
+      labs(T, ["A", "B", "C", "D"]);
+    } else if (drawId === "midpt" || drawId === "convMid") {
+      var TA = { x: 60, y: 250 }, TB = { x: 360, y: 250 }, TC = { x: 210, y: 50 };
+      var TD = mid(TA, TB), TE = mid(TA, TC);
+      if (drawId === "convMid") TE = lerp(TA, TC, 0.5);
+      poly([TA, TB, TC]);
+      svg.appendChild(seg(TA, TB, INK, 3)); svg.appendChild(seg(TB, TC, INK)); svg.appendChild(seg(TC, TA, INK));
+      svg.appendChild(seg(TD, TE, GOOD, 3.5));
+      svg.appendChild(parallelSlash(TD, TE, 1));
+      svg.appendChild(parallelSlash(TA, TB, 1));
+      svg.appendChild(tickMark(TA, TD, 1)); svg.appendChild(tickMark(TD, TB, 1));
+      svg.appendChild(tickMark(TA, TE, 2)); svg.appendChild(tickMark(TE, TC, 2));
+      [["A", TA], ["B", TB], ["C", TC], ["D", TD], ["E", TE]].forEach(function (L) {
+        svg.appendChild(E("circle", { cx: L[1].x, cy: L[1].y, r: 5, fill: L[0] === "D" || L[0] === "E" ? GOOD : MARK, stroke: "#0f172a", "stroke-width": 1.5 }));
+        svg.appendChild(labelAt(L[1], L[0], 8, -8));
+      });
+    } else if (drawId === "intercept") {
+      [80, 150, 220].forEach(function (y) {
+        svg.appendChild(E("line", { x1: 40, y1: y, x2: 380, y2: y, stroke: GOOD, "stroke-width": 3 }));
+      });
+      svg.appendChild(seg({ x: 100, y: 40 }, { x: 140, y: 260 }, ACCENT, 2.5));
+      svg.appendChild(seg({ x: 300, y: 40 }, { x: 340, y: 260 }, VIOLET, 2.5));
+      var ys = [80, 150, 220];
+      var L = [{ x: 100, y: 40 }, { x: 140, y: 260 }];
+      var R = [{ x: 300, y: 40 }, { x: 340, y: 260 }];
+      ys.forEach(function (y, i) {
+        var p = hitY(L[0], L[1], y), q = hitY(R[0], R[1], y);
+        svg.appendChild(E("circle", { cx: p.x, cy: p.y, r: 4, fill: ACCENT }));
+        svg.appendChild(E("circle", { cx: q.x, cy: q.y, r: 4, fill: VIOLET }));
+        svg.appendChild(labelAt(p, "ABC"[i], -14, -4, ACCENT));
+        svg.appendChild(labelAt(q, "DEF"[i], 8, -4, VIOLET));
+      });
+      var pA = hitY(L[0], L[1], 80), pB = hitY(L[0], L[1], 150), pC = hitY(L[0], L[1], 220);
+      svg.appendChild(tickMark(pA, pB, 1, ACCENT)); svg.appendChild(tickMark(pB, pC, 1, ACCENT));
+    } else if (drawId === "alt" || drawId === "corr" || drawId === "int") {
+      svg.appendChild(E("line", { x1: 40, y1: 100, x2: 380, y2: 100, stroke: GOOD, "stroke-width": 3 }));
+      svg.appendChild(E("line", { x1: 40, y1: 220, x2: 380, y2: 220, stroke: GOOD, "stroke-width": 3 }));
+      svg.appendChild(seg({ x: 120, y: 40 }, { x: 300, y: 280 }, ACCENT, 2.5));
+      var hit1 = hitY({ x: 120, y: 40 }, { x: 300, y: 280 }, 100);
+      var hit2 = hitY({ x: 120, y: 40 }, { x: 300, y: 280 }, 220);
+      svg.appendChild(angleArc(hit1, { x: 380, y: 100 }, { x: 300, y: 280 }, 22, VIOLET));
+      svg.appendChild(angleArc(hit2, { x: 40, y: 220 }, { x: 120, y: 40 }, 22, VIOLET));
+    } else {
+      // SAS/ASA/SSS small triangles
+      var U = [{ x: 70, y: 220 }, { x: 180, y: 220 }, { x: 110, y: 80 }];
+      var V = [{ x: 240, y: 220 }, { x: 350, y: 220 }, { x: 300, y: 90 }];
+      poly(U); poly(V, "rgba(167,139,250,.12)");
+      outline(U); outline(V);
+      svg.appendChild(tickMark(U[0], U[1], 1)); svg.appendChild(tickMark(V[0], V[1], 1));
+      if (drawId !== "ASA") {
+        svg.appendChild(tickMark(U[1], U[2], 2)); svg.appendChild(tickMark(V[1], V[2], 2));
+      }
+      if (drawId === "SSS" || drawId === "SAS") {
+        svg.appendChild(tickMark(U[2], U[0], 3)); svg.appendChild(tickMark(V[2], V[0], 3));
+      }
+      if (drawId === "SAS" || drawId === "ASA") {
+        svg.appendChild(angleArc(U[0], U[1], U[2], 20, MARK));
+        svg.appendChild(angleArc(V[0], V[1], V[2], 20, MARK));
+      }
+    }
+  }
+
   function renderReasons() {
     makeButtons(document.getElementById("reason-cat-btns"), REASON_CATS, reasonCat, function (id) {
       reasonCat = id;
@@ -1225,19 +1152,14 @@
       renderReasons();
     });
     var grid = document.getElementById("reason-grid");
-    var detail = document.getElementById("reason-detail");
-    if (!grid) return;
+    var list = REASONS[reasonCat] || [];
     grid.innerHTML = "";
-    (REASONS[reasonCat] || []).forEach(function (r, i) {
+    list.forEach(function (r, i) {
       var b = document.createElement("button");
       b.type = "button";
       b.className = "reason-card" + (reasonActive === i ? " active" : "");
       b.innerHTML = '<span class="abbr"></span><span class="desc"></span>';
       b.querySelector(".abbr").textContent = r.abbr;
-      b.querySelector(".desc").textContent = r.desc.replace(/\\\(|\\\)|\\dfrac\{1\}\{2\}|\\angle|\\parallel|\\triangle/g, function (m) {
-        return m; // keep raw; we'll math-render detail
-      });
-      // plain desc without latex for card
       renderMixed(b.querySelector(".desc"), r.desc);
       b.addEventListener("click", function () {
         reasonActive = i;
@@ -1245,137 +1167,38 @@
       });
       grid.appendChild(b);
     });
-    if (reasonActive != null && REASONS[reasonCat][reasonActive]) {
-      var R = REASONS[reasonCat][reasonActive];
-      renderMixed(detail, "**" + R.abbr + "** — " + R.desc + (R.eg ? " Example: " + R.eg : ""));
-    } else {
-      renderMixed(detail, "Pick a reason card above.");
+
+    var svg = document.getElementById("reason-svg");
+    var explain = document.getElementById("reason-explain");
+    if (reasonActive == null || !list[reasonActive]) {
+      clr(svg);
+      svg.appendChild(labelAt({ x: 80, y: 150 }, "Pick a reason →", 0, 0, "#94a3b8"));
+      explain.innerHTML = "<p>Pick a reason card to see an explanation with a figure.</p>";
+      return;
     }
-  }
-
-  var REASON_QUIZ = [
-    {
-      q: "In //gram \\(ABCD\\), you write \\(AB = CD\\). Best reason?",
-      opts: ["[opp. sides of //gram]", "[mid-pt. thm.]", "[SAS]", "[property of trapezium]"],
-      ans: 0,
-    },
-    {
-      q: "\\(D\\), \\(E\\) mid-points of \\(AB\\), \\(AC\\). You conclude \\(DE \\parallel BC\\). Reason?",
-      opts: ["[intercept thm.]", "[mid-pt. thm.]", "[opp. ∠s of //gram]", "[ASA]"],
-      ans: 1,
-    },
-    {
-      q: "Three parallels cut equal segments on one transversal. You claim equal segments on another. Reason?",
-      opts: ["[corr. ∠s, // lines]", "[diags. of //gram]", "[intercept thm.]", "[SSS]"],
-      ans: 2,
-    },
-    {
-      q: "Given \\(AB = CD\\), \\(AD = BC\\). You conclude \\(ABCD\\) is a //gram. Reason?",
-      opts: ["[opp. sides equal]", "[opp. sides of //gram]", "[property of rhombus]", "[int. ∠s, // lines]"],
-      ans: 0,
-    },
-    {
-      q: "\\(AB \\parallel DC\\) with transversal \\(AC\\). \\(\\angle BAC = \\angle DCA\\). Reason?",
-      opts: ["[corr. ∠s, // lines]", "[alt. ∠s, // lines]", "[base ∠s, isos. △]", "[diags. of //gram]"],
-      ans: 1,
-    },
-  ];
-  var reasonQuizI = 0;
-  var reasonQuizLocked = false;
-
-  function renderReasonQuiz() {
-    var Q = REASON_QUIZ[reasonQuizI % REASON_QUIZ.length];
-    renderMixed(document.getElementById("reason-quiz-q"), Q.q);
-    var opts = document.getElementById("reason-quiz-opts");
-    var fb = document.getElementById("reason-quiz-fb");
-    reasonQuizLocked = false;
-    fb.className = "feedback";
-    fb.textContent = "";
-    opts.innerHTML = "";
-    Q.opts.forEach(function (text, i) {
-      var b = document.createElement("button");
-      b.type = "button";
-      b.className = "quiz-opt";
-      b.textContent = text;
-      b.addEventListener("click", function () {
-        if (reasonQuizLocked) return;
-        reasonQuizLocked = true;
-        if (i === Q.ans) {
-          b.classList.add("ok");
-          fb.className = "feedback ok";
-          renderMixed(fb, "Correct!");
-        } else {
-          b.classList.add("bad");
-          opts.children[Q.ans].classList.add("ok");
-          fb.className = "feedback bad";
-          renderMixed(fb, "The standard reason is **" + Q.opts[Q.ans] + "**.");
-        }
-      });
-      opts.appendChild(b);
+    var R = list[reasonActive];
+    drawReasonFigure(svg, R.draw);
+    var ex = REASON_EXPLAIN[R.id] || { steps: [R.desc] };
+    explain.innerHTML = "<p><strong></strong></p><ol></ol>";
+    renderMixed(explain.querySelector("strong"), R.abbr);
+    // put abbr in strong via text
+    explain.querySelector("strong").textContent = R.abbr;
+    var ol = explain.querySelector("ol");
+    ex.steps.forEach(function (s) {
+      var li = document.createElement("li");
+      ol.appendChild(li);
+      renderMixed(li, s);
     });
   }
 
   /* ── init ────────────────────────────────────────────────── */
   function init() {
-    setActiveLab("para");
-
-    function setParaPreset(id) {
-      paraVerts = PARA_PRESETS[id].map(function (p) { return { x: p.x, y: p.y }; });
-      makeButtons(document.getElementById("para-preset-btns"), [
-        { id: "standard", label: "Standard" },
-        { id: "skewed", label: "Skewed" },
-        { id: "tall", label: "Tall" },
-      ], id, setParaPreset);
-      renderPara();
-    }
-    setParaPreset("standard");
-
-    renderParaProps();
-    renderPara();
-    bindParaDrag();
-
-    document.getElementById("proof-prev").addEventListener("click", function () {
-      if (proofStep > 0) { proofStep--; renderProof(); }
-    });
-    document.getElementById("proof-next").addEventListener("click", function () {
-      if (proofStep < PROOF_STEPS.length - 1) { proofStep++; renderProof(); }
-    });
-    renderProof();
-    renderProve();
-
-    renderFamily();
-    renderFamilyQuiz();
-    document.getElementById("family-quiz-next").addEventListener("click", function () {
-      familyQuizI++;
-      renderFamilyQuiz();
-    });
-
-    renderMid();
-    bindMidDrag();
-    document.getElementById("mid-check-btn").addEventListener("click", function () {
-      var v = String(document.getElementById("mid-check-in").value).trim();
-      var fb = document.getElementById("mid-check-fb");
-      var n = parseFloat(v.replace(/[^\d.]/g, ""));
-      if (n === 6) {
-        fb.className = "feedback ok";
-        renderMixed(fb, "Yes — \\(DE = \\dfrac{1}{2} \\times 12 = 6\\) by **[mid-pt. thm.]**.");
-      } else {
-        fb.className = "feedback bad";
-        renderMixed(fb, "Use mid-pt. thm.: \\(DE = \\dfrac{1}{2}BC = \\dfrac{1}{2} \\times 12 = 6\\).");
-      }
-    });
-
-    renderInt();
-    bindIntDrag();
-    renderProp();
-    bindPropDrag();
-
+    setActiveLab("detect");
+    bindDetect();
+    bindThm();
+    renderDetect();
+    renderThm();
     renderReasons();
-    renderReasonQuiz();
-    document.getElementById("reason-quiz-next").addEventListener("click", function () {
-      reasonQuizI++;
-      renderReasonQuiz();
-    });
   }
 
   if (document.readyState === "loading") document.addEventListener("DOMContentLoaded", init);
