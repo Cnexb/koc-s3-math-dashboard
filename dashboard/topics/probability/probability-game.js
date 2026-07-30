@@ -1,415 +1,407 @@
-/* Probability — Builder Game.
- *
- * Two challenge modes share one tab (toggled by the .subnav chips):
- *
- *   A) Tree Challenge  — a random "draw 2 balls" scenario is shown with a blank
- *      probability tree. The learner DRAGS fraction chips onto each branch slot
- *      (the with/without-replacement traps are baked into the distractor chips),
- *      checks the branches, then picks the final answer from multiple choice.
- *
- *   B) Bag Designer    — the learner is given a TARGET like P(red) = 3/8 and must
- *      add / remove coloured balls until the chance of red matches. A live spinner
- *      and a "Spin 200×" experiment reinforce theoretical vs experimental probability.
- *
- * Colours / fonts match the rest of the probability dashboard. Maths renders via KaTeX.
+/* Probability — three mini-games:
+ *   1) Apple Catch Quest  — cartoon catcher; build a bag to match P(colour)
+ *   2) Expected Value Challenge — pick 1 of 3 options per round (3 rounds)
+ *   3) Dice Clear — place 8 chips on 2–12, roll dice, clear the board
  */
 (function () {
   "use strict";
 
   const NS = "http://www.w3.org/2000/svg";
   const C = { ink: "#e5e7eb", dim: "#94a3b8", fav: "#FFD54F", tot: "#66BB6A", a: "#4FC3F7", red: "#f06292", line: "#28365c" };
-  const BALL = { R: "#ef4444", G: "#22c55e", B: "#3b82f6" };
-  const BALL_NAME = { R: "red", G: "green", B: "blue" };
+  const APPLE_NAME = { R: "red", G: "green", Y: "yellow" };
+  const REC = { apple: "prob-game-apple-best", bet: "prob-game-bet-best", dice: "prob-game-dice-best" };
 
-  /* ── tiny helpers ── */
   function E(tag, attrs) { const e = document.createElementNS(NS, tag); for (const k in attrs) e.setAttribute(k, attrs[k]); return e; }
   function clear(n) { while (n && n.firstChild) n.removeChild(n.firstChild); }
   function km(el, latex) { try { window.katex.render(latex, el, { throwOnError: false, displayMode: false }); } catch (e) { el.textContent = latex; } }
-  // iPad / phone: WebKit (bug 23113) paints foreignObject content without the
-  // svg's viewBox transform, so the dropped fractions drift to the top-left.
-  // Workaround: position:fixed re-anchors the content to the foreignObject box,
-  // with percentage sizes so flex centring still works. Desktop is untouched.
-  function isTouchUI() {
-    const de = document.documentElement;
-    return de.classList.contains("tablet-touch") || de.classList.contains("phone-compact") ||
-      window.innerWidth <= 767 ||
-      (window.matchMedia && window.matchMedia("(pointer: coarse)").matches);
-  }
-  function isAppleWebKit() {
-    const ua = navigator.userAgent;
-    if (/iPad|iPhone|iPod/.test(ua)) return true;
-    if (navigator.platform === "MacIntel" && navigator.maxTouchPoints > 1) return true; // iPadOS desktop UA
-    return /AppleWebKit/.test(ua) && !/Chrome|CriOS|Edg|Android/.test(ua);
-  }
-  function anchorFO(fo, div, w, h) {
-    if (!isTouchUI() || !isAppleWebKit()) return;
-    // position:fixed re-anchors to the foreignObject box (WebKit bug 23113).
-    // Pixel width/height are ignored (shrink-wrap), so centre with left/top 50%
-    // + translate(-50%,-50%). Rewrite cssText in one shot — piecemeal style
-    // updates are unreliable inside a foreignObject on WebKit.
-    const cls = div.className;
-    const color = /\bfilled\b/.test(cls) ? "#0b1324"
-      : (div.style.color || window.getComputedStyle(div).color || "#e8eefc");
-    const fs = parseFloat(div.style.fontSize) || parseFloat(window.getComputedStyle(div).fontSize) || 14;
-    div.dataset.basefs = String(fs);
-    const svg = fo.ownerSVGElement;
-    const paint = (s) => {
-      div.style.cssText = "position:fixed;left:50%;top:55%;transform:translate(-50%,-50%);" +
-        "white-space:nowrap;display:flex;align-items:center;justify-content:center;" +
-        "background:transparent;border:none;color:" + color + ";font-size:" + (fs * s) + "px;line-height:1;";
-      div.className = cls; // keep .pg-slot / .filled / .empty for ::after and katex colour
-      if (div.dataset.latex) km(div, div.dataset.latex);
-    };
-    const apply = () => {
-      const vb = svg && svg.viewBox && svg.viewBox.baseVal;
-      const cw = svg ? svg.getBoundingClientRect().width : 0;
-      if (!vb || !vb.width || !cw) { paint(1); return false; }
-      paint(cw / vb.width);
-      return true;
-    };
-    if (!apply() && typeof ResizeObserver !== "undefined" && svg) {
-      const ro = new ResizeObserver(() => { if (apply()) ro.disconnect(); });
-      ro.observe(svg);
-    }
-  }
   function gcd(a, b) { a = Math.abs(a); b = Math.abs(b); while (b) { const t = a % b; a = b; b = t; } return a || 1; }
   function fr(n, d) { if (d < 0) { n = -n; d = -d; } const g = gcd(n, d) || 1; return { n: n / g, d: d / g }; }
-  function fmul(a, b) { return fr(a.n * b.n, a.d * b.d); }
-  function fadd(a, b) { return fr(a.n * b.d + b.n * a.d, a.d * b.d); }
-  function fsub(a, b) { return fr(a.n * b.d - b.n * a.d, a.d * b.d); }
   const feq = (a, b) => a.n * b.d === b.n * a.d;
-  const fnum = (f) => f.n / f.d;
-  const fracTex = (f) => (f.n === 0 ? "0" : f.d === 1 ? String(f.n) : `\\frac{${f.n}}{${f.d}}`);
-  const fracKey = (f) => { const r = fr(f.n, f.d); return r.n + "/" + r.d; };
-  function shuffle(arr) { for (let i = arr.length - 1; i > 0; i--) { const j = Math.floor(Math.random() * (i + 1)); [arr[i], arr[j]] = [arr[j], arr[i]]; } return arr; }
+  const fracTex = (f) => (f.n === 0 ? "0" : f.d === 1 ? String(f.n) : "\\frac{" + f.n + "}{" + f.d + "}");
   const ri = (lo, hi) => lo + Math.floor(Math.random() * (hi - lo + 1));
+  const fmtNum = (x) => { const r = Math.round(x * 100) / 100; return Number.isInteger(r) ? String(r) : String(r); };
+  const fmtTime = (ms) => { const s = Math.floor(ms / 1000); return Math.floor(s / 60) + ":" + String(s % 60).padStart(2, "0"); };
+  const dash = (v) => (v == null ? "—" : v);
 
-  /* shared ghost-drag (pointer based, like the area/volume builder) */
-  function ghostDrag(label, e, onMove, onDrop) {
-    const ghost = document.createElement("div");
-    ghost.className = "drag-ghost";
-    const span = document.createElement("span"); km(span, label); ghost.appendChild(span);
-    const sx = e.clientX, sy = e.clientY; let moved = false;
-    ghost.style.left = sx + "px"; ghost.style.top = sy + "px";
-    document.body.appendChild(ghost);
-    function mv(ev) {
-      if (Math.abs(ev.clientX - sx) > 4 || Math.abs(ev.clientY - sy) > 4) moved = true;
-      ghost.style.left = ev.clientX + "px"; ghost.style.top = ev.clientY + "px";
-      if (onMove) onMove(ev, moved);
-    }
-    function cleanup() {
-      window.removeEventListener("pointermove", mv);
-      window.removeEventListener("pointerup", up);
-      window.removeEventListener("pointercancel", cn);
-      ghost.remove();
-    }
-    function up(ev) { cleanup(); onDrop(ev, moved); }
-    // iOS Safari fires pointercancel when it steals the touch for scrolling;
-    // without this the ghost stays stuck on screen and the drop never lands.
-    function cn(ev) { cleanup(); onDrop(ev, true); }
-    window.addEventListener("pointermove", mv); window.addEventListener("pointerup", up);
-    window.addEventListener("pointercancel", cn);
+  const memRec = {};
+
+  function loadRec(key) { return memRec[REC[key]] ?? null; }
+  function saveRec(key, val) { memRec[REC[key]] = val; }
+
+  /* Best record: commit previous play's pending result when NEXT play starts */
+  const pendingBest = { apple: null, bet: null, dice: null };
+  const displayBest = { apple: null, bet: null, dice: null };
+
+  function isBetter(game, val, stored) {
+    if (stored == null) return true;
+    if (game === "bet") return val > stored;
+    if (game === "apple") return val < stored;
+    return val < stored; /* dice */
   }
-  function slotUnder(ev) { const el = document.elementFromPoint(ev.clientX, ev.clientY); return el && el.closest ? el.closest(".pg-slot") : null; }
 
-  /* ═══════════════════════════ MODE A: Tree Challenge ═══════════════════════════ */
-  const TG = { mounted: false, score: 0, streak: 0, sel: null };
-
-  // branch order: 0=P(R)  1=P(O)  2=P(R|R)  3=P(O|R)  4=P(R|O)  5=P(O|O)
-  function expectedFor(a, b, total, replace) {
-    if (replace) return [
-      { n: a, d: total }, { n: b, d: total },
-      { n: a, d: total }, { n: b, d: total }, { n: a, d: total }, { n: b, d: total },
-    ];
-    return [
-      { n: a, d: total }, { n: b, d: total },
-      { n: a - 1, d: total - 1 }, { n: b, d: total - 1 }, { n: a, d: total - 1 }, { n: b - 1, d: total - 1 },
-    ];
+  function commitPending(game) {
+    if (pendingBest[game] == null) return;
+    const stored = loadRec(REC[game]);
+    if (isBetter(game, pendingBest[game], stored)) saveRec(REC[game], pendingBest[game]);
+    pendingBest[game] = null;
   }
-  const EVENTS = [
-    { id: "RR", label: "both balls are red", legs: [[0, 2]], op: "mul" },
-    { id: "OO", label: "both balls are OTHER", legs: [[1, 5]], op: "mul" },
-    { id: "RO", label: "red first, then OTHER", legs: [[0, 3]], op: "mul" },
-    { id: "OR", label: "OTHER first, then red", legs: [[1, 4]], op: "mul" },
-    { id: "DIFF", label: "the two balls are different colours", legs: [[0, 3], [1, 4]], op: "add" },
-    { id: "ALR", label: "at least one ball is red", legs: [[1, 5]], op: "complement" },
+
+  function beginPlay(game) {
+    commitPending(game);
+    displayBest[game] = loadRec(REC[game]);
+  }
+
+  function queueBest(game, result) {
+    const stored = loadRec(REC[game]);
+    if (isBetter(game, result, stored)) pendingBest[game] = result;
+  }
+
+  function fmtBestDisplay(game) {
+    const v = displayBest[game];
+    if (v == null) return "—";
+    if (game === "apple") return fmtTime(v);
+    if (game === "bet") return "$" + v;
+    return String(v) + " rounds";
+  }
+
+  /* ═══════════════════════ APPLE CATCH QUEST ═══════════════════════ */
+  const ROUND_POOL = [
+    [{ col: "R", t: fr(1, 2) }, { col: "G", t: fr(1, 3) }, { col: "Y", t: fr(1, 4) }],
+    [{ col: "R", t: fr(1, 4) }, { col: "G", t: fr(2, 5) }, { col: "Y", t: fr(3, 8) }],
+    [{ col: "R", t: fr(3, 8) }, { col: "G", t: fr(2, 7) }, { col: "Y", t: fr(1, 6) }],
   ];
-  function eventProb(exp, ev) {
-    const rv = (i) => fr(exp[i].n, exp[i].d);
-    const leaf = (pair) => fmul(rv(pair[0]), rv(pair[1]));
-    if (ev.op === "mul") return leaf(ev.legs[0]);
-    if (ev.op === "add") return ev.legs.reduce((acc, p) => fadd(acc, leaf(p)), fr(0, 1));
-    return fsub(fr(1, 1), leaf(ev.legs[0]));   // complement
+  const HUB_NEAR = 15;
+  const BIN_NEAR = 81;
+  const MOVE_LO = 5;
+  const MOVE_HI = 95;
+  let ag = null, agLoop = null, agPaused = false;
+
+  function acMetrics() {
+    const h = els.acStage.clientHeight || 400;
+    const w = els.acStage.clientWidth || 640;
+    const groundLine = h * 0.91 + 10;
+    const playerH = 100;
+    const footY = groundLine;
+    const canopyBottom = h * 0.30 - 10;
+    const spawnXMin = w * 0.22;
+    const spawnXMax = w * 0.78;
+    const basketTop = footY - playerH + 48;
+    const basketBottom = footY - playerH + 72;
+    return { h, w, groundLine, footY, canopyBottom, spawnXMin, spawnXMax,
+      basketTop, basketBottom, basketHalfW: 26, moveMin: w * (MOVE_LO / 100), moveMax: w * (MOVE_HI / 100) };
   }
 
-  let tg = null;
-  function newTree() {
-    const a = ri(2, 5), b = ri(2, 5), total = a + b;
-    const replace = Math.random() < 0.5;
-    const otherCol = Math.random() < 0.5 ? "G" : "B";
-    const exp = expectedFor(a, b, total, replace);
-    const altExp = expectedFor(a, b, total, !replace);
-    const ev = EVENTS[ri(0, EVENTS.length - 1)];
-
-    // chip palette: the correct branch fractions + the opposite-assumption traps
-    const map = {};
-    const add = (f) => { if (f.d <= 0 || f.n < 0) return; const k = f.n + "/" + f.d; if (!map[k]) map[k] = f; };
-    exp.forEach(add); altExp.forEach(add);
-    add({ n: a, d: total - 1 }); add({ n: b, d: total - 1 });
-    const chips = shuffle(Object.keys(map).map((k) => map[k]));
-
-    tg = { a, b, total, replace, otherCol, exp, ev, chips, assigned: [null, null, null, null, null, null], checked: false, solved: false };
-    TG.sel = null;
-    renderTreeScenario();
-    renderTree();
-    renderChips();
-    els.tgFinal.classList.add("hidden");
-    els.tgFeedback.textContent = "";
-    els.tgFeedback.className = "pg-feedback";
+  function clearApples() {
+    if (!ag) return;
+    ag.apples.forEach((a) => a.el.remove());
+    ag.apples = [];
   }
 
-  function renderTreeScenario() {
-    const other = BALL_NAME[tg.otherCol];
-    const how = tg.replace ? "<b>with replacement</b> (the first ball is put back before the second draw)"
-                           : "<b>without replacement</b> (the first ball is kept out)";
-    const evl = tg.ev.label.replace("OTHER", other);
-    els.tgScenario.innerHTML = "A bag holds <b>" + tg.a + " red</b> and <b>" + tg.b + " " + other +
-      "</b> balls. Two balls are drawn one after the other, " + how +
-      ". Complete the tree, then find the probability that <b>" + evl + "</b>.";
+  function newApplePlay() {
+    beginPlay("apple");
+    const rounds = ROUND_POOL.map((pool) => pool[ri(0, pool.length - 1)]);
+    ag = {
+      round: 1, maxRounds: 3, rounds, done: false, paused: false,
+      counts: { R: 0, G: 0, Y: 0 },
+      playerX: 50, apples: [], lastSpawn: 0,
+      playStart: performance.now(), roundStart: performance.now(),
+      totalMs: 0, running: false,
+    };
+    els.acDone.classList.add("hidden");
+    if (els.acGameUi) els.acGameUi.classList.remove("won");
+    els.acHome.classList.remove("hidden");
+    els.acStart.textContent = "Start game";
+    els.acPause.classList.add("hidden");
+    els.acFeedback.textContent = "";
+    els.acFeedback.className = "pg-feedback";
+    clearApples();
+    updateAppleHud();
+    els.acBest.textContent = fmtBestDisplay("apple");
   }
 
-  // node + slot layout in the 660×360 viewBox
-  const ROOT = [52, 180], N1 = { R: [300, 96], O: [300, 264] };
-  const N2 = { RR: [566, 46], RO: [566, 146], OR: [566, 214], OO: [566, 314] };
-  const SLOTS = [
-    { i: 0, p: [176, 138] }, { i: 1, p: [176, 222] },
-    { i: 2, p: [433, 71] }, { i: 3, p: [433, 121] },
-    { i: 4, p: [433, 239] }, { i: 5, p: [433, 289] },
-  ];
-  function node(svg, xy, col, letter) {
-    svg.appendChild(E("circle", { cx: xy[0], cy: xy[1], r: 16, fill: BALL[col], "fill-opacity": 0.9, stroke: "#0b1324", "stroke-width": 2 }));
-    const t = E("text", { x: xy[0], y: xy[1] + 1, "text-anchor": "middle", "dominant-baseline": "middle",
-      "font-size": 14, "font-weight": 700, fill: "#0b1324", "font-family": "Hanken Grotesk, sans-serif" });
-    t.textContent = letter; svg.appendChild(t);
+  function startAppleRound() {
+    if (!ag) return;
+    els.acHome.classList.add("hidden");
+    ag.running = true;
+    ag.paused = false;
+    agPaused = false;
+    ag.playStart = performance.now();
+    ag.roundStart = performance.now();
+    clearApples();
+    startAppleLoop();
+    els.acStage.focus();
   }
-  function leafLabel(svg, xy, txt, col) {
-    svg.appendChild(E("circle", { cx: xy[0], cy: xy[1], r: 7, fill: BALL[col], stroke: "#0b1324", "stroke-width": 1.5 }));
-    const t = E("text", { x: xy[0] + 14, y: xy[1] + 1, "text-anchor": "start", "dominant-baseline": "middle",
-      "font-size": 12.5, fill: C.dim, "font-family": "JetBrains Mono, monospace" });
-    t.textContent = txt; svg.appendChild(t);
+
+  function curTarget() { return ag.rounds[ag.round - 1]; }
+
+  function updateAppleHud() {
+    if (!ag) return;
+    const t = curTarget();
+    els.acRound.textContent = ag.round;
+    els.acBest.textContent = fmtBestDisplay("apple");
+    clear(els.acMission);
+    els.acMission.appendChild(document.createTextNode("Catch apples! Make "));
+    const tgt = document.createElement("span");
+    tgt.className = "ac-target";
+    els.acMission.appendChild(tgt);
+    km(tgt, "P(\\text{" + APPLE_NAME[t.col] + "}) = " + fracTex(t.t));
+    els.acMission.appendChild(document.createTextNode(", then deliver at the house."));
+    els.acCr.textContent = ag.counts.R;
+    els.acCg.textContent = ag.counts.G;
+    els.acCy.textContent = ag.counts.Y;
+    const total = ag.counts.R + ag.counts.G + ag.counts.Y;
+    clear(els.acProb);
+    if (total === 0) km(els.acProb, "P(\\text{" + APPLE_NAME[t.col] + "}) = \\text{--}");
+    else {
+      const p = fr(ag.counts[t.col], total);
+      km(els.acProb, "P(\\text{" + APPLE_NAME[t.col] + "}) = \\frac{" + ag.counts[t.col] + "}{" + total + "} = " + fracTex(p));
+    }
   }
-  function branch(svg, from, to) {
-    svg.appendChild(E("line", { x1: from[0], y1: from[1], x2: to[0], y2: to[1], stroke: C.line, "stroke-width": 2 }));
+
+  function spawnApple() {
+    const m = acMetrics();
+    const cols = ["R", "G", "Y"];
+    const col = cols[ri(0, 2)];
+    const xPx = m.spawnXMin + Math.random() * (m.spawnXMax - m.spawnXMin);
+    const el = document.createElement("div");
+    el.className = "ac-apple " + col;
+    el.style.left = xPx + "px";
+    el.style.top = (m.canopyBottom - 8) + "px";
+    els.acApples.appendChild(el);
+    ag.apples.push({ col, x: xPx, y: m.canopyBottom - 8, el, speed: 0.45 + Math.random() * 0.3 });
   }
-  // Draw a branch as two segments that stop at a slot box, so the line can never
-  // show "through" the slot (WebKit foreignObject compositing punches a hole
-  // through sibling SVG fills back to earlier strokes).
-  function branchViaSlot(svg, from, to, slot) {
-    const sx = slot.p[0];
-    const sy = slot.p[1];
-    const hw = 40; // half-gap: wider than the 30px slot half-width so stubs never peek under the FO
-    const dx = to[0] - from[0];
-    const dy = to[1] - from[1];
-    const len = Math.hypot(dx, dy) || 1;
-    const ux = dx / len;
-    const uy = dy / len;
-    const tMid = (sx - from[0]) * ux + (sy - from[1]) * uy;
-    const half = hw / Math.max(Math.abs(ux), 0.25);
-    const t0 = Math.max(0, tMid - half);
-    const t1 = Math.min(len, tMid + half);
-    svg.appendChild(E("line", { x1: from[0], y1: from[1], x2: from[0] + ux * t0, y2: from[1] + uy * t0, stroke: C.line, "stroke-width": 2 }));
-    svg.appendChild(E("line", { x1: from[0] + ux * t1, y1: from[1] + uy * t1, x2: to[0], y2: to[1], stroke: C.line, "stroke-width": 2 }));
-  }
-  function renderTree() {
-    const svg = els.tgTree; clear(svg);
-    const O = tg.otherCol, oL = O;   // letter for other colour = its key (G/B)
-    // slot 0 on ROOT→N1.R, 1 on ROOT→N1.O, 2..5 on the four second-level branches
-    branchViaSlot(svg, ROOT, N1.R, SLOTS[0]);
-    branchViaSlot(svg, ROOT, N1.O, SLOTS[1]);
-    branchViaSlot(svg, N1.R, N2.RR, SLOTS[2]);
-    branchViaSlot(svg, N1.R, N2.RO, SLOTS[3]);
-    branchViaSlot(svg, N1.O, N2.OR, SLOTS[4]);
-    branchViaSlot(svg, N1.O, N2.OO, SLOTS[5]);
-    svg.appendChild(E("circle", { cx: ROOT[0], cy: ROOT[1], r: 7, fill: C.dim }));
-    node(svg, N1.R, "R", "R"); node(svg, N1.O, O, oL);
-    leafLabel(svg, N2.RR, "R , R", "R"); leafLabel(svg, N2.RO, "R , " + oL, O);
-    leafLabel(svg, N2.OR, oL + " , R", "R"); leafLabel(svg, N2.OO, oL + " , " + oL, O);
-    // slots: opaque SVG rect behind a transparent foreignObject overlay
-    // (WebKit often fails to paint CSS backgrounds inside foreignObject)
-    SLOTS.forEach((s) => {
-      const w = 60, h = 30;
-      const v = tg.assigned[s.i];
-      let fill = "#0f172a", stroke = C.line, dash = "4 3";
-      if (v) { fill = "#b3e5fc"; stroke = C.a; dash = ""; }
-      if (tg.checked && v) {
-        const ok = feq(v, fr(tg.exp[s.i].n, tg.exp[s.i].d));
-        fill = ok ? "#c8e6c9" : "#f8bbd0";
-        stroke = ok ? C.tot : C.red;
-        dash = "";
+
+  function appleLoop(now) {
+    if (!ag || !ag.running || ag.paused) return;
+    const m = acMetrics();
+    els.acTime.textContent = fmtTime(now - ag.playStart);
+    if (now - ag.lastSpawn > 750 + Math.random() * 450) { spawnApple(); ag.lastSpawn = now; }
+
+    const basketX = (ag.playerX / 100) * m.w;
+
+    ag.apples = ag.apples.filter((a) => {
+      a.y += a.speed;
+      a.el.style.top = a.y + "px";
+      const inBasketY = a.y >= m.basketTop && a.y <= m.basketBottom;
+      const inBasketX = Math.abs(a.x - basketX) < m.basketHalfW;
+      if (inBasketY && inBasketX) {
+        ag.counts[a.col]++;
+        a.el.remove();
+        updateAppleHud();
+        return false;
       }
-      // page-coloured eraser first: WebKit foreignObject can punch a hole through
-      // sibling fills back to earlier strokes; a cream rect under the blue one
-      // means any punch-through shows the card colour, not the branch line.
-      svg.appendChild(E("rect", {
-        x: s.p[0] - w / 2 - 1, y: s.p[1] - h / 2 - 1, width: w + 2, height: h + 2, rx: 10,
-        fill: "#fdfbf7",
-      }));
-      const rect = E("rect", {
-        x: s.p[0] - w / 2, y: s.p[1] - h / 2, width: w, height: h, rx: 9,
-        fill, stroke, "stroke-width": 1.5,
-      });
-      if (dash) rect.setAttribute("stroke-dasharray", dash);
-      svg.appendChild(rect);
-
-      const fo = E("foreignObject", { x: s.p[0] - w / 2, y: s.p[1] - h / 2, width: w, height: h });
-      const div = document.createElement("div");
-      div.className = "pg-slot";
-      div.dataset.idx = s.i;
-      if (v) { div.dataset.latex = fracTex(v); div.classList.add("filled"); }
-      else { div.classList.add("empty"); }
-      if (tg.checked && v) div.classList.add(feq(v, fr(tg.exp[s.i].n, tg.exp[s.i].d)) ? "ok" : "bad");
-      div.addEventListener("click", () => onSlotClick(s.i, div));
-      fo.appendChild(div); svg.appendChild(fo);
-      if (isTouchUI() && isAppleWebKit()) {
-        anchorFO(fo, div, w, h); // styles + KaTeX applied inside
-      } else {
-        if (v) km(div, fracTex(v));
-        anchorFO(fo, div, w, h);
-      }
+      if (a.y > m.footY + 10) { a.el.remove(); return false; }
+      return true;
     });
-  }
-  function onSlotClick(idx, div) {
-    if (TG.sel) { tg.assigned[idx] = TG.sel.val; clearSel(); afterEdit(); }
-    else if (tg.assigned[idx]) { tg.assigned[idx] = null; afterEdit(); }
-  }
-  function afterEdit() { tg.checked = false; tg.solved = false; els.tgFinal.classList.add("hidden"); els.tgFeedback.textContent = ""; els.tgFeedback.className = "pg-feedback"; renderTree(); }
-  function clearSel() { if (TG.sel) TG.sel.el.classList.remove("used"); TG.sel = null; }
 
-  function renderChips() {
-    const box = els.tgChips; clear(box);
-    tg.chips.forEach((f) => {
-      const chip = document.createElement("button");
-      chip.className = "pg-chip"; km(chip, fracTex(f));
-      chip.addEventListener("pointerdown", (e) => {
+    els.acPlayer.style.left = ag.playerX + "%";
+    agLoop = requestAnimationFrame(appleLoop);
+  }
+
+  function startAppleLoop() {
+    if (!ag) return;
+    if (agLoop) cancelAnimationFrame(agLoop);
+    ag.lastSpawn = performance.now();
+    agLoop = requestAnimationFrame(appleLoop);
+  }
+
+  function stopAppleLoop() {
+    if (!ag) return;
+    ag.running = false;
+    if (agLoop) cancelAnimationFrame(agLoop);
+    agLoop = null;
+    clearApples();
+  }
+
+  function nearHub() { return ag && ag.playerX <= HUB_NEAR; }
+  function nearBin() { return ag && ag.playerX >= BIN_NEAR; }
+
+  function trySubmit() {
+    if (nearHub()) submitBag();
+    else {
+      els.acFeedback.textContent = "Walk closer to the house!";
+      els.acFeedback.className = "pg-feedback bad";
+    }
+  }
+
+  function tryEmpty() {
+    if (nearBin()) emptyBag();
+    else {
+      els.acFeedback.textContent = "Walk closer to the bin!";
+      els.acFeedback.className = "pg-feedback bad";
+    }
+  }
+
+  function emptyBag() {
+    ag.counts = { R: 0, G: 0, Y: 0 };
+    els.acFeedback.textContent = "Bag emptied — keep catching!";
+    els.acFeedback.className = "pg-feedback";
+    updateAppleHud();
+  }
+
+  function submitBag() {
+    const total = ag.counts.R + ag.counts.G + ag.counts.Y;
+    const t = curTarget();
+    if (total === 0) {
+      els.acFeedback.textContent = "Catch some apples first!";
+      els.acFeedback.className = "pg-feedback bad";
+      return;
+    }
+    const p = fr(ag.counts[t.col], total);
+    if (!feq(p, t.t)) {
+      els.acFeedback.textContent = "Not quite — P(" + APPLE_NAME[t.col] + ") is " + p.n + "/" + p.d + ", need " + t.t.n + "/" + t.t.d + ".";
+      els.acFeedback.className = "pg-feedback bad";
+      return;
+    }
+    ag.totalMs += performance.now() - ag.roundStart;
+    clearApples();
+    if (ag.round >= ag.maxRounds) finishApplePlay();
+    else {
+      ag.round++;
+      ag.counts = { R: 0, G: 0, Y: 0 };
+      ag.roundStart = performance.now();
+      els.acFeedback.textContent = "Round " + (ag.round - 1) + " done! Next target…";
+      els.acFeedback.className = "pg-feedback ok";
+      updateAppleHud();
+    }
+  }
+
+  function finishApplePlay() {
+    stopAppleLoop();
+    ag.done = true;
+    const totalMs = ag.totalMs + (performance.now() - ag.roundStart);
+    queueBest("apple", totalMs);
+    els.acDoneMsg.innerHTML = "Total time: <b>" + fmtTime(totalMs) + "</b><br>Best record: <b>" + fmtBestDisplay("apple") + "</b>";
+    if (els.acGameUi) els.acGameUi.classList.add("won");
+    els.acDone.classList.remove("hidden");
+  }
+
+  function togglePause() {
+    if (!ag || ag.done || els.acHome && !els.acHome.classList.contains("hidden")) return;
+    ag.paused = !ag.paused;
+    agPaused = ag.paused;
+    if (ag.paused) {
+      els.acPause.classList.remove("hidden");
+      els.acPauseBtn.textContent = "▶ Resume";
+    } else {
+      els.acPause.classList.add("hidden");
+      els.acPauseBtn.textContent = "⏸ Pause";
+      ag.lastSpawn = performance.now();
+      startAppleLoop();
+    }
+  }
+
+  function onStageClick(e) {
+    if (!ag || ag.done || ag.paused || !els.acHome.classList.contains("hidden")) return;
+    const rect = els.acStage.getBoundingClientRect();
+    const x = e.clientX - rect.left;
+    const mid = rect.width / 2;
+    const STEP = 3;
+    if (x < mid) ag.playerX = Math.max(MOVE_LO, ag.playerX - STEP);
+    else ag.playerX = Math.min(MOVE_HI, ag.playerX + STEP);
+  }
+
+  function bindApple() {
+    window.addEventListener("keydown", (e) => {
+      if (!ag || ag.done || els.gameApple.style.display === "none") return;
+      if (els.acHome && !els.acHome.classList.contains("hidden")) return;
+      if (e.key === "ArrowLeft" || e.key === "a" || e.key === "A") { ag.playerX = Math.max(MOVE_LO, ag.playerX - 3); e.preventDefault(); }
+      if (e.key === "ArrowRight" || e.key === "d" || e.key === "D") { ag.playerX = Math.min(MOVE_HI, ag.playerX + 3); e.preventDefault(); }
+      if (e.key === " " || e.key === "Spacebar") {
         e.preventDefault();
-        chip.classList.add("dragging");
-        ghostDrag(fracTex(f), e,
-          (ev) => {
-            els.tgTree.querySelectorAll(".pg-slot").forEach((s) => s.classList.remove("hover"));
-            const slot = slotUnder(ev); if (slot) slot.classList.add("hover");
-          },
-          (ev, moved) => {
-            chip.classList.remove("dragging");
-            els.tgTree.querySelectorAll(".pg-slot").forEach((s) => s.classList.remove("hover"));
-            if (moved) { const slot = slotUnder(ev); if (slot) { tg.assigned[+slot.dataset.idx] = f; afterEdit(); } }
-            else { // click = pick up / put down
-              if (TG.sel && TG.sel.el === chip) clearSel();
-              else { clearSel(); TG.sel = { val: f, el: chip }; chip.classList.add("used"); }
-            }
-          });
-      });
-      box.appendChild(chip);
+        if (nearHub()) submitBag();
+        else if (nearBin()) emptyBag();
+      }
     });
+    els.acStage.addEventListener("click", onStageClick);
+    els.acHub.addEventListener("click", (e) => { e.stopPropagation(); trySubmit(); });
+    els.acBin.addEventListener("click", (e) => { e.stopPropagation(); tryEmpty(); });
+    els.acStart.addEventListener("click", () => {
+      els.acHome.classList.add("hidden");
+      if (!ag.running && !ag.done) startAppleRound();
+      else if (ag.paused) {
+        ag.paused = false;
+        agPaused = false;
+        ag.lastSpawn = performance.now();
+        startAppleLoop();
+      }
+    });
+    els.acRestart.addEventListener("click", () => { stopAppleLoop(); newApplePlay(); });
+    els.acHomeBtn.addEventListener("click", () => {
+      if (!ag || ag.done || !els.acHome.classList.contains("hidden")) {
+        if (ag && !ag.done) els.acHome.classList.remove("hidden");
+        return;
+      }
+      ag.paused = true;
+      agPaused = true;
+      if (agLoop) cancelAnimationFrame(agLoop);
+      agLoop = null;
+      els.acPause.classList.add("hidden");
+      els.acHome.classList.remove("hidden");
+      els.acStart.textContent = ag.running ? "Continue" : "Start game";
+    });
+    els.acPauseBtn.addEventListener("click", togglePause);
+    els.acResume.addEventListener("click", togglePause);
   }
 
-  function checkBranches() {
-    if (tg.assigned.some((v) => !v)) { els.tgFeedback.textContent = "Fill in every branch first."; els.tgFeedback.className = "pg-feedback bad"; return; }
-    tg.checked = true;
-    const wrong = tg.assigned.filter((v, i) => !feq(v, fr(tg.exp[i].n, tg.exp[i].d))).length;
-    renderTree();
-    if (wrong === 0) {
-      els.tgFeedback.textContent = "All branches correct \u2713 now choose the final answer.";
-      els.tgFeedback.className = "pg-feedback ok";
-      revealFinal();
-    } else {
-      els.tgFeedback.textContent = wrong + (wrong === 1 ? " branch" : " branches") + " need a rethink \u2014 mind the replacement rule.";
-      els.tgFeedback.className = "pg-feedback bad";
-    }
+  /* ═══════════════════════ EXPECTED VALUE CHALLENGE ═══════════════════════ */
+  let bet = null;
+
+  function makeOption() {
+    const lo = [18, 22, 25, 30][ri(0, 3)];
+    const hi = lo + [12, 15, 18, 22][ri(0, 3)];
+    const p = [35, 40, 45, 50, 55, 60, 65][ri(0, 6)];
+    return { p, hi, lo, ev: p / 100 * hi + (100 - p) / 100 * lo };
   }
 
-  function revealFinal() {
-    const ev = tg.ev, exp = tg.exp, other = BALL_NAME[tg.otherCol];
-    const prob = eventProb(exp, ev);
-    const work = "P = " + fracTex(prob);
-    // multiple-choice answers
-    const altExp = expectedFor(tg.a, tg.b, tg.total, !tg.replace);
-    const seen = {}; const opts = [];
-    const push = (f) => { if (!f || f.d <= 0 || f.n < 0 || f.n > f.d) return; const k = fracKey(f); if (seen[k]) return; seen[k] = 1; opts.push(fr(f.n, f.d)); };
-    push(prob);
-    push(eventProb(altExp, ev));                          // wrong replacement assumption
-    if (ev.op === "mul") push(fadd(fr(exp[ev.legs[0][0]].n, exp[ev.legs[0][0]].d), fr(exp[ev.legs[0][1]].n, exp[ev.legs[0][1]].d)));  // added instead of multiplied
-    push(fsub(fr(1, 1), prob));                            // complement slip
-    const dens = [tg.total, tg.total - 1, tg.total * (tg.total - 1), 2 * tg.total, 4, 6, 8];
-    let guard = 0;
-    while (opts.length < 4 && guard++ < 300) { const d = dens[ri(0, dens.length - 1)]; push(fr(ri(1, Math.max(1, d - 1)), d)); }
-    const choices = shuffle(opts.slice(0, 4));
-
-    const evl = ev.label.replace("OTHER", other);
-    let html = '<h4>Final answer</h4><div class="pg-work" id="tg-work"></div>' +
-      '<p class="pg-tray-label">P(' + evl + ') = ?</p><div class="pg-mc" id="tg-mc"></div>';
-    els.tgFinal.innerHTML = html;
-    els.tgFinal.classList.remove("hidden");
-    km(document.getElementById("tg-work"), work);
-    const mc = document.getElementById("tg-mc");
-    choices.forEach((f) => {
-      const b = document.createElement("button");
-      b.className = "pg-mc-btn"; b._frac = f; km(b, fracTex(f));
-      b.addEventListener("click", () => pickAnswer(b, f, prob, mc));
-      mc.appendChild(b);
-    });
-  }
-  function pickAnswer(btn, f, prob, mc) {
-    if (tg.solved) return;
-    tg.solved = true;
-    Array.prototype.forEach.call(mc.children, (b) => {
-      b.disabled = true;
-      if (feq(b._frac, prob)) b.classList.add("ok");   // always reveal the right answer
-    });
-    if (feq(f, prob)) {
-      TG.score++; TG.streak++;
-      els.tgFeedback.textContent = "Correct! \uD83C\uDF89  +1"; els.tgFeedback.className = "pg-feedback ok";
-    } else {
-      btn.classList.add("bad"); TG.streak = 0;
-      els.tgFeedback.textContent = "Not quite \u2014 check the final probability above."; els.tgFeedback.className = "pg-feedback bad";
-    }
-    els.tgScore.textContent = TG.score; els.tgStreak.textContent = TG.streak;
+  function goodTriple(a, b, c) {
+    const evs = [a.ev, b.ev, c.ev].sort((x, y) => x - y);
+    if (evs[2] - evs[0] > 22) return false;
+    if (evs[2] > 75) return false;
+    if (Math.abs(a.p - b.p) < 8 && Math.abs(a.hi - b.hi) < 5 && Math.abs(a.lo - b.lo) < 5) return false;
+    return true;
   }
 
-  /* ═══════════════════════════ MODE B: Bag Designer ═══════════════════════════ */
-  const BG = { mounted: false, score: 0 };
-  const TARGETS = [[1, 2], [1, 3], [2, 3], [1, 4], [3, 4], [2, 5], [3, 5], [1, 5], [3, 8], [5, 8], [1, 6], [5, 6]];
-  let bg = null;
-  function newTarget() {
-    const t = TARGETS[ri(0, TARGETS.length - 1)];
-    bg = { target: fr(t[0], t[1]), counts: { R: 1, G: 1, B: 0 }, solved: false };
-    els.bgFeedback.textContent = ""; els.bgFeedback.className = "pg-feedback";
-    els.bgSim.classList.add("hidden");
-    renderTarget(); renderCounters(); renderBag();
+  function newBet() {
+    beginPlay("bet");
+    let A, B, C, guard = 0;
+    do { A = makeOption(); B = makeOption(); C = makeOption(); guard++; }
+    while (guard < 300 && !goodTriple(A, B, C));
+    bet = { A, B, C, round: 1, total: 0, log: [], busy: false, done: false };
+    els.btReveal.classList.add("hidden");
+    els.btResult.className = "bt-result";
+    els.btResult.textContent = "Pick an option to spin the wheel.";
+    els.btFeedback.textContent = "";
+    els.btNext.disabled = true;
+    els.btNext.textContent = "Next round";
+    els.btBest.textContent = fmtBestDisplay("bet");
+    drawWheel(null);
+    renderBetCards();
+    updateBetStatus();
   }
-  function renderTarget() {
-    els.bgTarget.innerHTML = 'Design a bag so the chance of drawing <b>red</b> is exactly <span id="bg-tt"></span>.';
-    km(document.getElementById("bg-tt"), fracTex(bg.target));
+
+  function updateBetStatus() {
+    els.btRound.textContent = bet.round;
+    els.btTotal.textContent = "$" + bet.total;
+    els.btStatus.innerHTML = bet.done
+      ? "Game over — see your score and expected values below."
+      : "Round <b>" + bet.round + "</b> of 3: the three options stay fixed this game. Pick one to spin.";
   }
-  function bagTotal() { return bg.counts.R + bg.counts.G + bg.counts.B; }
-  function renderCounters() {
-    const box = els.bgCounters; clear(box);
-    ["R", "G", "B"].forEach((col) => {
-      const row = document.createElement("div");
-      row.className = "pg-counter";
-      row.innerHTML = '<span class="lbl"><span class="bb-ball" style="width:16px;height:16px;background:' + BALL[col] + '"></span>' +
-        BALL_NAME[col].charAt(0).toUpperCase() + BALL_NAME[col].slice(1) + '</span>';
-      const step = document.createElement("div");
-      step.className = "stepper";
-      const minus = document.createElement("button"); minus.className = "step-btn"; minus.textContent = "\u2212";
-      const val = document.createElement("span"); val.className = "step-val"; val.textContent = bg.counts[col];
-      const plus = document.createElement("button"); plus.className = "step-btn"; plus.textContent = "+";
-      minus.addEventListener("click", () => { if (bg.counts[col] > 0) { bg.counts[col]--; onBagEdit(); } });
-      plus.addEventListener("click", () => { if (bg.counts[col] < 9) { bg.counts[col]++; onBagEdit(); } });
-      step.appendChild(minus); step.appendChild(val); step.appendChild(plus);
-      row.appendChild(step); box.appendChild(row);
-    });
+
+  function optionCardHTML(side, o) {
+    const names = { A: "Option A", B: "Option B", C: "Option C" };
+    return '<div class="bt-name">' + names[side] + '</div>' +
+      '<div class="bt-out"><span class="pct">' + o.p + '%</span><span class="arr">→</span><span class="pay hi-pay">$' + o.hi + '</span></div>' +
+      '<div class="bt-out"><span class="pct">' + (100 - o.p) + '%</span><span class="arr">→</span><span class="pay lo-pay">$' + o.lo + '</span></div>' +
+      '<div class="bt-bar"><i style="width:' + o.p + '%;background:#66BB6A"></i><i style="width:' + (100 - o.p) + '%;background:#FFD54F"></i></div>';
   }
-  function onBagEdit() { bg.solved = false; els.bgFeedback.textContent = ""; els.bgFeedback.className = "pg-feedback"; els.bgSim.classList.add("hidden"); renderCounters(); renderBag(); }
+
+  function renderBetCards() {
+    els.btA.innerHTML = optionCardHTML("A", bet.A);
+    els.btB.innerHTML = optionCardHTML("B", bet.B);
+    els.btC.innerHTML = optionCardHTML("C", bet.C);
+    [els.btA, els.btB, els.btC].forEach((c) => { c.classList.remove("chosen"); c.disabled = bet.busy || bet.done; });
+  }
 
   function polar(cx, cy, r, deg) { const a = (deg - 90) * Math.PI / 180; return [cx + r * Math.cos(a), cy + r * Math.sin(a)]; }
   function sector(svg, cx, cy, r, a0, a1, fill) {
@@ -418,111 +410,6 @@
     const large = (a1 - a0) > 180 ? 1 : 0;
     svg.appendChild(E("path", { d: "M" + cx + " " + cy + " L" + p0[0] + " " + p0[1] + " A" + r + " " + r + " 0 " + large + " 1 " + p1[0] + " " + p1[1] + " Z",
       fill, stroke: "#0b1324", "stroke-width": 1.5 }));
-  }
-  function renderBag() {
-    const total = bagTotal();
-    const svg = els.bgSpinner; clear(svg);
-    const cx = 110, cy = 110, r = 92;
-    if (total === 0) {
-      svg.appendChild(E("circle", { cx, cy, r, fill: "#1b2945", stroke: C.line, "stroke-width": 2 }));
-      const t = E("text", { x: cx, y: cy, "text-anchor": "middle", "dominant-baseline": "middle", "font-size": 13, fill: C.dim });
-      t.textContent = "empty"; svg.appendChild(t);
-    } else {
-      let ang = 0;
-      ["R", "G", "B"].forEach((col) => {
-        const frac = bg.counts[col] / total; if (frac <= 0) return;
-        const span = frac * 360; sector(svg, cx, cy, r, ang, ang + span, BALL[col]); ang += span;
-      });
-    }
-    svg.appendChild(E("circle", { cx, cy, r: 6, fill: "#0b1324", stroke: "#fff", "stroke-width": 1.5 }));
-
-    // ball preview row
-    const box = els.bgBalls; clear(box);
-    if (total === 0) { const e = document.createElement("span"); e.className = "empty"; e.textContent = "Add balls with the steppers \u2192"; box.appendChild(e); }
-    else ["R", "G", "B"].forEach((col) => { for (let i = 0; i < bg.counts[col]; i++) {
-      const b = document.createElement("span"); b.className = "bb-ball"; b.style.cssText = "width:18px;height:18px;background:" + BALL[col]; box.appendChild(b);
-    } });
-
-    // readout
-    clear(els.bgReadout);
-    const sub = document.createElement("div"); sub.className = "pg-sub"; sub.textContent = "Chance of red"; els.bgReadout.appendChild(sub);
-    const prob = document.createElement("div"); prob.className = "pg-prob";
-    if (total === 0) km(prob, "P(\\text{red}) = \\text{--}");
-    else { const p = fr(bg.counts.R, total); km(prob, "P(\\text{red}) = \\frac{" + bg.counts.R + "}{" + total + "} = " + fracTex(p) + " = " + fnum(p).toFixed(3)); }
-    els.bgReadout.appendChild(prob);
-  }
-  function checkBag() {
-    const total = bagTotal();
-    if (total === 0) { els.bgFeedback.textContent = "The bag is empty \u2014 add some balls."; els.bgFeedback.className = "pg-feedback bad"; return; }
-    const p = fr(bg.counts.R, total);
-    if (feq(p, bg.target)) {
-      if (!bg.solved) { bg.solved = true; BG.score++; els.bgScore.textContent = BG.score; }
-      els.bgFeedback.textContent = "Perfect \u2014 that bag gives P(red) = " + bg.target.n + "/" + bg.target.d + " \u2713";
-      els.bgFeedback.className = "pg-feedback ok";
-    } else {
-      const cmp = fnum(p) > fnum(bg.target) ? "too high" : "too low";
-      els.bgFeedback.textContent = "Not yet \u2014 P(red) is " + cmp + ". Target is " + bg.target.n + "/" + bg.target.d + ".";
-      els.bgFeedback.className = "pg-feedback bad";
-    }
-  }
-  function spinBag() {
-    const total = bagTotal();
-    if (total === 0) { els.bgFeedback.textContent = "Add balls before spinning."; els.bgFeedback.className = "pg-feedback bad"; return; }
-    const N = 200; let reds = 0;
-    for (let i = 0; i < N; i++) { if (Math.random() * total < bg.counts.R) reds++; }
-    const exp = (reds / N), theo = bg.counts.R / total;
-    els.bgSim.classList.remove("hidden");
-    els.bgSim.innerHTML = "Spun <span class=\"num\">" + N + "\u00d7</span>: drew red <span class=\"num\">" + reds + "</span> times \u2192 experimental P \u2248 <span class=\"num\">" + exp.toFixed(3) +
-      "</span><br>Theoretical P(red) = <span class=\"num\">" + theo.toFixed(3) + "</span> \u00b7 target = <span class=\"num\">" + fnum(bg.target).toFixed(3) +
-      "</span>. <span style=\"color:#94a3b8\">More spins \u2192 experimental gets closer to theoretical.</span>";
-  }
-
-  /* ═══════════════════════════ MODE C: Betting Game ═══════════════════════════ */
-  const fmtNum = (x) => { const r = Math.round(x * 100) / 100; return Number.isInteger(r) ? String(r) : String(r); };
-  let bet = null;
-  function makeOption() {
-    const lo = [20, 30, 40][ri(0, 2)];
-    const hiPool = [50, 60, 70, 80, 100].filter((h) => h >= lo + 20);
-    const hi = hiPool[ri(0, hiPool.length - 1)];
-    const p = [30, 40, 50, 60, 70][ri(0, 4)];
-    return { p, hi, lo, ev: p / 100 * hi + (100 - p) / 100 * lo };
-  }
-  function newBet(useExample) {
-    let A, B;
-    if (useExample) { A = { p: 50, hi: 100, lo: 30, ev: 65 }; B = { p: 70, hi: 50, lo: 30, ev: 44 }; }
-    else {
-      let guard = 0;
-      do { A = makeOption(); B = makeOption(); guard++; }
-      while ((Math.abs(A.ev - B.ev) < 6 || (A.p === B.p && A.hi === B.hi && A.lo === B.lo)) && guard < 200);
-    }
-    bet = { A, B, round: 1, total: 0, log: [], busy: false, done: false, chosenSide: null };
-    els.btReveal.classList.add("hidden"); els.btReveal.innerHTML = "";
-    els.btResult.className = "bt-result"; els.btResult.textContent = "Pick a side to spin the wheel.";
-    els.btFeedback.textContent = ""; els.btFeedback.className = "pg-feedback";
-    els.btNext.disabled = true; els.btNext.textContent = "Next round";
-    renderBetCards(); drawWheel(null); updateBetStatus();
-  }
-  function updateBetStatus() {
-    els.btRound.textContent = bet.round; els.btTotal.textContent = "$" + bet.total;
-    els.btStatus.innerHTML = bet.done ? "Game over \u2014 see the expected-value verdict below."
-      : "Round <b>" + bet.round + "</b> of 3: choose <b>Left</b> or <b>Right</b>. The wheel spins by the real odds.";
-  }
-  function optionCardHTML(side, o) {
-    const name = side === "A" ? "Option A" : "Option B", sideLbl = side === "A" ? "Left" : "Right";
-    return '<span class="bt-side">' + sideLbl + '</span><div class="bt-name">' + name + '</div>' +
-      '<div class="bt-out"><span class="pct">' + o.p + '%</span><span class="arr">\u2192</span><span class="pay">$' + o.hi + '</span></div>' +
-      '<div class="bt-out"><span class="pct">' + (100 - o.p) + '%</span><span class="arr">\u2192</span><span class="pay">$' + o.lo + '</span></div>' +
-      '<div class="bt-bar"><i style="width:' + o.p + '%;background:#66BB6A"></i><i style="width:' + (100 - o.p) + '%;background:#FFD54F"></i></div>';
-  }
-  function renderBetCards() {
-    els.btA.innerHTML = optionCardHTML("A", bet.A); els.btB.innerHTML = optionCardHTML("B", bet.B);
-    [els.btA, els.btB].forEach((c) => { c.classList.remove("chosen"); c.disabled = bet.busy || bet.done; });
-  }
-  function secLabel(g, cx, cy, rr, deg, txt) {
-    const p = polar(cx, cy, rr, deg);
-    const t = E("text", { x: p[0], y: p[1], "text-anchor": "middle", "dominant-baseline": "middle",
-      "font-size": 16, "font-weight": 700, fill: "#0b1324", "font-family": "JetBrains Mono, monospace" });
-    t.textContent = txt; g.appendChild(t);
   }
   function drawWheel(o) {
     const svg = els.btWheel; clear(svg); const cx = 110, cy = 110, r = 92;
@@ -535,132 +422,356 @@
       const hiSpan = o.p * 3.6;
       sector(g, cx, cy, r, 0, hiSpan, "#66BB6A");
       sector(g, cx, cy, r, hiSpan, 360, "#FFD54F");
-      secLabel(g, cx, cy, r * 0.6, hiSpan / 2, "$" + o.hi);
-      secLabel(g, cx, cy, r * 0.6, (hiSpan + 360) / 2, "$" + o.lo);
       svg.appendChild(g); svg._rot = g;
     }
     svg.appendChild(E("circle", { cx, cy, r: 8, fill: "#0b1324", stroke: "#fff", "stroke-width": 1.5 }));
     svg.appendChild(E("path", { d: "M110 30 L100 4 L120 4 Z", fill: "#f06292", stroke: "#0b1324", "stroke-width": 1.5 }));
   }
-  function animateRot(g, from, to, dur, done) {
+  function animateRot(g, to, done) {
     if (!g) { if (done) done(); return; }
     const t0 = performance.now();
     (function frame(now) {
-      const k = Math.min(1, (now - t0) / dur), e = 1 - Math.pow(1 - k, 3);
-      g.setAttribute("transform", "rotate(" + (from + (to - from) * e) + " 110 110)");
+      const k = Math.min(1, (now - t0) / 2100), e = 1 - Math.pow(1 - k, 3);
+      g.setAttribute("transform", "rotate(" + to * e + " 110 110)");
       if (k < 1) requestAnimationFrame(frame); else if (done) done();
     })(t0);
   }
+
   function pickBet(side) {
     if (bet.busy || bet.done) return;
     const o = bet[side];
-    bet.busy = true; bet.chosenSide = side;
-    renderBetCards();
-    (side === "A" ? els.btA : els.btB).classList.add("chosen");
-    els.btA.disabled = els.btB.disabled = true;
-    els.btResult.className = "bt-result"; els.btResult.textContent = "Spinning\u2026";
+    bet.busy = true;
+    [els.btA, els.btB, els.btC].forEach((c) => c.classList.remove("chosen"));
+    document.getElementById("bt-" + side).classList.add("chosen");
+    els.btA.disabled = els.btB.disabled = els.btC.disabled = true;
+    els.btResult.textContent = "Spinning…";
     drawWheel(o);
-    const hit = Math.random() * 100 < o.p;       // strict random by the real odds
+    const hit = Math.random() * 100 < o.p;
     const payout = hit ? o.hi : o.lo;
     const hiSpan = o.p * 3.6;
-    const a0 = hit ? 0 : hiSpan, a1 = hit ? hiSpan : 360;
-    const mid = a0 + (a1 - a0) * (0.2 + Math.random() * 0.6);
-    const R = 360 * 4 + ((360 - mid) % 360);
-    animateRot(els.btWheel._rot, 0, R, 2100, () => finishSpin(side, o, hit, payout));
+    const mid = hit ? hiSpan / 2 : (hiSpan + 360) / 2;
+    animateRot(els.btWheel._rot, 360 * 4 + (360 - mid), () => {
+      bet.total += payout;
+      bet.log.push({ round: bet.round, side, payout });
+      bet.busy = false;
+      els.btResult.innerHTML = "Landed on <span class=\"win\">$" + payout + "</span> (Option " + side + ").";
+      updateBetStatus();
+      els.btNext.disabled = false;
+      els.btNext.textContent = bet.round >= 3 ? "See results" : "Next round";
+    });
   }
-  function finishSpin(side, o, hit, payout) {
-    bet.total += payout;
-    bet.log.push({ round: bet.round, side, payout });
-    bet.busy = false;
-    els.btResult.innerHTML = "Landed on <span class=\"win\">$" + payout + "</span> \u2014 the " +
-      (hit ? o.p : 100 - o.p) + "% outcome of Option " + side + ".";
-    updateBetStatus();
-    els.btNext.disabled = false;
-    els.btNext.textContent = bet.round >= 3 ? "Reveal expected value" : "Next round";
-  }
+
   function nextBetRound() {
     if (bet.busy) return;
     if (bet.round >= 3) { revealBet(); return; }
-    bet.round++; bet.chosenSide = null;
-    els.btResult.className = "bt-result"; els.btResult.textContent = "Pick a side to spin the wheel.";
-    els.btNext.disabled = true; els.btNext.textContent = "Next round";
-    drawWheel(null); renderBetCards(); updateBetStatus();
-  }
-  function revealBet() {
-    bet.done = true; els.btA.disabled = els.btB.disabled = true; updateBetStatus();
-    const A = bet.A, B = bet.B, better = A.ev >= B.ev ? "A" : "B", worse = better === "A" ? "B" : "A";
-    const bo = bet[better], wo = bet[worse];
-    const evTex = (o) => "E = " + (o.p / 100) + "\\times" + o.hi + " + " + ((100 - o.p) / 100) + "\\times" + o.lo + " = \\$" + fmtNum(o.ev);
-    const logHtml = bet.log.map((l) => "Round " + l.round + ": chose <span class=\"r\">" + l.side + "</span> \u2192 won <span class=\"r\">$" + l.payout + "</span>").join("<br>");
-    const chosenBetter = bet.log.filter((l) => l.side === better).length;
-    els.btReveal.innerHTML =
-      '<h4>Expected value \u2014 which side was smarter?</h4>' +
-      '<div class="bt-reveal-grid">' +
-        '<div class="bt-ev ' + (better === "A" ? "best" : "") + '"><div class="ev-name">Option A' + (better === "A" ? ' <span class="tag">higher EV</span>' : '') + '</div><div class="ev-eq" id="bt-evA"></div></div>' +
-        '<div class="bt-ev ' + (better === "B" ? "best" : "") + '"><div class="ev-name">Option B' + (better === "B" ? ' <span class="tag">higher EV</span>' : '') + '</div><div class="ev-eq" id="bt-evB"></div></div>' +
-      '</div>' +
-      '<div class="bt-log">' + logHtml + '<br><b>Your total over 3 rounds: $' + bet.total + '</b></div>' +
-      '<div class="bt-verdict">Option <b>' + better + '</b> has the higher expected value ($' + fmtNum(bo.ev) + ' per round vs $' + fmtNum(wo.ev) +
-        '). Always picking it averages <b>$' + fmtNum(3 * bo.ev) + '</b> over 3 rounds. You chose the higher-EV side in <b>' + chosenBetter +
-        ' of 3</b> rounds. <span style="color:#94a3b8">Luck decides a single spin, but expected value is the smart long-run pathway.</span></div>';
-    els.btReveal.classList.remove("hidden");
-    km(document.getElementById("bt-evA"), evTex(A));
-    km(document.getElementById("bt-evB"), evTex(B));
+    bet.round++;
+    els.btResult.textContent = "Pick an option to spin the wheel.";
     els.btNext.disabled = true;
+    drawWheel(null);
+    renderBetCards();
+    updateBetStatus();
   }
 
-  /* ═══════════════════════════ mount / wiring ═══════════════════════════ */
+  function revealBet() {
+    bet.done = true;
+    els.btA.disabled = els.btB.disabled = els.btC.disabled = true;
+    const opts = [{ id: "A", o: bet.A }, { id: "B", o: bet.B }, { id: "C", o: bet.C }];
+    const best = opts.slice().sort((a, b) => b.o.ev - a.o.ev)[0];
+    const evTex = (o) => "E = " + (o.p / 100) + "\\times" + o.hi + " + " + ((100 - o.p) / 100) + "\\times" + o.lo + " = \\$" + fmtNum(o.ev);
+    const logHtml = bet.log.map((l) => "Round " + l.round + ": Option <span class=\"r\">" + l.side + "</span> → <span class=\"r\">$" + l.payout + "</span>").join("<br>");
+    queueBest("bet", bet.total);
+    let grid = '<div class="bt-reveal-grid">';
+    opts.forEach(({ id, o }) => {
+      grid += '<div class="bt-ev ' + (id === best.id ? "best" : "") + '"><div class="ev-name">Option ' + id +
+        (id === best.id ? ' <span class="tag">highest EV</span>' : '') + '</div><div class="ev-eq" id="bt-ev' + id + '"></div></div>';
+    });
+    grid += '</div>';
+    els.btReveal.innerHTML = '<h4>Round complete</h4>' + grid +
+      '<div class="bt-log">' + logHtml + '<br><b>Your total score: $' + bet.total + '</b></div>' +
+      '<div class="bt-verdict">Best record: <b>' + fmtBestDisplay("bet") +
+      '</b>. Option <b>' + best.id + '</b> has the highest expected value ($' + fmtNum(best.o.ev) + ' per spin).</div>';
+    els.btReveal.classList.remove("hidden");
+    opts.forEach(({ id, o }) => km(document.getElementById("bt-ev" + id), evTex(o)));
+    els.btNext.disabled = true;
+    updateBetStatus();
+  }
+
+  /* ═══════════════════════ DICE CLEAR ═══════════════════════ */
+  const DICE_CHIPS = 8;
+  const PIP_POS = {
+    1: [[1, 1]], 2: [[0, 0], [2, 2]], 3: [[0, 0], [1, 1], [2, 2]],
+    4: [[0, 0], [0, 2], [2, 0], [2, 2]], 5: [[0, 0], [0, 2], [1, 1], [2, 0], [2, 2]],
+    6: [[0, 0], [0, 1], [0, 2], [2, 0], [2, 1], [2, 2]],
+  };
+  let dg = null;
+  let dgRollSpeed = 1;
+
+  function diceRollTiming() {
+    if (dgRollSpeed >= 5) return { instant: true };
+    const baseMs = 76;
+    const baseCount = 16;
+    if (dgRollSpeed <= 1) return { tickMs: baseMs, tickCount: baseCount };
+    const t = (dgRollSpeed - 1) / 3;
+    return {
+      tickMs: Math.max(12, Math.round(baseMs - t * 64)),
+      tickCount: Math.max(2, Math.round(baseCount - t * 14)),
+    };
+  }
+
+  function buildDie(el, n) {
+    clear(el);
+    for (let r = 0; r < 3; r++) for (let c = 0; c < 3; c++) {
+      const pip = document.createElement("div");
+      pip.className = "dg-pip";
+      const on = (PIP_POS[n] || []).some((p) => p[0] === c && p[1] === r);
+      if (on) pip.classList.add("on");
+      el.appendChild(pip);
+    }
+  }
+
+  function newDice() {
+    beginPlay("dice");
+    dg = { board: {}, pool: DICE_CHIPS, rounds: 0, phase: "place", rolling: false, d1: 1, d2: 1 };
+    for (let n = 2; n <= 12; n++) dg.board[n] = 0;
+    els.dgFinal.classList.add("hidden");
+    els.dgToast.textContent = "";
+    els.dgSum.innerHTML = '<span class="lbl">Sum</span>—';
+    els.dgRoll.disabled = true;
+    els.dgBest.textContent = fmtBestDisplay("dice");
+    renderDiceBoard();
+  }
+
+  function renderDiceBoard() {
+    clear(els.dgBoard);
+    for (let n = 2; n <= 12; n++) {
+      const cell = document.createElement("button");
+      cell.type = "button";
+      cell.className = "dg-cell" + (dg.phase !== "place" ? " disabled" : "");
+      cell.dataset.n = n;
+      const num = document.createElement("div");
+      num.className = "num"; num.textContent = n;
+      const chips = document.createElement("div");
+      chips.className = "chips";
+      for (let i = 0; i < dg.board[n]; i++) {
+        const ch = document.createElement("span");
+        ch.className = "dg-chip";
+        chips.appendChild(ch);
+      }
+      cell.appendChild(num); cell.appendChild(chips);
+      cell.addEventListener("click", () => onCellClick(n, cell));
+      els.dgBoard.appendChild(cell);
+    }
+    clear(els.dgPool);
+    for (let i = 0; i < dg.pool; i++) {
+      const ch = document.createElement("span");
+      ch.className = "dg-chip";
+      els.dgPool.appendChild(ch);
+    }
+    els.dgPoolN.textContent = dg.pool + " left";
+    els.dgRounds.textContent = dg.rounds;
+    els.dgRoll.disabled = dg.pool > 0 || dg.phase !== "roll" || dg.rolling;
+    buildDie(els.dgD1, dg.d1);
+    buildDie(els.dgD2, dg.d2);
+  }
+
+  function onCellClick(n, cell) {
+    if (dg.phase !== "place") return;
+    if (dg.pool > 0) {
+      dg.board[n]++;
+      dg.pool--;
+      const ch = document.createElement("span");
+      ch.className = "dg-chip";
+      cell.querySelector(".chips").appendChild(ch);
+    } else if (dg.board[n] > 0) {
+      dg.board[n]--;
+      dg.pool++;
+      const chips = cell.querySelector(".chips");
+      if (chips.lastChild) chips.removeChild(chips.lastChild);
+    }
+    els.dgPoolN.textContent = dg.pool + " left";
+    clear(els.dgPool);
+    for (let i = 0; i < dg.pool; i++) {
+      const ch = document.createElement("span");
+      ch.className = "dg-chip";
+      els.dgPool.appendChild(ch);
+    }
+    if (dg.pool === 0) {
+      dg.phase = "roll";
+      els.dgToast.textContent = "All chips placed — roll the dice!";
+      renderDiceBoard();
+    }
+  }
+
+  function rollDice() {
+    if (dg.rolling || dg.pool > 0 || dg.phase !== "roll") return;
+    dg.rolling = true;
+    els.dgRoll.disabled = true;
+    els.dgToast.textContent = "";
+    const timing = diceRollTiming();
+
+    function finishRoll() {
+      dg.d1 = ri(1, 6);
+      dg.d2 = ri(1, 6);
+      const sum = dg.d1 + dg.d2;
+      dg.rounds++;
+      els.dgD1.classList.remove("rolling");
+      els.dgD2.classList.remove("rolling");
+      buildDie(els.dgD1, dg.d1);
+      buildDie(els.dgD2, dg.d2);
+      els.dgSum.innerHTML = '<span class="lbl">Sum</span>' + sum;
+      els.dgRounds.textContent = dg.rounds;
+      handleRoll(sum);
+    }
+
+    if (timing.instant) {
+      finishRoll();
+      return;
+    }
+
+    els.dgD1.classList.add("rolling");
+    els.dgD2.classList.add("rolling");
+    let ticks = 0;
+    const iv = setInterval(() => {
+      dg.d1 = ri(1, 6);
+      dg.d2 = ri(1, 6);
+      buildDie(els.dgD1, dg.d1);
+      buildDie(els.dgD2, dg.d2);
+      if (++ticks >= timing.tickCount) {
+        clearInterval(iv);
+        finishRoll();
+      }
+    }, timing.tickMs);
+  }
+
+  function handleRoll(sum) {
+    const cell = els.dgBoard.querySelector('[data-n="' + sum + '"]');
+    if (dg.board[sum] > 0) {
+      dg.board[sum]--;
+      const chip = cell && cell.querySelector(".dg-chip");
+      if (chip) {
+        chip.classList.add("removing");
+        setTimeout(() => { if (chip.parentNode) chip.remove(); }, 280);
+      }
+      els.dgToast.textContent = "Removed a chip from " + sum + "!";
+      els.dgToast.className = "dg-toast hit";
+    } else {
+      els.dgToast.textContent = "No chip on " + sum + " — nothing removed.";
+      els.dgToast.className = "dg-toast miss";
+    }
+    const left = Object.values(dg.board).reduce((a, b) => a + b, 0);
+    dg.rolling = false;
+    if (left === 0) finishDice();
+    else els.dgRoll.disabled = false;
+  }
+
+  function finishDice() {
+    dg.phase = "done";
+    queueBest("dice", dg.rounds);
+    els.dgFinal.classList.remove("hidden");
+    els.dgFinal.innerHTML = "<h4>Board cleared!</h4><p>You finished in <b>" + dg.rounds + " rounds</b>. Best record: <b>" +
+      fmtBestDisplay("dice") + "</b>.</p>";
+    els.dgRoll.disabled = true;
+  }
+
+  /* ═══════════════════════ mount ═══════════════════════ */
   let els = {};
+
   function bindOnce() {
     els = {
-      // tree
-      tgScenario: document.getElementById("tg-scenario"), tgTree: document.getElementById("tg-tree"),
-      tgChips: document.getElementById("tg-chips"), tgCheck: document.getElementById("tg-check"),
-      tgFeedback: document.getElementById("tg-feedback"), tgFinal: document.getElementById("tg-final"),
-      tgScore: document.getElementById("tg-score"), tgStreak: document.getElementById("tg-streak"), tgNew: document.getElementById("tg-new"),
-      // bag
-      bgTarget: document.getElementById("bg-target"), bgSpinner: document.getElementById("bg-spinner"),
-      bgBalls: document.getElementById("bg-balls"), bgCounters: document.getElementById("bg-counters"),
-      bgReadout: document.getElementById("bg-readout"), bgCheck: document.getElementById("bg-check"),
-      bgSpin: document.getElementById("bg-spin"), bgFeedback: document.getElementById("bg-feedback"),
-      bgSim: document.getElementById("bg-sim"), bgScore: document.getElementById("bg-score"), bgNew: document.getElementById("bg-new"),
-      // bet
-      btStatus: document.getElementById("bt-status"), btRound: document.getElementById("bt-round"), btTotal: document.getElementById("bt-total"),
-      btNew: document.getElementById("bt-new"), btA: document.getElementById("bt-A"), btB: document.getElementById("bt-B"),
-      btWheel: document.getElementById("bt-wheel"), btResult: document.getElementById("bt-result"),
-      btNext: document.getElementById("bt-next"), btFeedback: document.getElementById("bt-feedback"), btReveal: document.getElementById("bt-reveal"),
+      acMission: document.getElementById("ac-mission"),
+      acRound: document.getElementById("ac-round"),
+      acTime: document.getElementById("ac-time"),
+      acBest: document.getElementById("ac-best"),
+      acStage: document.getElementById("ac-stage"),
+      acApples: document.getElementById("ac-apples"),
+      acPlayer: document.getElementById("ac-player"),
+      acHub: document.getElementById("ac-hub"),
+      acBin: document.getElementById("ac-bin"),
+      acCr: document.getElementById("ac-cr"),
+      acCg: document.getElementById("ac-cg"),
+      acCy: document.getElementById("ac-cy"),
+      acProb: document.getElementById("ac-prob"),
+      acFeedback: document.getElementById("ac-feedback"),
+      acDone: document.getElementById("ac-done"),
+      acDoneMsg: document.getElementById("ac-done-msg"),
+      acGameUi: document.getElementById("ac-game-ui"),
+      acRestart: document.getElementById("ac-restart"),
+      acHome: document.getElementById("ac-home"),
+      acPause: document.getElementById("ac-pause"),
+      acStart: document.getElementById("ac-start"),
+      acHomeBtn: document.getElementById("ac-home-btn"),
+      acPauseBtn: document.getElementById("ac-pause-btn"),
+      acResume: document.getElementById("ac-resume"),
+      btStatus: document.getElementById("bt-status"),
+      btRound: document.getElementById("bt-round"),
+      btTotal: document.getElementById("bt-total"),
+      btBest: document.getElementById("bt-best"),
+      btNew: document.getElementById("bt-new"),
+      btA: document.getElementById("bt-A"),
+      btB: document.getElementById("bt-B"),
+      btC: document.getElementById("bt-C"),
+      btWheel: document.getElementById("bt-wheel"),
+      btResult: document.getElementById("bt-result"),
+      btNext: document.getElementById("bt-next"),
+      btFeedback: document.getElementById("bt-feedback"),
+      btReveal: document.getElementById("bt-reveal"),
+      dgBoard: document.getElementById("dg-board"),
+      dgPool: document.getElementById("dg-pool"),
+      dgPoolN: document.getElementById("dg-pool-n"),
+      dgD1: document.getElementById("dg-d1"),
+      dgD2: document.getElementById("dg-d2"),
+      dgSum: document.getElementById("dg-sum"),
+      dgToast: document.getElementById("dg-toast"),
+      dgRoll: document.getElementById("dg-roll"),
+      dgSpeed: document.getElementById("dg-speed"),
+      dgRounds: document.getElementById("dg-rounds"),
+      dgBest: document.getElementById("dg-best"),
+      dgNew: document.getElementById("dg-new"),
+      dgFinal: document.getElementById("dg-final"),
       modeBtns: Array.prototype.slice.call(document.querySelectorAll("[data-game]")),
-      gameTree: document.getElementById("game-tree"), gameBag: document.getElementById("game-bag"), gameBet: document.getElementById("game-bet"),
+      gameApple: document.getElementById("game-apple"),
+      gameBet: document.getElementById("game-bet"),
+      gameDice: document.getElementById("game-dice"),
+      hintApple: document.getElementById("hint-apple"),
+      hintBet: document.getElementById("hint-bet"),
+      hintDice: document.getElementById("hint-dice"),
     };
-    els.tgCheck.addEventListener("click", checkBranches);
-    els.tgNew.addEventListener("click", () => { tg.solved = false; newTree(); });
-    els.bgCheck.addEventListener("click", checkBag);
-    els.bgSpin.addEventListener("click", spinBag);
-    els.bgNew.addEventListener("click", newTarget);
+    bindApple();
     els.btA.addEventListener("click", () => pickBet("A"));
     els.btB.addEventListener("click", () => pickBet("B"));
+    els.btC.addEventListener("click", () => pickBet("C"));
     els.btNext.addEventListener("click", nextBetRound);
-    els.btNew.addEventListener("click", () => newBet(false));
+    els.btNew.addEventListener("click", newBet);
+    els.dgRoll.addEventListener("click", rollDice);
+    els.dgNew.addEventListener("click", newDice);
+    els.dgSpeed.addEventListener("input", () => { dgRollSpeed = +els.dgSpeed.value; });
     els.modeBtns.forEach((b) => b.addEventListener("click", () => setMode(b.dataset.game)));
   }
+
   function setMode(mode) {
     els.modeBtns.forEach((b) => b.classList.toggle("active", b.dataset.game === mode));
-    els.gameTree.style.display = mode === "tree" ? "" : "none";
-    els.gameBag.style.display = mode === "bag" ? "" : "none";
+    els.gameApple.style.display = mode === "apple" ? "" : "none";
     els.gameBet.style.display = mode === "bet" ? "" : "none";
+    els.gameDice.style.display = mode === "dice" ? "" : "none";
+    if (els.hintApple) els.hintApple.classList.toggle("hidden", mode !== "apple");
+    if (els.hintBet) els.hintBet.classList.toggle("hidden", mode !== "bet");
+    if (els.hintDice) els.hintDice.classList.toggle("hidden", mode !== "dice");
+    if (mode === "apple" && ag && ag.running && !ag.paused && !ag.done && els.acHome.classList.contains("hidden")) startAppleLoop();
+    else stopAppleLoop();
   }
 
   const Game = {
     mounted: false,
     mount() {
       if (this.mounted) return;
-      if (!document.getElementById("tg-tree")) return;
+      if (!document.getElementById("ac-stage")) return;
       this.mounted = true;
       bindOnce();
-      newTree();
-      newTarget();
-      newBet(true);
-      setMode("tree");
+      dgRollSpeed = +els.dgSpeed.value;
+      newApplePlay();
+      newBet();
+      newDice();
+      setMode("apple");
     },
     show() { this.mount(); },
   };
