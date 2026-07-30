@@ -3,6 +3,7 @@
   "use strict";
 
   const BIT_COUNT = 10;
+  const MATCH_BIT_COUNT = 9;
 
   function ri(lo, hi) {
     return lo + Math.floor(Math.random() * (hi - lo + 1));
@@ -38,11 +39,6 @@
 
   function bitsToBinaryString(bits) {
     return bits.map(String).join("");
-  }
-
-  function bitCountForTarget(n) {
-    if (n <= 0) return 1;
-    return denaryToBinaryString(n).length;
   }
 
   function bitsToBinaryStringTrimmed(bits) {
@@ -364,7 +360,7 @@
     let matchTarget = genMatchTarget([]);
     const recentMatch = [matchTarget];
     let matchStreak = 0;
-    const matchBits = new Array(BIT_COUNT).fill(0);
+    const matchBits = new Array(MATCH_BIT_COUNT).fill(0);
     const matchRow = document.getElementById("bin-match-row");
     const matchTargetEl = document.getElementById("bin-match-target");
     const fbMatch = document.getElementById("fb-bin-match");
@@ -372,8 +368,7 @@
 
     function showMatchChallenge() {
       matchTargetEl.innerHTML = "\\(" + matchTarget + "_{(10)}\\)";
-      matchBits.length = 0;
-      for (let i = 0; i < bitCountForTarget(matchTarget); i++) matchBits.push(0);
+      matchBits.fill(0);
       buildBitRow(matchRow, matchBits);
       fbMatch.className = "feedback";
       fbMatch.textContent = "Flip bits to match the target, then Check.";
