@@ -319,24 +319,48 @@
     return avg * 0.04;
   }
 
+  /** True when all three sides are within tolerance (handles a≈b, a≈c but b≉c). */
+  function isEquilateralSides(v) {
+    var sides = sideLengths(v);
+    var tol = sideEqTol(v);
+    var maxS = Math.max(sides[0], sides[1], sides[2]);
+    var minS = Math.min(sides[0], sides[1], sides[2]);
+    return maxS - minS < tol;
+  }
+
+  /**
+   * Best equal-side pair [i,j] within tol, or null.
+   * Prefers the closest pair so near-equilateral noise does not mark three sides differently.
+   */
+  function bestEqualSidePair(v) {
+    if (isEquilateralSides(v)) return null;
+    var sides = sideLengths(v);
+    var tol = sideEqTol(v);
+    var best = null;
+    var bestDiff = Infinity;
+    [[0, 1], [1, 2], [0, 2]].forEach(function (pr) {
+      var d = Math.abs(sides[pr[0]] - sides[pr[1]]);
+      if (d < tol && d < bestDiff) {
+        bestDiff = d;
+        best = pr;
+      }
+    });
+    return best;
+  }
+
   /** All active type badges (e.g. right + isosceles for 等腰直角三角形). */
   function triangleTags(v) {
     var angles = [0, 1, 2].map(function (i) { return angleAt(v, i); });
     var maxA = Math.max.apply(null, angles);
-    var sides = sideLengths(v);
-    var tol = sideEqTol(v);
-    var ab = Math.abs(sides[0] - sides[1]) < tol;
-    var bc = Math.abs(sides[1] - sides[2]) < tol;
-    var ca = Math.abs(sides[2] - sides[0]) < tol;
     var tags = [];
-    if (ab && bc && ca) {
+    if (isEquilateralSides(v)) {
       tags.push("equilateral");
       return tags;
     }
     if (Math.abs(maxA - 90) < 3.5) tags.push("right");
     else if (maxA > 90) tags.push("obtuse");
     else tags.push("acute");
-    if (ab || bc || ca) tags.push("isosceles");
+    if (bestEqualSidePair(v)) tags.push("isosceles");
     return tags;
   }
 
@@ -439,24 +463,12 @@
 
   /** Side equality ticks for isosceles (equal legs) / equilateral (all three). */
   function equalSideTickPlan(v) {
-    var sides = sideLengths(v);
-    var tol = sideEqTol(v);
-    if (
-      Math.abs(sides[0] - sides[1]) < tol &&
-      Math.abs(sides[1] - sides[2]) < tol
-    ) {
-      return [1, 1, 1];
-    }
+    if (isEquilateralSides(v)) return [1, 1, 1];
+    var pair = bestEqualSidePair(v);
+    if (!pair) return [0, 0, 0];
     var plan = [0, 0, 0];
-    var pairs = [[0, 1], [1, 2], [0, 2]];
-    var tick = 1;
-    pairs.forEach(function (pr) {
-      if (Math.abs(sides[pr[0]] - sides[pr[1]]) < tol) {
-        if (!plan[pr[0]]) plan[pr[0]] = tick;
-        if (!plan[pr[1]]) plan[pr[1]] = tick;
-        tick++;
-      }
-    });
+    plan[pair[0]] = 1;
+    plan[pair[1]] = 1;
     return plan;
   }
 
@@ -467,20 +479,14 @@
    * - equilateral: all 1
    */
   function halfTickPlan(v) {
-    var sides = sideLengths(v);
-    var tol = sideEqTol(v);
-    if (
-      Math.abs(sides[0] - sides[1]) < tol &&
-      Math.abs(sides[1] - sides[2]) < tol
-    ) {
-      return [1, 1, 1];
-    }
+    if (isEquilateralSides(v)) return [1, 1, 1];
+    var pair = bestEqualSidePair(v);
+    if (!pair) return SIDE_TICKS.slice();
     var plan = [0, 0, 0];
-    // Equal legs share 1; unequal remaining side gets 2
-    if (Math.abs(sides[1] - sides[2]) < tol) { plan[1] = 1; plan[2] = 1; plan[0] = 2; }
-    else if (Math.abs(sides[0] - sides[2]) < tol) { plan[0] = 1; plan[2] = 1; plan[1] = 2; }
-    else if (Math.abs(sides[0] - sides[1]) < tol) { plan[0] = 1; plan[1] = 1; plan[2] = 2; }
-    else return SIDE_TICKS.slice();
+    plan[pair[0]] = 1;
+    plan[pair[1]] = 1;
+    var other = 3 - pair[0] - pair[1];
+    plan[other] = 2;
     return plan;
   }
 
@@ -509,15 +515,9 @@
    * Scalene: all three angles use different marks.
    */
   function angleArcPlan(v) {
-    var tags = triangleTags(v);
-    if (tags.indexOf("equilateral") >= 0) return [1, 1, 1];
+    if (isEquilateralSides(v)) return [1, 1, 1];
 
     var sidePlan = equalSideTickPlan(v);
-    // Equilateral via side ticks (all three same positive count)
-    if (sidePlan[0] && sidePlan[0] === sidePlan[1] && sidePlan[1] === sidePlan[2]) {
-      return [1, 1, 1];
-    }
-
     // Isosceles: exactly one unmarked side = base; its two endpoints are equal angles
     var marked = 0;
     var base = -1;
