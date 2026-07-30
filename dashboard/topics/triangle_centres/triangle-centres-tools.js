@@ -160,9 +160,7 @@
   }
 
   function sideHashes(p, q, count, col) {
-    // Offset from the midpoint so ticks are not buried under median /
-    // angle-bisector / altitude feet (which hit side midpoints).
-    return hashMarks(p, q, 0.32, count, col, 12);
+    return hashMarks(p, q, 0.5, count, col, 12);
   }
 
   function medianHalfMarks(p1, m, p2, tickLevel) {
