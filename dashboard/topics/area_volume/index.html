@@ -12,7 +12,7 @@
   <script defer src="../../shared/phone-compact.js?v=20260711-phone"></script>
   <script defer src="../../shared/embed-nav.js?v=20260710-deck-16x9"></script>
   <script defer src="area-volume-tools.js?v=20260730-prejm"></script>
-  <script defer src="area-volume-game.js?v=20260719-fo2"></script>
+  <script defer src="area-volume-game.js?v=20260730-builder"></script>
   <script defer src="area-volume-comics.js?v=20260730-prejm"></script>
   <script defer src="area-volume-quiz.js?v=20260730-prejm"></script>
   <style>
@@ -135,6 +135,8 @@
       font: inherit; font-weight: 600; font-size: 13px; padding: 7px 12px; border-radius: 9px; cursor: pointer; }
     .icon-btn:hover { border-color: var(--a); }
     .icon-btn.danger:hover { border-color: #E57373; color: #E57373; }
+    .icon-btn.hidden { display: none; }
+    .icon-btn.disabled, .icon-btn:disabled { opacity: .38; cursor: not-allowed; pointer-events: none; }
     #build-canvas { width: 100%; height: auto; display: block; border-radius: 10px; touch-action: none;
       background:
         linear-gradient(rgba(79,195,247,.06) 1px, transparent 1px) 0 0 / 100% 32px,
@@ -187,12 +189,13 @@
 
     /* calc panel */
     .calc-panel { background: var(--panel); border: 1px solid var(--line); border-radius: 14px;
-      display: flex; flex-direction: column; max-height: 620px; }
+      display: flex; flex-direction: column; overflow: hidden; min-height: 0; max-height: 620px; }
     .calc-head { padding: 14px 16px; border-bottom: 1px solid var(--line);
       background: linear-gradient(180deg,#16233d,var(--panel)); border-radius: 14px 14px 0 0; flex: none; }
     .calc-head h3 { margin: 0; font-size: 16px; color: var(--a); }
     .calc-head p { margin: 4px 0 0; font-size: 12px; color: var(--dim); }
-    .calc-scroll { padding: 12px; overflow-y: auto; display: flex; flex-direction: column; gap: 10px; }
+    .calc-scroll { padding: 12px; overflow-y: auto; display: flex; flex-direction: column; gap: 10px;
+      flex: 1; min-height: 0; }
     .calc-empty { color: var(--dim); font-size: 14px; text-align: center; padding: 28px 10px; line-height: 1.6; }
     .calc-card { background: var(--panel2); border: 1px solid var(--line); border-radius: 11px; padding: 11px 13px;
       transition: all .15s; cursor: pointer; }
@@ -426,15 +429,17 @@
       <aside class="palette">
         <h3 id="pal-title">2D Shapes</h3>
         <div id="pal-list"></div>
-        <p class="pal-hint">Tip: drag onto the board, or click to drop in the middle.</p>
+        <p class="pal-hint" id="pal-hint">Match a formula onto each shape to unlock adding more blocks here.</p>
       </aside>
 
       <!-- canvas -->
-      <div class="canvas-card">
+      <div class="canvas-card" id="canvas-card">
         <div class="canvas-bar">
           <span class="cb-title">Canvas</span>
           <span class="cb-count" id="canvas-count">0 shapes</span>
           <span class="spacer"></span>
+          <button id="toggle-labels" class="icon-btn hidden">Hide labels</button>
+          <button id="build-screenshot" class="icon-btn hidden">Screenshot</button>
           <button id="build-clear" class="icon-btn danger">Clear all</button>
         </div>
         <svg id="build-canvas" viewBox="0 0 640 460" role="img" aria-label="shape building canvas"></svg>
@@ -453,7 +458,7 @@
       </div>
 
       <!-- step-by-step calculation -->
-      <section class="calc-panel">
+      <section class="calc-panel" id="calc-panel">
         <div class="calc-head">
           <h3 id="calc-title">Total Area</h3>
           <p id="calc-sub">Sum of every shape's area on the canvas</p>
