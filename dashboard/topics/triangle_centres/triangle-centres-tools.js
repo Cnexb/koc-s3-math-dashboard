@@ -43,8 +43,8 @@
   var PRESETS = {
     // Scalene acute: three different side lengths, all angles < 90°
     acute: [{ x: 55, y: 320 }, { x: 440, y: 300 }, { x: 200, y: 55 }],
-    // Isosceles right at A: AB = AC (等腰直角三角形)
-    right: [{ x: 100, y: 300 }, { x: 320, y: 300 }, { x: 100, y: 80 }],
+    // Scalene right at A: AB ≠ AC (直角但不等腰)
+    right: [{ x: 100, y: 300 }, { x: 380, y: 300 }, { x: 100, y: 95 }],
     // Obtuse at A; H well clear of A; O well clear of midpoints (both in fixed box)
     obtuse: [{ x: 170, y: 220 }, { x: 400, y: 300 }, { x: 140, y: 60 }],
     // AC = BC (isosceles at C), acute
