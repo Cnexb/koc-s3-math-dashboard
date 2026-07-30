@@ -38,10 +38,10 @@
     if (window.self === window.top) return;
     document.documentElement.classList.add("in-embed");
     applyTabletClass();
-    if (!document.documentElement.classList.contains("tablet-touch")) return;
 
     var row = ensureTabRow();
-    if (!row || row.querySelector(".embed-back-btn")) return;
+    if (!row) return;
+    if (row.querySelector(".embed-back-btn")) return;
 
     var btn = document.createElement("button");
     btn.type = "button";

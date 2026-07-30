@@ -421,7 +421,7 @@
           title: "Area & Volume",
           subtitle: "KOC S3 Math · Summer 2026 · L07–09 Area and Volume",
           desc: "2D areas and 3D solids — formulas, interactive tool, and builder game.",
-          path: "topics/area_volume/index.html?v=20260711-phone",
+          path: "topics/area_volume/index.html?v=20260730-restore",
           cover: "cover-av",
           icon: "\u{1F4D0}",
           tags: ["L07\u201309", "Slides", "Tools", "Game"],
@@ -441,7 +441,7 @@
           title: "Inequality",
           subtitle: "KOC S3 Math · Summer 2026 · L03 Inequality",
           desc: "Signs, number lines, and solving — sign-flip lab, match-up & Sign Flip Doors games, summary, and quiz.",
-          path: "topics/inequality/index.html?v=20260711-phone",
+          path: "topics/inequality/index.html?v=20260730-restore",
           cover: "cover-in",
           icon: "\u{2264}",
           tags: ["L03", "Number line", "Games", "Summary"],
@@ -451,7 +451,7 @@
           title: "Probability",
           subtitle: "KOC S3 Math · Summer 2026 · L10–12 Probability",
           desc: "Formula, tree diagrams, tabulation — card tool and probability games.",
-          path: "topics/probability/index.html?v=20260711-phone",
+          path: "topics/probability/index.html?v=20260730-restore",
           cover: "cover-pb",
           icon: "\u{1F3B4}",
           tags: ["L10\u201312", "Tree", "Cards", "Game"],
@@ -461,7 +461,7 @@
           title: "Percentages",
           subtitle: "KOC S3 Math · Summer 2026 · L04–06 Percentages",
           desc: "Change factor, interest, tax — interest explorer, RPG games, lesson summary.",
-          path: "topics/percentage/index.html?v=20260725-persist",
+          path: "topics/percentage/index.html?v=20260730-restore",
           cover: "cover-pc",
           icon: "\u{0025}",
           tags: ["L04\u201306", "Interest", "Game", "Worked"],
@@ -537,9 +537,16 @@
         }
       }
 
+      function isGalleryTopicHash(id) {
+        return !!(id && findTopic(id));
+      }
+
       TOPICS.forEach(function (t) { grid.appendChild(buildCard(t)); });
 
-      backBtn.addEventListener("click", closeViewer);
+      backBtn.addEventListener("click", function (e) {
+        e.preventDefault();
+        closeViewer();
+      });
       window.addEventListener("message", function (e) {
         if (!e.data || e.data.type !== "uniplus:back-to-gallery") return;
         if (viewerView.classList.contains("active")) closeViewer();
@@ -547,14 +554,25 @@
       window.addEventListener("keydown", function (e) {
         if (e.key === "Escape" && viewerView.classList.contains("active")) closeViewer();
       });
+      // If a topic page navigates the iframe to s3.html (or elsewhere), pull back to gallery
+      frame.addEventListener("load", function () {
+        try {
+          var href = frame.contentWindow.location.href;
+          if (/\/s3\.html(\?|#|$)/i.test(href)) {
+            closeViewer();
+          }
+        } catch (err) {
+          /* cross-origin — ignore */
+        }
+      });
       window.addEventListener("hashchange", function () {
         var id = (location.hash || "").replace(/^#/, "");
-        if (id && findTopic(id)) openTopic(id);
+        if (isGalleryTopicHash(id)) openTopic(id);
         else if (!id) closeViewer();
       });
 
       var initial = (location.hash || "").replace(/^#/, "");
-      if (initial && findTopic(initial)) openTopic(initial);
+      if (isGalleryTopicHash(initial)) openTopic(initial);
     })();
   </script>
   <script src="https://uni-education-elearning.pages.dev/tracker/uni-tracker.js?v=8" defer></script>
