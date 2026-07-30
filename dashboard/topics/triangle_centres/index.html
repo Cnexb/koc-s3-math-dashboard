@@ -40,9 +40,11 @@
         <section class="block">
           <h2>Four special lines → four centres</h2>
           <p class="hint">All construction lines are solid. Medians use tick marks on equal halves; altitudes show a right-angle symbol at the foot; angle bisectors use outward arc marks. Drag vertices to explore.</p>
+          <p class="split-hint">Shape presets (click to load):</p>
           <div class="tool-toggle-row" id="tri-preset-btns"></div>
           <div class="tool-toggle-row" id="tri-mode-btns"></div>
           <svg class="lab-svg" id="tri-svg" viewBox="0 0 500 400" aria-label="Special lines and centres"></svg>
+          <p class="split-hint" style="margin-top:10px;margin-bottom:4px">Detected from the current shape:</p>
           <div class="badge-row" id="tri-type-badges"></div>
           <p class="formula" id="tri-caption"></p>
           <div class="note-box" id="tri-placement"></div>
@@ -91,7 +93,7 @@
   <script defer src="https://cdn.jsdelivr.net/npm/katex@0.16.11/dist/katex.min.js"></script>
   <script defer src="https://cdn.jsdelivr.net/npm/katex@0.16.11/dist/contrib/auto-render.min.js"></script>
   <script defer src="../../shared/jm-tabs.js?v=20260730-jm28j"></script>
-  <script defer src="triangle-centres-tools.js?v=20260730-iso-right-obtuse"></script>
+  <script defer src="triangle-centres-tools.js?v=20260730-restore-marks"></script>
   <script>
     document.addEventListener("DOMContentLoaded", function () {
       if (window.initJmTabs) window.initJmTabs();
