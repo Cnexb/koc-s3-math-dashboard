@@ -113,13 +113,26 @@
       stroke: col || INK, "stroke-width": w || SW, "stroke-linecap": "round",
     });
   }
-  function labelAt(p, text, dx, dy, fill) {
-    var t = E("text", {
+  function labelAt(p, text, dx, dy, fill, centered) {
+    var attrs = {
       x: p.x + (dx || 0), y: p.y + (dy || 0),
       fill: fill || INK, "font-size": 14, "font-weight": 700,
-    });
+    };
+    if (centered) {
+      attrs["text-anchor"] = "middle";
+      attrs["dominant-baseline"] = "middle";
+    }
+    var t = E("text", attrs);
     t.textContent = text;
     return t;
+  }
+
+  /** Place label on the ray from centroid → vertex, fixed radius (same for every label). */
+  var LABEL_R = 16;
+  function outwardLabel(p, centroid, name, distPx) {
+    var u = unit(centroid, p);
+    var d = distPx == null ? LABEL_R : distPx;
+    return labelAt(p, name, u.x * d, u.y * d, INK, true);
   }
   /** Invisible drag target + tiny vertex dot (no orange spots). */
   function handle(p, key, fill) {
@@ -212,16 +225,6 @@
     return ticks;
   }
 
-  function outwardLabel(p, centroid, name, distPx) {
-    var u = unit(centroid, p);
-    var d = distPx == null ? 15 : distPx;
-    var dx = u.x * d;
-    var dy = u.y * d;
-    // Tiny nudge off the stroke when the ray is almost axis-aligned
-    if (Math.abs(u.x) < 0.2) dx += p.x < centroid.x ? -3 : 3;
-    if (Math.abs(u.y) < 0.2) dy += p.y < centroid.y ? -3 : 5;
-    return labelAt(p, name, dx, dy);
-  }
 
   /** Equal-angle mark: n = 1, 2 or 3 concentric arcs (nOrDoubles: true⇒2). */
   function angleArc(vertex, pA, pB, r, color, nOrDoubles) {
@@ -1273,7 +1276,7 @@
       var cen = { x: cx / pts.length, y: cy / pts.length };
       pts.forEach(function (p, i) {
         svg.appendChild(E("circle", { cx: p.x, cy: p.y, r: 5, fill: MARK, stroke: "#0f172a", "stroke-width": 1.5 }));
-        svg.appendChild(outwardLabel(p, cen, names[i], 14));
+        svg.appendChild(outwardLabel(p, cen, names[i]));
       });
     }
 
@@ -1356,7 +1359,7 @@
         }));
         var cen = { x: (TA.x + TB.x + TC.x) / 3, y: (TA.y + TB.y + TC.y) / 3 };
         // Push D,E slightly farther so ticks / DE don't cover letters
-        svg.appendChild(outwardLabel(L[1], cen, L[0], L[0] === "D" || L[0] === "E" ? 18 : 14));
+        svg.appendChild(outwardLabel(L[1], cen, L[0]));
       });
     } else if (drawId === "intercept") {
       [80, 150, 220].forEach(function (y) {
