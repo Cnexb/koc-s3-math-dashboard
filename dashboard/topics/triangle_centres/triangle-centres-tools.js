@@ -499,18 +499,40 @@
     else g.appendChild(dashedSeg(C, F, "#94a3b8", 1.8));
   }
 
+  /**
+   * Arc-count plan per vertex A,B,C for equal-angle marks.
+   * Rule: the two angles that touch the unique side WITHOUT an equal-tick
+   * (the base) are the equal base angles; the apex gets a different count.
+   * Equilateral: all three angles use the same mark.
+   * Scalene: all three angles use different marks.
+   */
   function angleArcPlan(v) {
-    var sides = sideLengths(v);
-    var tol = sideEqTol(v);
-    if (
-      Math.abs(sides[0] - sides[1]) < tol &&
-      Math.abs(sides[1] - sides[2]) < tol
-    ) {
+    var tags = triangleTags(v);
+    if (tags.indexOf("equilateral") >= 0) return [1, 1, 1];
+
+    var sidePlan = equalSideTickPlan(v);
+    // Equilateral via side ticks (all three same positive count)
+    if (sidePlan[0] && sidePlan[0] === sidePlan[1] && sidePlan[1] === sidePlan[2]) {
       return [1, 1, 1];
     }
-    if (Math.abs(sides[1] - sides[2]) < tol) return [2, 2, 1];
-    if (Math.abs(sides[0] - sides[2]) < tol) return [2, 1, 2];
-    if (Math.abs(sides[0] - sides[1]) < tol) return [1, 2, 2];
+
+    // Isosceles: exactly one unmarked side = base; its two endpoints are equal angles
+    var marked = 0;
+    var base = -1;
+    for (var i = 0; i < 3; i++) {
+      if (sidePlan[i]) marked++;
+      else base = i;
+    }
+    if (marked === 2 && base >= 0) {
+      var plan = [1, 1, 1];
+      var apex = (base + 2) % 3;
+      plan[base] = 2;
+      plan[(base + 1) % 3] = 2;
+      plan[apex] = 1;
+      return plan;
+    }
+
+    // Scalene (or unknown): three different marks
     return ANGLE_ARCS.slice();
   }
 
