@@ -20,6 +20,8 @@
     // Only rewrite when not already on GitHub Pages (local / CF / custom domain).
     if (/github\.io$/i.test(location.hostname)) return;
     if (location.protocol === "file:") return;
+    // Keep local preview on local mp4s (new decks are not on GH Pages yet).
+    if (/^(localhost|127\.0\.0\.1)$/i.test(location.hostname)) return;
 
     document.querySelectorAll("[data-background-video]").forEach(function (el) {
       var v = el.getAttribute("data-background-video");
