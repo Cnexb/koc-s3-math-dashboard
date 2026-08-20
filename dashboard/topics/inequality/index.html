@@ -1,7 +1,55 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-  <meta charset="utf-8">
+<script>
+(function () {
+  if (!/[?&]jmTools=1(?:&|$)/.test(location.search || "")) return;
+  document.documentElement.classList.add("jm-tools-only");
+  function postH() {
+    var root = document.getElementById("sf-root");
+    var wrap = document.querySelector("#panel-tools .sf-wrap");
+    var panel = document.getElementById("panel-tools");
+    // Measure intrinsic content only (ignore current iframe viewport height).
+    var h = 0;
+    function contentBottom(el) {
+      if (!el) return 0;
+      var bottom = 0;
+      var kids = el.children;
+      for (var i = 0; i < kids.length; i++) {
+        var c = kids[i];
+        bottom = Math.max(bottom, c.offsetTop + c.offsetHeight);
+      }
+      return bottom;
+    }
+    if (root) h = Math.max(h, contentBottom(root), root.scrollHeight || 0);
+    if (wrap) {
+      var hint = wrap.querySelector(".sf-hint");
+      var hintH = hint ? (hint.offsetTop + hint.offsetHeight) : 0;
+      h = Math.max(h, hintH + contentBottom(root) + 12, contentBottom(wrap));
+    }
+    if (panel) {
+      var pad = 28;
+      h = Math.max(h, contentBottom(panel) + pad);
+      if (wrap) h = Math.max(h, wrap.offsetTop + (wrap.scrollHeight || wrap.offsetHeight || 0) + pad);
+    }
+    h = Math.max(420, Math.ceil(h));
+    try { parent.postMessage({ type: "jm-tools-height", height: h }, "*"); } catch (e) {}
+  }
+  window.__jmToolsPostHeight = postH;
+  window.addEventListener("load", function () {
+    postH();
+    setTimeout(postH, 200);
+    setTimeout(postH, 800);
+    var panel = document.getElementById("panel-tools");
+    var root = document.getElementById("sf-root");
+    if (window.ResizeObserver) {
+      if (panel) new ResizeObserver(postH).observe(panel);
+      if (root) new ResizeObserver(postH).observe(root);
+    }
+  });
+})();
+</script>
+<meta charset="utf-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title>Inequality — KOC S3 Math</title>
   <link href="https://fonts.googleapis.com/css2?family=Hanken+Grotesk:wght@400;600;700&family=JetBrains+Mono:wght@400;700&display=swap" rel="stylesheet">
@@ -12,7 +60,7 @@
   <script defer src="../../shared/deck-touch-nav.js?v=20260725-fixes6"></script>
   <script defer src="../../shared/phone-compact.js?v=20260711-phone"></script>
   <script defer src="../../shared/embed-nav.js?v=20260710-deck-16x9"></script>
-  <script defer src="inequality-tools.js?v=20260725-fixes2"></script>
+  <script defer src="inequality-tools.js?v=20260806-jm26-shrink"></script>
   <script defer src="inequality-game.js?v=20260706-quiz2"></script>
   <script defer src="sign-flip-doors.js?v=20260706-quiz2"></script>
   <script defer src="inequality-quiz.js?v=20260725-fixes6"></script>
@@ -72,6 +120,18 @@
     .sf-progress-fill {
       height: 100%; width: 0; border-radius: 999px; background: var(--sf-accent, #0277BD);
       transition: width .25s ease;
+      display: flex; flex-direction: row; align-items: stretch; overflow: hidden;
+    }
+    .sf-progress-ok {
+      height: 100%; width: 0; flex: 0 0 auto; background: #81C784;
+      transition: width .25s ease;
+    }
+    .sf-progress-bad {
+      height: 100%; width: 0; flex: 0 0 auto; background: #F06292;
+      transition: width .25s ease;
+    }
+    .sf-progress-track.sf-accuracy .sf-progress-fill {
+      width: 100% !important; background: transparent !important;
     }
     .sf-card {
       background: var(--panel); border: 1px solid var(--line); border-radius: 16px;
@@ -95,10 +155,122 @@
     .sf-head {
       font-weight: 700; font-size: 13px; color: var(--sf-accent, #0277BD); letter-spacing: .04em;
       text-transform: uppercase; font-family: "JetBrains Mono", monospace;
+      display: flex; align-items: center; gap: 8px; flex-wrap: wrap;
+    }
+    .sf-stage {
+      display: inline-block; padding: 2px 8px; border-radius: 999px;
+      background: var(--sf-accent-soft, #E3F2FD); color: var(--sf-accent, #0277BD);
+      font-size: 11px; font-weight: 700; letter-spacing: .02em;
+      text-transform: none; font-family: "Plus Jakarta Sans", system-ui, sans-serif;
     }
     .sf-prompt {
       margin: 0; font-size: 16px; font-weight: 600; color: var(--ink); line-height: 1.5;
     }
+    .sf-compare {
+      margin-top: 8px; display: flex; flex-direction: column; gap: 4px;
+      font-size: 14px; font-weight: 600;
+    }
+    .sf-compare-lbl {
+      display: inline-block; min-width: 58px; font-size: 11px; font-weight: 700;
+      letter-spacing: .04em; text-transform: uppercase; opacity: .85;
+    }
+    .sf-compare-yours { color: #E57373; }
+    .sf-compare-ok { color: var(--ab); }
+    .sf-interval { font-family: "JetBrains Mono", monospace; font-size: 12px; color: var(--dim); font-weight: 600; }
+    .sf-ray-anim line:nth-of-type(2) {
+      stroke-dasharray: 240;
+      stroke-dashoffset: 240;
+      animation: sf-ray-stroke .55s ease-out forwards;
+    }
+    @keyframes sf-ray-stroke {
+      to { stroke-dashoffset: 0; }
+    }
+    .sf-ray-anim path {
+      animation: sf-ray-head .35s ease-out .25s both;
+    }
+    @keyframes sf-ray-head {
+      from { opacity: 0; }
+      to { opacity: 1; }
+    }
+    .sf-card-enter {
+      animation: sf-card-in .38s ease-out both;
+    }
+    @keyframes sf-card-in {
+      from { opacity: 0; transform: translateY(12px) scale(.985); }
+      to { opacity: 1; transform: none; }
+    }
+    .sf-card-ok { animation: sf-ok-glow .55s ease-out; }
+    .sf-card-bad { animation: sf-bad-shake .45s ease-out; }
+    @keyframes sf-ok-glow {
+      0% { box-shadow: 0 0 0 0 rgba(102,187,106,.0); }
+      40% { box-shadow: 0 0 0 4px rgba(102,187,106,.35); }
+      100% { box-shadow: 0 10px 28px rgba(0,0,0,.05); }
+    }
+    @keyframes sf-bad-shake {
+      0%, 100% { transform: translateX(0); }
+      20% { transform: translateX(-6px); }
+      40% { transform: translateX(6px); }
+      60% { transform: translateX(-4px); }
+      80% { transform: translateX(3px); }
+    }
+    .sf-pop { animation: sf-pop-in .4s cubic-bezier(.2,1.2,.4,1) both; }
+    @keyframes sf-pop-in {
+      from { opacity: 0; transform: translateY(6px) scale(.92); }
+      to { opacity: 1; transform: none; }
+    }
+    .sf-board-pulse { animation: sf-board-pulse .5s ease-out; }
+    @keyframes sf-board-pulse {
+      0% { transform: scale(.98); }
+      60% { transform: scale(1.015); }
+      100% { transform: none; }
+    }
+    .sf-dot-pop { transform-box: fill-box; transform-origin: center; animation: sf-dot-pop .4s ease-out .15s both; }
+    @keyframes sf-dot-pop {
+      from { opacity: 0; transform: scale(.4); }
+      to { opacity: 1; transform: scale(1); }
+    }
+    .sf-done-enter { animation: sf-card-in .45s ease-out both; }
+    .sf-review {
+      display: flex; flex-direction: column; gap: 12px; margin-top: 4px;
+    }
+    .sf-review-title {
+      margin: 0; font-size: 15px; font-weight: 700; color: var(--sf-accent, #0277BD);
+      letter-spacing: .02em;
+    }
+    .sf-review-item {
+      background: #fff; border: 1px solid var(--line); border-radius: 14px;
+      padding: 14px 16px; display: flex; flex-direction: column; gap: 10px;
+      box-shadow: 0 4px 16px rgba(0,0,0,.04);
+      animation: sf-card-in .4s ease-out both;
+    }
+    .sf-review-q { display: flex; flex-wrap: wrap; align-items: baseline; gap: 8px 12px; }
+    .sf-review-q .katex { font-size: 1.25em; color: var(--ink); }
+    .sf-review-rows {
+      display: grid; grid-template-columns: 1fr 1fr; gap: 10px;
+    }
+    @media (max-width: 640px) { .sf-review-rows { grid-template-columns: 1fr; } }
+    .sf-review-yours, .sf-review-ok {
+      display: flex; flex-wrap: wrap; align-items: center; gap: 8px;
+      padding: 10px 12px; border-radius: 10px; font-weight: 600;
+    }
+    .sf-review-yours { background: rgba(229,115,115,.1); color: #c62828; }
+    .sf-review-ok { background: rgba(102,187,106,.12); color: var(--ab); }
+    .sf-review-lbl {
+      font-size: 11px; font-weight: 700; text-transform: uppercase; letter-spacing: .04em;
+      opacity: .8; min-width: 72px;
+    }
+    .sf-review-dot {
+      width: 16px; height: 16px; border-radius: 50%; flex: none; box-sizing: border-box;
+    }
+    .sf-review-dot.hollow {
+      background: #fff; border: 2.5px solid currentColor;
+    }
+    .sf-review-dot.filled { background: currentColor; border: 2px solid currentColor; }
+    .sf-review-nl {
+      background: var(--sf-surface, #F3F7FA); border-radius: 10px; padding: 6px 8px;
+      display: flex; align-items: center; justify-content: center;
+    }
+    .sf-review-nl svg { width: 100%; height: auto; display: block; }
     .sf-stem-row {
       display: flex; align-items: center; justify-content: center;
       padding: 28px 16px; min-height: 88px;
@@ -113,6 +285,20 @@
     .sf-build-lbl { width: 100%; margin: 0 0 4px; font-size: 13px; font-weight: 600; color: var(--dim); text-align: center; }
     .sf-build-x, .sf-build-val { font-family: "JetBrains Mono", monospace; font-size: 28px; font-weight: 700; color: var(--ink); }
     .sf-build-val .katex { font-size: 1em; color: var(--ink); }
+    .sf-bound-input {
+      width: 4.2em; min-width: 64px; height: 48px; box-sizing: border-box;
+      border: 2px dashed rgba(2, 119, 189, .35); border-radius: 10px;
+      background: #fff; color: var(--sf-accent, #0277BD);
+      font: inherit; font-family: "JetBrains Mono", monospace; font-size: 26px; font-weight: 700;
+      text-align: center; outline: none;
+    }
+    .sf-bound-input:focus {
+      border-style: solid; border-color: var(--sf-accent, #0277BD);
+      box-shadow: 0 0 0 2px rgba(2, 119, 189, .18);
+    }
+    .sf-bound-input.reveal-ok { border-style: solid; border-color: var(--ab); box-shadow: 0 0 0 1px var(--ab) inset; }
+    .sf-bound-input.reveal-bad { border-style: solid; border-color: #E57373; box-shadow: 0 0 0 1px #E57373 inset; }
+    .sf-bound-input:disabled { opacity: 1; }
     .sf-sign-slot {
       min-width: 52px; min-height: 48px; border: 2px dashed rgba(2, 119, 189, .35); border-radius: 10px;
       display: flex; align-items: center; justify-content: center; font-size: 26px; font-weight: 700;
@@ -159,7 +345,8 @@
     .sf-nl-section { display: flex; flex-direction: column; gap: 10px; flex: 1; }
     .sf-nl-board {
       position: relative; background: #fff; border: 1px solid var(--line);
-      border-radius: 12px; padding: 8px 8px 0; min-height: 130px; flex: 1;
+      border-radius: 12px; padding: 8px; min-height: 130px; flex: 0 0 auto;
+      display: flex; align-items: center; justify-content: center;
     }
     .sf-nl-board svg { width: 100%; height: auto; display: block; pointer-events: none; }
     .sf-nl-board.drop-target { cursor: copy; }
@@ -432,6 +619,51 @@
     .summary-set.hidden { display: none; }
   </style>
   <link rel="stylesheet" href="../../shared/chem-light-theme.css?v=20260710-deck-16x9">
+<style id="jm-tools-only-css">
+/* JM S3 embed: show only Interactive Tools */
+html.jm-tools-only body > header,
+html.jm-tools-only body > .tab-row,
+html.jm-tools-only body > nav,
+html.jm-tools-only body > .tabs,
+html.jm-tools-only body > section:not(#panel-tools) {
+  display: none !important;
+}
+html.jm-tools-only #panel-tools,
+html.jm-tools-only #panel-tools.hidden {
+  display: block !important;
+  visibility: visible !important;
+  padding: 8px 12px 20px !important;
+  max-width: none !important;
+  overflow: visible !important;
+  height: auto !important;
+}
+html.jm-tools-only body {
+  margin: 0 !important;
+  min-height: 0 !important;
+  height: auto !important;
+  background: #ffffff !important;
+  overflow-x: hidden !important;
+  overflow-y: hidden !important;
+}
+html.jm-tools-only {
+  background: #ffffff !important;
+  height: auto !important;
+  overflow: hidden !important;
+}
+html.jm-tools-only #sf-root,
+html.jm-tools-only .sf-wrap {
+  overflow: visible !important;
+  height: auto !important;
+}
+html.jm-tools-only .sf-card,
+html.jm-tools-only .sf-layout,
+html.jm-tools-only .sf-left,
+html.jm-tools-only .sf-right,
+html.jm-tools-only .sf-nl-section {
+  height: auto !important;
+  flex-grow: 0 !important;
+}
+</style>
 </head>
 <body>
   <header>
@@ -472,7 +704,7 @@
   <!-- TAB 2: sign-flip lab -->
   <section id="panel-tools" class="panel hidden">
     <div class="sf-wrap">
-      <p class="sf-hint">Divide both sides, then <b>drag the sign</b> into your answer and <b>drag hollow or filled</b> onto the number line.</p>
+      <p class="sf-hint">Difficulty rises: <b>3</b> positive → <b>5</b> negative (sign flip) → <b>4</b> multi-step. In Stage 3, <b>enter the boundary value</b>, then drag the sign and hollow / filled.</p>
       <div id="sf-root"></div>
     </div>
   </section>

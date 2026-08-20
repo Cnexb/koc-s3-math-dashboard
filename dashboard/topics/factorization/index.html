@@ -1,7 +1,51 @@
 ﻿<!DOCTYPE html>
 <html lang="en">
 <head>
-  <meta charset="utf-8">
+<script>
+(function () {
+  if (!/[?&]jmTools=1(?:&|$)/.test(location.search || "")) return;
+  document.documentElement.classList.add("jm-tools-only");
+  function postH() {
+    var h = Math.max(
+      document.documentElement.scrollHeight || 0,
+      document.body ? document.body.scrollHeight : 0,
+      400
+    );
+    try { parent.postMessage({ type: "jm-tools-height", height: h }, "*"); } catch (e) {}
+  }
+  window.addEventListener("load", function () {
+    postH();
+    setTimeout(postH, 200);
+    setTimeout(postH, 800);
+    if (window.ResizeObserver) {
+      new ResizeObserver(postH).observe(document.documentElement);
+    }
+  });
+})();
+</script>
+<script>
+(function () {
+  if (!/[?&]jmTools=1(?:&|$)/.test(location.search || "")) return;
+  document.documentElement.classList.add("jm-tools-only");
+  function postH() {
+    var h = Math.max(
+      document.documentElement.scrollHeight || 0,
+      document.body ? document.body.scrollHeight : 0,
+      400
+    );
+    try { parent.postMessage({ type: "jm-tools-height", height: h }, "*"); } catch (e) {}
+  }
+  window.addEventListener("load", function () {
+    postH();
+    setTimeout(postH, 200);
+    setTimeout(postH, 800);
+    if (window.ResizeObserver) {
+      new ResizeObserver(postH).observe(document.documentElement);
+    }
+  });
+})();
+</script>
+<meta charset="utf-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title>Factorization — KOC S3 Math</title>
   <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/katex@0.16.11/dist/katex.min.css" crossorigin="anonymous">
@@ -11,7 +55,7 @@
   <script defer src="../../shared/deck-touch-nav.js?v=20260725-fixes6"></script>
   <script defer src="../../shared/phone-compact.js?v=20260711-phone"></script>
   <script defer src="../../shared/embed-nav.js?v=20260710-deck-16x9"></script>
-  <script defer src="factorization-tools.js?v=20260711-summary-zoom"></script>
+  <script defer src="factorization-tools.js?v=20260806-jm25-fix4"></script>
   <script defer src="factorization-game.js?v=20260719-ipad-snake"></script>
   <script defer src="factorization-quiz.js?v=20260725-fixes6"></script>
   <style>
@@ -78,7 +122,8 @@
       text-transform: uppercase; letter-spacing: .05em; }
     .slider-row { display: grid; grid-template-columns: 32px 1fr 40px; align-items: center; gap: 12px; margin-bottom: 14px; }
     .slider-name { font-family: "JetBrains Mono", monospace; font-weight: 700; font-size: 20px; }
-    .slider-val { font-family: "JetBrains Mono", monospace; text-align: right; color: var(--ink); font-weight: 700; font-size: 16px; }
+    .slider-val { min-width: 2.6em; font-family: "JetBrains Mono", monospace; text-align: right; color: var(--ink); font-weight: 700; font-size: 16px; }
+    .slider-val .katex { font-size: 1em; }
     input[type=range] { -webkit-appearance: none; appearance: none; height: 6px; border-radius: 999px;
       background: #e8e0d4; outline: none; }
     input[type=range]::-webkit-slider-thumb { -webkit-appearance: none; width: 18px; height: 18px; border-radius: 50%;
@@ -114,13 +159,9 @@
     .cross-step-panel.hidden { display: none; }
     .cross-step-panel h3 { margin: 0 0 8px; font-size: 15px; color: var(--ink); font-weight: 700;
       text-transform: uppercase; letter-spacing: .05em; }
-    #cross-step-2 h3, #cross-step-3 h3 { font-size: 24px; color: var(--ink); margin-bottom: 12px; }
     .cross-step-note { color: var(--dim); font-size: 15px; margin: 0 0 14px; line-height: 1.55; }
-    #cross-step-2 .cross-step-note, #cross-step-3 .cross-step-note {
-      font-size: 21px; color: var(--ink); line-height: 1.55; margin-bottom: 18px;
-    }
-    #cross-step-2 .cross-math, #cross-step-3 .cross-math { font-size: 28px; margin: 16px 0 20px; line-height: 1.7; }
-    #cross-step-2 .cross-math .katex, #cross-step-3 .cross-math .katex { font-size: 1.15em; }
+    .cross-math { font-size: 20px; margin: 12px 0; line-height: 1.6; color: var(--ink); }
+    .cross-math .katex { font-size: 1.05em; }
     .cross-form { display: flex; align-items: center; gap: 10px; flex-wrap: wrap; margin-bottom: 14px; }
     .cross-num { width: 64px; background: var(--panel2); color: var(--ink); border: 1px solid var(--line);
       border-radius: 9px; padding: 10px 8px; font: inherit; font-size: 18px; font-weight: 700; text-align: center;
@@ -128,8 +169,7 @@
     .cross-num:focus { outline: none; border-color: var(--a); }
     .cross-term { font-size: 19px; min-width: 26px; color: var(--ink); }
     .cross-op { font-size: 20px; color: var(--ink); font-weight: 700; }
-    .cross-preview { font-size: 22px; margin: 8px 0 16px; min-height: 32px; color: var(--ink); }
-    .cross-math { font-size: 20px; margin: 12px 0; line-height: 1.6; color: var(--ink); }
+    .cross-preview { font-size: 20px; margin: 8px 0 16px; min-height: 32px; color: var(--ink); }
     .cross-err { background: rgba(198,40,40,.1); border: 1px solid #C62828; border-radius: 10px;
       padding: 12px 14px; color: #C62828; font-size: 14px; margin-bottom: 12px; }
     .cross-err.hidden { display: none; }
@@ -219,6 +259,19 @@
     .cross-mark.bad { color: #C62828; }
     .cross-answer { font-size: 20px; text-align: center; margin-top: 10px; color: var(--ink); }
     .cross-hint { font-size: 14px; color: var(--dim); text-align: center; margin-top: 8px; }
+    .cross-slot.cross-swap-out {
+      animation: cross-swap-out .32s ease-in forwards;
+    }
+    .cross-slot.cross-swap-in {
+      animation: cross-swap-in .38s ease-out;
+    }
+    @keyframes cross-swap-out {
+      to { opacity: .15; transform: translateY(10px) scale(.92); }
+    }
+    @keyframes cross-swap-in {
+      from { opacity: .2; transform: translateY(-12px) scale(.92); }
+      to { opacity: 1; transform: none; }
+    }
     @media (max-width: 640px) {
       .chip { font-size: 15px; padding: 9px 12px; }
       .eq-line { font-size: 18px; }
@@ -688,11 +741,6 @@
       .figure-card, .control-card, .control-stack, .cross-lab { padding: 14px; }
       input[type=range]::-webkit-slider-thumb { width: 22px; height: 22px; }
       input[type=range]::-moz-range-thumb { width: 22px; height: 22px; }
-      #cross-step-2 h3, #cross-step-3 h3 { font-size: clamp(18px, 4.5vw, 24px); }
-      #cross-step-2 .cross-step-note, #cross-step-3 .cross-step-note {
-        font-size: clamp(16px, 4vw, 21px);
-      }
-      #cross-step-2 .cross-math, #cross-step-3 .cross-math { font-size: clamp(18px, 4.5vw, 28px); }
       .cross-grid {
         grid-template-columns: minmax(52px, 1fr) 18px 32px minmax(52px, 1fr) 18px;
         gap: 6px 2px;
@@ -1017,6 +1065,33 @@
     }
   </style>
   <link rel="stylesheet" href="../../shared/chem-light-theme.css?v=20260710-deck-16x9">
+<style id="jm-tools-only-css">
+/* JM S3 embed: show only Interactive Tools */
+html.jm-tools-only body > header,
+html.jm-tools-only body > .tab-row,
+html.jm-tools-only body > nav,
+html.jm-tools-only body > .tabs,
+html.jm-tools-only body > section:not(#panel-tools) {
+  display: none !important;
+}
+html.jm-tools-only #panel-tools,
+html.jm-tools-only #panel-tools.hidden {
+  display: block !important;
+  visibility: visible !important;
+  padding: 8px 12px 20px !important;
+  max-width: none !important;
+}
+html.jm-tools-only body {
+  margin: 0 !important;
+  min-height: 0 !important;
+  background: #ffffff !important;
+  overflow-x: hidden !important;
+  overflow-y: auto !important;
+}
+html.jm-tools-only {
+  background: #ffffff !important;
+}
+</style>
 </head>
 <body>
   <header>
@@ -1078,8 +1153,8 @@
           <div id="tool-eq"></div>
           <div class="legend">
             <p class="legend-title">Colour key</p>
-            <div class="lg-item"><i class="sw" style="background:var(--a-fill)"></i><span class="lg-sym" data-tex="a"></span><em>variable</em></div>
-            <div class="lg-item"><i class="sw" style="background:var(--b-fill)"></i><span class="lg-sym" data-tex="b"></span><em>constant number</em></div>
+            <div class="lg-item"><i class="sw" style="background:var(--a-fill)"></i><span class="lg-sym" data-tex="a"></span><em>multiple of x</em></div>
+            <div class="lg-item"><i class="sw" style="background:var(--b-fill)"></i><span class="lg-sym" data-tex="b"></span><em>multiple of y</em></div>
             <div class="lg-item"><i class="sw" style="background:var(--ab-fill)"></i><span class="lg-sym" data-tex="ab"></span><em>product / middle term</em></div>
           </div>
         </div>

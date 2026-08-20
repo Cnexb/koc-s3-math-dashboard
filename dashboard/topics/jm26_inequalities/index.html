@@ -8,12 +8,24 @@
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
   <link href="https://fonts.googleapis.com/css2?family=Hanken+Grotesk:wght@400;600;700&display=swap" rel="stylesheet">
   <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/katex@0.16.11/dist/katex.min.css">
-  <link rel="stylesheet" href="../../shared/jm-lesson.css?v=20260730-split">
+  <link rel="stylesheet" href="../../shared/jm-lesson.css?v=20260820-jm-tools">
   <style>
-    body { margin:0; min-height:100vh; color:var(--text); font-family:"Hanken Grotesk",system-ui,sans-serif;
-      background:linear-gradient(180deg,#f8fafc,#f1f5f9); user-select:none; }
-    h1 { margin:0 0 8px; font-size:clamp(26px,4vw,36px); }
-    .lead { margin:0 0 18px; color:var(--muted); font-size:15px; line-height:1.55; }
+    body {
+      margin: 0; min-height: 100vh; color: var(--text);
+      font-family: "Hanken Grotesk", system-ui, sans-serif;
+      background: linear-gradient(180deg, #f8fafc, #f1f5f9); user-select: none;
+    }
+    h1 { margin: 0 0 8px; font-size: clamp(26px, 4vw, 36px); }
+    .lead { margin: 0 0 18px; color: var(--muted); font-size: 15px; line-height: 1.55; }
+    .jm-page { width: min(1100px, 100%); }
+    .jm-tools-frame {
+      display: block; width: 100%; min-height: 920px; height: 920px;
+      border: 0; border-radius: 16px; background: #fff;
+    }
+    .jm-tools-shell {
+      margin: 0; padding: 0; overflow: hidden;
+      border: 1px solid var(--line); border-radius: 16px; background: var(--surface);
+    }
   </style>
 </head>
 <body>
@@ -21,30 +33,37 @@
     <a class="jm-back" href="../../s3.html#lessons">← S3 Lessons</a>
     <p class="jm-eyebrow">JM26 · Lesson 26</p>
     <h1>Inequalities I</h1>
-    <p class="lead">Interactive tools and comics for linear inequalities (S3 JM26).</p>
+    <p class="lead">Ascending practice: positive coefficients, then sign flips, then multi-step — Stage 3 asks you to enter the boundary of x as well as the sign and dot.</p>
     <nav class="jm-tabs" aria-label="Lesson sections">
       <button class="jm-tab active" type="button" data-tab="tools">Interactive Tools</button>
       <button class="jm-tab" type="button" data-tab="comics">Comics</button>
     </nav>
     <section id="panel-tools" class="jm-panel">
-      <section class="block">
-        <h2>Interactive Tools</h2>
-        <p class="hint">Content for this S3 lesson is coming soon.</p>
-      </section>
+      <p class="part-title">Lab · Interactive tools</p>
+      <div class="jm-tools-shell">
+        <iframe id="jm-tools-frame" class="jm-tools-frame" title="Inequalities I interactive tools"
+          src="../inequality/index.html?jmTools=1&v=20260820-jm-tools" loading="eager"></iframe>
+      </div>
     </section>
     <section id="panel-comics" class="jm-panel hidden">
       <section class="block">
         <h2>Comics</h2>
-        <p class="hint">Comics for this S3 lesson are coming soon.</p>
+        <p class="hint">Comics for this topic are coming soon.</p>
       </section>
     </section>
   </main>
   <script defer src="https://cdn.jsdelivr.net/npm/katex@0.16.11/dist/katex.min.js"></script>
   <script defer src="https://cdn.jsdelivr.net/npm/katex@0.16.11/dist/contrib/auto-render.min.js"></script>
-  <script defer src="../../shared/jm-tabs.js?v=20260730-split"></script>
+  <script defer src="../../shared/jm-tabs.js?v=20260820-jm-tools"></script>
   <script>
     document.addEventListener("DOMContentLoaded", function () {
       if (window.initJmTabs) window.initJmTabs();
+      var frame = document.getElementById("jm-tools-frame");
+      window.addEventListener("message", function (e) {
+        if (!e.data || e.data.type !== "jm-tools-height" || !frame) return;
+        var h = Math.max(420, Math.min(2400, Number(e.data.height) || 0));
+        if (h) frame.style.height = h + "px";
+      });
     });
   </script>
 </body>

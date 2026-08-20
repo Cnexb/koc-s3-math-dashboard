@@ -21,7 +21,10 @@
     cellAB: "#11321d", // dark text on green fill
     cellB: "#3a2f06",  // dark text on amber fill
   };
+  // Shared cell opacities so (a+b)², (a-b)² and a²−b² read as one palette.
+  const OP_A = 0.55, OP_B = 0.65, OP_AB = 0.55;
   const NS = "http://www.w3.org/2000/svg";
+
   const TABLET_MAX_W = 1366;
   const PHONE_MAX_W = 767;
   const deckTouch = () => window.KOCDeckTouch;
@@ -167,7 +170,9 @@
   function lineSvg(p, x1, y1, x2, y2, col, w, dash) {
     const a = { x1, y1, x2, y2, stroke: col, "stroke-width": w || 2 };
     if (dash) a["stroke-dasharray"] = dash;
-    p.appendChild(E("line", a));
+    const el = E("line", a);
+    p.appendChild(el);
+    return el;
   }
   function plainText(p, x, y, s, col, size) {
     const t = E("text", {
@@ -316,11 +321,12 @@
   const toolSum = {
     name: "(a+b)^2",
     viewBox: "0 0 410 380",
-    defaults: { a: 3, b: 2 },
+    defaults: { a: 3, b: 2, eqFlip: 0 },
     sliders: [
       { key: "a", label: "a", min: 1, max: 7, step: 1, color: C.a },
       { key: "b", label: "b", min: 1, max: 5, step: 1, color: C.b },
     ],
+    buttons: [{ id: "sum-eq-flip", label: "Show: factor \u2192 expand", labelAlt: "Show: expand \u2192 factor", toggle: "eqFlip" }],
     clamp() {},
     draw(svg, st, api) {
       // Scale the figure to fill the canvas so cells stay large & legible
@@ -333,10 +339,10 @@
       const ox = ml + (aw - S) / 2, top = mt + (ah - S) / 2;
       const sel = api ? api.sel : null;
       const cells = [
-        { x: ox, y: top, w: A, h: A, fill: C.aFill, op: 0.55, lt: sqX(st.a), tc: C.cellA },
-        { x: ox + A, y: top, w: B, h: A, fill: C.abFill, op: 0.55, lt: xyCoef(st.a * st.b), tc: C.cellAB },
-        { x: ox, y: top + A, w: A, h: B, fill: C.abFill, op: 0.55, lt: xyCoef(st.a * st.b), tc: C.cellAB },
-        { x: ox + A, y: top + A, w: B, h: B, fill: C.bFill, op: 0.65, lt: sqY(st.b), tc: C.cellB },
+        { x: ox, y: top, w: A, h: A, fill: C.aFill, op: OP_A, lt: sqX(st.a), tc: C.cellA },
+        { x: ox + A, y: top, w: B, h: A, fill: C.abFill, op: OP_AB, lt: xyCoef(st.a * st.b), tc: C.cellAB },
+        { x: ox, y: top + A, w: A, h: B, fill: C.abFill, op: OP_AB, lt: xyCoef(st.a * st.b), tc: C.cellAB },
+        { x: ox + A, y: top + A, w: B, h: B, fill: C.bFill, op: OP_B, lt: sqY(st.b), tc: C.cellB },
       ];
       cells.forEach((c, i) => {
         const on = sel === i, dim = sel != null && !on;
@@ -365,10 +371,15 @@
     },
     latex(st) {
       const a = st.a, b = st.b;
-      return [
+      const factorFirst = [
         `(${tc(C.a, "a")}+${tc(C.b, "b")})^2 = ${tc(C.a, "a^2")} + ${tc(C.ab, "2ab")} + ${tc(C.b, "b^2")}`,
         `${binomPlusXY(a, b)}^2 = ${tc(C.a, sqX(a))} + ${tc(C.ab, midXY(a, b))} + ${tc(C.b, sqY(b))}`,
       ];
+      const expandFirst = [
+        `${tc(C.a, "a^2")} + ${tc(C.ab, "2ab")} + ${tc(C.b, "b^2")} = (${tc(C.a, "a")}+${tc(C.b, "b")})^2`,
+        `${tc(C.a, sqX(a))} + ${tc(C.ab, midXY(a, b))} + ${tc(C.b, sqY(b))} = ${binomPlusXY(a, b)}^2`,
+      ];
+      return st.eqFlip ? expandFirst : factorFirst;
     },
   };
 
@@ -376,10 +387,14 @@
   const toolDiff = {
     name: "(a-b)^2",
     viewBox: "0 0 410 380",
-    defaults: { a: 5, b: 2 },
+    defaults: { a: 5, b: 2, eqFlip: 0, sharedStep: 0 },
     sliders: [
       { key: "a", label: "a", min: 3, max: 8, step: 1, color: C.a },
       { key: "b", label: "b", min: 1, max: 7, step: 1, color: C.b },
+    ],
+    buttons: [
+      { id: "diff-eq-flip", label: "Show: factor \u2192 expand", labelAlt: "Show: expand \u2192 factor", toggle: "eqFlip" },
+      { id: "diff-shared-step", label: "Reveal shared corner", labelAlt: "Hide shared corner", toggle: "sharedStep" },
     ],
     clamp(st) { if (st.b > st.a - 1) st.b = st.a - 1; },
     draw(svg, st, api) {
@@ -395,15 +410,14 @@
       const ab = st.a * st.b;
       const innerSqLabel = `(${tc(C.a, "a")}-${tc(C.b, "b")})^2`;
       const cells = [
-        { x: ox + IN, y: top, w: B, h: A, fill: C.abFill, op: 0.5,
+        { x: ox + IN, y: top, w: B, h: A, fill: C.abFill, op: OP_AB,
           lx: ox + IN + B / 2, ly: top + IN / 2, lw: B, lh: IN, lt: xyCoef(ab), tc: C.cellAB },
-        { x: ox, y: top + IN, w: A, h: B, fill: C.abFill, op: 0.5,
+        { x: ox, y: top + IN, w: A, h: B, fill: C.abFill, op: OP_AB,
           lx: ox + IN / 2, ly: top + IN + B / 2, lw: IN, lh: B, lt: xyCoef(ab), tc: C.cellAB },
-        { x: ox + IN, y: top + IN, w: B, h: B, fill: C.bFill, op: 0.55,
+        { x: ox + IN, y: top + IN, w: B, h: B, fill: C.bFill, op: OP_B,
           lx: ox + IN + B / 2, ly: top + IN + B / 2, lw: B, lh: B, lt: sqY(st.b), tc: C.cellB },
-        { x: ox, y: top, w: IN, h: IN, fill: C.aFill, op: 0.6,
+        { x: ox, y: top, w: IN, h: IN, fill: C.aFill, op: OP_A,
           lx: ox + IN / 2, ly: top + IN / 2, lw: IN, lh: IN, lt: innerSqLabel, tc: C.cellA,
-          // Scale with cell; pad keeps (a-b)^2 inside borders at extreme a/b (e.g. 4 & 3).
           fitOpts: { max: 24, min: 10, padX: 12, padY: 10, glyphEm: 0.52 } },
       ];
       cells.forEach((c, i) => {
@@ -416,28 +430,20 @@
           : fitTex(svg, c.lx, c.ly, c.lt, c.tc, c.lw, c.lh, { max: 22, min: 10, padX: 8, padY: 8 });
         fade(f, dim); pickable(f, i, api);
       });
-      // Hint before any click: stripe each FULL ab strip with slanted lines
-      // (bottom strip one way, right strip the other). The stripes run through
-      // the b² corner, so the corner shows a cross-hatch — making it obvious
-      // each ab strip is the whole a×b band and the corner is shared by both.
-      if (sel == null) {
-        const stripe = "#558B2F";
-        hatchFill(svg, ox, top + IN, A, B, stripe, 45, 0.55);      // bottom ab strip "/"
-        hatchFill(svg, ox + IN, top, B, A, stripe, -45, 0.55);     // right ab strip "\"
-        // redraw labels so they stay crisp above the stripes (non-interactive
-        // so the cells underneath stay clickable)
+      if (sel == null && !st.sharedStep) {
+        const stripe = C.ab;
+        hatchFill(svg, ox, top + IN, A, B, stripe, 45, 0.55);
+        hatchFill(svg, ox + IN, top, B, A, stripe, -45, 0.55);
         noHit(fitTex(svg, ox + IN + B / 2, top + IN / 2, xyCoef(ab), C.cellAB, B, IN, { max: 22, min: 10, padX: 8, padY: 8 }));
         noHit(fitTex(svg, ox + IN / 2, top + IN + B / 2, xyCoef(ab), C.cellAB, IN, B, { max: 22, min: 10, padX: 8, padY: 8 }));
         noHit(fitTex(svg, ox + IN + B / 2, top + IN + B / 2, sqY(st.b), C.cellB, B, B, { max: 22, min: 10, padX: 8, padY: 8 }));
       }
-      // When an ab strip is picked, reveal that it continues *through* the b²
-      // corner — paint the corner in the strip colour so the full a×b extent is
-      // visible, then hatch it to flag the corner as the shared (double-counted)
-      // piece. This corrects the static look where ab seems to be only one cell.
-      if (sel === 0 || sel === 1) {
+      // Guided reveal: both ab strips count the b² corner once each → shared.
+      if (st.sharedStep || sel === 0 || sel === 1) {
         rectSvg(svg, ox + IN, top + IN, B, B, C.abFill, Math.min(0.95, 0.5 + 0.28)).style.pointerEvents = "none";
         hatchOverlay(svg, ox + IN, top + IN, B, B, C.rm);
-        noHit(fitTex(svg, ox + IN + B / 2, top + IN + B / 2, "\\text{shared}", C.rm, B, B, { max: 12 }));
+        noHit(fitTex(svg, ox + IN + B / 2, top + IN + B / 2,
+          st.sharedStep ? "\\text{counted twice}" : "\\text{shared}", C.rm, B, B, { max: 11 }));
       }
       rectSvg(svg, ox, top, A, A, "none", 0, C.ink, 2.5);
       const sc = sel != null ? cells[sel] : null;
@@ -453,9 +459,6 @@
       rights.forEach((L) => {
         fade(tex(svg, ox + A + inset.edgeRight, L.cy, L.t, L.col, L.fz, 70, 34), sc && !span(sc.y, sc.y + sc.h, L.s, L.e));
       });
-      // total side length a = (a-b) + b, shown on the otherwise-empty left &
-      // bottom sides; lit when the selected piece spans that whole side (i.e.
-      // makes clear each ab strip is a full a×b rectangle).
       const fullV = sc && sc.y <= top + 0.5 && sc.y + sc.h >= top + A - 0.5;
       const fullH = sc && sc.x <= ox + 0.5 && sc.x + sc.w >= ox + A - 0.5;
       fade(tex(svg, ox - inset.edgeX, top + A / 2, coefX(st.a), C.a, 20, 48, 34), sc && !fullV);
@@ -463,87 +466,179 @@
     },
     latex(st) {
       const a = st.a, b = st.b;
-      return [
+      const factorFirst = [
         `(${tc(C.a, "a")}-${tc(C.b, "b")})^2 = ${tc(C.a, "a^2")} - ${tc(C.ab, "2ab")} + ${tc(C.b, "b^2")}`,
         `${binomDiffXY(a, b)}^2 = ${tc(C.a, sqX(a))} - ${tc(C.ab, midXY(a, b))} + ${tc(C.b, sqY(b))}`,
       ];
+      const expandFirst = [
+        `${tc(C.a, "a^2")} - ${tc(C.ab, "2ab")} + ${tc(C.b, "b^2")} = (${tc(C.a, "a")}-${tc(C.b, "b")})^2`,
+        `${tc(C.a, sqX(a))} - ${tc(C.ab, midXY(a, b))} + ${tc(C.b, sqY(b))} = ${binomDiffXY(a, b)}^2`,
+      ];
+      const lines = st.eqFlip ? expandFirst : factorFirst;
+      if (st.sharedStep) {
+        lines.push(`\\text{Corner }${tc(C.b, "b^2")}\\text{ lies in both }${tc(C.ab, "ab")}\\text{ strips (shared).}`);
+      }
+      return lines;
     },
   };
 
   /* ──────────────────── Tool 3: a^2 - b^2 = (a+b)(a-b) ──────────────────── */
+  function easeInOutCubic(t) {
+    return t < 0.5 ? 4 * t * t * t : 1 - Math.pow(-2 * t + 2, 3) / 2;
+  }
+  function lerp(a, b, t) { return a + (b - a) * t; }
+
+  function dosLayout(st, svg) {
+    let inset;
+    if (isPhoneCompact()) {
+      inset = { ml: 72, mr: 56, mt: 46, mb: 56, edgeX: 34, edgeTop: 22, edgeRight: 34, edgeBottom: 26 };
+    } else if (isTabletTouch()) {
+      inset = { ml: 78, mr: 54, mt: 48, mb: 54, edgeX: 42, edgeTop: 24, edgeRight: 38, edgeBottom: 28 };
+    } else {
+      inset = { ml: 56, mr: 48, mt: 42, mb: 48, edgeX: 28, edgeTop: 20, edgeRight: 30, edgeBottom: 22 };
+    }
+    if (!isPhoneCompact()) inset = scaleInset(inset, labelScale(svg));
+    const ml = inset.ml, mr = inset.mr, mt = inset.mt, mb = inset.mb;
+    const aw = 450 - ml - mr, ah = 380 - mt - mb;
+    // Fit both the a×a square and the (a+b)×(a-b) rectangle in the same canvas.
+    const unit = Math.min(aw / (st.a + st.b), ah / st.a);
+    const A = st.a * unit, B = st.b * unit, IN = A - B;
+    const ox0 = ml + (aw - A) / 2;
+    const top0 = mt + (ah - A) / 2;
+    const ox1 = ml + (aw - (A + B)) / 2;
+    const top1 = mt + (ah - IN) / 2;
+    return { inset, ox0, top0, ox1, top1, A, B, IN };
+  }
+
+  /** Progress t∈[0,1]: 0 = a² with b² cut out, 1 = rearranged (a+b)(a−b). */
+  function drawDoSProgress(svg, st, t) {
+    const L = dosLayout(st, svg);
+    const { inset, A, B, IN } = L;
+    const removePhase = Math.min(1, t / 0.22);
+    const movePhase = easeInOutCubic(Math.max(0, Math.min(1, (t - 0.22) / 0.78)));
+    const ox = lerp(L.ox0, L.ox1, movePhase);
+    const top = lerp(L.top0, L.top1, movePhase);
+
+    // Top band a × (a−b) — stays put relative to the moving frame.
+    rectSvg(svg, ox, top, A, IN, C.aFill, OP_A, C.aFill, 1);
+
+    // Bottom strip: 橫放 (IN×B) → rotate 90° CW → 直立 (B×IN) on the right (stays blue with the a band).
+    const cx0 = ox + IN / 2;
+    const cy0 = top + IN + B / 2;
+    const cx1 = ox + A + B / 2;
+    const cy1 = top + IN / 2;
+    if (movePhase < 0.98) {
+      const cx = lerp(cx0, cx1, movePhase);
+      const cy = lerp(cy0, cy1, movePhase);
+      const ang = 90 * movePhase;
+      const stripG = E("g", {
+        transform: "translate(" + cx + " " + cy + ") rotate(" + ang + ")",
+      });
+      rectSvg(stripG, -IN / 2, -B / 2, IN, B, C.aFill, OP_A, C.aFill, 1);
+      if (movePhase > 0.02) {
+        rectSvg(stripG, -IN / 2, -B / 2, IN, B, "none", 0, C.ink, 2);
+      }
+      svg.appendChild(stripG);
+    } else {
+      rectSvg(svg, ox + A, top, B, IN, C.aFill, OP_A, C.aFill, 1);
+    }
+
+    // Blue cut line (animation hinge) — fades as the strip turns away.
+    if (removePhase < 1 || movePhase < 0.98) {
+      const cut = lineSvg(svg, ox, top + IN, ox + IN, top + IN, C.a, 2.5);
+      cut.setAttribute("opacity", String(Math.max(0, 1 - movePhase * 1.35)));
+      cut.style.pointerEvents = "none";
+    }
+
+    // b² corner marked for removal (yellow fill + red dotted cut).
+    if (removePhase < 1) {
+      const bOp = OP_B * (1 - removePhase);
+      const bSq = rectSvg(svg, ox + IN, top + IN, B, B, C.bFill, bOp, C.rm, 2.2, "5 3.5");
+      bSq.setAttribute("opacity", String(1 - removePhase * 0.15));
+      if (removePhase < 0.85) {
+        fitTex(svg, ox + IN + B / 2, top + IN + B / 2, sqY(st.b), C.cellB, B, B, { max: 18, min: 10 })
+          .setAttribute("opacity", String(1 - removePhase));
+      }
+    }
+
+    // Outer outline of the current silhouette.
+    if (movePhase < 0.02) {
+      rectSvg(svg, ox, top, A, A, "none", 0, C.ink, 2.5);
+    } else if (movePhase > 0.98) {
+      rectSvg(svg, ox, top, A + B, IN, "none", 0, C.ink, 2.5);
+      lineSvg(svg, ox + A, top, ox + A, top + IN, C.ink, 1, "3 3");
+    } else {
+      rectSvg(svg, ox, top, A, IN, "none", 0, C.ink, 2);
+    }
+
+    // Labels — cross-fade between start and end.
+    const startOp = Math.max(0, 1 - movePhase * 1.6);
+    const endOp = Math.max(0, (movePhase - 0.35) / 0.65);
+    if (startOp > 0.05) {
+      const midLabel = fitTex(svg, ox + A / 2, top + IN / 2, sqX(st.a) + "-" + sqY(st.b), C.cellA, A, IN, { max: 22, min: 11 });
+      midLabel.setAttribute("opacity", String(startOp));
+      const tTop = tex(svg, ox + A / 2, top - inset.edgeTop, coefX(st.a), C.a, 20, 70, 34);
+      tTop.setAttribute("opacity", String(startOp));
+      const tLeft = tex(svg, ox - inset.edgeX, top + A / 2, coefX(st.a), C.a, 20, 48, 34);
+      tLeft.setAttribute("opacity", String(startOp));
+      if (removePhase < 0.9) {
+        const tb = tex(svg, ox + IN + B / 2, top + A + inset.edgeBottom, coefY(st.b), C.b, 20, 70, 34);
+        tb.setAttribute("opacity", String(startOp * (1 - removePhase)));
+        const tr = tex(svg, ox + A + inset.edgeRight, top + IN + B / 2, coefY(st.b), C.b, 20, 70, 34);
+        tr.setAttribute("opacity", String(startOp * (1 - removePhase)));
+      }
+    }
+    if (endOp > 0.05) {
+      const W = A + B, H = IN;
+      const endLab = fitTex(svg, ox + A / 2, top + H / 2, sqX(st.a) + "-" + sqY(st.b), C.cellA, A, H, { max: 22, min: 11 });
+      endLab.setAttribute("opacity", String(endOp));
+      const topF = tex(svg, ox + A / 2, top - inset.edgeTop, coefX(st.a) + "+" + coefY(st.b), C.a, 18, 130, 34);
+      topF.setAttribute("opacity", String(endOp));
+      const leftLblW = 118;
+      const ls = labelScale(svg);
+      const halfW = (leftLblW * ls) / 2;
+      let lcx = ox - 12 - halfW;
+      if (lcx - halfW < 6) lcx = 6 + halfW;
+      const leftF = tex(svg, lcx, top + H / 2, coefX(st.a) + "-" + coefY(st.b), C.a, 16, leftLblW, 34);
+      leftF.setAttribute("opacity", String(endOp));
+    }
+  }
+
+  function dosNarration(t, toMode) {
+    // t is absolute progress 0..1 toward rearranged; toMode unused for text direction
+    if (t < 0.02) return "Start: square a\u00b2 with corner b\u00b2 marked for removal.";
+    if (t < 0.28) return "1. Remove the red-dotted b\u00b2 corner.";
+    if (t < 0.98) return "2. Rotate the bottom strip from flat to upright, and slide it to the right.";
+    return "3. Result: rectangle (a+b) by (a\u2212b). The upright strip on the right has width b.";
+  }
+
   const toolDoS = {
     name: "a^2-b^2",
     viewBox: "0 0 450 380",
-    defaults: { a: 5, b: 2, mode: 0 },
+    defaults: { a: 5, b: 2, mode: 0, eqFlip: 0 },
     sliders: [
       { key: "a", label: "a", min: 3, max: 8, step: 1, color: C.a },
       { key: "b", label: "b", min: 1, max: 7, step: 1, color: C.b },
     ],
-    buttons: [{ label: "Rearrange \u27f3", toggle: "mode" }],
+    buttons: [
+      { id: "dos-rearrange", label: "Rearrange \u27f3", labelAlt: "Restore \u27f3", toggle: "mode" },
+      { id: "dos-eq-flip", label: "Show: factor \u2192 expand", labelAlt: "Show: expand \u2192 factor", toggle: "eqFlip" },
+    ],
     clamp(st) { if (st.b > st.a - 1) st.b = st.a - 1; },
     draw(svg, st) {
-      if (!st.mode) {
-        let inset;
-        if (isPhoneCompact()) {
-          inset = { ml: 58, mr: 56, mt: 44, mb: 56, edgeX: 32, edgeTop: 22, edgeRight: 34, edgeBottom: 26 };
-        } else if (isTabletTouch()) {
-          inset = { ml: 66, mr: 54, mt: 46, mb: 54, edgeX: 42, edgeTop: 24, edgeRight: 38, edgeBottom: 28 };
-        } else {
-          inset = { ml: 34, mr: 48, mt: 40, mb: 52, edgeX: 24, edgeTop: 20, edgeRight: 28, edgeBottom: 22 };
-        }
-        if (!isPhoneCompact()) inset = scaleInset(inset, labelScale(svg));
-        const ml = inset.ml, mr = inset.mr, mt = inset.mt, mb = inset.mb;
-        const aw = 450 - ml - mr, ah = 380 - mt - mb;
-        const A = Math.min(aw, ah), unit = A / st.a;
-        const B = st.b * unit, IN = A - B;
-        const ox = ml + (aw - A) / 2, top = mt + (ah - A) / 2;
-        rectSvg(svg, ox, top, A, IN, C.aFill, 0.55, C.aFill, 1);
-        rectSvg(svg, ox, top + IN, IN, B, C.aFill, 0.55, C.aFill, 1);
-        rectSvg(svg, ox + IN, top + IN, B, B, C.bFill, 0.35, C.rm, 2, "4 3");
-        rectSvg(svg, ox, top, A, A, "none", 0, C.ink, 2.5);
-        fitTex(svg, ox + A / 2, top + IN / 2, sqX(st.a) + "-" + sqY(st.b), C.cellA, A, IN, { max: 22, min: 11 });
-        fitTex(svg, ox + IN + B / 2, top + IN + B / 2, sqY(st.b), C.rm, B, B, { max: 18, min: 10 });
-        tex(svg, ox + A / 2, top - inset.edgeTop, coefX(st.a), C.a, 20, 70, 34);
-        tex(svg, ox - inset.edgeX, top + A / 2, coefX(st.a), C.a, 20, 48, 34);
-        tex(svg, ox + IN + B / 2, top + A + inset.edgeBottom, coefY(st.b), C.b, 20, 70, 34);
-        tex(svg, ox + A + inset.edgeRight, top + IN + B / 2, coefY(st.b), C.b, 20, 70, 34);
-      } else {
-        let inset;
-        if (isPhoneCompact()) {
-          inset = { ml: 96, mr: 48, mt: 46, mb: 40, edgeX: 16, edgeTop: 22 };
-        } else if (isTabletTouch()) {
-          inset = { ml: 88, mr: 52, mt: 48, mb: 40, edgeX: 14, edgeTop: 24 };
-        } else {
-          inset = { ml: 108, mr: 42, mt: 44, mb: 36, edgeX: 14, edgeTop: 20 };
-        }
-        if (!isPhoneCompact()) inset = scaleInset(inset, labelScale(svg));
-        const ml = inset.ml, mr = inset.mr, mt = inset.mt, mb = inset.mb;
-        const aw = 450 - ml - mr, ah = 380 - mt - mb;
-        const unit = Math.min(aw / (st.a + st.b), ah / (st.a - st.b));
-        const A = st.a * unit, B = st.b * unit, IN = A - B;
-        const W = A + B, H = IN;
-        const ox = ml + (aw - W) / 2, top = mt + (ah - H) / 2;
-        rectSvg(svg, ox, top, A, H, C.aFill, 0.55, C.aFill, 1);
-        rectSvg(svg, ox + A, top, B, H, C.aFill, 0.55, C.aFill, 1);
-        lineSvg(svg, ox + A, top, ox + A, top + H, C.ink, 1, "3 3");
-        rectSvg(svg, ox, top, W, H, "none", 0, C.ink, 2.5);
-        fitTex(svg, ox + W / 2, top + H / 2, sqX(st.a) + "-" + sqY(st.b), C.cellA, W, H, { max: 22, min: 11 });
-        tex(svg, ox + W / 2, top - inset.edgeTop, "(" + coefX(st.a) + "+" + coefY(st.b) + ")", C.a, 18, 120, 34);
-        const leftLblW = 118;
-        const ls = labelScale(svg);
-        const leftGap = 12;
-        const halfW = (leftLblW * ls) / 2;
-        let lcx = ox - leftGap - halfW;
-        if (lcx - halfW < 6) lcx = 6 + halfW;
-        tex(svg, lcx, top + H / 2, "(" + coefX(st.a) + "-" + coefY(st.b) + ")", C.a, 16, leftLblW, 34);
-      }
+      drawDoSProgress(svg, st, st.mode ? 1 : 0);
     },
     latex(st) {
       const a = st.a, b = st.b;
-      return [
+      const factorFirst = [
         `${tc(C.a, "a^2")} - ${tc(C.b, "b^2")} = (${tc(C.a, "a")}+${tc(C.b, "b")})(${tc(C.a, "a")}-${tc(C.b, "b")})`,
         `${dosDiffXY(a, b)} = ${dosFactorsXY(a, b)}`,
       ];
+      const expandFirst = [
+        `(${tc(C.a, "a")}+${tc(C.b, "b")})(${tc(C.a, "a")}-${tc(C.b, "b")}) = ${tc(C.a, "a^2")} - ${tc(C.b, "b^2")}`,
+        `${dosFactorsXY(a, b)} = ${dosDiffXY(a, b)}`,
+      ];
+      return st.eqFlip ? expandFirst : factorFirst;
     },
   };
 
@@ -572,14 +667,36 @@
     const controls = document.getElementById("tool-controls");
     const eqBox = document.getElementById("tool-eq");
     const toolBtns = document.querySelectorAll("[data-tool]");
-    let current = null, state = {};
+    let current = null, state = {}, animating = false;
 
     const api = {
       get sel() { return state.sel == null ? null : state.sel; },
       select(i) { state.sel = (state.sel === i ? null : i); redraw(); },
     };
 
+    function sliderValTex(key, n) {
+      if (key === "a") return coefX(n);
+      if (key === "b") return coefY(n);
+      return String(n);
+    }
+
+    function setBadge(el, key, n) {
+      if (!el) return;
+      const texStr = sliderValTex(key, n);
+      try { katex.render(texStr, el, { throwOnError: false, displayMode: false }); }
+      catch (e) { el.textContent = texStr; }
+    }
+
+    function syncSliderBadges() {
+      current.sliders.forEach((s) => {
+        setBadge(document.getElementById("val-" + s.key), s.key, state[s.key]);
+        const inp = document.getElementById("sl-" + s.key);
+        if (inp && +inp.value !== state[s.key]) inp.value = state[s.key];
+      });
+    }
+
     function redraw() {
+      if (!current) return;
       if (current.clamp) current.clamp(state);
       clear(svg);
       current.draw(svg, state, api);
@@ -590,15 +707,53 @@
         svg.style.aspectRatio = "";
       }
       renderEq(eqBox, current.latex(state));
-      current.sliders.forEach((s) => {
-        const badge = document.getElementById("val-" + s.key);
-        if (badge) badge.textContent = state[s.key];
-        const inp = document.getElementById("sl-" + s.key);
-        if (inp && +inp.value !== state[s.key]) inp.value = state[s.key];
+      syncSliderBadges();
+      (current.buttons || []).forEach((spec) => {
+        if (!spec.id) return;
+        const btn = document.getElementById(spec.id);
+        if (!btn) return;
+        const on = !!state[spec.toggle];
+        btn.textContent = on ? (spec.labelAlt || spec.label) : spec.label;
+        btn.disabled = animating && spec.toggle === "mode";
       });
+      const narr = document.getElementById("dos-narration");
+      if (narr) {
+        narr.style.display = current === toolDoS ? "block" : "none";
+        if (current === toolDoS) narr.textContent = dosNarration(state.mode ? 1 : 0);
+      }
+    }
+
+    function animateDoS(toMode) {
+      if (animating || current !== toolDoS) return;
+      animating = true;
+      const dosBtn = document.getElementById("dos-rearrange");
+      if (dosBtn) dosBtn.disabled = true;
+      const narr = document.getElementById("dos-narration");
+      const tStart = performance.now();
+      const dur = 1200;
+      const from = state.mode ? 1 : 0;
+      const to = toMode ? 1 : 0;
+      function frame(now) {
+        const p = Math.min(1, (now - tStart) / dur);
+        const eased = easeInOutCubic(p);
+        const t = from + (to - from) * eased;
+        clear(svg);
+        drawDoSProgress(svg, state, t);
+        renderEq(eqBox, current.latex(state));
+        if (narr) narr.textContent = dosNarration(t);
+        if (p < 1) {
+          requestAnimationFrame(frame);
+        } else {
+          state.mode = toMode ? 1 : 0;
+          animating = false;
+          redraw();
+        }
+      }
+      requestAnimationFrame(frame);
     }
 
     function loadTool(key) {
+      animating = false;
       current = TOOLS[key];
       state = Object.assign({}, current.defaults);
       svg.setAttribute("viewBox", current.viewBox);
@@ -613,25 +768,51 @@
         const inp = document.createElement("input");
         inp.id = "sl-" + s.key; inp.type = "range";
         inp.min = s.min; inp.max = s.max; inp.step = s.step; inp.value = state[s.key];
-        inp.addEventListener("input", (e) => { state[s.key] = +e.target.value; redraw(); });
+        inp.addEventListener("input", (e) => {
+          if (animating) return;
+          state[s.key] = +e.target.value;
+          if (current === toolDoS) state.mode = 0;
+          redraw();
+        });
         const val = document.createElement("span");
-        val.className = "slider-val"; val.id = "val-" + s.key; val.textContent = state[s.key];
+        val.className = "slider-val"; val.id = "val-" + s.key;
+        setBadge(val, s.key, state[s.key]);
         wrap.appendChild(name); wrap.appendChild(inp); wrap.appendChild(val);
         controls.appendChild(wrap);
       });
       (current.buttons || []).forEach((b) => {
         const btn = document.createElement("button");
+        btn.type = "button";
         btn.className = "tool-action";
-        btn.textContent = b.label;
-        btn.addEventListener("click", () => { state[b.toggle] = state[b.toggle] ? 0 : 1; redraw(); });
+        if (b.id) btn.id = b.id;
+        btn.textContent = state[b.toggle] ? (b.labelAlt || b.label) : b.label;
+        btn.addEventListener("click", () => {
+          if (animating) return;
+          if (current === toolDoS && b.toggle === "mode") {
+            animateDoS(state.mode ? 0 : 1);
+            return;
+          }
+          state[b.toggle] = state[b.toggle] ? 0 : 1;
+          redraw();
+        });
         controls.appendChild(btn);
       });
+      let narr = document.getElementById("dos-narration");
+      if (!narr) {
+        narr = document.createElement("p");
+        narr.id = "dos-narration";
+        narr.className = "split-hint";
+        narr.style.marginTop = "8px";
+        if (eqBox && eqBox.parentNode) eqBox.parentNode.insertBefore(narr, eqBox);
+        else controls.appendChild(narr);
+      }
       redraw();
       toolBtns.forEach((b) => b.classList.toggle("active", b.dataset.tool === key));
     }
 
     // Click empty canvas (or the outer border) to clear the focus.
     svg.addEventListener("click", (e) => {
+      if (animating) return;
       if ((e.target === svg || e.target.getAttribute("fill") === "none") && state.sel != null) {
         state.sel = null; redraw();
       }
@@ -652,6 +833,7 @@
     }
     toolBtns.forEach((b) => b.addEventListener("click", () => activate(b.dataset.tool)));
     const onLayoutChange = () => {
+      if (animating) return;
       if (current && toolLayout && !toolLayout.classList.contains("hidden")) redraw();
       if (window.FZ_CROSS && window.FZ_CROSS.onTabletChange) window.FZ_CROSS.onTabletChange();
     };
@@ -667,6 +849,7 @@
       if (!panel || panel.classList.contains("hidden")) return;
       clearTimeout(phoneResizeT);
       phoneResizeT = setTimeout(() => {
+        if (animating) return;
         if (current && toolLayout && !toolLayout.classList.contains("hidden")) redraw();
       }, 120);
     });
@@ -1010,10 +1193,18 @@
       const pBl = a2 * c1;  // bottom-left × top-right → below 2x (bl)
       const mid = pBr + pBl;
       const ok = mid === wiz.B2;
-      Object.keys(slots).forEach((k) => {
-        slots[k].classList.toggle("correct", ok);
-        slots[k].classList.toggle("wrong", !ok);
-      });
+      // Per-diagonal feedback: highlight which cross pair is off when possible.
+      const swapYWorks = (a1 * c1 + a2 * c2) === wiz.B2;
+      Object.keys(slots).forEach((k) => slots[k].classList.remove("correct", "wrong"));
+      if (ok) {
+        Object.keys(slots).forEach((k) => slots[k].classList.add("correct"));
+      } else if (swapYWorks) {
+        slots.tr.classList.add("wrong");
+        slots.br.classList.add("wrong");
+        animateYFactorSwap();
+      } else {
+        Object.keys(slots).forEach((k) => slots[k].classList.add("wrong"));
+      }
 
       prodBlEl.appendChild(kxEl(xyTermTex(pBl)));
       prodTrEl.appendChild(kxEl(xyTermTex(pBr)));
@@ -1036,7 +1227,40 @@
           ? polyTex(wiz.A, wiz.B, wiz.C) + " = " + prefix + "\\cdot" + inner
           : polyTex(wiz.A, wiz.B, wiz.C) + " = " + inner;
         answerEl.appendChild(kxEl(full));
+      } else {
+        const tip = document.createElement("p");
+        tip.className = "cross-hint";
+        tip.textContent = swapYWorks
+          ? "Cross sum is " + mid + "; need " + wiz.B2 + ". The two y-slot numbers can be swapped — watch the swap animation."
+          : "Cross products: (" + a2 + ")(" + c1 + ") + (" + a1 + ")(" + c2 + ") = " + mid +
+            "; need " + wiz.B2 + ". Try a different factor pair.";
+        checkEl.appendChild(tip);
       }
+    }
+
+    let swapAnimLock = false;
+    function animateYFactorSwap() {
+      if (swapAnimLock) return;
+      if (wiz.values.tr == null || wiz.values.br == null) return;
+      swapAnimLock = true;
+      const tr = slots.tr, br = slots.br;
+      tr.classList.add("cross-swap-out");
+      br.classList.add("cross-swap-out");
+      setTimeout(() => {
+        const tmp = wiz.values.tr;
+        wiz.values.tr = wiz.values.br;
+        wiz.values.br = tmp;
+        renderSlot("tr");
+        renderSlot("br");
+        tr.classList.add("cross-swap-in");
+        br.classList.add("cross-swap-in");
+        setTimeout(() => {
+          tr.classList.remove("cross-swap-in", "cross-swap-out");
+          br.classList.remove("cross-swap-in", "cross-swap-out");
+          swapAnimLock = false;
+          updateCheck();
+        }, 380);
+      }, 320);
     }
 
     function renderStep4() {
@@ -1072,33 +1296,62 @@
       }
     }
 
+    function prepareInner() {
+      prepNeg();
+      prepGcf();
+    }
+
+    function canIntegerFactorise() {
+      prepareInner();
+      return hasFactorisation();
+    }
+
+    function showStep1Error(msg) {
+      step1Err.textContent = msg;
+      step1Err.classList.remove("hidden");
+    }
+
     document.getElementById("cross-next-1").addEventListener("click", () => {
       readInputs();
       step1Err.classList.add("hidden");
       if (!Number.isInteger(wiz.A) || !Number.isInteger(wiz.B) || !Number.isInteger(wiz.C)) {
-        step1Err.textContent = "Please enter whole numbers for all three coefficients.";
-        step1Err.classList.remove("hidden");
+        showStep1Error("Please enter whole numbers for all three coefficients.");
         return;
       }
       if (wiz.A === 0 || wiz.C === 0) {
-        step1Err.textContent = "The x\u00b2 and y\u00b2 coefficients must be non-zero for the cross method.";
-        step1Err.classList.remove("hidden");
+        showStep1Error("The x\u00b2 and y\u00b2 coefficients must be non-zero for the cross method.");
         return;
       }
-      prepNeg();
+      if (!canIntegerFactorise()) {
+        showStep1Error("This trinomial has no integer cross-method factorisation — try coefficients whose inner form has two integer factor pairs for the xy term.");
+        return;
+      }
       renderStep2();
       showStep(2);
     });
 
     document.getElementById("cross-back-2").addEventListener("click", () => showStep(1));
     document.getElementById("cross-next-2").addEventListener("click", () => {
-      prepGcf();
+      step1Err.classList.add("hidden");
+      prepareInner();
+      if (!hasFactorisation()) {
+        showStep1Error("This trinomial has no integer cross-method factorisation — try different coefficients.");
+        showStep(1);
+        return;
+      }
       renderStep3();
       showStep(3);
     });
 
     document.getElementById("cross-back-3").addEventListener("click", () => showStep(2));
     document.getElementById("cross-next-3").addEventListener("click", () => {
+      step1Err.classList.add("hidden");
+      prepareInner();
+      if (!hasFactorisation()) {
+        showStep1Error("This trinomial has no integer cross-method factorisation — try different coefficients.");
+        showStep(1);
+        return;
+      }
       renderStep4();
       showStep(4);
     });

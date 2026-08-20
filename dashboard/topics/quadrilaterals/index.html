@@ -1,6 +1,28 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
+<script>
+(function () {
+  if (!/[?&]jmTools=1(?:&|$)/.test(location.search || "")) return;
+  document.documentElement.classList.add("jm-tools-only");
+  function postH() {
+    var h = Math.max(
+      document.documentElement.scrollHeight || 0,
+      document.body ? document.body.scrollHeight : 0,
+      400
+    );
+    try { parent.postMessage({ type: "jm-tools-height", height: h }, "*"); } catch (e) {}
+  }
+  window.addEventListener("load", function () {
+    postH();
+    setTimeout(postH, 200);
+    setTimeout(postH, 800);
+    if (window.ResizeObserver) {
+      new ResizeObserver(postH).observe(document.documentElement);
+    }
+  });
+})();
+</script>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title>Quadrilaterals — JM29</title>
@@ -81,6 +103,55 @@
     .explain-steps ol { margin:8px 0 0; padding-left:1.2em; }
     .explain-steps li { margin-bottom:6px; }
   </style>
+<style id="jm-tools-only-css">
+/* JM S3 embed: show only Interactive Tools */
+html.jm-tools-only body > header,
+html.jm-tools-only body > .tab-row,
+html.jm-tools-only body > nav,
+html.jm-tools-only body > .tabs,
+html.jm-tools-only body > section:not(#panel-tools) {
+  display: none !important;
+}
+html.jm-tools-only .jm-back,
+html.jm-tools-only .jm-eyebrow,
+html.jm-tools-only main.jm-page > h1,
+html.jm-tools-only main.jm-page > .lead,
+html.jm-tools-only .jm-tabs,
+html.jm-tools-only #panel-comics,
+html.jm-tools-only main.page > .back,
+html.jm-tools-only main.page > .eyebrow,
+html.jm-tools-only main.page > h1,
+html.jm-tools-only main.page > .lead,
+html.jm-tools-only main.page > nav.tabs {
+  display: none !important;
+}
+html.jm-tools-only #panel-tools,
+html.jm-tools-only #panel-tools.hidden,
+html.jm-tools-only #panel-tools.mode-panel,
+html.jm-tools-only #panel-tools.jm-panel {
+  display: block !important;
+  visibility: visible !important;
+  padding: 8px 12px 20px !important;
+  max-width: none !important;
+}
+html.jm-tools-only main.jm-page,
+html.jm-tools-only main.page {
+  width: 100% !important;
+  max-width: none !important;
+  margin: 0 !important;
+  padding: 0 !important;
+}
+html.jm-tools-only body {
+  margin: 0 !important;
+  min-height: 0 !important;
+  background: #ffffff !important;
+  overflow-x: hidden !important;
+  overflow-y: auto !important;
+}
+html.jm-tools-only {
+  background: #ffffff !important;
+}
+</style>
 </head>
 <body>
   <main class="jm-page">
@@ -101,7 +172,7 @@
         <p class="part-title">Lab 1 · Shape detector &amp; prove</p>
         <section class="block">
           <h2>Drag any corner — what shape is it?</h2>
-          <p class="hint">Pick a preset, or drag A–D. // marks use arrowheads; equal lengths use tick groups (same tick count = same length only). Marks are offset so they do not stack.</p>
+          <p class="hint">Pick a preset, or drag A–D. // marks use arrowheads; equal lengths use tick groups (same tick count = same length only). Marks are centered on each side in a shared cluster so they do not stack.</p>
           <div class="tool-toggle-row" id="det-preset-btns"></div>
           <svg class="lab-svg" id="det-svg" viewBox="0 0 500 340" aria-label="Quadrilateral detector"></svg>
           <div class="badge-row" id="det-badges"></div>
@@ -133,7 +204,7 @@
         <p class="part-title">Lab 2 · Mid-pt. thm. &amp; Intercept thm.</p>
         <section class="block">
           <h2>Parallel lines playground</h2>
-          <p class="hint">Drag near the left end of a green line to move it. Drag blue/purple end-handles to tilt. Mid-pt: match <strong>PB = BC</strong> and <strong>PE = EF</strong>. Intercept: match <strong>AB = BC</strong> (then DE = EF follows).</p>
+          <p class="hint">Drag near the left end of a green line to move it. Drag blue/purple end-handles to tilt. Mid-pt: two // lines — match <strong>PB = BC</strong> and <strong>PE = EF</strong> (segment turns gold when fit). Intercept: three // lines — match <strong>AB = BC</strong> (then DE = EF follows).</p>
           <div class="tool-toggle-row" id="thm-mode-btns"></div>
           <div class="tool-toggle-row" style="margin-top:.35rem">
             <button type="button" class="btn" id="thm-snap-btn">Fit condition</button>
@@ -172,8 +243,8 @@
   </main>
   <script defer src="https://cdn.jsdelivr.net/npm/katex@0.16.11/dist/katex.min.js"></script>
   <script defer src="https://cdn.jsdelivr.net/npm/katex@0.16.11/dist/contrib/auto-render.min.js"></script>
-  <script defer src="../../shared/jm-tabs.js?v=20260730-jm29m"></script>
-  <script defer src="quadrilaterals-tools.js?v=20260730-jm29m"></script>
+  <script defer src="../../shared/jm-tabs.js?v=20260806-jm29p"></script>
+  <script defer src="quadrilaterals-tools.js?v=20260806-jm29u"></script>
   <script>
     document.addEventListener("DOMContentLoaded", function () {
       if (window.initJmTabs) window.initJmTabs();

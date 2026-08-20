@@ -1,7 +1,51 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-  <meta charset="utf-8">
+<script>
+(function () {
+  if (!/[?&]jmTools=1(?:&|$)/.test(location.search || "")) return;
+  document.documentElement.classList.add("jm-tools-only");
+  function postH() {
+    var h = Math.max(
+      document.documentElement.scrollHeight || 0,
+      document.body ? document.body.scrollHeight : 0,
+      400
+    );
+    try { parent.postMessage({ type: "jm-tools-height", height: h }, "*"); } catch (e) {}
+  }
+  window.addEventListener("load", function () {
+    postH();
+    setTimeout(postH, 200);
+    setTimeout(postH, 800);
+    if (window.ResizeObserver) {
+      new ResizeObserver(postH).observe(document.documentElement);
+    }
+  });
+})();
+</script>
+<script>
+(function () {
+  if (!/[?&]jmTools=1(?:&|$)/.test(location.search || "")) return;
+  document.documentElement.classList.add("jm-tools-only");
+  function postH() {
+    var h = Math.max(
+      document.documentElement.scrollHeight || 0,
+      document.body ? document.body.scrollHeight : 0,
+      400
+    );
+    try { parent.postMessage({ type: "jm-tools-height", height: h }, "*"); } catch (e) {}
+  }
+  window.addEventListener("load", function () {
+    postH();
+    setTimeout(postH, 200);
+    setTimeout(postH, 800);
+    if (window.ResizeObserver) {
+      new ResizeObserver(postH).observe(document.documentElement);
+    }
+  });
+})();
+</script>
+<meta charset="utf-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title>Probability — KOC S3 Math</title>
   <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/katex@0.16.11/dist/katex.min.css" crossorigin="anonymous">
@@ -11,7 +55,7 @@
   <script defer src="../../shared/deck-touch-nav.js?v=20260725-fixes6"></script>
   <script defer src="../../shared/phone-compact.js?v=20260711-phone"></script>
   <script defer src="../../shared/embed-nav.js?v=20260710-deck-16x9"></script>
-  <script defer src="probability-tools.js?v=20260720-comics"></script>
+  <script defer src="probability-tools.js?v=20260806-nofill"></script>
   <script defer src="probability-game.js?v=20260730-apple"></script>
   <script defer src="probability-quiz.js?v=20260725-fixes6"></script>
   <script defer src="probability-comics.js?v=20260720-comics"></script>
@@ -142,6 +186,39 @@
     table.ptab td.cellp { font-family: "JetBrains Mono", monospace; }
     table.ptab .balls-cell { display: inline-flex; gap: 3px; align-items: center; }
     .bb-leaf-fav { font-weight: 700; }
+
+    /* Fill-the-tree practice */
+    .bb-mode-field { min-width: 200px; }
+    .bb-fill-bar { display: none; flex-wrap: wrap; align-items: center; gap: 10px; margin: 0 0 12px;
+      padding: 10px 14px; background: var(--panel); border: 1px solid var(--line); border-radius: 12px; }
+    .bb-fill-bar.visible { display: flex; }
+    .bb-fill-bar .bb-fill-hint { flex: 1 1 180px; font-size: 13px; color: var(--dim); margin: 0; line-height: 1.4; }
+    .bb-fill-btn { background: var(--panel2); color: var(--ink); border: 1px solid var(--line);
+      font: inherit; font-weight: 600; padding: 8px 14px; border-radius: 9px; cursor: pointer; font-size: 14px; }
+    .bb-fill-btn:hover { border-color: var(--a); }
+    .bb-fill-btn.primary { background: var(--a); color: #06283d; border-color: var(--a); }
+    .bb-fill-status { font-size: 13px; font-weight: 600; min-height: 1.2em; }
+    .bb-fill-status.ok { color: var(--tot); }
+    .bb-fill-status.bad { color: #f87171; }
+    .bb-frac-wrap { display: flex; align-items: center; justify-content: center; gap: 2px;
+      width: 100%; height: 100%; box-sizing: border-box; padding: 2px; pointer-events: auto; }
+    .bb-frac-inp { width: 22px; height: 20px; padding: 0; margin: 0; text-align: center;
+      font-family: "JetBrains Mono", monospace; font-size: 11px; font-weight: 700;
+      background: #0f172a; color: var(--ink); border: 1px solid transparent; border-radius: 4px;
+      -moz-appearance: textfield; appearance: textfield; }
+    .bb-frac-inp::-webkit-outer-spin-button, .bb-frac-inp::-webkit-inner-spin-button { -webkit-appearance: none; margin: 0; }
+    .bb-frac-inp:focus { outline: none; border-color: var(--a); }
+    .bb-frac-slash { color: var(--dim); font-size: 11px; font-weight: 700; line-height: 1; }
+    .bb-edge-pill { transition: stroke .15s, fill .15s; }
+    .bb-edge-pill.ok { stroke: var(--tot) !important; fill: rgba(102,187,106,.18) !important; }
+    .bb-edge-pill.bad { stroke: #f87171 !important; fill: rgba(248,113,113,.14) !important; }
+    .bb-edge-pill.revealed { stroke: var(--a) !important; fill: rgba(79,195,247,.14) !important; }
+    .bb-frac-chips { display: flex; flex-wrap: wrap; gap: 4px; justify-content: center; max-width: 100%; }
+    .bb-frac-chip { font-family: "JetBrains Mono", monospace; font-size: 10px; font-weight: 700;
+      padding: 2px 6px; border-radius: 999px; border: 1px solid var(--line); background: #0f172a;
+      color: var(--dim); cursor: pointer; line-height: 1.3; }
+    .bb-frac-chip:hover { border-color: var(--a); color: var(--ink); }
+    .bb-frac-chip.picked { background: var(--a); color: #06283d; border-color: var(--a); }
 
     /* enlarge modal */
     .ct-modal { position: fixed; inset: 0; z-index: 60; display: flex; align-items: center; justify-content: center;
@@ -417,6 +494,33 @@
     .comic-chapter-next { margin-left: auto; }
   </style>
   <link rel="stylesheet" href="../../shared/chem-light-theme.css?v=20260710-deck-16x9">
+<style id="jm-tools-only-css">
+/* JM S3 embed: show only Interactive Tools */
+html.jm-tools-only body > header,
+html.jm-tools-only body > .tab-row,
+html.jm-tools-only body > nav,
+html.jm-tools-only body > .tabs,
+html.jm-tools-only body > section:not(#panel-tools) {
+  display: none !important;
+}
+html.jm-tools-only #panel-tools,
+html.jm-tools-only #panel-tools.hidden {
+  display: block !important;
+  visibility: visible !important;
+  padding: 8px 12px 20px !important;
+  max-width: none !important;
+}
+html.jm-tools-only body {
+  margin: 0 !important;
+  min-height: 0 !important;
+  background: #ffffff !important;
+  overflow-x: hidden !important;
+  overflow-y: auto !important;
+}
+html.jm-tools-only {
+  background: #ffffff !important;
+}
+</style>
 </head>
 <body>
   <header>
