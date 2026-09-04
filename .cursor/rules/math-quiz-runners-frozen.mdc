@@ -1,0 +1,13 @@
+---
+description: Freeze Math quiz runners and tracker bridge — edit *-quiz-data.js instead
+globs: dashboard/topics/**/*-quiz.js,dashboard/shared/math-quiz-tracker.js,dashboard/index.html,.github/workflows/**
+alwaysApply: false
+---
+
+# Frozen Math wiring
+
+This file posts `uniplus:quizAnswer` or loads `uni-tracker.js`.
+
+Put question changes in the matching `*-quiz-data.js`. Leave this file unchanged.
+
+Do not edit `quizId`, `idPrefix`, `postMessage`, or network calls. If the teacher needs that, stop and name the technical owner.

@@ -2,7 +2,9 @@
 .ppt_export/
 
 # IDE / debug
-.cursor/
+.cursor/*
+!.cursor/rules/
+!.cursor/rules/**
 debug-*.log
 
 # Python
