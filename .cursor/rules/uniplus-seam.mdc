@@ -1,0 +1,28 @@
+---
+description: Math UniPlus seam — quiz content edits must not touch tracking or quiz runners
+alwaysApply: true
+---
+
+# Math content seam
+
+This repo is the S3 Maths dashboard inside a UniPlus iframe. Teachers may add quiz questions freely. Tracker wiring stays frozen.
+
+## Do this
+
+Edit only the question banks:
+
+- `dashboard/topics/percentage/percentage-quiz-data.js`
+- `dashboard/topics/factorization/factorization-quiz-data.js`
+- `dashboard/topics/inequality/inequality-quiz-data.js`
+- `dashboard/topics/probability/probability-quiz-data.js`
+- `dashboard/topics/area_volume/area-volume-quiz-data.js`
+
+Keep the existing shape: `{ id, type: "mc", prompt, choices, answer }` where `answer` is a 0-based index. New questions get a new `id`. Never reuse a published `id`.
+
+After edits run `node dashboard/scripts/test-math-quiz-tracker.cjs`.
+
+## Stop and ask the technical owner if the task needs
+
+`*-quiz.js` runners, `dashboard/shared/math-quiz-tracker.js`, `uni-tracker.js`, `postMessage`, `uniplus:*` payloads, `quizId`, `questionId` prefixes (`pct-q`, `fac-q`, `ineq-q`, `prob-q`, `av-q`), `functions/`, `.github/`, Supabase, or `fetch`.
+
+Do not convert choices to `{ key: "A", text }` or answers to `"B"`. That would change rows in `math_quiz_attempts`.
