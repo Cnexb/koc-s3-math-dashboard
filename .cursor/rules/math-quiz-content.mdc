@@ -1,0 +1,35 @@
+---
+description: How to add or edit S3 Math quiz questions in *-quiz-data.js
+globs: dashboard/topics/**/*-quiz-data.js
+alwaysApply: false
+---
+
+# Math quiz content
+
+Edit this data file only. The matching `*-quiz.js` runner and `math-quiz-tracker.js` stay closed.
+
+## New question
+
+Append to the `MATH_QUIZ_BANKS[...]` array:
+
+```js
+{
+  id: 11,
+  type: "mc",
+  prompt: "Question in English",
+  choices: ["\\text{A}", "\\text{B}", "\\text{C}", "\\text{D}"],
+  answer: 1,
+}
+```
+
+`id` must be unique in that bank. `answer` is the index of the correct choice (0 = A). Optional `stem` (KaTeX) and `figures: [{ src, alt }]`.
+
+Then run:
+
+```bash
+node dashboard/scripts/test-math-quiz-tracker.cjs
+```
+
+## Remove a question
+
+Delete that object. Do not renumber remaining `id` values. Teacher reports key off `pct-q1` / `fac-q3` and would split if ids move.
