@@ -129,6 +129,47 @@ check("stemMode matches the pre-split runners", () => {
   assert.equal(facPayload.quizId, "math-factorization");
 });
 
+check("iframe topic page: same-window tracker must receive each answer (no session = no fetch)", () => {
+  const origWindow = globalThis.window;
+  const receivedOnQuizPage = [];
+  const parentPosts = [];
+  const fakeWindow = {
+    postMessage: (data) => receivedOnQuizPage.push(data),
+    parent: { postMessage: (data) => parentPosts.push(data) },
+    top: { postMessage: () => {} },
+  };
+  fakeWindow.top = { postMessage: () => {} };
+  globalThis.window = fakeWindow;
+  const fetchCalls = [];
+  globalThis.fetch = () => {
+    fetchCalls.push("fetch");
+    return Promise.resolve({ ok: true, text: () => Promise.resolve("") });
+  };
+  try {
+    const quiz = loadBank("topics/probability/probability-quiz-data.js").probability;
+    const answers = {};
+    quiz.forEach((q) => {
+      answers[q.id] = 0;
+    });
+    tracker.reportQuiz(tracker.QUIZ_META.probability, quiz, answers);
+    assert.equal(parentPosts.length, 10, "still notify UniPlus parent");
+    assert.equal(
+      receivedOnQuizPage.length,
+      10,
+      "uni-tracker on the topic page never saw the answers — this is why Supabase stayed empty"
+    );
+    assert.equal(fetchCalls.length, 0, "MathQuizTracker must not call Supabase");
+    receivedOnQuizPage.forEach((p) => {
+      assert.equal(p.type, "uniplus:quizAnswer");
+      assert.equal(p.subject, "MATH");
+      assert.equal(p.quizId, "math-probability");
+    });
+  } finally {
+    globalThis.window = origWindow;
+    delete globalThis.fetch;
+  }
+});
+
 check("reportQuiz posts one parent message per question and never fetches", () => {
   const { fakeWindow, posts } = mockWindow();
   const origWindow = globalThis.window;
@@ -181,6 +222,23 @@ check("runners still call MathQuizTracker.reportQuiz and do not inline fetch", (
     assert.ok(!/fetch\s*\(/.test(src), bank.runner + " must not fetch");
     assert.ok(!/supabase/i.test(src), bank.runner + " must not mention supabase");
   }
+});
+
+check("topic quiz pages load uni-tracker.js so iframe sessions can save", () => {
+  const pages = [
+    "topics/percentage/index.html",
+    "topics/factorization/index.html",
+    "topics/inequality/index.html",
+    "topics/probability/index.html",
+    "topics/area_volume/index.html",
+  ];
+  pages.forEach((rel) => {
+    const html = fs.readFileSync(path.join(root, rel), "utf8");
+    assert.ok(
+      html.includes("uni-education-elearning.pages.dev/tracker/uni-tracker.js"),
+      rel + " missing uni-tracker.js"
+    );
+  });
 });
 
 if (failed) {

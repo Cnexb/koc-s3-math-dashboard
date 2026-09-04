@@ -1,6 +1,10 @@
 /**
  * Shared Math quiz → UniPlus tracker bridge.
- * Does not call Supabase. uni-tracker.js on the hub listens for these events.
+ * Does not call Supabase. uni-tracker.js on the topic page (and hub) listens.
+ *
+ * UniPlus is one iframe: quiz pages navigate away from the hub, so answers
+ * must also postMessage to this window. Parent-only posts never reach a
+ * listener (UniPlus does not load uni-tracker.js).
  */
 (function (root, factory) {
   var api = factory();
@@ -89,9 +93,16 @@
 
   function postPayload(payload) {
     var target = getWindow();
-    if (!target || !target.parent || !target.parent.postMessage) return;
-    target.parent.postMessage(payload, "*");
-    if (target.top && target.top !== target.parent) {
+    if (!target) return;
+    // In an iframe, parent !== this window. Notify the page that loaded
+    // uni-tracker.js (the topic page) without duplicating when standalone.
+    if (target.parent && target.parent !== target && target.postMessage) {
+      target.postMessage(payload, "*");
+    }
+    if (target.parent && target.parent.postMessage) {
+      target.parent.postMessage(payload, "*");
+    }
+    if (target.top && target.top !== target.parent && target.top.postMessage) {
       try {
         target.top.postMessage(payload, "*");
       } catch (_) {}
