@@ -1,0 +1,10 @@
+{
+  "cleanUrls": false,
+  "trailingSlash": false,
+  "redirects": [
+    { "source": "/dashboard/s2", "destination": "/dashboard/s2.html#lessons", "type": 302 },
+    { "source": "/dashboard/s2/", "destination": "/dashboard/s2.html#lessons", "type": 302 },
+    { "source": "/dashboard/s3", "destination": "/dashboard/s3.html#lessons", "type": 302 },
+    { "source": "/dashboard/s3/", "destination": "/dashboard/s3.html#lessons", "type": 302 }
+  ]
+}

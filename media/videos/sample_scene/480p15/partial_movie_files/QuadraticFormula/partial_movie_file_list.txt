@@ -1,0 +1,4 @@
+# This file is used internally by FFMPEG.
+file 'file:C:/Users/user/Downloads/koc-s3-math-dashboard/media/videos/sample_scene/480p15/partial_movie_files/QuadraticFormula/1584795214_3534244425_223132457.mp4'
+file 'file:C:/Users/user/Downloads/koc-s3-math-dashboard/media/videos/sample_scene/480p15/partial_movie_files/QuadraticFormula/4072820271_3000266292_2855719915.mp4'
+file 'file:C:/Users/user/Downloads/koc-s3-math-dashboard/media/videos/sample_scene/480p15/partial_movie_files/QuadraticFormula/4072820271_2872842549_1820016737.mp4'

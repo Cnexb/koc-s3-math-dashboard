@@ -90,7 +90,12 @@ MAP = [
     },
 ]
 
-V = "20260820-jm-tools"
+V = "20260821-displace9"
+
+
+def html_text(s: str) -> str:
+    return s.replace("&", "&amp;").replace("—", "&mdash;").replace("–", "&ndash;")
+
 
 JM_TOOLS_CSS = """
 /* JM S3 embed: show only Interactive Tools */
@@ -136,6 +141,13 @@ html.jm-tools-only body {
   background: #ffffff !important;
   overflow-x: hidden !important;
   overflow-y: auto !important;
+  caret-color: transparent !important;
+}
+html.jm-tools-only input,
+html.jm-tools-only textarea,
+html.jm-tools-only select,
+html.jm-tools-only [contenteditable="true"] {
+  caret-color: auto !important;
 }
 html.jm-tools-only {
   background: #ffffff !important;
@@ -208,7 +220,7 @@ def write_jm_page(cfg: dict) -> Path:
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>{cfg['title']} — {cfg['jm']}</title>
+  <title>{cfg['title']} &mdash; {cfg['jm']}</title>
   <link rel="preconnect" href="https://fonts.googleapis.com">
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
   <link href="https://fonts.googleapis.com/css2?family=Hanken+Grotesk:wght@400;600;700&display=swap" rel="stylesheet">
@@ -218,7 +230,7 @@ def write_jm_page(cfg: dict) -> Path:
     body {{
       margin: 0; min-height: 100vh; color: var(--text);
       font-family: "Hanken Grotesk", system-ui, sans-serif;
-      background: linear-gradient(180deg, #f8fafc, #f1f5f9); user-select: none;
+      background: linear-gradient(180deg, #f8fafc, #f1f5f9); caret-color: transparent;
     }}
     h1 {{ margin: 0 0 8px; font-size: clamp(26px, 4vw, 36px); }}
     .lead {{ margin: 0 0 18px; color: var(--muted); font-size: 15px; line-height: 1.55; }}
@@ -235,10 +247,10 @@ def write_jm_page(cfg: dict) -> Path:
 </head>
 <body>
   <main class="jm-page">
-    <a class="jm-back" href="../../s3.html#lessons">← S3 Lessons</a>
+    <a class="jm-back" href="../../s3.html#lessons">&larr; S3 Lessons</a>
     <p class="jm-eyebrow">{cfg['jm']} · Lesson {cfg['lesson']}</p>
     <h1>{cfg['title']}</h1>
-    <p class="lead">{cfg['lead']}</p>
+    <p class="lead">{html_text(cfg['lead'])}</p>
     <nav class="jm-tabs" aria-label="Lesson sections">
       <button class="jm-tab active" type="button" data-tab="tools">Interactive Tools</button>
       <button class="jm-tab" type="button" data-tab="comics">Comics</button>

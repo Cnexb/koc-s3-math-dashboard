@@ -1,34 +1,15 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-<script>
-(function () {
-  if (!/[?&]jmTools=1(?:&|$)/.test(location.search || "")) return;
-  document.documentElement.classList.add("jm-tools-only");
-  function postH() {
-    var h = Math.max(
-      document.documentElement.scrollHeight || 0,
-      document.body ? document.body.scrollHeight : 0,
-      400
-    );
-    try { parent.postMessage({ type: "jm-tools-height", height: h }, "*"); } catch (e) {}
-  }
-  window.addEventListener("load", function () {
-    postH();
-    setTimeout(postH, 200);
-    setTimeout(postH, 800);
-    if (window.ResizeObserver) {
-      new ResizeObserver(postH).observe(document.documentElement);
-    }
-  });
-})();
-</script>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>Law of Indices — JM24</title>
+  <meta http-equiv="Cache-Control" content="no-cache, no-store, must-revalidate" />
+  <meta http-equiv="Pragma" content="no-cache" />
+  <meta http-equiv="Expires" content="0" />
+  <title>JM24 · Law of Indices</title>
   <link rel="preconnect" href="https://fonts.googleapis.com">
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-  <link href="https://fonts.googleapis.com/css2?family=Hanken+Grotesk:wght@400;600;700&display=swap" rel="stylesheet">
+  <link href="https://fonts.googleapis.com/css2?family=Hanken+Grotesk:wght@400;600;700&family=DM+Sans:wght@400;500;700&family=Fraunces:opsz,wght@9..144,600;9..144,700&family=JetBrains+Mono:wght@400;700&display=swap" rel="stylesheet">
   <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/katex@0.16.11/dist/katex.min.css">
   <style>
     :root {
@@ -37,75 +18,25 @@
       --text: #1e293b;
       --muted: #64748b;
       --line: rgba(30, 41, 59, 0.12);
-      --accent: #0284c7;
-      --glow: #0369a1;
+      --accent: #4FC3F7;
+      --glow: #29B6F6;
       --good: #15803d;
       --warn: #a16207;
       --bad: #be123c;
     }
-    * { box-sizing: border-box; }
-    body {
-      margin: 0; min-height: 100vh; color: var(--text);
-      font-family: "Hanken Grotesk", system-ui, sans-serif;
-      background:
-        radial-gradient(ellipse 80% 50% at 12% 0%, rgba(14, 165, 233, 0.12), transparent 55%),
-        radial-gradient(ellipse 70% 45% at 90% 10%, rgba(56, 189, 248, 0.1), transparent 50%),
-        radial-gradient(ellipse 60% 40% at 50% 100%, rgba(125, 211, 252, 0.14), transparent 55%),
-        linear-gradient(180deg, #f8fafc 0%, #f1f5f9 100%);
-      background-attachment: fixed;
-      user-select: none;
-    }
-    .page {
-      position: relative; z-index: 1; width: min(860px, 100%);
-      margin: 0 auto; padding: 28px 22px 80px;
-    }
-    .back {
-      display: inline-flex; margin-bottom: 18px; padding: 7px 12px;
-      border: 1px solid var(--line); border-radius: 8px;
-      background: var(--surface-2); color: var(--text);
-      text-decoration: none; font: inherit; font-size: 13px; font-weight: 600; cursor: pointer;
-    }
-    .back:hover { border-color: var(--accent); color: var(--accent); }
-    .eyebrow {
-      margin: 0 0 6px; color: var(--glow); font-size: 11px; font-weight: 700;
-      letter-spacing: .12em; text-transform: uppercase;
-    }
-    h1 { margin: 0 0 8px; font-size: clamp(26px, 4vw, 36px); letter-spacing: -.03em; }
-    .lead { margin: 0 0 18px; color: var(--muted); font-size: 15px; line-height: 1.55; }
-    .back:focus-visible, .tab:focus-visible, .chip:focus-visible {
-      outline: 2px solid var(--accent); outline-offset: 3px;
-    }
-    .tabs {
-      display: flex; gap: 6px; margin: 0 0 14px;
-      border-bottom: 1px solid var(--line); padding-bottom: 0;
-    }
-    .tab {
-      background: none; border: none; color: var(--muted);
-      font: inherit; font-weight: 600; font-size: 15px;
-      padding: 10px 16px; cursor: pointer;
-      border-radius: 10px 10px 0 0;
-    }
-    .tab:hover { color: var(--text); }
-    .tab.active {
-      color: var(--text);
-      background: var(--surface);
-      box-shadow: inset 0 -2px 0 var(--accent);
-    }
-    .mode-panel { display: block; }
-    .mode-panel.hidden { display: none; }
     .subnav {
       display: flex; flex-wrap: wrap; gap: 8px;
       margin: 0 0 16px; align-items: center;
     }
     .chip {
-      background: var(--surface); border: 1px solid var(--line); color: var(--muted);
+      background: #fff; border: 1px solid var(--line); color: var(--muted);
       font: inherit; font-weight: 600; padding: 8px 14px;
-      border-radius: 10px; cursor: pointer; font-size: 14px;
+      border-radius: 999px; cursor: pointer; font-size: 14px;
       transition: color .15s, background .15s, border-color .15s;
     }
-    .chip:hover { color: var(--text); }
+    .chip:hover { color: var(--accent); border-color: rgba(61, 126, 166, 0.35); }
     .chip.active {
-      color: #fff; background: var(--accent); border-color: var(--accent);
+      color: #fff; background: #4FC3F7; border-color: #4FC3F7;
     }
     .lab { display: none; }
     .lab.active { display: block; }
@@ -126,12 +57,12 @@
     .formula.formula-locked { display: none; }
 
     .step-frame {
-      display: grid; grid-template-columns: 48px 1fr 48px; gap: 10px;
-      min-height: 200px; padding: 12px; border-radius: 14px;
+      display: grid; grid-template-columns: 48px minmax(0, 1fr) 48px; gap: 10px;
+      min-width: 0; min-height: 200px; padding: 12px; border-radius: 14px;
       border: 1px solid var(--line); background: var(--surface-2);
     }
     @media (max-width: 640px) {
-      .step-frame { grid-template-columns: 1fr; }
+      .step-frame { grid-template-columns: minmax(0, 1fr); }
       .nav-btn.prev { order: 2; justify-self: start; }
       .nav-btn.next { order: 3; justify-self: end; margin-top: -44px; }
       .step-body { order: 1; }
@@ -143,9 +74,11 @@
     }
     .nav-btn:hover:not(:disabled) { border-color: var(--accent); color: var(--accent); }
     .nav-btn:disabled { opacity: .35; cursor: not-allowed; }
-    .step-body { display: flex; flex-direction: column; justify-content: center; gap: 10px; padding: 6px; min-height: 170px; }
+    .step-body { display: flex; flex-direction: column; justify-content: center; gap: 10px; padding: 6px; min-height: 170px; overflow: hidden; min-width: 0; max-width: 100%; }
     .step-panel { display: none; }
     .step-panel.active { display: block; }
+    .step-track { display: flex; width: 100%; transition: transform 0.35s ease; will-change: transform; }
+    .step-track > .step-panel { display: block; flex: 0 0 100%; width: 100%; max-width: 100%; min-width: 0; box-sizing: border-box; overflow: hidden; }
     .step-label { font-size: 12px; font-weight: 700; letter-spacing: .08em; text-transform: uppercase; color: var(--glow); }
     .step-title { margin: 0; font-size: 18px; font-weight: 700; line-height: 1.35; }
     .step-text { margin: 0; color: var(--muted); font-size: 15px; line-height: 1.55; }
@@ -372,103 +305,76 @@
       background: rgba(21, 128, 61, .12); color: var(--good); font-size: 12px; font-weight: 700;
     }
 
-    .duel-prompt {
-      margin: 0 0 12px; text-align: center; font-size: 1.35em; font-weight: 700;
-      color: var(--accent); min-height: 2em;
+    /* ── Scientific notation lab ── */
+    .sci-digit-row {
+      display: flex; flex-wrap: wrap; align-items: center; justify-content: center;
+      gap: 2px; font-size: clamp(22px, 4vw, 32px); font-weight: 700;
+      font-family: ui-monospace, "Cascadia Code", monospace; letter-spacing: .04em;
+      min-height: 52px;
     }
-    .duel-choices {
-      display: grid; grid-template-columns: 1fr 1fr; gap: 10px; margin-bottom: 12px;
+    .sci-digit {
+      min-width: 22px; text-align: center; padding: 4px 2px;
+      border-radius: 8px; background: #e0f2fe;
     }
-    @media (max-width: 520px) {
-      .duel-choices { grid-template-columns: 1fr; }
+    .sci-decimal {
+      color: var(--bad); font-size: 1.4em; font-weight: 900; padding: 0 2px;
     }
-    .duel-card {
-      border: 1px solid var(--line); border-radius: 12px; background: #fff;
-      padding: 16px 14px; cursor: pointer; font: inherit; text-align: center;
-      transition: border-color .15s, background .15s;
+    .sci-preview {
+      margin-top: 10px; text-align: center; font-size: 1.2em; color: var(--accent); min-height: 1.6em;
     }
-    .duel-card:hover:not(:disabled) { border-color: var(--accent); }
-    .duel-card:focus-visible { outline: 2px solid var(--accent); outline-offset: 3px; }
-    .duel-card:disabled { cursor: default; }
-    .duel-card .duel-letter {
-      display: block; margin-bottom: 6px; font-size: 11px; font-weight: 700;
-      letter-spacing: .08em; text-transform: uppercase; color: var(--muted);
+    .sci-shift-controls {
+      display: flex; flex-wrap: wrap; gap: 10px; justify-content: center; align-items: center;
+      margin-top: 12px;
     }
-    .duel-card .duel-math { font-size: 1.2em; color: var(--text); }
-    .duel-card.reveal-ok {
-      border-color: rgba(21, 128, 61, .55); background: rgba(21, 128, 61, .08);
+    .sci-exp-readout {
+      font-weight: 700; color: var(--glow); min-width: 2em; display: inline-block; text-align: center;
     }
-    .duel-card.reveal-bad {
-      border-color: rgba(190, 18, 60, .45); background: rgba(190, 18, 60, .06);
+    .sci-convert-fields, .sci-arith-fields {
+      display: flex; flex-wrap: wrap; gap: 12px; align-items: center; justify-content: center;
     }
+    .sci-convert-fields label, .sci-arith-fields label {
+      display: flex; align-items: center; gap: 6px; color: var(--muted); font-size: 15px;
+    }
+    .sci-convert-fields input, .sci-arith-fields input {
+      width: 88px; padding: 8px 10px; border-radius: 10px; border: 1px solid var(--line);
+      background: #fff; color: var(--text); font: inherit; font-weight: 700; text-align: center;
+    }
+    .sci-convert-q, .sci-arith-q { text-align: center; font-size: 1.1em; margin: 8px 0 12px; line-height: 1.5; }
   </style>
-<style id="jm-tools-only-css">
-/* JM S3 embed: show only Interactive Tools */
-html.jm-tools-only body > header,
-html.jm-tools-only body > .tab-row,
-html.jm-tools-only body > nav,
-html.jm-tools-only body > .tabs,
-html.jm-tools-only body > section:not(#panel-tools) {
-  display: none !important;
-}
-html.jm-tools-only .jm-back,
-html.jm-tools-only .jm-eyebrow,
-html.jm-tools-only main.jm-page > h1,
-html.jm-tools-only main.jm-page > .lead,
-html.jm-tools-only .jm-tabs,
-html.jm-tools-only #panel-comics,
-html.jm-tools-only main.page > .back,
-html.jm-tools-only main.page > .eyebrow,
-html.jm-tools-only main.page > h1,
-html.jm-tools-only main.page > .lead,
-html.jm-tools-only main.page > nav.tabs {
-  display: none !important;
-}
-html.jm-tools-only #panel-tools,
-html.jm-tools-only #panel-tools.hidden,
-html.jm-tools-only #panel-tools.mode-panel,
-html.jm-tools-only #panel-tools.jm-panel {
-  display: block !important;
-  visibility: visible !important;
-  padding: 8px 12px 20px !important;
-  max-width: none !important;
-}
-html.jm-tools-only main.jm-page,
-html.jm-tools-only main.page {
-  width: 100% !important;
-  max-width: none !important;
-  margin: 0 !important;
-  padding: 0 !important;
-}
-html.jm-tools-only body {
-  margin: 0 !important;
-  min-height: 0 !important;
-  background: #ffffff !important;
-  overflow-x: hidden !important;
-  overflow-y: auto !important;
-}
-html.jm-tools-only {
-  background: #ffffff !important;
-}
-</style>
+  <link rel="stylesheet" href="../../lessons/_shared/lesson.css?v=20260830b">
+  <link rel="stylesheet" href="../../shared/comics-bridge.css?v=20260829c">
+  <link rel="stylesheet" href="../../shared/jm-comics.css?v=20260830-fu">
+  <link rel="stylesheet" href="../../shared/page-motion.css?v=20260830b">
+  <link rel="stylesheet" href="../../shared/jm-lesson.css?v=20260904-jm29b">
+  <link rel="stylesheet" href="../../shared/jm28-panel.css?v=20260904-jm28">
+  <link rel="stylesheet" href="../../shared/paper-labs.css?v=20260904-jm29">
 </head>
-<body>
-
-
-<main class="page">
-    <a class="back" href="../../s3.html#lessons">← S3 Lessons</a>
-    <p class="eyebrow">JM24 · Lesson 24</p>
+<body class="paper-labs">
+<main class="jm-page">
+    <a class="jm-back" href="../../index.html#lessons">&larr; S3 Lessons</a>
+    <p class="jm-eyebrow">JM24 &middot; Lesson 24</p>
     <h1>Law of Indices</h1>
-    <p class="lead">Interactive tools for powers and binary, plus comics.</p>
+    <p class="lead">Powers, scientific notation, binary, comics, and quiz.</p>
+    <nav class="jm-tabs" aria-label="Lesson sections">
+    <button class="jm-tab active" type="button" data-tab="concept">Concept &amp; Formula</button>
+    <button class="jm-tab" type="button" data-tab="tools">Interactive Tool</button>
+    <button class="jm-tab" type="button" data-tab="games">Games</button>
+    <button class="jm-tab" type="button" data-tab="comics">Comics</button>
+    <button class="jm-tab" type="button" data-tab="summary">Summary</button>
+    <button class="jm-tab" type="button" data-tab="quiz">Quiz</button>
+  </nav>
 
-    <nav class="tabs" aria-label="Lesson sections">
-      <button class="tab active" type="button" data-tab="tools">Interactive Tools</button>
-      <button class="tab" type="button" data-tab="comics">Comics</button>
-    </nav>
-
-    <section id="panel-tools" class="mode-panel">
+    <section id="panel-concept" class="jm-panel">
+      <section class="block">
+        <h2>Concept &amp; Formula</h2>
+        <p class="hint">Coming soon.</p>
+      </section>
+    </section>
+    <section id="panel-tools" class="jm-panel hidden">
       <div class="subnav" aria-label="Tools">
         <button class="chip active" type="button" data-lab="powers">Powers</button>
+        <button class="chip" type="button" data-lab="scientific">Scientific notation</button>
+        <button class="chip" type="button" data-lab="sci-walk">Sci walkthrough</button>
         <button class="chip" type="button" data-lab="binary">Binary</button>
       </div>
 
@@ -677,34 +583,6 @@ html.jm-tools-only {
       <p class="formula">\[ x^{\frac{n}{m}}=\sqrt[m]{x^{n}} \]</p>
     </section>
 
-    <!-- Wrong law duel — after roots, before zero -->
-    <section class="block">
-      <h2>Wrong law duel · Product vs power-of-a-power</h2>
-      <p class="hint">
-        Each question is either a product \(a^{m}\times a^{n}\) (add indices)
-        or a power of a power \((a^{m})^{n}\) (multiply indices).
-        Pick the matching result — the other law is the trap.
-      </p>
-      <div class="task-box">
-        <h3>Pick the correct result</h3>
-        <p class="duel-prompt" id="duel-prompt">\((x^{2})^{3}\)</p>
-        <div class="duel-choices" id="duel-choices" role="group" aria-label="Choose the correct result">
-          <button class="duel-card" type="button" id="duel-card-a" data-side="a">
-            <span class="duel-letter">Card A</span>
-            <span class="duel-math" id="duel-math-a"></span>
-          </button>
-          <button class="duel-card" type="button" id="duel-card-b" data-side="b">
-            <span class="duel-letter">Card B</span>
-            <span class="duel-math" id="duel-math-b"></span>
-          </button>
-        </div>
-        <div class="count-row">
-          <button class="btn" type="button" id="duel-next">Next duel</button>
-        </div>
-        <p class="feedback" id="fb-duel">Choose A or B.</p>
-      </div>
-    </section>
-
     <!-- Zero -->
     <section class="block">
       <h2>6. Zero exponent · \(x^{0}=1\)</h2>
@@ -752,6 +630,140 @@ html.jm-tools-only {
       </div>
       <p class="formula">\[ x^{-n}=\frac{1}{x^{n}}\quad(x\neq 0) \]</p>
     </section>
+      </div>
+
+      <div class="lab" id="lab-scientific">
+        <p class="lead">Write very large or very small numbers as \(a \times 10^{n}\) with \(1 \le a &lt; 10\). Uses the same index laws as the Powers lab — multiply adds indices, divide subtracts.</p>
+
+        <p class="part-title">Part 1 · Standard form</p>
+        <section class="block">
+          <h2>1. What is scientific notation?</h2>
+          <p class="hint">Worksheet §1–10: express ordinary numbers in the form \(a \times 10^{n}\).</p>
+          <div class="step-frame" data-stepper="sci-intro">
+            <button class="nav-btn prev" type="button" aria-label="Previous">←</button>
+            <div class="step-body">
+              <div class="step-panel active" data-step="0">
+                <div class="step-label">Step 1 / 4</div>
+                <p class="step-title">Standard form</p>
+                <p class="step-text">Scientific notation (standard form) writes a number as a coefficient times a power of ten.</p>
+                <p class="step-math">\[ a \times 10^{n}\qquad\text{where}\quad 1 \le a < 10 \]</p>
+              </div>
+              <div class="step-panel" data-step="1">
+                <div class="step-label">Step 2 / 4</div>
+                <p class="step-title">Large numbers → positive \(n\)</p>
+                <div class="step-examples">
+                  <div class="chip-ex">\(102\,000\,000 = 1.02 \times 10^{8}\)</div>
+                  <div class="chip-ex">\(9\,410\,000\,000 = 9.41 \times 10^{9}\)</div>
+                </div>
+                <p class="step-text">Move the decimal point left; count how many places → that is \(n\).</p>
+              </div>
+              <div class="step-panel" data-step="2">
+                <div class="step-label">Step 3 / 4</div>
+                <p class="step-title">Small numbers → negative \(n\)</p>
+                <div class="step-examples">
+                  <div class="chip-ex">\(0.000\,504 = 5.04 \times 10^{-4}\)</div>
+                  <div class="chip-ex">\(0.000\,000\,000\,000\,001\,4 = 1.4 \times 10^{-15}\)</div>
+                </div>
+                <p class="step-text">Move the decimal point right; the count is negative.</p>
+              </div>
+              <div class="step-panel" data-step="3">
+                <div class="step-label">Step 4 / 4</div>
+                <p class="step-title">Why powers of \(10\)?</p>
+                <p class="step-text">Each shift of the decimal is one factor of \(10\). That is exactly the index law you already know: \(10^{m} \times 10^{n} = 10^{m+n}\).</p>
+                <p class="step-math">\[ 2.45 \times 10^{2} \times 10^{6} = 2.45 \times 10^{8} \]</p>
+              </div>
+            </div>
+            <button class="nav-btn next" type="button" aria-label="Next">→</button>
+          </div>
+          <div class="step-dots" data-dots="sci-intro"><span class="on"></span><span></span><span></span><span></span></div>
+        </section>
+
+        <p class="part-title">Part 2 · Move the decimal</p>
+        <section class="block">
+          <h2>2. Convert by shifting the decimal point</h2>
+          <p class="hint" id="sci-shift-target">Convert the number below into standard form.</p>
+          <div class="stage">
+            <div id="sci-shift-display"></div>
+            <p class="sci-preview" id="sci-shift-preview">\(1 \times 10^{0}\)</p>
+          </div>
+          <div class="sci-shift-controls">
+            <button class="btn" type="button" id="sci-shift-left">← shift decimal left</button>
+            <span class="sci-exp-readout" id="sci-shift-power">Power: \(10^{0}\)</span>
+            <button class="btn" type="button" id="sci-shift-right">shift decimal right →</button>
+          </div>
+          <div class="task-box">
+            <h3>Your task</h3>
+            <p class="hint" style="margin:0">Stop when exactly one non-zero digit is before the decimal point (\(1 \le a &lt; 10\)).</p>
+            <div class="count-row">
+              <button class="btn" type="button" id="sci-shift-check">Check</button>
+              <button class="btn" type="button" id="sci-shift-reset">New number</button>
+            </div>
+            <p class="feedback" id="fb-sci-shift">Move the decimal until you have one non-zero digit before the point.</p>
+          </div>
+          <p class="formula formula-locked" id="formula-sci-shift">\[ 1.02 \times 10^{8} \]</p>
+        </section>
+
+        <p class="part-title">Part 3 · Practice</p>
+        <section class="block">
+          <h2>3. Convert both ways</h2>
+          <p class="hint">Random question: ordinary → scientific, or scientific → ordinary (worksheet Q1–10 style).</p>
+          <p class="sci-convert-q" id="sci-convert-q">—</p>
+          <div class="sci-convert-fields" id="sci-convert-fields"></div>
+          <div class="task-box">
+            <div class="count-row">
+              <button class="btn" type="button" id="sci-convert-check">Check</button>
+              <button class="btn" type="button" id="sci-convert-reset">New question</button>
+            </div>
+            <p class="feedback" id="fb-sci-convert">Enter your answer, then Check.</p>
+          </div>
+          <p class="formula formula-locked" id="formula-sci-convert">\[ \text{answer} \]</p>
+        </section>
+
+        <p class="part-title">Part 4 · Multiply &amp; divide</p>
+        <section class="block">
+          <h2>4. Use index laws (worksheet Q11–22)</h2>
+          <p class="hint">Combine coefficients, then add or subtract the indices — same rules as \(x^{m} \times x^{n}\) and \(x^{m} \div x^{n}\).</p>
+          <p class="sci-arith-q" id="sci-arith-q">—</p>
+          <div class="sci-arith-fields">
+            <label>Answer: <input id="sci-arith-a" type="number" step="any"> × 10<sup>n</sup>, n = <input id="sci-arith-n" type="number" step="1"></label>
+          </div>
+          <div class="task-box">
+            <div class="count-row">
+              <button class="btn" type="button" id="sci-arith-check">Check</button>
+              <button class="btn" type="button" id="sci-arith-reset">New question</button>
+            </div>
+            <p class="feedback" id="fb-sci-arith">Multiply: add indices. Divide: subtract indices.</p>
+          </div>
+          <p class="formula formula-locked" id="formula-sci-arith">\[ \text{answer} \]</p>
+        </section>
+
+        <p class="part-title">Part 5 · Compare &amp; order</p>
+        <section class="block" id="sci-sort-wrap">
+          <h2>5. Arrange in order (worksheet Q33–34)</h2>
+          <p class="hint" id="sci-sort-label">Drag into ascending order (smallest → largest).</p>
+          <div class="sort-area">
+            <div class="sort-pool" id="sci-sort-pool"></div>
+            <div class="sort-slots-row" id="sci-sort-slots">
+              <div class="sort-slot-wrap"><span class="sort-slot-label">1st</span><div class="sort-slot" data-slot="0"></div></div>
+              <div class="sort-slot-wrap"><span class="sort-slot-label">2nd</span><div class="sort-slot" data-slot="1"></div></div>
+              <div class="sort-slot-wrap"><span class="sort-slot-label">3rd</span><div class="sort-slot" data-slot="2"></div></div>
+              <div class="sort-slot-wrap"><span class="sort-slot-label">4th</span><div class="sort-slot" data-slot="3"></div></div>
+            </div>
+          </div>
+          <div class="task-box">
+            <div class="count-row">
+              <button class="btn" type="button" id="sci-sort-check">Check order</button>
+              <button class="btn" type="button" id="sci-sort-reset">New set</button>
+            </div>
+            <p class="feedback" id="fb-sci-sort">Convert mentally to compare, then drag the cards.</p>
+          </div>
+          <p class="formula formula-locked" id="formula-sci-sort">\[ \text{correct order} \]</p>
+        </section>
+      </div>
+
+      <div class="lab" id="lab-sci-walk">
+        <p class="lead">Guided scientific-notation walkthrough (from the comics lesson) — step through conversion and arithmetic modules. The Scientific notation lab above stays available for practice drills.</p>
+        <div id="sci-walk-root"></div>
       </div>
 
       <div class="lab" id="lab-binary">
@@ -886,12 +898,41 @@ html.jm-tools-only {
       </div>
     </section>
 
-    <section id="panel-comics" class="mode-panel hidden"></section>
+    <section id="panel-games" class="jm-panel hidden">
+      <section class="block">
+        <h2>Games</h2>
+        <p class="hint">Coming soon.</p>
+      </section>
+    </section>
+    <section id="panel-comics" class="jm-panel hidden">
+      <div class="subnav" id="comics-series-nav" aria-label="Comic series"></div>
+      <div class="subnav" id="comics-subnav" aria-label="Comic pages"></div>
+      <div id="comics-stage"></div>
+      <p class="hint">Read each page. When a concept finishes, answer the two follow-up questions. They stay on this tab only.</p>
+    </section>
+    <section id="panel-summary" class="jm-panel hidden">
+      <section class="block">
+        <h2>Summary</h2>
+        <p class="hint">Coming soon.</p>
+      </section>
+    </section>
+    <section id="panel-quiz" class="jm-panel hidden">
+      <section class="block">
+        <h2>Quiz</h2>
+        <p class="hint">Coming soon.</p>
+      </section>
+    </section>
   </main>
 
   <script defer src="https://cdn.jsdelivr.net/npm/katex@0.16.11/dist/katex.min.js"></script>
   <script defer src="https://cdn.jsdelivr.net/npm/katex@0.16.11/dist/contrib/auto-render.min.js"></script>
-  <script defer src="law-of-indices-binary.js?v=20260806-duel2"></script>
+  <script defer src="law-of-indices-binary.js?v=20260730-bin8"></script>
+  <script defer src="law-of-indices-scientific.js?v=20260810-sci3"></script>
+  <script src="comics-manifest.js?v=20260829c"></script>
+  <script src="../../shared/jm-comics-engine.js?v=20260830-fu"></script>
+  <script src="indices-comics.js?v=20260830-fu"></script>
+  <script src="sci-notation-content.js?v=20260828-sel1"></script>
+  <script src="sci-notation-tool.js?v=20260828-sel1"></script>
   <script>
     function renderKatex(root) {
       if (!window.renderMathInElement) return;
@@ -913,20 +954,36 @@ html.jm-tools-only {
     function initStepper(name) {
       const frame = document.querySelector(`[data-stepper="${name}"]`);
       const dotsWrap = document.querySelector(`[data-dots="${name}"]`);
+      if (!frame) return;
+      let track = frame.querySelector(".step-track");
       const panels = [...frame.querySelectorAll(".step-panel")];
+      if (!track && panels.length) {
+        const host = panels[0].parentNode;
+        host.classList.add("step-viewport");
+        track = document.createElement("div");
+        track.className = "step-track";
+        panels.forEach((p) => track.appendChild(p));
+        host.appendChild(track);
+      }
       const prev = frame.querySelector(".prev");
       const next = frame.querySelector(".next");
       stepperState[name] = 0;
       function show(i) {
         stepperState[name] = Math.max(0, Math.min(panels.length - 1, i));
+        if (track) track.style.transform = `translateX(-${stepperState[name] * 100}%)`;
         panels.forEach((p, idx) => p.classList.toggle("active", idx === stepperState[name]));
-        [...dotsWrap.querySelectorAll("span")].forEach((d, idx) => d.classList.toggle("on", idx === stepperState[name]));
-        prev.disabled = stepperState[name] === 0;
-        next.disabled = stepperState[name] === panels.length - 1;
+        if (dotsWrap) {
+          [...dotsWrap.querySelectorAll("span")].forEach((d, idx) => d.classList.toggle("on", idx === stepperState[name]));
+        }
+        if (prev) prev.disabled = stepperState[name] === 0;
+        if (next) next.disabled = stepperState[name] === panels.length - 1;
         renderKatex(frame);
       }
-      prev.addEventListener("click", () => show(stepperState[name] - 1));
-      next.addEventListener("click", () => show(stepperState[name] + 1));
+      if (prev) prev.addEventListener("click", () => show(stepperState[name] - 1));
+      if (next) next.addEventListener("click", () => show(stepperState[name] + 1));
+      if (dotsWrap) {
+        [...dotsWrap.querySelectorAll("span")].forEach((d, idx) => d.addEventListener("click", () => show(idx)));
+      }
       show(0);
     }
 
@@ -1015,108 +1072,6 @@ html.jm-tools-only {
       renderKatex(fb);
     });
     document.getElementById("prod-reset").addEventListener("click", resetProd);
-
-    /* Wrong law duel — random product (add) vs power-of-a-power (multiply) */
-    (function initWrongLawDuel() {
-      const BASES = ["x", "2", "3", "a"];
-      const promptEl = document.getElementById("duel-prompt");
-      const cardA = document.getElementById("duel-card-a");
-      const cardB = document.getElementById("duel-card-b");
-      const mathA = document.getElementById("duel-math-a");
-      const mathB = document.getElementById("duel-math-b");
-      const fb = document.getElementById("fb-duel");
-      const nextBtn = document.getElementById("duel-next");
-      let state = null;
-
-      function randInt(lo, hi) {
-        return lo + Math.floor(Math.random() * (hi - lo + 1));
-      }
-      function baseTex(base) {
-        return String(base);
-      }
-      function powerTex(base, exp) {
-        return baseTex(base) + "^{" + exp + "}";
-      }
-      function nestedPowTex(base, m, n) {
-        return "\\left(" + powerTex(base, m) + "\\right)^{" + n + "}";
-      }
-      function prodTex(base, m, n) {
-        return powerTex(base, m) + "\\times " + powerTex(base, n);
-      }
-
-      function nextDuel() {
-        let m; let n;
-        do {
-          m = randInt(2, 5);
-          n = randInt(2, 5);
-        } while (m + n === m * n); // avoid 2+2 = 2·2 ambiguity
-        const base = BASES[randInt(0, BASES.length - 1)];
-        const kind = Math.random() < 0.5 ? "prod" : "pow"; // a^m×a^n vs (a^m)^n
-        const correctExp = kind === "prod" ? m + n : m * n;
-        const wrongExp = kind === "prod" ? m * n : m + n;
-        const correctOnA = Math.random() < 0.5;
-        state = { kind, m, n, base, correctExp, wrongExp, correctOnA, answered: false };
-
-        promptEl.innerHTML = "\\(" + (kind === "prod" ? prodTex(base, m, n) : nestedPowTex(base, m, n)) + "\\)";
-        const leftTex = powerTex(base, correctOnA ? correctExp : wrongExp);
-        const rightTex = powerTex(base, correctOnA ? wrongExp : correctExp);
-        mathA.innerHTML = "\\(" + leftTex + "\\)";
-        mathB.innerHTML = "\\(" + rightTex + "\\)";
-
-        [cardA, cardB].forEach((c) => {
-          c.disabled = false;
-          c.classList.remove("reveal-ok", "reveal-bad");
-        });
-        fb.className = "feedback";
-        fb.textContent = "Choose A or B.";
-        renderKatex(document.getElementById("duel-choices").parentElement);
-      }
-
-      function choose(side) {
-        if (!state || state.answered) return;
-        state.answered = true;
-        const pickedCorrect = (side === "a") === state.correctOnA;
-        const correctCard = state.correctOnA ? cardA : cardB;
-        const wrongCard = state.correctOnA ? cardB : cardA;
-        correctCard.classList.add("reveal-ok");
-        wrongCard.classList.add("reveal-bad");
-        cardA.disabled = true;
-        cardB.disabled = true;
-
-        const { kind, base, m, n, correctExp, wrongExp } = state;
-        const powForm = nestedPowTex(base, m, n);
-        const prod = prodTex(base, m, n);
-        if (kind === "prod") {
-          if (pickedCorrect) {
-            fb.className = "feedback ok";
-            fb.innerHTML = "Correct — product adds indices: \\(" + prod + "=" +
-              powerTex(base, m + "+" + n) + "=" + powerTex(base, correctExp) +
-              "\\). Multiplying is for \\(" + powForm + "=" + powerTex(base, wrongExp) + "\\).";
-          } else {
-            fb.className = "feedback bad";
-            fb.innerHTML = "Not quite — \\(" + prod + "=" + powerTex(base, correctExp) +
-              "\\) (add). Multiplying indices is for power-of-a-power: \\(" +
-              powForm + "=" + powerTex(base, wrongExp) + "\\).";
-          }
-        } else if (pickedCorrect) {
-          fb.className = "feedback ok";
-          fb.innerHTML = "Correct — power of a power multiplies: \\(" + powForm + "=" +
-            powerTex(base, m + "\\times " + n) + "=" + powerTex(base, correctExp) +
-            "\\). Adding is for the product \\(" + prod + "=" + powerTex(base, wrongExp) + "\\).";
-        } else {
-          fb.className = "feedback bad";
-          fb.innerHTML = "Not quite — \\(" + powForm + "=" + powerTex(base, correctExp) +
-            "\\) (multiply). Adding indices is for the product rule: \\(" +
-            prod + "=" + powerTex(base, wrongExp) + "\\).";
-        }
-        renderKatex(fb);
-      }
-
-      cardA.addEventListener("click", () => choose("a"));
-      cardB.addEventListener("click", () => choose("b"));
-      nextBtn.addEventListener("click", nextDuel);
-      window.resetWrongLawDuel = nextDuel;
-    })();
 
     /* Quotient fraction */
     let selected = null;
@@ -1325,20 +1280,24 @@ html.jm-tools-only {
     window.lockFormula = lockFormula;
 
     function showTab(name) {
-      document.querySelectorAll(".tab").forEach((btn) => {
+      document.querySelectorAll(".jm-tab").forEach((btn) => {
         btn.classList.toggle("active", btn.dataset.tab === name);
       });
-      document.querySelectorAll(".mode-panel").forEach((panel) => {
+      document.querySelectorAll(".jm-panel").forEach((panel) => {
         panel.classList.toggle("hidden", panel.id !== "panel-" + name);
+        panel.classList.toggle("active", panel.id === "panel-" + name);
       });
       if (name === "tools") {
         const activeLab = document.querySelector(".lab.active");
         if (activeLab) renderKatex(activeLab);
+      } else {
+        const panel = document.getElementById("panel-" + name);
+        if (panel) renderKatex(panel);
       }
     }
     function showLab(name) {
       showTab("tools");
-      document.querySelectorAll(".subnav .chip").forEach((btn) => {
+      document.querySelectorAll(".subnav .chip[data-lab]").forEach((btn) => {
         btn.classList.toggle("active", btn.dataset.lab === name);
       });
       document.querySelectorAll(".lab").forEach((lab) => {
@@ -1347,19 +1306,27 @@ html.jm-tools-only {
       history.replaceState(null, "", "#" + name);
       const labEl = document.getElementById("lab-" + name);
       if (labEl) renderKatex(labEl);
+      if (name === "sci-walk" && window.SciNotationTool && !window.__sciWalkReady) {
+        const root = document.getElementById("sci-walk-root");
+        if (root) {
+          window.SciNotationTool.init(root);
+          window.__sciWalkReady = true;
+        }
+      }
     }
-    document.querySelectorAll(".tab").forEach((btn) => {
+    document.querySelectorAll(".jm-tab").forEach((btn) => {
       btn.addEventListener("click", () => {
         const name = btn.dataset.tab;
         showTab(name);
-        history.replaceState(null, "", name === "tools" ? "#powers" : "#comics");
         if (name === "tools") {
           const active = document.querySelector(".subnav .chip.active");
-          if (active) history.replaceState(null, "", "#" + active.dataset.lab);
+          history.replaceState(null, "", "#" + (active ? active.dataset.lab : "powers"));
+        } else {
+          history.replaceState(null, "", "#" + name);
         }
       });
     });
-    document.querySelectorAll(".subnav .chip").forEach((btn) => {
+    document.querySelectorAll(".subnav .chip[data-lab]").forEach((btn) => {
       btn.addEventListener("click", () => showLab(btn.dataset.lab));
     });
 
@@ -1368,13 +1335,24 @@ html.jm-tools-only {
       resetProd();
       resetQuot();
       resetPow();
-      if (window.resetWrongLawDuel) window.resetWrongLawDuel();
       if (window.initBinaryLab) window.initBinaryLab();
+      if (window.initScientificLab) window.initScientificLab();
       const hash = (location.hash || "").replace("#", "");
-      if (hash === "comics") showTab("comics");
+      const topTabs = ["concept", "games", "comics", "summary", "quiz"];
+      if (topTabs.indexOf(hash) >= 0) showTab(hash);
       else if (hash === "binary") showLab("binary");
+      else if (hash === "scientific") showLab("scientific");
+      else if (hash === "sci-walk") showLab("sci-walk");
       else if (hash === "powers" || hash === "tools") showLab("powers");
+      else showTab("concept");
     });
   </script>
+    <script defer src="../../shared/jm-tabs.js?v=20260904-jm28"></script>
+  <script>
+    document.addEventListener('DOMContentLoaded', function () {
+      if (window.initJmTabs) window.initJmTabs();
+    });
+  </script>
+  <script src="../../shared/suppress-ui-caret.js?v=20260904a"></script>
 </body>
 </html>

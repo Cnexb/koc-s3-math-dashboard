@@ -40,8 +40,8 @@
     <div id="steps">
       <div id="steps-scroll"></div>
       <div id="nav">
-        <button type="button" id="prev">← Prev</button>
-        <button type="button" id="next" class="primary">Next →</button>
+        <button type="button" id="prev">??Prev</button>
+        <button type="button" id="next" class="primary">Next ??/button>
       </div>
     </div>
     <div id="viz">
@@ -107,8 +107,8 @@
       c.classList.toggle("active", i === idx);
       c.classList.toggle("done", i < idx);
     });
-    document.getElementById("lbl-top").textContent = `${tw}×${tl} cm`;
-    document.getElementById("lbl-bot").textContent = `${bw}×${bl} cm`;
+    document.getElementById("lbl-top").textContent = `${tw}?${tl} cm`;
+    document.getElementById("lbl-bot").textContent = `${bw}?${bl} cm`;
     document.getElementById("lbl-fh").textContent = `h=${fh}`;
     document.getElementById("lbl-top").style.opacity = 1;
     document.getElementById("lbl-bot").style.opacity = 1;
@@ -116,7 +116,7 @@
     document.getElementById("lbl-fh").style.opacity = idx >= 1 ? 1 : 0;
     prev.disabled = idx <= 0;
     next.disabled = idx >= steps.length - 1;
-    next.textContent = idx >= steps.length - 1 ? "Done" : "Next →";
+    next.textContent = idx >= steps.length - 1 ? "Done" : "Next ??;
     if (window.parent !== window) {
       window.parent.postMessage({ type: "av-tool-step", step: idx, total: steps.length }, "*");
     }

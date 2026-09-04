@@ -1,68 +1,41 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-<script>
-(function () {
-  if (!/[?&]jmTools=1(?:&|$)/.test(location.search || "")) return;
-  document.documentElement.classList.add("jm-tools-only");
-  function postH() {
-    var h = Math.max(
-      document.documentElement.scrollHeight || 0,
-      document.body ? document.body.scrollHeight : 0,
-      400
-    );
-    try { parent.postMessage({ type: "jm-tools-height", height: h }, "*"); } catch (e) {}
-  }
-  window.addEventListener("load", function () {
-    postH();
-    setTimeout(postH, 200);
-    setTimeout(postH, 800);
-    if (window.ResizeObserver) {
-      new ResizeObserver(postH).observe(document.documentElement);
-    }
-  });
-})();
-</script>
-<script>
-(function () {
-  if (!/[?&]jmTools=1(?:&|$)/.test(location.search || "")) return;
-  document.documentElement.classList.add("jm-tools-only");
-  function postH() {
-    var h = Math.max(
-      document.documentElement.scrollHeight || 0,
-      document.body ? document.body.scrollHeight : 0,
-      400
-    );
-    try { parent.postMessage({ type: "jm-tools-height", height: h }, "*"); } catch (e) {}
-  }
-  window.addEventListener("load", function () {
-    postH();
-    setTimeout(postH, 200);
-    setTimeout(postH, 800);
-    if (window.ResizeObserver) {
-      new ResizeObserver(postH).observe(document.documentElement);
-    }
-  });
-})();
-</script>
-<meta charset="utf-8">
+  <meta charset="utf-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>Area &amp; Volume — KOC S3 Math</title>
+  <title>Areas and Volumes III - JM32</title>
   <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/katex@0.16.11/dist/katex.min.css" crossorigin="anonymous">
   <script defer src="https://cdn.jsdelivr.net/npm/katex@0.16.11/dist/katex.min.js" crossorigin="anonymous"></script>
-  <link href="https://fonts.googleapis.com/css2?family=Hanken+Grotesk:wght@400;600;700&family=JetBrains+Mono:wght@400;700&display=swap" rel="stylesheet">
+  <link href="https://fonts.googleapis.com/css2?family=Hanken+Grotesk:wght@400;600;700&family=JetBrains+Mono:wght@400;700&family=Fraunces:opsz,wght@9..144,600;9..144,700&display=swap" rel="stylesheet">
   <link rel="stylesheet" href="../../shared/topic-shell.css?v=20260725-fixes6">
+  <link rel="stylesheet" href="../../shared/topic-chrome.css?v=20260829s">
+  <link rel="stylesheet" href="../../shared/paper-labs.css?v=20260904-jm29">
+  <link rel="stylesheet" href="../../shared/jm-lesson.css?v=20260904-jm29b">
+  <link rel="stylesheet" href="../../shared/jm28-panel.css?v=20260904-jm28">
   <script defer src="../../shared/deck-touch-nav.js?v=20260725-fixes6"></script>
   <script defer src="../../shared/phone-compact.js?v=20260711-phone"></script>
   <script defer src="../../shared/embed-nav.js?v=20260710-deck-16x9"></script>
   <script defer src="area-volume-tools.js?v=20260730-prejm"></script>
   <script defer src="area-volume-game.js?v=20260730-builder"></script>
-  <script defer src="area-volume-comics.js?v=20260730-prejm"></script>
+  <script defer src="../../shared/jm-comics-engine.js?v=20260830-fu"></script>
+  <script defer src="area-volume-comics.js?v=20260830-fu"></script>
   <script defer src="area-volume-quiz.js?v=20260730-prejm"></script>
   <style>
     :root {
-      --bg: #fdfbf7; --panel: #ffffff; --panel2: #f5efe6; --ink: #2c2420; --dim: #5d544f;
-      --a: #4FC3F7; --b: #FFD54F; --ab: #81C784; --down: #F06292; --line: rgba(0, 0, 0, 0.08);
+      --surface: #ffffff;
+      --surface-2: #eef2f7;
+      --text: #1e293b;
+      --muted: #64748b;
+      --line: rgba(30, 41, 59, 0.12);
+      --accent: #4FC3F7;
+      --glow: #29B6F6;
+      --bg: #f1f5f9;
+      --panel: var(--surface);
+      --panel2: var(--surface-2);
+      --ink: var(--text);
+      --dim: var(--muted);
+      --a: var(--accent);
+      --b: #FFD54F; --ab: #81C784; --down: #F06292;
     }
     * { box-sizing: border-box; }
     body {
@@ -92,7 +65,7 @@
       font-size: 14px; transition: all .15s;
     }
     .chip:hover { color: var(--ink); }
-    .chip.active { color: #06283d; background: var(--a); border-color: var(--a); }
+    .chip.active { color: #fff; background: #4FC3F7; border-color: #4FC3F7; }
     /* Tab 1: slide deck — height from topic-shell.css */
     .deck-wrap {
       background: #000; border: 1px solid var(--line); border-radius: 12px; overflow: hidden;
@@ -387,56 +360,28 @@
     .comic-chapter-next { margin-left: auto; }
   </style>
   <link rel="stylesheet" href="../../shared/chem-light-theme.css?v=20260710-deck-16x9">
-<style id="jm-tools-only-css">
-/* JM S3 embed: show only Interactive Tools */
-html.jm-tools-only body > header,
-html.jm-tools-only body > .tab-row,
-html.jm-tools-only body > nav,
-html.jm-tools-only body > .tabs,
-html.jm-tools-only body > section:not(#panel-tools) {
-  display: none !important;
-}
-html.jm-tools-only #panel-tools,
-html.jm-tools-only #panel-tools.hidden {
-  display: block !important;
-  visibility: visible !important;
-  padding: 8px 12px 20px !important;
-  max-width: none !important;
-}
-html.jm-tools-only body {
-  margin: 0 !important;
-  min-height: 0 !important;
-  background: #ffffff !important;
-  overflow-x: hidden !important;
-  overflow-y: auto !important;
-}
-html.jm-tools-only {
-  background: #ffffff !important;
-}
-</style>
+  <link rel="stylesheet" href="../../shared/jm-comics.css?v=20260830-fu">
+  <link rel="stylesheet" href="../../shared/page-motion.css?v=20260830a">
 </head>
-<body>
-  <header>
-    <img class="topic-logo" src="../../shared/uniplus-logo.png" alt="Uni+ logo">
-    <div class="topic-headings">
-      <div class="topic-brand">Uni<span class="plus">+</span> · Mathematics</div>
-      <h1>Area &amp; Volume</h1>
-      <span class="crumb">KOC S3 Math · Summer 2026 · L07–09 Area and Volume</span>
-    </div>
-  </header>
+<body class="paper-labs">
+<main class="jm-page">
+  <a class="jm-back" href="../../index.html#lessons">&larr; S3 Lessons</a>
+  <p class="jm-eyebrow">JM32 &middot; Lesson 32</p>
+  <h1>Areas and Volumes III</h1>
+  <p class="lead">Sectors, cylinders, cones, and spheres: tools, builder game, comics, and quiz.</p>
 
-  <div class="tab-row">
-  <nav class="tabs">
-    <button class="tab active" data-tab="slides">Concept &amp; Formula</button>
-    <button class="tab" data-tab="tools">Interactive Tool</button>
-    <button class="tab" data-tab="game">Builder Game</button>
-    <button class="tab" data-tab="comics">Comics</button>
-    <button class="tab" data-tab="quiz">Quiz</button>
+  <nav class="jm-tabs" aria-label="Lesson sections">
+    <button class="jm-tab active" type="button" data-tab="slides">Concept &amp; Formula</button>
+    <button class="jm-tab" type="button" data-tab="tools">Interactive Tool</button>
+    <button class="jm-tab" type="button" data-tab="game">Games</button>
+    <button class="jm-tab" type="button" data-tab="comics">Comics</button>
+    <button class="jm-tab" type="button" data-tab="summary">Summary</button>
+    <button class="jm-tab" type="button" data-tab="quiz">Quiz</button>
   </nav>
-  </div>
+<!-- TAB 1: slide decks -->
+  <section id="panel-slides" class="jm-panel">
+      <section class="block jm-deck-panel">
 
-  <!-- TAB 1: slide decks -->
-  <section id="panel-slides" class="panel">
     <div class="subnav">
       <button class="chip active" data-deck="../../slides/area_volume/plane-shapes/index.html">2D Shapes — Area</button>
       <button class="chip" data-deck="../../slides/area_volume/solids/index.html">3D Solids — Volume &amp; Surface Area</button>
@@ -451,10 +396,12 @@ html.jm-tools-only {
     <p class="hint hint-deck-desktop">Use &rarr; / Space to advance, &larr; to go back. Each slide builds the formula step by step from the figure.</p>
     <p class="hint hint-deck-tablet">Swipe left for next slide, right for previous &mdash; or use the arrows. Each slide builds the formula step by step from the figure.</p>
     <p class="hint hint-deck-phone">Tap the &larr; and &rarr; buttons below the slide. Each slide builds the formula step by step from the figure.</p>
-  </section>
+  
+      </section>
+    </section>
 
   <!-- TAB 2: interactive tool — similar shapes & solids -->
-  <section id="panel-tools" class="panel hidden">
+  <section id="panel-tools" class="jm-panel hidden">
     <div class="subnav">
       <button class="chip active" data-lab="square">Square + Prism</button>
       <button class="chip" data-lab="triangle">Triangle + Pyramid</button>
@@ -485,7 +432,7 @@ html.jm-tools-only {
   </section>
 
   <!-- TAB 3: builder game -->
-  <section id="panel-game" class="panel hidden">
+  <section id="panel-game" class="jm-panel hidden">
     <div class="build-top">
       <div class="mode-switch">
         <button class="mode-btn active" data-mode="2d">2D · Area</button>
@@ -545,14 +492,14 @@ html.jm-tools-only {
   </section>
 
   <!-- TAB: comics story + concept checks (separate from quiz DB) -->
-  <section id="panel-comics" class="panel hidden">
+  <section id="panel-comics" class="jm-panel hidden">
     <div class="subnav" id="comics-subnav"></div>
     <div id="comics-stage"></div>
-    <p class="hint">Read the comic page. Where there are concept checks below, answers stay on this tab only — they do not affect the Quiz.</p>
+    <p class="hint">Read each page. When a concept finishes, answer the two follow-up questions. They stay on this tab only.</p>
   </section>
 
   <!-- TAB: quiz -->
-  <section id="panel-quiz" class="panel hidden">
+  <section id="panel-quiz" class="jm-panel hidden">
     <div class="quiz-wrap">
       <div class="quiz-progress-wrap" id="quiz-progress-wrap">
         <div class="quiz-progress-label" id="quiz-progress-label">Question 1 of 1</div>
@@ -575,5 +522,13 @@ html.jm-tools-only {
       <div id="fx-body"></div>
     </div>
   </div>
+</main>
+    <script defer src="../../shared/jm-tabs.js?v=20260904-jm28"></script>
+  <script>
+    document.addEventListener('DOMContentLoaded', function () {
+      if (window.initJmTabs) window.initJmTabs();
+    });
+  </script>
+  <script src="../../shared/suppress-ui-caret.js?v=20260904a"></script>
 </body>
 </html>

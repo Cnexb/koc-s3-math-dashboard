@@ -1,0 +1,473 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>S2 Mathematics</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Hanken+Grotesk:wght@400;600;700&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/katex@0.16.11/dist/katex.min.css">
+  <style>
+    :root {
+      --bg: #f4f7fb;
+      --surface: #ffffff;
+      --surface-2: #eef2f7;
+      --text: #1e293b;
+      --muted: #64748b;
+      --line: rgba(30, 41, 59, 0.12);
+      --accent: #4FC3F7;
+      --glow: #29B6F6;
+    }
+
+    * { box-sizing: border-box; }
+
+    body {
+      min-height: 100vh;
+      margin: 0;
+      color: var(--text);
+      font-family: "Hanken Grotesk", system-ui, sans-serif;
+      caret-color: transparent;
+      background:
+        radial-gradient(ellipse 80% 50% at 12% 0%, rgba(14, 165, 233, 0.12), transparent 55%),
+        radial-gradient(ellipse 70% 45% at 90% 10%, rgba(56, 189, 248, 0.1), transparent 50%),
+        radial-gradient(ellipse 60% 40% at 50% 100%, rgba(125, 211, 252, 0.14), transparent 55%),
+        linear-gradient(180deg, #f8fafc 0%, #f1f5f9 100%);
+      background-attachment: fixed;
+      overflow-x: hidden;
+    }
+
+    .page {
+      position: relative;
+      z-index: 1;
+      width: min(960px, 100%);
+      margin: 0 auto;
+      padding: 34px 28px 56px;
+    }
+
+    .eyebrow {
+      margin: 0 0 6px;
+      color: var(--glow);
+      font-size: 11px;
+      font-weight: 700;
+      letter-spacing: .12em;
+      text-transform: uppercase;
+    }
+
+    h1 {
+      margin: 0;
+      font-size: clamp(24px, 4vw, 34px);
+      letter-spacing: -.03em;
+    }
+
+    .intro {
+      max-width: 520px;
+      margin: 8px 0 22px;
+      color: var(--muted);
+      font-size: 14px;
+      line-height: 1.5;
+    }
+
+    .grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(220px, 1fr));
+      gap: 14px;
+    }
+
+    button.card,
+    a.card {
+      display: flex;
+      flex-direction: column;
+      min-height: 0;
+      padding: 0;
+      overflow: hidden;
+      border: 1px solid var(--line);
+      border-radius: 12px;
+      background: var(--surface);
+      color: inherit;
+      font: inherit;
+      text-align: left;
+      text-decoration: none;
+      cursor: pointer;
+      box-shadow: 0 4px 16px rgba(15, 23, 42, 0.05);
+      transition: transform .18s ease, border-color .18s ease, box-shadow .18s ease;
+    }
+
+    button.card:hover,
+    a.card:hover {
+      transform: translateY(-2px);
+      border-color: rgba(2, 132, 199, 0.35);
+      box-shadow: 0 10px 28px rgba(15, 23, 42, 0.1);
+    }
+
+    button.card:focus-visible,
+    a.card:focus-visible,
+    .back:focus-visible {
+      outline: 2px solid var(--accent);
+      outline-offset: 3px;
+    }
+
+    .cover {
+      height: 72px;
+      display: grid;
+      place-items: center;
+      background:
+        radial-gradient(circle at 30% 40%, rgba(14, 165, 233, .18), transparent 55%),
+        linear-gradient(135deg, #e0f2fe, #dbeafe);
+    }
+
+    .cover .katex {
+      font-size: 1.55em;
+      color: inherit;
+    }
+
+    .s2-mark {
+      color: #0f766e;
+      font-size: 34px;
+      font-weight: 700;
+    }
+
+    .s3-mark {
+      color: var(--accent);
+      font-size: 34px;
+      font-weight: 700;
+    }
+
+    .body {
+      padding: 12px 14px 14px;
+    }
+
+    .body h2 {
+      margin: 0 0 4px;
+      font-size: 16px;
+      line-height: 1.25;
+    }
+
+    .body p {
+      margin: 0;
+      color: var(--muted);
+      font-size: 12.5px;
+      line-height: 1.4;
+    }
+
+    .tag {
+      display: inline-block;
+      margin-top: 10px;
+      padding: 3px 9px;
+      border: 1px solid var(--line);
+      border-radius: 999px;
+      background: var(--surface-2);
+      color: var(--muted);
+      font-size: 11px;
+      font-weight: 600;
+    }
+
+    .view { display: none; }
+    .view.active { display: block; }
+
+    .back {
+      margin: 0 0 18px;
+      padding: 7px 12px;
+      border: 1px solid var(--line);
+      border-radius: 8px;
+      background: var(--surface);
+      color: var(--text);
+      font: inherit;
+      font-size: 13px;
+      font-weight: 600;
+      cursor: pointer;
+    }
+
+    .back:hover {
+      border-color: var(--accent);
+      color: var(--accent);
+    }
+
+    .lesson .cover {
+      height: 64px;
+    }
+
+    .lesson.errors .cover {
+      color: #b45309;
+      background:
+        radial-gradient(circle at 35% 45%, rgba(251, 191, 36, .35), transparent 50%),
+        linear-gradient(135deg, #fef3c7, #fde68a);
+    }
+
+    .lesson.algebra .cover {
+      color: #7c3aed;
+      background:
+        radial-gradient(circle at 65% 40%, rgba(196, 181, 253, .4), transparent 50%),
+        linear-gradient(135deg, #ede9fe, #ddd6fe);
+    }
+
+    .lesson.indices .cover {
+      color: #29B6F6;
+      background:
+        radial-gradient(circle at 70% 30%, rgba(14, 165, 233, .22), transparent 50%),
+        linear-gradient(135deg, #e0f2fe, #bae6fd);
+    }
+
+    .lesson.polynomials .cover {
+      color: #a16207;
+      background:
+        radial-gradient(circle at 25% 60%, rgba(253, 230, 138, .35), transparent 50%),
+        linear-gradient(135deg, #fef3c7, #fde68a);
+    }
+
+    .lesson.polynomials .cover .katex {
+      font-size: 1.2em;
+    }
+
+    .lesson.inequality .cover {
+      color: #be123c;
+      background:
+        radial-gradient(circle at 70% 35%, rgba(251, 113, 133, .28), transparent 50%),
+        linear-gradient(135deg, #ffe4e6, #fecdd3);
+    }
+
+    .lesson.percentage .cover {
+      color: #15803d;
+      background:
+        radial-gradient(circle at 30% 50%, rgba(134, 239, 172, .35), transparent 50%),
+        linear-gradient(135deg, #dcfce7, #bbf7d0);
+    }
+
+    .lesson.triangle .cover {
+      color: #7c3aed;
+      background:
+        radial-gradient(circle at 65% 40%, rgba(196, 181, 253, .4), transparent 50%),
+        linear-gradient(135deg, #ede9fe, #ddd6fe);
+    }
+
+    .lesson.quadrilateral .cover {
+      color: #0f766e;
+      background:
+        radial-gradient(circle at 25% 55%, rgba(94, 234, 212, .35), transparent 50%),
+        linear-gradient(135deg, #ccfbf1, #99f6e4);
+    }
+
+    .lesson.probability .cover {
+      color: #c2410c;
+      background:
+        radial-gradient(circle at 70% 30%, rgba(253, 186, 116, .4), transparent 50%),
+        linear-gradient(135deg, #ffedd5, #fed7aa);
+    }
+
+    .lesson.statistics .cover {
+      color: #4338ca;
+      background:
+        radial-gradient(circle at 35% 45%, rgba(165, 180, 252, .4), transparent 50%),
+        linear-gradient(135deg, #e0e7ff, #c7d2fe);
+    }
+
+    .lesson.area-volume .cover {
+      color: #29B6F6;
+      background:
+        radial-gradient(circle at 60% 35%, rgba(56, 189, 248, .3), transparent 50%),
+        linear-gradient(135deg, #e0f2fe, #bae6fd);
+    }
+
+    .lesson.coordinates .cover {
+      color: #db2777;
+      background:
+        radial-gradient(circle at 30% 40%, rgba(244, 114, 182, .32), transparent 50%),
+        linear-gradient(135deg, #fce7f3, #fbcfe8);
+    }
+
+    .lesson.trigonometry .cover {
+      color: #6d28d9;
+      background:
+        radial-gradient(circle at 65% 50%, rgba(167, 139, 250, .35), transparent 50%),
+        linear-gradient(135deg, #f3e8ff, #e9d5ff);
+    }
+
+    .lesson.trigonometry .cover .katex {
+      font-size: 1.05em;
+    }
+
+    .lesson.trig-app .cover {
+      color: #b45309;
+      background:
+        radial-gradient(circle at 40% 45%, rgba(252, 211, 77, .4), transparent 50%),
+        linear-gradient(135deg, #fef3c7, #fde68a);
+    }
+
+    @media (max-width: 600px) {
+      .page { padding: 24px 16px 40px; }
+    }
+  </style>
+</head>
+<body>
+  <main class="page">
+    <section class="view active" id="home">
+      <p class="eyebrow">Mathematics Gallery</p>
+      <h1>Course Levels</h1>
+      <p class="intro">Choose a level to view its lessons.</p>
+      <div class="grid">
+        <button class="card" type="button" data-go="lessons">
+          <div class="cover"><span class="s2-mark">S2</span></div>
+          <div class="body">
+            <h2>S2</h2>
+            <p>JM11?揓M23 路 S2 topics</p>
+            <span class="tag">JM11?揓M23</span>
+          </div>
+        </button>
+        <a class="card" href="s3.html#lessons">
+          <div class="cover"><span class="s3-mark">S3</span></div>
+          <div class="body">
+            <h2>S3</h2>
+            <p>JM24?揓M35 路 S3 topics</p>
+            <span class="tag">JM24?揓M35</span>
+          </div>
+        </a>
+      </div>
+    </section>
+    <section class="view" id="lessons">
+      <button class="back" type="button" data-go="home">&larr; All levels</button>
+      <p class="eyebrow">S2 Mathematics</p>
+      <h1>S2 Lessons</h1>
+      <div class="grid">
+
+        <a class="card lesson errors" href="topics/jm11_errors/index.html">
+          <div class="cover">\( \pm 1 \)</div>
+          <div class="body">
+            <h2>Errors</h2>
+            <p>JM11 路 Lesson 11</p>
+            <span class="tag">JM11</span>
+          </div>
+        </a>
+
+        <a class="card lesson polynomials" href="topics/jm12_identities_factorization/index.html">
+          <div class="cover">\( (a+b)^2 \)</div>
+          <div class="body">
+            <h2>Identities and Factorization</h2>
+            <p>JM12 路 Lesson 12</p>
+            <span class="tag">JM12</span>
+          </div>
+        </a>
+
+        <a class="card lesson algebra" href="topics/jm13_algebraic_functions/index.html">
+          <div class="cover">\( f(x) \)</div>
+          <div class="body">
+            <h2>Algebraic Functions and Formulae</h2>
+            <p>JM13 路 Lesson 13</p>
+            <span class="tag">JM13</span>
+          </div>
+        </a>
+
+        <a class="card lesson triangle" href="topics/jm14_angles_figures/index.html">
+          <div class="cover">\( \angle ABC \)</div>
+          <div class="body">
+            <h2>Angles Related to Figures</h2>
+            <p>JM14 路 Lesson 14</p>
+            <span class="tag">JM14</span>
+          </div>
+        </a>
+
+        <a class="card lesson triangle" href="topics/jm15_congruence/index.html">
+          <div class="cover">\( \cong \)</div>
+          <div class="body">
+            <h2>Congruence</h2>
+            <p>JM15 路 Lesson 15</p>
+            <span class="tag">JM15</span>
+          </div>
+        </a>
+
+        <a class="card lesson percentage" href="topics/jm16_rate_ratio_proportion/index.html">
+          <div class="cover">\( a:b \)</div>
+          <div class="body">
+            <h2>Rate, Ratio and Proportion</h2>
+            <p>JM16 路 Lesson 16</p>
+            <span class="tag">JM16</span>
+          </div>
+        </a>
+
+        <a class="card lesson area-volume" href="topics/jm17_similarity/index.html">
+          <div class="cover">\( k \)</div>
+          <div class="body">
+            <h2>Similarity</h2>
+            <p>JM17 路 Lesson 17</p>
+            <span class="tag">JM17</span>
+          </div>
+        </a>
+
+        <a class="card lesson statistics" href="topics/jm18_statistics_ii/index.html">
+          <div class="cover">\( \bar{x} \)</div>
+          <div class="body">
+            <h2>Statistics II</h2>
+            <p>JM18 路 Lesson 18</p>
+            <span class="tag">JM18</span>
+          </div>
+        </a>
+
+        <a class="card lesson algebra" href="topics/jm19_simultaneous_equations/index.html">
+          <div class="cover">\( x+y=5 \)</div>
+          <div class="body">
+            <h2>Simultaneous Equations</h2>
+            <p>JM19 路 Lesson 19</p>
+            <span class="tag">JM19</span>
+          </div>
+        </a>
+
+        <a class="card lesson triangle" href="topics/jm20_pythagoras_theorem/index.html">
+          <div class="cover">\( a^2+b^2=c^2 \)</div>
+          <div class="body">
+            <h2>Pythagoras' Theorem</h2>
+            <p>JM20 路 Lesson 20</p>
+            <span class="tag">JM20</span>
+          </div>
+        </a>
+
+        <a class="card lesson quadrilateral" href="topics/jm21_deductive_geometry/index.html">
+          <div class="cover">\( \therefore \)</div>
+          <div class="body">
+            <h2>Deductive Geometry</h2>
+            <p>JM21 路 Lesson 21</p>
+            <span class="tag">JM21</span>
+          </div>
+        </a>
+
+        <a class="card lesson trigonometry" href="topics/jm22_trigonometric_ratios/index.html">
+          <div class="cover">\( \sin\theta \)</div>
+          <div class="body">
+            <h2>Trigonometric Ratios</h2>
+            <p>JM22 路 Lesson 22</p>
+            <span class="tag">JM22</span>
+          </div>
+        </a>
+
+        <a class="card lesson area-volume" href="topics/jm23_areas_volumes_ii/index.html">
+          <div class="cover">\( V=Ah \)</div>
+          <div class="body">
+            <h2>Areas and Volumes II</h2>
+            <p>JM23 路 Lesson 23</p>
+            <span class="tag">JM23</span>
+          </div>
+        </a>
+      </div>
+    </section>
+  </main>
+  <script defer src="https://cdn.jsdelivr.net/npm/katex@0.16.11/dist/katex.min.js"></script>
+  <script defer src="https://cdn.jsdelivr.net/npm/katex@0.16.11/dist/contrib/auto-render.min.js"
+    onload="renderMathInElement(document.body, {
+      delimiters: [
+        { left: '\\(', right: '\\)', display: false },
+        { left: '\\[', right: '\\]', display: true }
+      ]
+    });"></script>
+  <script>
+    const views = document.querySelectorAll(".view");
+    function show(id) {
+      views.forEach((v) => v.classList.toggle("active", v.id === id));
+      const titles = { home: "S2 Mathematics", lessons: "S2 Lessons" };
+      document.title = titles[id] || "S2 Mathematics";
+    }
+    document.querySelectorAll("[data-go]").forEach((el) => {
+      el.addEventListener("click", () => show(el.dataset.go));
+    });
+    if (location.hash === "#lessons") show("lessons");
+  </script>
+  <script defer src="shared/suppress-ui-caret.js?v=20260827-legend"></script>
+</body>
+</html>

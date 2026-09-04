@@ -1,78 +1,58 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-<script>
-(function () {
-  if (!/[?&]jmTools=1(?:&|$)/.test(location.search || "")) return;
-  document.documentElement.classList.add("jm-tools-only");
-  function postH() {
-    var root = document.getElementById("sf-root");
-    var wrap = document.querySelector("#panel-tools .sf-wrap");
-    var panel = document.getElementById("panel-tools");
-    // Measure intrinsic content only (ignore current iframe viewport height).
-    var h = 0;
-    function contentBottom(el) {
-      if (!el) return 0;
-      var bottom = 0;
-      var kids = el.children;
-      for (var i = 0; i < kids.length; i++) {
-        var c = kids[i];
-        bottom = Math.max(bottom, c.offsetTop + c.offsetHeight);
-      }
-      return bottom;
-    }
-    if (root) h = Math.max(h, contentBottom(root), root.scrollHeight || 0);
-    if (wrap) {
-      var hint = wrap.querySelector(".sf-hint");
-      var hintH = hint ? (hint.offsetTop + hint.offsetHeight) : 0;
-      h = Math.max(h, hintH + contentBottom(root) + 12, contentBottom(wrap));
-    }
-    if (panel) {
-      var pad = 28;
-      h = Math.max(h, contentBottom(panel) + pad);
-      if (wrap) h = Math.max(h, wrap.offsetTop + (wrap.scrollHeight || wrap.offsetHeight || 0) + pad);
-    }
-    h = Math.max(420, Math.ceil(h));
-    try { parent.postMessage({ type: "jm-tools-height", height: h }, "*"); } catch (e) {}
-  }
-  window.__jmToolsPostHeight = postH;
-  window.addEventListener("load", function () {
-    postH();
-    setTimeout(postH, 200);
-    setTimeout(postH, 800);
-    var panel = document.getElementById("panel-tools");
-    var root = document.getElementById("sf-root");
-    if (window.ResizeObserver) {
-      if (panel) new ResizeObserver(postH).observe(panel);
-      if (root) new ResizeObserver(postH).observe(root);
-    }
-  });
-})();
-</script>
-<meta charset="utf-8">
+  <meta charset="utf-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>Inequality — KOC S3 Math</title>
+  <title>Inequalities I - JM26</title>
   <link href="https://fonts.googleapis.com/css2?family=Hanken+Grotesk:wght@400;600;700&family=JetBrains+Mono:wght@400;700&display=swap" rel="stylesheet">
   <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/katex@0.16.11/dist/katex.min.css" crossorigin="anonymous">
   <script defer src="https://cdn.jsdelivr.net/npm/katex@0.16.11/dist/katex.min.js" crossorigin="anonymous"></script>
+  <script defer src="https://cdn.jsdelivr.net/npm/katex@0.16.11/dist/contrib/auto-render.min.js" crossorigin="anonymous"></script>
   <link rel="stylesheet" href="../../shared/topic-shell.css?v=20260725-fixes6">
   <link rel="stylesheet" href="sign-flip-doors.css?v=20260706-quiz2">
+  <link href="https://fonts.googleapis.com/css2?family=DM+Sans:wght@400;500;700&family=Fraunces:opsz,wght@9..144,600;9..144,700&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="../../shared/comics-bridge.css?v=20260828-sel1">
+  <link rel="stylesheet" href="../../shared/topic-chrome.css?v=20260829s">
+  <link rel="stylesheet" href="../../shared/paper-labs.css?v=20260904-jm29">
+  <link rel="stylesheet" href="../../shared/jm-lesson.css?v=20260904-jm29b">
+  <link rel="stylesheet" href="../../shared/jm28-panel.css?v=20260904-jm28">
+  <link rel="stylesheet" href="../../shared/jm26-runner.css?v=20260831-merge">
   <script defer src="../../shared/deck-touch-nav.js?v=20260725-fixes6"></script>
   <script defer src="../../shared/phone-compact.js?v=20260711-phone"></script>
   <script defer src="../../shared/embed-nav.js?v=20260710-deck-16x9"></script>
-  <script defer src="inequality-tools.js?v=20260806-jm26-shrink"></script>
-  <script defer src="inequality-game.js?v=20260706-quiz2"></script>
+  <script src="comics-manifest.js?v=20260828-sel1"></script>
+  <script src="../../shared/jm-comics-engine.js?v=20260830-fu"></script>
+  <script src="inequalities-comics.js?v=20260830-fu"></script>
+  <script defer src="inequality-tools.js?v=20260831-merge"></script>
+  <script defer src="inequality-game.js?v=20260831-merge"></script>
   <script defer src="sign-flip-doors.js?v=20260706-quiz2"></script>
   <script defer src="inequality-quiz.js?v=20260725-fixes6"></script>
   <style>
     :root {
-      --bg: #fdfbf7; --panel: #ffffff; --panel2: #f5efe6; --ink: #2c2420; --dim: #5d544f;
-      --a: #4FC3F7; --line: rgba(0, 0, 0, 0.08); --ab: #66BB6A;
-      --gt: #66BB6A; --ge: #AB47BC; --lt: #FFD54F; --le: #4FC3F7; --red: #EF5350;
+      --surface: #ffffff;
+      --surface-2: #eef2f7;
+      --text: #1e293b;
+      --muted: #64748b;
+      --line: rgba(30, 41, 59, 0.12);
+      --accent: #4FC3F7;
+      --glow: #29B6F6;
+      --bg: #f1f5f9;
+      --panel: var(--surface);
+      --panel2: var(--surface-2);
+      --ink: var(--text);
+      --dim: var(--muted);
+      --a: var(--accent);
+      --ab: #66BB6A;
+      --gt: #66BB6A; --ge: #AB47BC; --lt: #FFD54F; --le: #0ea5e9; --red: #EF5350;
     }
     * { box-sizing: border-box; }
-    body { background: var(--bg); color: var(--ink);
-      font-family: "Hanken Grotesk", system-ui, sans-serif; }
+    body { margin: 0; min-height: 100vh; color: var(--text);
+      font-family: "Hanken Grotesk", system-ui, sans-serif;
+      background:
+        radial-gradient(ellipse 80% 50% at 10% 0%, rgba(14,165,233,.12), transparent 55%),
+        radial-gradient(ellipse 70% 45% at 92% 8%, rgba(56,189,248,.1), transparent 50%),
+        linear-gradient(180deg,#f8fafc,#f1f5f9);
+      background-attachment: fixed; }
     header { padding: 18px 28px; border-bottom: 1px solid var(--line);
       display: flex; align-items: baseline; gap: 14px; }
     header h1 { font-size: 22px; margin: 0; font-weight: 700; }
@@ -86,7 +66,7 @@
       font: inherit; font-weight: 600; padding: 8px 14px; border-radius: 999px; cursor: pointer;
       font-size: 14px; transition: all .15s; }
     .chip:hover { color: var(--ink); }
-    .chip.active { color: #06283d; background: var(--a); border-color: var(--a); }
+    .chip.active { color: #fff; background: #4FC3F7; border-color: #4FC3F7; }
     /* Tab 1: slide deck — height from topic-shell.css */
     .deck-wrap { background: #000; border: 1px solid var(--line); border-radius: 12px; overflow: hidden; }
     .hint { color: var(--dim); font-size: 13px; text-align: center; margin-top: 10px; }
@@ -120,18 +100,6 @@
     .sf-progress-fill {
       height: 100%; width: 0; border-radius: 999px; background: var(--sf-accent, #0277BD);
       transition: width .25s ease;
-      display: flex; flex-direction: row; align-items: stretch; overflow: hidden;
-    }
-    .sf-progress-ok {
-      height: 100%; width: 0; flex: 0 0 auto; background: #81C784;
-      transition: width .25s ease;
-    }
-    .sf-progress-bad {
-      height: 100%; width: 0; flex: 0 0 auto; background: #F06292;
-      transition: width .25s ease;
-    }
-    .sf-progress-track.sf-accuracy .sf-progress-fill {
-      width: 100% !important; background: transparent !important;
     }
     .sf-card {
       background: var(--panel); border: 1px solid var(--line); border-radius: 16px;
@@ -155,122 +123,10 @@
     .sf-head {
       font-weight: 700; font-size: 13px; color: var(--sf-accent, #0277BD); letter-spacing: .04em;
       text-transform: uppercase; font-family: "JetBrains Mono", monospace;
-      display: flex; align-items: center; gap: 8px; flex-wrap: wrap;
-    }
-    .sf-stage {
-      display: inline-block; padding: 2px 8px; border-radius: 999px;
-      background: var(--sf-accent-soft, #E3F2FD); color: var(--sf-accent, #0277BD);
-      font-size: 11px; font-weight: 700; letter-spacing: .02em;
-      text-transform: none; font-family: "Plus Jakarta Sans", system-ui, sans-serif;
     }
     .sf-prompt {
       margin: 0; font-size: 16px; font-weight: 600; color: var(--ink); line-height: 1.5;
     }
-    .sf-compare {
-      margin-top: 8px; display: flex; flex-direction: column; gap: 4px;
-      font-size: 14px; font-weight: 600;
-    }
-    .sf-compare-lbl {
-      display: inline-block; min-width: 58px; font-size: 11px; font-weight: 700;
-      letter-spacing: .04em; text-transform: uppercase; opacity: .85;
-    }
-    .sf-compare-yours { color: #E57373; }
-    .sf-compare-ok { color: var(--ab); }
-    .sf-interval { font-family: "JetBrains Mono", monospace; font-size: 12px; color: var(--dim); font-weight: 600; }
-    .sf-ray-anim line:nth-of-type(2) {
-      stroke-dasharray: 240;
-      stroke-dashoffset: 240;
-      animation: sf-ray-stroke .55s ease-out forwards;
-    }
-    @keyframes sf-ray-stroke {
-      to { stroke-dashoffset: 0; }
-    }
-    .sf-ray-anim path {
-      animation: sf-ray-head .35s ease-out .25s both;
-    }
-    @keyframes sf-ray-head {
-      from { opacity: 0; }
-      to { opacity: 1; }
-    }
-    .sf-card-enter {
-      animation: sf-card-in .38s ease-out both;
-    }
-    @keyframes sf-card-in {
-      from { opacity: 0; transform: translateY(12px) scale(.985); }
-      to { opacity: 1; transform: none; }
-    }
-    .sf-card-ok { animation: sf-ok-glow .55s ease-out; }
-    .sf-card-bad { animation: sf-bad-shake .45s ease-out; }
-    @keyframes sf-ok-glow {
-      0% { box-shadow: 0 0 0 0 rgba(102,187,106,.0); }
-      40% { box-shadow: 0 0 0 4px rgba(102,187,106,.35); }
-      100% { box-shadow: 0 10px 28px rgba(0,0,0,.05); }
-    }
-    @keyframes sf-bad-shake {
-      0%, 100% { transform: translateX(0); }
-      20% { transform: translateX(-6px); }
-      40% { transform: translateX(6px); }
-      60% { transform: translateX(-4px); }
-      80% { transform: translateX(3px); }
-    }
-    .sf-pop { animation: sf-pop-in .4s cubic-bezier(.2,1.2,.4,1) both; }
-    @keyframes sf-pop-in {
-      from { opacity: 0; transform: translateY(6px) scale(.92); }
-      to { opacity: 1; transform: none; }
-    }
-    .sf-board-pulse { animation: sf-board-pulse .5s ease-out; }
-    @keyframes sf-board-pulse {
-      0% { transform: scale(.98); }
-      60% { transform: scale(1.015); }
-      100% { transform: none; }
-    }
-    .sf-dot-pop { transform-box: fill-box; transform-origin: center; animation: sf-dot-pop .4s ease-out .15s both; }
-    @keyframes sf-dot-pop {
-      from { opacity: 0; transform: scale(.4); }
-      to { opacity: 1; transform: scale(1); }
-    }
-    .sf-done-enter { animation: sf-card-in .45s ease-out both; }
-    .sf-review {
-      display: flex; flex-direction: column; gap: 12px; margin-top: 4px;
-    }
-    .sf-review-title {
-      margin: 0; font-size: 15px; font-weight: 700; color: var(--sf-accent, #0277BD);
-      letter-spacing: .02em;
-    }
-    .sf-review-item {
-      background: #fff; border: 1px solid var(--line); border-radius: 14px;
-      padding: 14px 16px; display: flex; flex-direction: column; gap: 10px;
-      box-shadow: 0 4px 16px rgba(0,0,0,.04);
-      animation: sf-card-in .4s ease-out both;
-    }
-    .sf-review-q { display: flex; flex-wrap: wrap; align-items: baseline; gap: 8px 12px; }
-    .sf-review-q .katex { font-size: 1.25em; color: var(--ink); }
-    .sf-review-rows {
-      display: grid; grid-template-columns: 1fr 1fr; gap: 10px;
-    }
-    @media (max-width: 640px) { .sf-review-rows { grid-template-columns: 1fr; } }
-    .sf-review-yours, .sf-review-ok {
-      display: flex; flex-wrap: wrap; align-items: center; gap: 8px;
-      padding: 10px 12px; border-radius: 10px; font-weight: 600;
-    }
-    .sf-review-yours { background: rgba(229,115,115,.1); color: #c62828; }
-    .sf-review-ok { background: rgba(102,187,106,.12); color: var(--ab); }
-    .sf-review-lbl {
-      font-size: 11px; font-weight: 700; text-transform: uppercase; letter-spacing: .04em;
-      opacity: .8; min-width: 72px;
-    }
-    .sf-review-dot {
-      width: 16px; height: 16px; border-radius: 50%; flex: none; box-sizing: border-box;
-    }
-    .sf-review-dot.hollow {
-      background: #fff; border: 2.5px solid currentColor;
-    }
-    .sf-review-dot.filled { background: currentColor; border: 2px solid currentColor; }
-    .sf-review-nl {
-      background: var(--sf-surface, #F3F7FA); border-radius: 10px; padding: 6px 8px;
-      display: flex; align-items: center; justify-content: center;
-    }
-    .sf-review-nl svg { width: 100%; height: auto; display: block; }
     .sf-stem-row {
       display: flex; align-items: center; justify-content: center;
       padding: 28px 16px; min-height: 88px;
@@ -285,20 +141,6 @@
     .sf-build-lbl { width: 100%; margin: 0 0 4px; font-size: 13px; font-weight: 600; color: var(--dim); text-align: center; }
     .sf-build-x, .sf-build-val { font-family: "JetBrains Mono", monospace; font-size: 28px; font-weight: 700; color: var(--ink); }
     .sf-build-val .katex { font-size: 1em; color: var(--ink); }
-    .sf-bound-input {
-      width: 4.2em; min-width: 64px; height: 48px; box-sizing: border-box;
-      border: 2px dashed rgba(2, 119, 189, .35); border-radius: 10px;
-      background: #fff; color: var(--sf-accent, #0277BD);
-      font: inherit; font-family: "JetBrains Mono", monospace; font-size: 26px; font-weight: 700;
-      text-align: center; outline: none;
-    }
-    .sf-bound-input:focus {
-      border-style: solid; border-color: var(--sf-accent, #0277BD);
-      box-shadow: 0 0 0 2px rgba(2, 119, 189, .18);
-    }
-    .sf-bound-input.reveal-ok { border-style: solid; border-color: var(--ab); box-shadow: 0 0 0 1px var(--ab) inset; }
-    .sf-bound-input.reveal-bad { border-style: solid; border-color: #E57373; box-shadow: 0 0 0 1px #E57373 inset; }
-    .sf-bound-input:disabled { opacity: 1; }
     .sf-sign-slot {
       min-width: 52px; min-height: 48px; border: 2px dashed rgba(2, 119, 189, .35); border-radius: 10px;
       display: flex; align-items: center; justify-content: center; font-size: 26px; font-weight: 700;
@@ -345,8 +187,7 @@
     .sf-nl-section { display: flex; flex-direction: column; gap: 10px; flex: 1; }
     .sf-nl-board {
       position: relative; background: #fff; border: 1px solid var(--line);
-      border-radius: 12px; padding: 8px; min-height: 130px; flex: 0 0 auto;
-      display: flex; align-items: center; justify-content: center;
+      border-radius: 12px; padding: 8px 8px 0; min-height: 130px; flex: 1;
     }
     .sf-nl-board svg { width: 100%; height: auto; display: block; pointer-events: none; }
     .sf-nl-board.drop-target { cursor: copy; }
@@ -475,7 +316,7 @@
 
     .mg-done { max-width: 920px; margin: 14px auto 0; text-align: center; color: var(--dim); font-size: 13px; }
 
-    #game-matchup.hidden, #game-doors.hidden { display: none; }
+    #game-matchup.hidden, #game-doors.hidden, #game-runner.hidden { display: none; }
 
     /* ── Quiz ── */
     #panel-quiz { overflow: visible; }
@@ -619,72 +460,29 @@
     .summary-set.hidden { display: none; }
   </style>
   <link rel="stylesheet" href="../../shared/chem-light-theme.css?v=20260710-deck-16x9">
-<style id="jm-tools-only-css">
-/* JM S3 embed: show only Interactive Tools */
-html.jm-tools-only body > header,
-html.jm-tools-only body > .tab-row,
-html.jm-tools-only body > nav,
-html.jm-tools-only body > .tabs,
-html.jm-tools-only body > section:not(#panel-tools) {
-  display: none !important;
-}
-html.jm-tools-only #panel-tools,
-html.jm-tools-only #panel-tools.hidden {
-  display: block !important;
-  visibility: visible !important;
-  padding: 8px 12px 20px !important;
-  max-width: none !important;
-  overflow: visible !important;
-  height: auto !important;
-}
-html.jm-tools-only body {
-  margin: 0 !important;
-  min-height: 0 !important;
-  height: auto !important;
-  background: #ffffff !important;
-  overflow-x: hidden !important;
-  overflow-y: hidden !important;
-}
-html.jm-tools-only {
-  background: #ffffff !important;
-  height: auto !important;
-  overflow: hidden !important;
-}
-html.jm-tools-only #sf-root,
-html.jm-tools-only .sf-wrap {
-  overflow: visible !important;
-  height: auto !important;
-}
-html.jm-tools-only .sf-card,
-html.jm-tools-only .sf-layout,
-html.jm-tools-only .sf-left,
-html.jm-tools-only .sf-right,
-html.jm-tools-only .sf-nl-section {
-  height: auto !important;
-  flex-grow: 0 !important;
-}
-</style>
+  <link rel="stylesheet" href="../../shared/jm-comics.css?v=20260830-fu">
+  <link rel="stylesheet" href="../../shared/page-motion.css?v=20260830a">
 </head>
-<body>
-  <header>
-    <img class="topic-logo" src="../../shared/uniplus-logo.png" alt="Uni+ logo">
-    <div class="topic-headings">
-      <div class="topic-brand">Uni<span class="plus">+</span> · Mathematics</div>
-      <h1>Inequality</h1>
-      <span class="crumb">KOC S3 Math · Summer 2026 · Inequality</span>
-    </div>
-  </header>
+<body class="paper-labs">
+<main class="jm-page">
+  <a class="jm-back" href="../../index.html#lessons">&larr; S3 Lessons</a>
+  <p class="jm-eyebrow">JM26 &middot; Lesson 26</p>
+  <h1>Inequalities I</h1>
+  <p class="lead">Classroom manga, quiz, Boundary Runner, and inequality labs.</p>
 
-  <nav class="tabs">
-    <button class="tab active" data-tab="slides">Concept &amp; Formula</button>
-    <button class="tab" data-tab="tools">Interactive Tool</button>
-    <button class="tab" data-tab="game">Games</button>
-    <button class="tab" data-tab="summary">Summary</button>
-    <button class="tab" data-tab="quiz">Quiz</button>
+  <nav class="jm-tabs" aria-label="Lesson sections">
+    <button class="jm-tab active" type="button" data-tab="slides">Concept &amp; Formula</button>
+    <button class="jm-tab" type="button" data-tab="tools">Interactive Tool</button>
+    <button class="jm-tab" type="button" data-tab="game">Games</button>
+    <button class="jm-tab" type="button" data-tab="comics">Comics</button>
+    <button class="jm-tab" type="button" data-tab="summary">Summary</button>
+    <button class="jm-tab" type="button" data-tab="quiz">Quiz</button>
   </nav>
 
   <!-- TAB 1: concept slide decks -->
-  <section id="panel-slides" class="panel">
+  <section id="panel-slides" class="jm-panel">
+      <section class="block jm-deck-panel">
+
     <div class="subnav">
       <button class="chip active" data-deck="../../slides/inequality/signs/index.html">Signs &amp; number line</button>
       <button class="chip" data-deck="../../slides/inequality/negative-coefficient/index.html">Multiply / divide by a negative</button>
@@ -699,10 +497,12 @@ html.jm-tools-only .sf-nl-section {
     <p class="hint hint-deck-desktop">Use &rarr; / Space to advance, &larr; to go back. Each slide builds the idea step by step.</p>
     <p class="hint hint-deck-tablet">Swipe left for next slide, right for previous &mdash; or use the arrows. Each slide builds the idea step by step.</p>
     <p class="hint hint-deck-phone">Tap the &larr; and &rarr; buttons below the slide. Each slide builds the idea step by step.</p>
-  </section>
+  
+      </section>
+    </section>
 
   <!-- TAB 2: sign-flip lab -->
-  <section id="panel-tools" class="panel hidden">
+  <section id="panel-tools" class="jm-panel hidden">
     <div class="sf-wrap">
       <p class="sf-hint">Difficulty rises: <b>3</b> positive → <b>5</b> negative (sign flip) → <b>4</b> multi-step. In Stage 3, <b>enter the boundary value</b>, then drag the sign and hollow / filled.</p>
       <div id="sf-root"></div>
@@ -710,13 +510,63 @@ html.jm-tools-only .sf-nl-section {
   </section>
 
   <!-- TAB 3: games -->
-  <section id="panel-game" class="panel hidden">
+  <section id="panel-comics" class="jm-panel hidden">
+    <div class="subnav" id="comics-series-nav" aria-label="Comic series"></div>
+    <div class="subnav" id="comics-subnav" aria-label="Comic pages"></div>
+    <div id="comics-stage"></div>
+    <p class="hint">Read each page. When a concept finishes, answer the two follow-up questions. They stay on this tab only.</p>
+  </section>
+
+  <section id="panel-game" class="jm-panel hidden">
     <div class="subnav">
-      <button type="button" class="chip active" data-ineq-game="matchup">Match-up Game</button>
+      <button type="button" class="chip active" data-ineq-game="runner">Boundary Runner</button>
+      <button type="button" class="chip" data-ineq-game="matchup">Match-up Game</button>
       <button type="button" class="chip" data-ineq-game="doors">Sign Flip Doors</button>
     </div>
 
-    <div id="game-matchup">
+    <div id="game-runner">
+      <div class="indices-game runner-game">
+        <div class="game-head">
+          <div>
+            <h2>Boundary Runner</h2>
+            <p class="game-intro">Run the platforms, then solve the inequality to open the next gate.</p>
+          </div>
+          <div class="game-hud" id="game-hud">
+            <span>Lives: <strong id="hud-lives">3</strong></span>
+            <span>Progress: <strong id="hud-progress">-</strong></span>
+          </div>
+        </div>
+        <div id="runner-map-view">
+          <div class="runner-map" id="runner-map"></div>
+        </div>
+        <div id="runner-play-view" hidden>
+          <div class="game-wrap">
+            <div class="solve-panel" id="solve-panel"></div>
+            <canvas id="game-canvas" width="900" height="520"></canvas>
+            <div class="game-touch" id="game-touch">
+              <button type="button" id="btn-left" aria-label="Left">&larr;</button>
+              <button type="button" id="btn-jump">Jump</button>
+              <button type="button" id="btn-right" aria-label="Right">&rarr;</button>
+            </div>
+            <div class="game-overlay" id="run-overlay">
+              <div class="overlay-card">
+                <h3 id="run-overlay-title"></h3>
+                <p id="run-overlay-msg"></p>
+                <p id="run-overlay-weakest" class="overlay-weakest" hidden></p>
+                <div class="overlay-actions">
+                  <button type="button" class="reader-nav" id="btn-run-retry">Play again</button>
+                  <button type="button" class="reader-nav runner-next-level" id="btn-run-next" hidden>Next level</button>
+                  <button type="button" class="reader-nav" id="btn-run-map">World map</button>
+                  <button type="button" class="reader-nav overlay-review" id="btn-run-review" hidden>Review comics</button>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <div id="game-matchup" class="hidden">
       <div class="mg-hud">
         <div class="mg-stat">Round <b id="mg-round">1</b><span style="color:var(--dim)">/3</span>
           <span id="mg-pips"></span></div>
@@ -875,7 +725,7 @@ html.jm-tools-only .sf-nl-section {
   </section>
 
   <!-- TAB 4: summary sheet -->
-  <section id="panel-summary" class="panel hidden">
+  <section id="panel-summary" class="jm-panel hidden">
     <div class="subnav" id="summary-style-nav">
       <button type="button" class="chip active" data-summary-style="style-1">Style 1</button>
       <button type="button" class="chip" data-summary-style="style-2">Style 2</button>
@@ -910,7 +760,7 @@ html.jm-tools-only .sf-nl-section {
   </section>
 
   <!-- TAB 5: quiz -->
-  <section id="panel-quiz" class="panel hidden">
+  <section id="panel-quiz" class="jm-panel hidden">
     <div class="quiz-wrap">
       <div class="quiz-progress-wrap" id="quiz-progress-wrap">
         <div class="quiz-progress-label" id="quiz-progress-label">Question 1 of 1</div>
@@ -925,5 +775,16 @@ html.jm-tools-only .sf-nl-section {
     <p class="hint">Pre S3 L03 Inequality Quiz — answer each question, use Next to move on. Submit on Q8 to see all results.</p>
   </section>
 
+  <script src="../../js/i18n.js"></script>
+  <script src="../../lessons/jm26/game-questions.js"></script>
+  <script src="../../lessons/jm26/runner-levels.js"></script>
+  <script src="../../lessons/jm26/boundary-runner.js"></script>
+  <script>
+    document.addEventListener("DOMContentLoaded", function () {
+      if (window.BoundaryRunner && window.BoundaryRunner.init) window.BoundaryRunner.init();
+    });
+  </script>
+</main>
+  <script src="../../shared/suppress-ui-caret.js?v=20260904a"></script>
 </body>
 </html>

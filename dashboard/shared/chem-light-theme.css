@@ -1,20 +1,20 @@
 /* Chem-inspired light theme for KOC S3 Math dashboards (UI shell only) */
 
 :root {
-  --bg: #fdfbf7;
+  --bg: #f8fafc;
   --panel: #ffffff;
-  --panel2: #f5efe6;
-  --ink: #2c2420;
-  --dim: #5d544f;
-  --line: rgba(0, 0, 0, 0.08);
-  --a: #4fc3f7;
-  --accent: #4fc3f7;
-  --on-accent: #06283d;
+  --panel2: #eef2f7;
+  --ink: #1e293b;
+  --dim: #64748b;
+  --line: rgba(30, 41, 59, 0.12);
+  --a: #4FC3F7;
+  --accent: #4FC3F7;
+  --on-accent: #ffffff;
   --nav-surface: rgba(255, 255, 255, 0.72);
-  --shadow-soft: 0 4px 24px rgba(0, 0, 0, 0.06), 0 1px 2px rgba(0, 0, 0, 0.04);
+  --shadow-soft: 0 4px 24px rgba(26, 31, 46, 0.06), 0 1px 2px rgba(26, 31, 46, 0.04);
 }
 
-/* ── Topic page header (hidden in embed) ── */
+/* ?�?� Topic page header (hidden in embed) ?�?� */
 header {
   padding: 14px 28px;
   border-bottom: 1px solid var(--line);
@@ -66,7 +66,7 @@ header .crumb {
   font-size: 13px;
 }
 
-/* ── Tabs (layout unchanged) ── */
+/* ?�?� Tabs (layout unchanged) ?�?� */
 .tabs {
   display: flex;
   gap: 6px;
@@ -178,7 +178,7 @@ html.tablet-touch.in-embed .panel {
   padding-bottom: 12px;
 }
 
-/* ── Subnav chips ── */
+/* ?�?� Subnav chips ?�?� */
 .chip {
   background: var(--panel);
   border: 1px solid var(--line);
@@ -199,7 +199,16 @@ html.tablet-touch.in-embed .panel {
 }
 
 .chip.active {
-  color: var(--on-accent);
-  background: var(--a);
-  border-color: var(--a);
+  color: #fff;
+  background: #4FC3F7;
+  border-color: #4FC3F7;
+}
+
+/* JM29 accent ??must win when this sheet loads after paper-labs */
+body.paper-labs .subnav .chip.active,
+body.paper-labs .chip.active,
+body.paper-labs .btn.active {
+  color: #fff !important;
+  background: #4FC3F7 !important;
+  border-color: #4FC3F7 !important;
 }

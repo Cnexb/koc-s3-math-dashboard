@@ -1,39 +1,22 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-<script>
-(function () {
-  if (!/[?&]jmTools=1(?:&|$)/.test(location.search || "")) return;
-  document.documentElement.classList.add("jm-tools-only");
-  function postH() {
-    var h = Math.max(
-      document.documentElement.scrollHeight || 0,
-      document.body ? document.body.scrollHeight : 0,
-      400
-    );
-    try { parent.postMessage({ type: "jm-tools-height", height: h }, "*"); } catch (e) {}
-  }
-  window.addEventListener("load", function () {
-    postH();
-    setTimeout(postH, 200);
-    setTimeout(postH, 800);
-    if (window.ResizeObserver) {
-      new ResizeObserver(postH).observe(document.documentElement);
-    }
-  });
-})();
-</script>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title>Special Line and Centres in Triangles — JM28</title>
   <link rel="preconnect" href="https://fonts.googleapis.com">
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-  <link href="https://fonts.googleapis.com/css2?family=Hanken+Grotesk:wght@400;600;700&display=swap" rel="stylesheet">
+  <link href="https://fonts.googleapis.com/css2?family=Hanken+Grotesk:wght@400;600;700&family=DM+Sans:wght@400;500;700&family=Fraunces:opsz,wght@9..144,600;9..144,700&display=swap" rel="stylesheet">
   <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/katex@0.16.11/dist/katex.min.css">
-  <link rel="stylesheet" href="../../shared/jm-lesson.css?v=20260730-jm28j">
+  <link rel="stylesheet" href="../../shared/jm-lesson.css?v=20260904-jm29b">
+  <link rel="stylesheet" href="../../shared/jm28-panel.css?v=20260904-jm28">
+  <link rel="stylesheet" href="../../shared/jm-comics.css?v=20260830-fu">
+  <link rel="stylesheet" href="../../shared/comics-bridge.css?v=20260830-merge">
+  <link rel="stylesheet" href="../../shared/topic-chrome.css?v=20260829s">
+  <link rel="stylesheet" href="../../shared/paper-labs.css?v=20260829s">
   <style>
     body { margin:0; min-height:100vh; color:var(--text); font-family:"Hanken Grotesk",system-ui,sans-serif;
-      background:linear-gradient(180deg,#f8fafc,#f1f5f9); user-select:none; }
+      user-select:none; }
     h1 { margin:0 0 8px; font-size:clamp(26px,4vw,36px); }
     .lead { margin:0 0 18px; color:var(--muted); font-size:15px; line-height:1.55; }
     .note-box {
@@ -42,89 +25,52 @@
       font-size: 14px; line-height: 1.55; color: var(--text);
     }
     .split-hint { margin: 0 0 10px; font-size: 13px; color: var(--muted); }
-    .match-k-ratios {
-      font-size: 13px; color: var(--muted); line-height: 1.45;
-      flex: 1 1 100%; min-width: 0; max-width: 100%;
+    #comics-subnav { margin-bottom: 14px; }
+    .comic-figure {
+      margin: 0;
+      border-radius: 14px;
+      border: 1px solid var(--line);
+      background: #0f172a;
+      overflow: hidden;
     }
-    .match-k-ratios strong { color: var(--text); font-weight: 700; }
-    #match-k-row { flex-wrap: wrap; align-items: center; gap: 8px 12px; }
-    #match-k-val { font-variant-numeric: tabular-nums; min-width: 2.6em; }
-    #match-svg .match-pulse {
-      animation: match-part-pulse 0.85s ease-in-out 2;
+    .comic-figure img {
+      display: block;
+      width: 100%;
+      height: auto;
+      vertical-align: middle;
     }
-    @keyframes match-part-pulse {
-      0%, 100% { opacity: 1; }
-      50% { opacity: 0.28; }
-    }
+    .comics-mode.hidden, .comics-pane.hidden { display: none; }
   </style>
-<style id="jm-tools-only-css">
-/* JM S3 embed: show only Interactive Tools */
-html.jm-tools-only body > header,
-html.jm-tools-only body > .tab-row,
-html.jm-tools-only body > nav,
-html.jm-tools-only body > .tabs,
-html.jm-tools-only body > section:not(#panel-tools) {
-  display: none !important;
-}
-html.jm-tools-only .jm-back,
-html.jm-tools-only .jm-eyebrow,
-html.jm-tools-only main.jm-page > h1,
-html.jm-tools-only main.jm-page > .lead,
-html.jm-tools-only .jm-tabs,
-html.jm-tools-only #panel-comics,
-html.jm-tools-only main.page > .back,
-html.jm-tools-only main.page > .eyebrow,
-html.jm-tools-only main.page > h1,
-html.jm-tools-only main.page > .lead,
-html.jm-tools-only main.page > nav.tabs {
-  display: none !important;
-}
-html.jm-tools-only #panel-tools,
-html.jm-tools-only #panel-tools.hidden,
-html.jm-tools-only #panel-tools.mode-panel,
-html.jm-tools-only #panel-tools.jm-panel {
-  display: block !important;
-  visibility: visible !important;
-  padding: 8px 12px 20px !important;
-  max-width: none !important;
-}
-html.jm-tools-only main.jm-page,
-html.jm-tools-only main.page {
-  width: 100% !important;
-  max-width: none !important;
-  margin: 0 !important;
-  padding: 0 !important;
-}
-html.jm-tools-only body {
-  margin: 0 !important;
-  min-height: 0 !important;
-  background: #ffffff !important;
-  overflow-x: hidden !important;
-  overflow-y: auto !important;
-}
-html.jm-tools-only {
-  background: #ffffff !important;
-}
-</style>
+  <link rel="stylesheet" href="../../shared/page-motion.css?v=20260830a">
 </head>
-<body>
+<body class="paper-labs">
   <main class="jm-page">
-    <a class="jm-back" href="../../s3.html#lessons">← S3 Lessons</a>
-    <p class="jm-eyebrow">JM28 · Lesson 28</p>
+    <a class="jm-back" href="../../index.html#lessons">&larr; S3 Lessons</a>
+    <p class="jm-eyebrow">JM28 &middot; Lesson 28</p>
     <h1>Special Line and Centres in Triangles</h1>
     <p class="lead">Special lines &amp; centres, angle pairs on parallel lines, then congruence and similarity — with standard geometry markings.</p>
-    <nav class="jm-tabs" aria-label="Lesson sections">
-      <button class="jm-tab active" type="button" data-tab="tools">Interactive Tools</button>
+        <nav class="jm-tabs" aria-label="Lesson sections">
+      <button class="jm-tab active" type="button" data-tab="concept">Concept &amp; Formula</button>
+      <button class="jm-tab" type="button" data-tab="tools">Interactive Tool</button>
+      <button class="jm-tab" type="button" data-tab="games">Games</button>
       <button class="jm-tab" type="button" data-tab="comics">Comics</button>
+      <button class="jm-tab" type="button" data-tab="summary">Summary</button>
+      <button class="jm-tab" type="button" data-tab="quiz">Quiz</button>
     </nav>
-    <section id="panel-tools" class="jm-panel">
+        <section id="panel-concept" class="jm-panel">
+      <section class="block">
+        <h2>Concept &amp; Formula</h2>
+        <p class="hint">Coming soon.</p>
+      </section>
+    </section>
+<section id="panel-tools" class="jm-panel hidden">
       <div class="subnav" id="jm28-lab-nav" aria-label="Tool labs"></div>
 
       <div class="lab active" id="lab-lines">
         <p class="part-title">Lab 1 · Special lines &amp; centres</p>
         <section class="block">
           <h2>Four special lines → four centres</h2>
-          <p class="hint">All construction lines are solid. Medians use tick marks on equal halves; altitudes show a right-angle symbol at the foot; angle bisectors use outward arc marks. Drag vertices to explore.</p>
+          <p class="hint">Construction lines are dashed. Side extensions beyond a vertex use dotted lines. Equal lengths use red ticks; equal angles and right angles use blue marks. Drag vertices to explore.</p>
           <p class="split-hint">Shape presets (click to load):</p>
           <div class="tool-toggle-row" id="tri-preset-btns"></div>
           <div class="tool-toggle-row" id="tri-mode-btns"></div>
@@ -158,12 +104,9 @@ html.jm-tools-only {
           <div class="tool-toggle-row" id="match-extra-btns"></div>
           <div class="slider-row" id="match-k-row" style="display:none">
             <label for="match-k">Scale factor \(k\)</label>
-            <input id="match-k" type="range" min="0.7" max="1.25" step="0.05" value="0.8">
+            <input id="match-k" type="range" min="0.5" max="1.5" step="0.1" value="0.8">
             <span id="match-k-val">0.8</span>
-            <span class="match-k-ratios" id="match-k-ratios" aria-live="polite"></span>
           </div>
-          <p class="split-hint" id="match-parts-hint">Matching parts — click a pair to highlight on both triangles:</p>
-          <div class="tool-toggle-row" id="match-parts-chips" aria-label="Matching parts"></div>
           <p class="split-hint" id="match-drag-hint">Drag A, B or C — the second triangle updates with you.</p>
           <svg class="lab-svg" id="match-svg" viewBox="0 0 520 320" aria-label="Congruence and similarity lab"></svg>
           <p class="formula" id="match-caption"></p>
@@ -171,21 +114,43 @@ html.jm-tools-only {
         </section>
       </div>
     </section>
-    <section id="panel-comics" class="jm-panel hidden">
+        <section id="panel-games" class="jm-panel hidden">
       <section class="block">
-        <h2>Comics</h2>
-        <p class="hint">Comics for this topic are coming soon.</p>
+        <h2>Games</h2>
+        <p class="hint">Coming soon.</p>
+      </section>
+    </section>
+    <section id="panel-comics" class="jm-panel hidden">
+      <div class="subnav" id="comics-series-nav" aria-label="Comic series"></div>
+      <div class="subnav" id="comics-subnav" aria-label="Comic pages"></div>
+      <div id="comics-stage"></div>
+      <p class="hint">Read each page. When a concept finishes, answer the two follow-up questions. They stay on this tab only.</p>
+    </section>
+    <section id="panel-summary" class="jm-panel hidden">
+      <section class="block">
+        <h2>Summary</h2>
+        <p class="hint">Coming soon.</p>
+      </section>
+    </section>
+    <section id="panel-quiz" class="jm-panel hidden">
+      <section class="block">
+        <h2>Quiz</h2>
+        <p class="hint">Coming soon.</p>
       </section>
     </section>
   </main>
   <script defer src="https://cdn.jsdelivr.net/npm/katex@0.16.11/dist/katex.min.js"></script>
   <script defer src="https://cdn.jsdelivr.net/npm/katex@0.16.11/dist/contrib/auto-render.min.js"></script>
-  <script defer src="../../shared/jm-tabs.js?v=20260730-jm28j"></script>
-  <script defer src="triangle-centres-tools.js?v=20260806-kfix"></script>
+  <script src="comics-manifest.js?v=20260830-merge"></script>
+  <script defer src="../../shared/jm-comics-engine.js?v=20260830-fu"></script>
+  <script defer src="triangle-centres-comics.js?v=20260830-fu"></script>
+  <script defer src="../../shared/jm-tabs.js?v=20260830b"></script>
+  <script defer src="triangle-centres-tools.js?v=20260830j"></script>
   <script>
     document.addEventListener("DOMContentLoaded", function () {
       if (window.initJmTabs) window.initJmTabs();
     });
   </script>
+  <script src="../../shared/suppress-ui-caret.js?v=20260904a"></script>
 </body>
 </html>

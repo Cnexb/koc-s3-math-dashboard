@@ -1,73 +1,50 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-<script>
-(function () {
-  if (!/[?&]jmTools=1(?:&|$)/.test(location.search || "")) return;
-  document.documentElement.classList.add("jm-tools-only");
-  function postH() {
-    var h = Math.max(
-      document.documentElement.scrollHeight || 0,
-      document.body ? document.body.scrollHeight : 0,
-      400
-    );
-    try { parent.postMessage({ type: "jm-tools-height", height: h }, "*"); } catch (e) {}
-  }
-  window.addEventListener("load", function () {
-    postH();
-    setTimeout(postH, 200);
-    setTimeout(postH, 800);
-    if (window.ResizeObserver) {
-      new ResizeObserver(postH).observe(document.documentElement);
-    }
-  });
-})();
-</script>
-<script>
-(function () {
-  if (!/[?&]jmTools=1(?:&|$)/.test(location.search || "")) return;
-  document.documentElement.classList.add("jm-tools-only");
-  function postH() {
-    var h = Math.max(
-      document.documentElement.scrollHeight || 0,
-      document.body ? document.body.scrollHeight : 0,
-      400
-    );
-    try { parent.postMessage({ type: "jm-tools-height", height: h }, "*"); } catch (e) {}
-  }
-  window.addEventListener("load", function () {
-    postH();
-    setTimeout(postH, 200);
-    setTimeout(postH, 800);
-    if (window.ResizeObserver) {
-      new ResizeObserver(postH).observe(document.documentElement);
-    }
-  });
-})();
-</script>
-<meta charset="utf-8">
+  <meta charset="utf-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>Probability — KOC S3 Math</title>
+  <title>Probabilities - JM30</title>
   <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/katex@0.16.11/dist/katex.min.css" crossorigin="anonymous">
   <script defer src="https://cdn.jsdelivr.net/npm/katex@0.16.11/dist/katex.min.js" crossorigin="anonymous"></script>
-  <link href="https://fonts.googleapis.com/css2?family=Hanken+Grotesk:wght@400;600;700&family=JetBrains+Mono:wght@400;700&display=swap" rel="stylesheet">
+  <link href="https://fonts.googleapis.com/css2?family=Hanken+Grotesk:wght@400;600;700&family=JetBrains+Mono:wght@400;700&family=Fraunces:opsz,wght@9..144,600;9..144,700&display=swap" rel="stylesheet">
   <link rel="stylesheet" href="../../shared/topic-shell.css?v=20260725-fixes6">
+  <link rel="stylesheet" href="../../shared/topic-chrome.css?v=20260829s">
+  <link rel="stylesheet" href="../../shared/paper-labs.css?v=20260904-jm29">
+  <link rel="stylesheet" href="../../shared/jm-lesson.css?v=20260904-jm29b">
+  <link rel="stylesheet" href="../../shared/jm28-panel.css?v=20260904-jm28">
   <script defer src="../../shared/deck-touch-nav.js?v=20260725-fixes6"></script>
   <script defer src="../../shared/phone-compact.js?v=20260711-phone"></script>
   <script defer src="../../shared/embed-nav.js?v=20260710-deck-16x9"></script>
-  <script defer src="probability-tools.js?v=20260806-nofill"></script>
+  <script defer src="probability-tools.js?v=20260828-eric-jm30"></script>
   <script defer src="probability-game.js?v=20260730-apple"></script>
   <script defer src="probability-quiz.js?v=20260725-fixes6"></script>
-  <script defer src="probability-comics.js?v=20260720-comics"></script>
+  <script defer src="../../shared/jm-comics-engine.js?v=20260830-fu"></script>
+  <script defer src="probability-comics.js?v=20260830-fu"></script>
   <style>
     :root {
-      --bg: #fdfbf7; --panel: #ffffff; --panel2: #f5efe6; --ink: #2c2420; --dim: #5d544f;
-      --a: #4FC3F7; --fav: #FFD54F; --tot: #66BB6A; --line: rgba(0, 0, 0, 0.08); --red: #f06292;
-      --ab: #81C784;
+      --surface: #ffffff;
+      --surface-2: #eef2f7;
+      --text: #1e293b;
+      --muted: #64748b;
+      --line: rgba(30, 41, 59, 0.12);
+      --accent: #4FC3F7;
+      --glow: #29B6F6;
+      --bg: #f1f5f9;
+      --panel: var(--surface);
+      --panel2: var(--surface-2);
+      --ink: var(--text);
+      --dim: var(--muted);
+      --a: var(--accent);
+      --fav: #FFD54F; --tot: #66BB6A; --red: #f06292;
     }
     * { box-sizing: border-box; }
-    body { background: var(--bg); color: var(--ink);
-      font-family: "Hanken Grotesk", system-ui, sans-serif; }
+    body { margin: 0; min-height: 100vh; color: var(--text);
+      font-family: "Hanken Grotesk", system-ui, sans-serif;
+      background:
+        radial-gradient(ellipse 80% 50% at 10% 0%, rgba(14,165,233,.12), transparent 55%),
+        radial-gradient(ellipse 70% 45% at 92% 8%, rgba(56,189,248,.1), transparent 50%),
+        linear-gradient(180deg,#f8fafc,#f1f5f9);
+      background-attachment: fixed; }
     header { padding: 18px 28px; border-bottom: 1px solid var(--line);
       display: flex; align-items: baseline; gap: 14px; }
     header h1 { font-size: 22px; margin: 0; font-weight: 700; }
@@ -82,7 +59,7 @@
       font: inherit; font-weight: 600; padding: 8px 14px; border-radius: 999px; cursor: pointer;
       font-size: 14px; transition: all .15s; }
     .chip:hover { color: var(--ink); }
-    .chip.active { color: #06283d; background: var(--a); border-color: var(--a); }
+    .chip.active { color: #fff; background: #4FC3F7; border-color: #4FC3F7; }
     /* Tab 1: slide deck — height from topic-shell.css */
     .deck-wrap { background: #000; border: 1px solid var(--line); border-radius: 12px; overflow: hidden; }
     .hint { color: var(--dim); font-size: 13px; text-align: center; margin-top: 10px; }
@@ -186,39 +163,6 @@
     table.ptab td.cellp { font-family: "JetBrains Mono", monospace; }
     table.ptab .balls-cell { display: inline-flex; gap: 3px; align-items: center; }
     .bb-leaf-fav { font-weight: 700; }
-
-    /* Fill-the-tree practice */
-    .bb-mode-field { min-width: 200px; }
-    .bb-fill-bar { display: none; flex-wrap: wrap; align-items: center; gap: 10px; margin: 0 0 12px;
-      padding: 10px 14px; background: var(--panel); border: 1px solid var(--line); border-radius: 12px; }
-    .bb-fill-bar.visible { display: flex; }
-    .bb-fill-bar .bb-fill-hint { flex: 1 1 180px; font-size: 13px; color: var(--dim); margin: 0; line-height: 1.4; }
-    .bb-fill-btn { background: var(--panel2); color: var(--ink); border: 1px solid var(--line);
-      font: inherit; font-weight: 600; padding: 8px 14px; border-radius: 9px; cursor: pointer; font-size: 14px; }
-    .bb-fill-btn:hover { border-color: var(--a); }
-    .bb-fill-btn.primary { background: var(--a); color: #06283d; border-color: var(--a); }
-    .bb-fill-status { font-size: 13px; font-weight: 600; min-height: 1.2em; }
-    .bb-fill-status.ok { color: var(--tot); }
-    .bb-fill-status.bad { color: #f87171; }
-    .bb-frac-wrap { display: flex; align-items: center; justify-content: center; gap: 2px;
-      width: 100%; height: 100%; box-sizing: border-box; padding: 2px; pointer-events: auto; }
-    .bb-frac-inp { width: 22px; height: 20px; padding: 0; margin: 0; text-align: center;
-      font-family: "JetBrains Mono", monospace; font-size: 11px; font-weight: 700;
-      background: #0f172a; color: var(--ink); border: 1px solid transparent; border-radius: 4px;
-      -moz-appearance: textfield; appearance: textfield; }
-    .bb-frac-inp::-webkit-outer-spin-button, .bb-frac-inp::-webkit-inner-spin-button { -webkit-appearance: none; margin: 0; }
-    .bb-frac-inp:focus { outline: none; border-color: var(--a); }
-    .bb-frac-slash { color: var(--dim); font-size: 11px; font-weight: 700; line-height: 1; }
-    .bb-edge-pill { transition: stroke .15s, fill .15s; }
-    .bb-edge-pill.ok { stroke: var(--tot) !important; fill: rgba(102,187,106,.18) !important; }
-    .bb-edge-pill.bad { stroke: #f87171 !important; fill: rgba(248,113,113,.14) !important; }
-    .bb-edge-pill.revealed { stroke: var(--a) !important; fill: rgba(79,195,247,.14) !important; }
-    .bb-frac-chips { display: flex; flex-wrap: wrap; gap: 4px; justify-content: center; max-width: 100%; }
-    .bb-frac-chip { font-family: "JetBrains Mono", monospace; font-size: 10px; font-weight: 700;
-      padding: 2px 6px; border-radius: 999px; border: 1px solid var(--line); background: #0f172a;
-      color: var(--dim); cursor: pointer; line-height: 1.3; }
-    .bb-frac-chip:hover { border-color: var(--a); color: var(--ink); }
-    .bb-frac-chip.picked { background: var(--a); color: #06283d; border-color: var(--a); }
 
     /* enlarge modal */
     .ct-modal { position: fixed; inset: 0; z-index: 60; display: flex; align-items: center; justify-content: center;
@@ -494,56 +438,28 @@
     .comic-chapter-next { margin-left: auto; }
   </style>
   <link rel="stylesheet" href="../../shared/chem-light-theme.css?v=20260710-deck-16x9">
-<style id="jm-tools-only-css">
-/* JM S3 embed: show only Interactive Tools */
-html.jm-tools-only body > header,
-html.jm-tools-only body > .tab-row,
-html.jm-tools-only body > nav,
-html.jm-tools-only body > .tabs,
-html.jm-tools-only body > section:not(#panel-tools) {
-  display: none !important;
-}
-html.jm-tools-only #panel-tools,
-html.jm-tools-only #panel-tools.hidden {
-  display: block !important;
-  visibility: visible !important;
-  padding: 8px 12px 20px !important;
-  max-width: none !important;
-}
-html.jm-tools-only body {
-  margin: 0 !important;
-  min-height: 0 !important;
-  background: #ffffff !important;
-  overflow-x: hidden !important;
-  overflow-y: auto !important;
-}
-html.jm-tools-only {
-  background: #ffffff !important;
-}
-</style>
+  <link rel="stylesheet" href="../../shared/jm-comics.css?v=20260830-fu">
+  <link rel="stylesheet" href="../../shared/page-motion.css?v=20260830a">
 </head>
-<body>
-  <header>
-    <img class="topic-logo" src="../../shared/uniplus-logo.png" alt="Uni+ logo">
-    <div class="topic-headings">
-      <div class="topic-brand">Uni<span class="plus">+</span> · Mathematics</div>
-      <h1>Probability</h1>
-      <span class="crumb">KOC S3 Math · Summer 2026 · L10–12 Probability</span>
-    </div>
-  </header>
+<body class="paper-labs">
+<main class="jm-page">
+  <a class="jm-back" href="../../index.html#lessons">&larr; S3 Lessons</a>
+  <p class="jm-eyebrow">JM30 &middot; Lesson 30</p>
+  <h1>Probabilities</h1>
+  <p class="lead">Formula, tree diagrams, and tabulation: tools, games, comics, and quiz.</p>
 
-  <div class="tab-row">
-  <nav class="tabs">
-    <button class="tab active" data-tab="slides">Concept &amp; Formula</button>
-    <button class="tab" data-tab="tools">Interactive Tool</button>
-    <button class="tab" data-tab="game">Probability Game</button>
-    <button class="tab" data-tab="comics">Comics</button>
-    <button class="tab" data-tab="quiz">Quiz</button>
+  <nav class="jm-tabs" aria-label="Lesson sections">
+    <button class="jm-tab active" type="button" data-tab="slides">Concept &amp; Formula</button>
+    <button class="jm-tab" type="button" data-tab="tools">Interactive Tool</button>
+    <button class="jm-tab" type="button" data-tab="game">Games</button>
+    <button class="jm-tab" type="button" data-tab="comics">Comics</button>
+    <button class="jm-tab" type="button" data-tab="summary">Summary</button>
+    <button class="jm-tab" type="button" data-tab="quiz">Quiz</button>
   </nav>
-  </div>
+<!-- TAB 1: concept slide decks -->
+  <section id="panel-slides" class="jm-panel">
+      <section class="block jm-deck-panel">
 
-  <!-- TAB 1: concept slide decks -->
-  <section id="panel-slides" class="panel">
     <div class="subnav">
       <button class="chip active" data-deck="../../slides/probability/formula/index.html">Probability formula</button>
       <button class="chip" data-deck="../../slides/probability/tree-diagram/index.html">Tree diagram</button>
@@ -559,10 +475,12 @@ html.jm-tools-only {
     <p class="hint hint-deck-desktop">Use &rarr; / Space to advance, &larr; to go back. Each slide builds the idea step by step.</p>
     <p class="hint hint-deck-tablet">Swipe left for next slide, right for previous &mdash; or use the arrows. Each slide builds the idea step by step.</p>
     <p class="hint hint-deck-phone">Tap the &larr; and &rarr; buttons below the slide. Each slide builds the idea step by step.</p>
-  </section>
+  
+      </section>
+    </section>
 
   <!-- TAB 2: interactive tools -->
-  <section id="panel-tools" class="panel hidden">
+  <section id="panel-tools" class="jm-panel hidden">
     <div class="subnav">
       <button class="chip active" data-tool="card">Card game (52)</button>
       <button class="chip" data-tool="ball">Ball drawing from a bag</button>
@@ -658,7 +576,7 @@ html.jm-tools-only {
   </section>
 
   <!-- TAB 3: probability game -->
-  <section id="panel-game" class="panel hidden">
+  <section id="panel-game" class="jm-panel hidden">
     <div class="subnav">
       <button class="chip active" data-game="apple">Apple Catch Quest</button>
       <button class="chip" data-game="bet">Expected Value Challenge</button>
@@ -812,14 +730,18 @@ html.jm-tools-only {
   </section>
 
   <!-- TAB: comics story + concept checks (separate from quiz DB) -->
-  <section id="panel-comics" class="panel hidden">
+  <section id="panel-comics" class="jm-panel hidden">
     <div class="subnav" id="comics-subnav"></div>
     <div id="comics-stage"></div>
-    <p class="hint">Read the comic page, then answer the two concept checks below. Answers stay on this tab only — they do not affect the Quiz.</p>
+    <p class="hint">Read each page. When a concept finishes, answer the two follow-up questions. They stay on this tab only.</p>
+  </section>
+
+  <section id="panel-summary" class="jm-panel hidden">
+    <p class="hint">Summary for this lesson is coming soon.</p>
   </section>
 
   <!-- TAB 5: quiz -->
-  <section id="panel-quiz" class="panel hidden">
+  <section id="panel-quiz" class="jm-panel hidden">
     <div class="quiz-wrap">
       <div class="quiz-progress-wrap" id="quiz-progress-wrap">
         <div class="quiz-progress-label" id="quiz-progress-label">Question 1 of 1</div>
@@ -834,5 +756,13 @@ html.jm-tools-only {
     <p class="hint">Pre S3 L10–12 Probability Quiz — answer each question, use Next to move on. Submit on Q10 to see all results. Wheel/diagram items refer to the quiz paper PDF.</p>
   </section>
 
+</main>
+    <script defer src="../../shared/jm-tabs.js?v=20260904-jm28"></script>
+  <script>
+    document.addEventListener('DOMContentLoaded', function () {
+      if (window.initJmTabs) window.initJmTabs();
+    });
+  </script>
+  <script src="../../shared/suppress-ui-caret.js?v=20260904a"></script>
 </body>
 </html>

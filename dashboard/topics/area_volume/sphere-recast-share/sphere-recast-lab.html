@@ -1,0 +1,242 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Sphere Recasting Lab · QB11</title>
+  <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/katex@0.16.11/dist/katex.min.css" crossorigin="anonymous">
+  <script defer src="https://cdn.jsdelivr.net/npm/katex@0.16.11/dist/katex.min.js" crossorigin="anonymous"></script>
+  <link href="https://fonts.googleapis.com/css2?family=Hanken+Grotesk:wght@400;600;700&family=JetBrains+Mono:wght@400;700&display=swap" rel="stylesheet">
+  <style>
+    :root {
+      --bg: #fdfbf7; --panel: #ffffff; --panel2: #f5efe6; --ink: #2c2420; --dim: #5d544f;
+      --a: #4FC3F7; --line: rgba(0, 0, 0, 0.08);
+    }
+    * { box-sizing: border-box; }
+    body {
+      margin: 0; background: var(--bg); color: var(--ink);
+      font-family: "Hanken Grotesk", system-ui, sans-serif;
+    }
+    header {
+      padding: 18px 24px; border-bottom: 1px solid var(--line);
+      display: flex; align-items: baseline; gap: 12px; flex-wrap: wrap;
+    }
+    header h1 { font-size: 22px; margin: 0; font-weight: 700; }
+    header .crumb { color: var(--dim); font-size: 13px; }
+    main { padding: 20px 24px 32px; max-width: 1240px; margin: 0 auto; }
+
+    .control-card {
+      background: var(--panel); border: 1px solid var(--line); border-radius: 14px; padding: 18px;
+    }
+    .control-card h3 { margin: 2px 0 14px; font-size: 15px; color: var(--dim); font-weight: 600;
+      text-transform: uppercase; letter-spacing: .05em; }
+    .tool-instr { font-size: 14px; color: var(--dim); line-height: 1.5; margin: 0 0 14px; }
+    .tool-action { margin-top: 14px; width: 100%; background: var(--panel2); color: var(--ink); border: 1px solid var(--line);
+      font: inherit; font-weight: 600; padding: 10px; border-radius: 9px; cursor: pointer;
+      user-select: none; -webkit-user-select: none; caret-color: transparent; }
+    .tool-action:hover { border-color: var(--a); }
+    .step-card { border: 1px solid var(--line); border-radius: 12px; padding: 12px 14px; margin-bottom: 10px;
+      background: var(--panel2); transition: border-color .2s, box-shadow .2s; }
+    .step-card.active { border-color: var(--a); box-shadow: 0 4px 16px -6px rgba(79,195,247,.45); }
+    .step-head { display: flex; align-items: center; gap: 10px; margin-bottom: 8px; }
+    .step-index { width: 24px; height: 24px; border-radius: 50%; background: var(--panel); color: var(--dim);
+      display: flex; align-items: center; justify-content: center; font-weight: 700; font-size: 13px; flex: none; }
+    .step-card.active .step-index { background: var(--a); color: #06283d; }
+    .step-title { font-weight: 700; font-size: 12px; color: var(--ink); text-transform: uppercase; letter-spacing: .04em; }
+    .step-body { font-size: 17px; }
+    .tool-nav { display: flex; align-items: center; justify-content: space-between; gap: 10px; margin-top: 4px; }
+    .nav-btn { background: var(--panel2); border: 1px solid var(--line); color: var(--ink); font: inherit;
+      font-weight: 600; padding: 8px 16px; border-radius: 9px; cursor: pointer;
+      user-select: none; -webkit-user-select: none; caret-color: transparent; }
+    .nav-btn:hover:not(:disabled) { border-color: var(--a); }
+    .nav-btn:disabled { opacity: .4; cursor: default; }
+    .progress-label { color: var(--dim); font-size: 13px; font-weight: 700; user-select: none; }
+
+    button, .recast-step-link, .recast-choice, .recast-reveal-prompt, .recast-stage-btn {
+      user-select: none; -webkit-user-select: none; caret-color: transparent;
+    }
+
+    .recast-layout {
+      display: grid; grid-template-columns: minmax(330px, 440px) minmax(0, 1fr);
+      gap: 18px; align-items: start;
+    }
+    .recast-dashboard { min-width: 0; }
+    .recast-stage {
+      min-width: 0; overflow: hidden;
+      background: var(--panel); border: 1px solid var(--line); border-radius: 14px; padding: 10px;
+      position: relative;
+    }
+    #recast-svg {
+      width: 100%; height: auto; max-height: calc(100vh - 140px);
+      aspect-ratio: 720 / 420; display: block;
+    }
+    .recast-step-list {
+      display: grid; grid-template-columns: 1fr 1fr; gap: 6px 8px;
+      margin: 0 0 12px; padding: 10px; border: 1px solid var(--line);
+      background: var(--panel2); border-radius: 10px;
+    }
+    .recast-step-link {
+      display: flex; align-items: center; gap: 7px; min-width: 0; padding: 5px 6px;
+      border: 0; background: none; color: var(--dim); font: inherit; font-size: 12px;
+      text-align: left; cursor: pointer; border-radius: 6px; transition: background .12s;
+    }
+    .recast-step-link:hover:not(:disabled) { background: rgba(0,0,0,.03); }
+    .recast-step-link span:last-child { overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
+    .recast-step-link:disabled { cursor: default; opacity: .45; }
+    .recast-step-link.active { color: var(--ink); font-weight: 700; background: rgba(79,195,247,.1); }
+    .recast-step-link.complete { color: #2E7D32; font-weight: 600; }
+    .recast-step-dot {
+      width: 20px; height: 20px; flex: none; border-radius: 50%; display: grid; place-items: center;
+      background: var(--panel); border: 1px solid var(--line); font-size: 10px; font-weight: 700;
+    }
+    .recast-step-link.active .recast-step-dot { background: var(--a); border-color: var(--a); color: #06283d; }
+    .recast-step-link.complete .recast-step-dot { background: #dff3e1; border-color: #81C784; color: #1b5e20; }
+    .recast-note-viewport { perspective: 900px; margin: 0 -4px; padding: 4px; min-height: 240px; }
+    .recast-note {
+      transform-origin: bottom right;
+      transition: transform .34s cubic-bezier(.22, .75, .25, 1), opacity .26s ease;
+      will-change: transform, opacity;
+    }
+    .recast-note.card-flip-out-right {
+      transform: translate3d(92%, 40px, 0) rotate(14deg) scale(0.91); opacity: 0; pointer-events: none;
+    }
+    .recast-note.card-flip-out-top {
+      transform: translate3d(0, -26px, 0) scale(0.95); opacity: 0; pointer-events: none;
+    }
+    .recast-note.card-enter-from-top {
+      transform: translate3d(0, -18px, 0) scale(0.97); opacity: 0; transition: none;
+    }
+    .recast-note.card-enter-from-right {
+      transform: translate3d(92%, 40px, 0) rotate(14deg) scale(0.91); opacity: 0; transition: none;
+    }
+    .recast-notecard {
+      margin-bottom: 0; background: var(--panel2); border: 1px solid var(--line); border-radius: 12px;
+      padding: 14px 16px; box-shadow: 0 4px 14px -6px rgba(0,0,0,.08);
+      display: flex; flex-direction: column; gap: 10px; user-select: none;
+    }
+    .recast-notecard.active { border-color: var(--a); box-shadow: 0 4px 16px -6px rgba(79,195,247,.4); }
+    .recast-notecard.clickable-card { cursor: pointer; }
+    .recast-prose { margin: 4px 0; font-size: 14px; line-height: 1.55; color: var(--ink); }
+    .recast-prose .recast-math { margin: 0 2px; }
+    .recast-prose .recast-math .katex { font-size: 1.04em; }
+    .recast-eq { overflow-x: auto; font-size: 16.5px; margin: 6px 0; padding: 2px 0; }
+    .recast-vol-preview {
+      font-size: 13px; color: var(--dim); margin: 0 0 12px; padding: 8px 10px;
+      background: var(--panel2); border-radius: 9px; border: 1px solid var(--line);
+    }
+    .recast-vol-preview .recast-prose { margin: 0; font-size: 13px; }
+    .calc-line-block { display: flex; flex-direction: column; gap: 6px; margin-top: 4px; }
+    .calc-line { opacity: 0; transform: translateY(8px); transition: opacity .26s ease-out, transform .26s ease-out; display: none; }
+    .calc-line.revealed { opacity: 1; transform: translateY(0); display: block; }
+    .recast-reveal-prompt {
+      display: flex; align-items: center; justify-content: center; gap: 6px; margin-top: 8px;
+      padding: 9px 12px; background: rgba(79, 195, 247, 0.12); border: 1px dashed var(--a);
+      border-radius: 8px; color: #0277BD; font-size: 13px; font-weight: 700; cursor: pointer; user-select: none;
+      transition: background .15s, transform .12s;
+    }
+    .recast-reveal-prompt:hover { background: rgba(79, 195, 247, 0.22); transform: translateY(-1px); }
+    .recast-reveal-prompt:active { transform: translateY(0); }
+    .recast-reveal-done { text-align: center; margin-top: 6px; color: #2E7D32; font-size: 12px; font-weight: 600; }
+    .recast-card-inputs {
+      margin-top: 4px; padding-top: 10px; border-top: 1px dashed var(--line);
+      display: flex; flex-direction: column; gap: 10px;
+    }
+    .recast-setup-field {
+      display: flex; justify-content: space-between; align-items: center; gap: 10px;
+      font-size: 14px; font-weight: 600;
+    }
+    .recast-setup-field em { font-style: normal; color: var(--a); font-family: "JetBrains Mono", monospace; }
+    .recast-value-box { display: inline-flex; align-items: center; gap: 8px; }
+    .recast-setup-field input {
+      width: 64px; font: inherit; font-size: 16px; padding: 7px 9px;
+      border: 1px solid var(--line); border-radius: 8px; background: #fff;
+    }
+    .recast-setup-field input:focus { outline: none; border-color: var(--a); }
+    .recast-unit { color: var(--dim); font-size: 13px; font-weight: 600; }
+    .recast-range-note { margin: -2px 0 0; color: var(--dim); font-size: 11px; text-align: right; }
+    .recast-fb { font-size: 13.5px; line-height: 1.45; margin: 8px 0 0; min-height: 1.2em; }
+    .recast-fb.ok { color: #2E7D32; font-weight: 700; }
+    .recast-fb.bad { color: #C62828; font-weight: 600; }
+    .recast-mc { display: flex; flex-direction: column; gap: 8px; margin-top: 8px; }
+    .recast-choice {
+      text-align: left; background: var(--panel); border: 1.5px solid var(--line); border-radius: 9px;
+      padding: 10px 14px; cursor: pointer; font: inherit; font-size: 13.5px; color: var(--ink);
+      transition: border-color .15s, background .15s, color .15s, transform .12s;
+    }
+    .recast-choice:hover:not(:disabled) { border-color: var(--a); background: #f5fbfe; }
+    .recast-choice:disabled { cursor: default; }
+    .recast-choice.is-correct {
+      background: #e8f5e9 !important; border-color: #4caf50 !important; color: #1b5e20 !important; font-weight: 700;
+    }
+    .recast-choice.is-wrong {
+      background: #ffebee !important; border-color: #ef5350 !important; color: #c62828 !important; font-weight: 600;
+    }
+    .recast-stage-btn {
+      position: absolute; bottom: 20px; right: 24px; z-index: 10;
+      background: #0288D1; color: #fff; border: none; font: inherit; font-size: 14px;
+      font-weight: 700; padding: 10px 18px; border-radius: 20px; cursor: pointer;
+      box-shadow: 0 4px 14px rgba(2,136,209,.4); display: flex; align-items: center; gap: 6px;
+      transition: transform .15s, background .15s;
+    }
+    .recast-stage-btn:hover { background: #0277BD; transform: translateY(-1px); }
+    .recast-stage-btn:active { transform: translateY(0); }
+    @keyframes yellowBluePulse {
+      0%, 100% { stroke: #FFD54F; filter: drop-shadow(0 0 6px rgba(255, 213, 79, 0.85)); }
+      50% { stroke: #4FC3F7; filter: drop-shadow(0 0 8px rgba(79, 195, 247, 0.9)); }
+    }
+    .shimmer-edge { animation: yellowBluePulse 1.8s ease-in-out infinite; }
+    @media (max-width: 800px) {
+      .recast-layout { grid-template-columns: 1fr; }
+      .recast-stage { position: static; }
+      #recast-svg { max-height: none; }
+    }
+    @media (prefers-reduced-motion: reduce) {
+      .recast-note { transition-duration: .01ms; }
+      .shimmer-edge { animation: none; stroke: #FFD54F; }
+    }
+  </style>
+</head>
+<body>
+  <header>
+    <h1>Sphere Recasting Lab</h1>
+    <span class="crumb">JM32 &middot; QB11 &middot; Interactive teaching tool</span>
+  </header>
+  <main>
+    <div id="recast-tool-shell">
+      <div class="recast-layout">
+        <div class="recast-dashboard control-card">
+          <h3>Sphere recasting</h3>
+          <p class="tool-instr">Control the values and advance each teaching step here. The diagram responds on the right.</p>
+          <div id="recast-vol-preview" class="recast-vol-preview" aria-live="polite"></div>
+          <nav id="recast-step-list" class="recast-step-list" aria-label="Recasting steps"></nav>
+          <div class="recast-note-viewport">
+            <div id="recast-note" class="recast-note">
+              <div id="recast-card"></div>
+            </div>
+          </div>
+          <div class="tool-nav">
+            <button id="recast-back" class="nav-btn" type="button">&lsaquo; Back</button>
+            <span id="recast-progress" class="progress-label"></span>
+            <button id="recast-next" class="nav-btn" type="button">Next &rsaquo;</button>
+          </div>
+          <button id="recast-reset" class="tool-action" type="button">Reset</button>
+        </div>
+        <div class="recast-stage">
+          <svg id="recast-svg" viewBox="0 0 720 420" preserveAspectRatio="xMidYMid meet"
+            role="img" aria-label="Animated sphere recasting diagram"></svg>
+        </div>
+      </div>
+    </div>
+  </main>
+  <script>
+    document.addEventListener("DOMContentLoaded", function () {
+      document.querySelectorAll("button").forEach(function (btn) {
+        btn.addEventListener("mousedown", function (e) {
+          if (e.button === 0) e.preventDefault();
+        });
+      });
+    });
+  </script>
+  <script src="area-volume-recast-lab.js"></script>
+</body>
+</html>

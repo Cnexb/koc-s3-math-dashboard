@@ -1,0 +1,237 @@
+JM23 陸運會漫畫腳本 (供修改)
+導航: Part 1 / 2 / 3, 頁底「下一頁」; 每 part 最後一頁才有 Concept check (無題號).
+標點盡量用半型. Part 1 圖片已按此稿重畫.
+
+============================================================
+PART 1 · Circumferences and arc lengths of circles
+公式目標: C = 2πr → r = C/(2π) → 路程 = n×C → 弧長 = (θ/360°)×2πr
+============================================================
+
+--- 1.1 Sports Day staff (交代身分; 圓圓尚未出場) ---
+[畫面] 陸運會前一晚的操場. 陳老師把工作人員證件遞給阿樂、美心.
+
+陳老師: 明日陸運會, 數學學會要負責場地.
+Mr Chan: Sports Day is tomorrow. Maths Club is in charge of the venue.
+
+阿樂: 我們是工作人員? 我只想著要去跑八百米.
+Ah Lok: We're staff? I was only thinking about running the 800.
+
+美心: 趁還沒到開賽時間, 先幫忙準備場地.
+Mei Sum: Before the races start, let's help set up the field first.
+
+陳老師: 快戴上證件, 早點弄好就能早點準備明日的比賽.
+Mr Chan: Put your badges on. Finish early, and you'll still have time to get ready for tomorrow's races.
+
+--- 1.2 Not magic (阿樂先喊「魔法」) ---
+[畫面] 用圓規畫熱身圈, 才畫了四分一. 圓圓彈出.
+
+阿樂: (嚇得後退) 魔法!? 圓規成精了!
+Ah Lok: (jumps back) Magic!? The compass came alive!
+
+美心: 你... 你是誰?
+Mei Sum: Who... are you?
+
+圓圓: 不是魔法啦, 我是圓圓, 是圓本身. 你們看看這條熱身圈.
+Circle: Not magic. I'm Circle — I'm the circle itself. Look at this warm-up loop.
+
+陳老師: 這條路是圓周. 一旦定下半徑, 就決定了這圈有多長.
+Mr Chan: This path is the circumference. Once you set the radius, you set how long this loop is.
+
+--- 1.3 The cord is the lap (先有 30 cm = 周長, 再出 C = 2πr) ---
+[畫面] 頒獎後台. 30 cm 彩繩圍成一圈, 圓圓站圓心.
+
+阿樂: 這條繩圍一圈最大就這麼大, 一點都不剩了.
+Ah Lok: Loop this cord once and this is as big as it gets. Nothing left over.
+
+美心: 所以繩有多長, 這個圓走一圈就有多長?
+Mei Sum: So however long the cord is, that's how long one lap of this circle is?
+
+圓圓: 沿我走一圈要走 30 cm, 所以周長就是 30 cm.
+Circle: Walk around me once and you walk 30 cm, so the circumference is 30 cm.
+
+陳老師: 對. 繩長就是周界 C. 從圓心到繩是半徑 r. 一圈等於兩個半徑那麼寬的 π 倍:
+C = 2πr
+
+--- 1.4 Turn the formula around (再出 r = C/2π; 直徑 2r ≈ 9.55 cm) ---
+阿樂: 可是我們只量了繩長 30 cm, 半徑還沒量... 花環會不會細得像手鏈?
+Ah Lok: We only measured the cord — 30 cm. We haven't measured the radius... will the wreath be as small as a bracelet?
+
+美心: 那就倒過來. 已經有 C = 2πr, 兩邊同除 2π:
+r = C/(2π) = 30/(2π) ≈ 4.77 cm
+
+美心: 半徑大概四厘米多, 真的只夠做小花環.
+Mei Sum: A bit over four centimetres. Yeah — only a tiny wreath.
+
+陳老師: 直徑就是 2r ≈ 9.55 cm, 不會太細的.
+Mr Chan: The diameter is 2r ≈ 9.55 cm. It won't be too thin.
+
+--- 1.5 Hula hoop challenge (先比半徑, 再求周界差) ---
+阿樂: 你們快看這個金圈好難轉, 一定大了很多!
+Ah Lok: Look at this gold hoop — it's so hard to spin. It must be a lot bigger!
+
+美心: 紅圈半徑 10 cm, 金圈比紅圈多了 4 cm.
+Mei Sum: The red hoop has radius 10 cm. The gold one is 4 cm more than the red.
+
+陳老師: 先比較兩圈半徑, 再求周界.
+Mr Chan: Compare the two radii first, then find the circumferences.
+
+阿樂: 金圈半徑多了 4 cm, 所以周界長了 4×2π = 8π ≈ 25.1 cm... 難怪沉了這麼多!
+Ah Lok: The gold radius is 4 cm more, so the circumference is 4×2π ≈ 25.1 cm longer... no wonder it feels so much heavier!
+
+--- 1.6 The coin stall (轉一圈 = 走一個周界; 單車同一件事) ---
+美心: 這個攤要你把硬幣滾到終點. 我滾了三十圈, 它走得好遠!
+Mei Sum: This stall wants you to roll a coin to the finish. I gave it thirty turns and it went so far!
+
+阿樂: 硬幣那麼小, 怎會走那麼遠?
+Ah Lok: It's such a tiny coin. How did it go that far?
+
+美心: 每滾一圈就走一次自己的周界, 三十圈就是 30×2πr = 60πr.
+Mei Sum: Each roll travels its own circumference once. Thirty rolls is 30×2πr = 60πr.
+
+圓圓: 車輪、呼拉圈、硬幣, 都一樣: 轉一圈, 就走 2πr.
+Circle: Wheels, hoops, coins — same idea. One turn walks 2πr.
+
+阿樂: 我量過, 輪的半徑是半米, C = π m, 所以大約 32 圈.
+Ah Lok: I measured. The wheel's radius is half a metre, C = π m, so about 32 turns.
+
+--- 1.7 The unfinished loop (回熱身圈只畫了 90°, 才出弧長) ---
+[畫面] 熱身圈只畫了四分一. 圓規還張開 5 m.
+
+阿樂: 熱身圈才畫了四分一, 圓規跳出來之後就沒畫完.
+Ah Lok: We only drew a quarter of the warm-up loop. After the compass jumped out, we stopped.
+
+美心: 這一段是彎的, 不是整圈. 粉筆還要再畫多長?
+Mei Sum: This bit is curved, not a full loop. How much more chalk do we still need?
+
+陳老師: 整圈是 2πr. 你們只畫了 90°, 就是整圈的四分一.
+Mr Chan: A full loop is 2πr. You only drew 90°, that's a quarter of the loop.
+
+圓圓: 這叫弧長. 弧長 = (θ/360°) × 2πr.
+Circle: That's called arc length. Arc = (θ/360°) × 2πr.
+
+美心: 圓規還張開 5 m, 所以這段弧是 (90/360)×2π×5 = 2.5π m.
+Mei Sum: The compass is still open 5 m, so this arc is 2.5π m.
+
+[Concept check — 無題號; 數值與漫畫不同]
+- 繩長 50 cm 圍成圓, 求 r (3 s.f.) → 7.96 cm
+- 車輪半徑 0.4 m, 走 50 m, 求轉數 → 20
+
+============================================================
+PART 2 · Areas of circles and sectors
+公式目標：A = πr² → 由 C 求 A → 兩半圓 = 整圓 → 扇形 (θ/360)πr² → 環 π(R²−r²)
+============================================================
+
+--- 2.1 The hole in the arch（為什麼要面積）---
+阿樂：貼紙邊緣跟洞口一圈對得上，是不是就夠了？
+Ah Lok: If the sticker's edge matches the hole's edge, that's enough, right?
+
+美心：邊緣對得上，只代表周界一樣。要遮住裡面，看的是面積——中間那一整塊。
+Mei Sum: Matching the edge only means the circumference matches. To cover the hole, we need the area — the whole inside.
+
+陳老師：周界是走一圈的路。面積是這一圈圍住的地面。圓面積：
+A = πr²
+
+美心：校徽半徑 5 cm，所以 A = π×5² = 25π ≈ 78.5 cm²。應該夠遮。
+Mei Sum: Badge radius 5 cm, so the area is about 78.5 cm². It should cover the hole.
+
+--- 2.2 Ribbon for a mini badge（先 C 再 A）---
+阿樂：這條彩帶六十厘米，圍成一圈當小校徽，中間能貼多大？
+Ah Lok: This ribbon is sixty centimetres. If I loop it as a mini badge, how much space is inside?
+
+美心：先用剛才的周界。彩帶長就是 C，先求 r，再求面積——順序跟花環那一步一樣，只是多問「裡面」。
+Mei Sum: Start with circumference again. The ribbon is C. Find r, then the area — same order as the wreath, but now we ask about the inside.
+
+r = 60/(2π) ≈ 9.55 cm，A = πr² ≈ 287 cm²
+
+美心：圍得成，裡面比你想的空。
+Mei Sum: It'll loop. The space inside is bigger than you're picturing.
+
+--- 2.3 Track bends on the arch（兩半圓）---
+陳老師：拱門上面兩個半圓，看起來像不像跑道彎道對摺？
+Mr Chan: Those two semicircles on the arch — don't they look like a track bend folded in half?
+
+阿樂：那油漆要按一個整圓來買？兩個半圓合起來……就是一個整圓？
+Ah Lok: So we buy paint as one full circle? Two semicircles together… that's one whole circle?
+
+美心：對。面積用 πr² 一次就夠。下面長方形再另算。
+Mei Sum: Yes. One πr² covers both semicircles. The rectangle underneath is separate.
+
+阿樂：入口花槽模型直徑 8 cm，半徑 4 cm，兩個半圓合起來也是 16π。
+Ah Lok: The planter model is 8 cm across, so radius 4 cm. Two semicircles again make 16π.
+
+--- 2.4 Pizza and the scoring ring（扇形 + 環）---
+圓圓：我要那一角！像看台切下來的一塊——不是整個圓。
+Circle: I'll take that slice! Like a piece of the grandstand — not the whole circle.
+
+美心：這角是 90°，剛好四分一個。整圓面積乘這個比例，就是這一角：
+A_sector = (θ/360°) × πr² = (90/360) × π × 10² = 25π cm²
+
+陳老師：擲豆袋那個靶，中間空心的環才計分——不是整個大圓。
+Mr Chan: On the bean-bag target, only the hollow ring scores — not the whole big circle.
+
+阿樂：大圓減小圓？
+Ah Lok: Big circle minus small circle?
+
+美心：對。環的面積是 πR² − πr² = π(R² − r²)。
+Mei Sum: Yes. The ring is π(R² − r²).
+
+【Concept check】
+- 半徑 7 cm 的圓面積（3 s.f.）→ 154 cm²
+- 60° 扇形、半徑 12 cm → 24π cm²
+
+============================================================
+PART 3 · Volumes and total surface areas of circular cylinders
+公式目標：V = πr²h → 側面 2πrh → TSA = 2πrh + 2πr² → Δh = V/(πr²)
+============================================================
+
+--- 3.1 Water for the 800 m（為什麼要體積）---
+美心：下一場是八百米。這些水夠不夠？不是問桶外面一圈有多長，是問裡面裝得下多少。
+Mei Sum: Next is the 800 metres. Is there enough water? That's not "how far around the barrel" — that's "how much fits inside".
+
+圓圓：這桶上下一樣圓，像把許多圓疊起來。每一層的面積是 πr²，疊多高就乘多高：
+V = πr²h
+
+阿樂：我量過，半徑 3 cm、高 9 cm，所以 V = 81π cm³ ……比我想像中多。
+Ah Lok: I measured — radius 3 cm, height 9 cm, so 81π cm³… more than I thought.
+
+--- 3.2 Sticker on the side（側面 ≠ 體積）---
+阿樂：校名貼紙圍一圈就好了吧？連蓋一起包會不會比較好看？
+Ah Lok: Just wrap the school name once around, right? Or should we cover the lid too — might look neater?
+
+陳老師：倒水要開蓋。貼紙只圍側面。把側面剪開攤平，是一張長方形：寬是周界 2πr，高是桶高 h。
+Mr Chan: We open the lid to pour. Wrap the side only. Cut the side and flatten it — a rectangle: width 2πr, height h.
+
+curved surface area = 2πrh
+
+美心：所以貼側面，用的是周界乘高，不是體積。
+Mei Sum: So the side sticker uses circumference times height — not the volume.
+
+--- 3.3 If we wrapped the whole barrel（總表面）---
+阿樂：那如果真的連蓋和底都包起來呢？
+Ah Lok: What if we really wrapped the lid and the base as well?
+
+美心：側面那張長方形，再加上兩個圓：
+TSA = 2πrh + 2πr²
+
+陳老師：陸運會我們只貼側面。但試卷問「總表面」，就要把兩個底加回去。不要把 2πrh 當成全部。
+Mr Chan: Today we only wrap the side. In a paper, "total surface area" means add both bases. Don't treat 2πrh as the whole barrel.
+
+--- 3.4 The water jumped（水位上升）---
+阿樂：誰把石頭掉進飲料桶？水位突然升了！水又沒有多倒進去……
+Ah Lok: Who dropped a stone in the drinks? The water jumped! We didn't pour any more in…
+
+陳老師：石頭佔了空間，水沒有別的路，只能往上。升起來那一截，體積等於石頭：
+πr² Δh = V_stone  ⇒  Δh = V_stone / (πr²)
+
+美心：擲鴨攤兩隻鴨也全沉了，水又升一截——一樣的道理。
+Mei Sum: At the duck stall both ducks sank, and the water rose again — same idea.
+
+阿樂：八百米的人還在跑！我們先把桶抬回終點！
+Ah Lok: The 800 is still going! Let's get these coolers to the finish!
+
+美心、阿樂：趕上了！
+Mei Sum & Ah Lok: Just in time!
+
+【Concept check】
+- 圓柱 r = 4 cm, h = 10 cm，求 V（留 π）→ 160π cm³
+- 石頭 88 cm³，桶半徑 4 cm，求 Δh（3 s.f.）→ 1.75 cm

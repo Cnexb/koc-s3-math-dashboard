@@ -16,8 +16,8 @@
       --text: #1e293b;
       --muted: #64748b;
       --line: rgba(30, 41, 59, 0.12);
-      --accent: #0284c7;
-      --glow: #0369a1;
+      --accent: #4FC3F7;
+      --glow: #29B6F6;
     }
 
     * { box-sizing: border-box; }
@@ -27,6 +27,7 @@
       margin: 0;
       color: var(--text);
       font-family: "Hanken Grotesk", system-ui, sans-serif;
+      caret-color: transparent;
       background:
         radial-gradient(ellipse 80% 50% at 12% 0%, rgba(14, 165, 233, 0.12), transparent 55%),
         radial-gradient(ellipse 70% 45% at 90% 10%, rgba(56, 189, 248, 0.1), transparent 50%),
@@ -120,6 +121,12 @@
       color: inherit;
     }
 
+    .s2-mark {
+      color: #0f766e;
+      font-size: 34px;
+      font-weight: 700;
+    }
+
     .s3-mark {
       color: var(--accent);
       font-size: 34px;
@@ -180,8 +187,22 @@
       height: 64px;
     }
 
+    .lesson.errors .cover {
+      color: #b45309;
+      background:
+        radial-gradient(circle at 35% 45%, rgba(251, 191, 36, .35), transparent 50%),
+        linear-gradient(135deg, #fef3c7, #fde68a);
+    }
+
+    .lesson.algebra .cover {
+      color: #7c3aed;
+      background:
+        radial-gradient(circle at 65% 40%, rgba(196, 181, 253, .4), transparent 50%),
+        linear-gradient(135deg, #ede9fe, #ddd6fe);
+    }
+
     .lesson.indices .cover {
-      color: #0369a1;
+      color: #29B6F6;
       background:
         radial-gradient(circle at 70% 30%, rgba(14, 165, 233, .22), transparent 50%),
         linear-gradient(135deg, #e0f2fe, #bae6fd);
@@ -241,7 +262,7 @@
     }
 
     .lesson.area-volume .cover {
-      color: #0369a1;
+      color: #29B6F6;
       background:
         radial-gradient(circle at 60% 35%, rgba(56, 189, 248, .3), transparent 50%),
         linear-gradient(135deg, #e0f2fe, #bae6fd);
@@ -272,38 +293,6 @@
         linear-gradient(135deg, #fef3c7, #fde68a);
     }
 
-    .topic-panel {
-      margin-top: 8px;
-      padding: 22px 22px 26px;
-      border: 1px solid var(--line);
-      border-radius: 14px;
-      background: var(--surface);
-      box-shadow: 0 4px 20px rgba(15, 23, 42, 0.06);
-    }
-
-    .topic-panel .badge-row {
-      display: flex;
-      flex-wrap: wrap;
-      gap: 8px;
-      margin-bottom: 12px;
-    }
-
-    .topic-panel h1 {
-      margin-bottom: 8px;
-    }
-
-    .topic-panel p {
-      margin: 0;
-      color: var(--muted);
-      font-size: 14px;
-      line-height: 1.55;
-      max-width: 520px;
-    }
-
-    .topic-panel .katex {
-      color: var(--accent);
-    }
-
     @media (max-width: 600px) {
       .page { padding: 24px 16px 40px; }
     }
@@ -319,19 +308,27 @@
       <p class="intro">Choose a level to view its lessons.</p>
 
       <div class="grid">
+        <a class="card" href="s2.html#lessons">
+          <div class="cover"><span class="s2-mark">S2</span></div>
+          <div class="body">
+            <h2>S2</h2>
+            <p>JM11?�JM23 · S2 topics</p>
+            <span class="tag">JM11?�JM23</span>
+          </div>
+        </a>
         <button class="card" type="button" data-go="lessons">
           <div class="cover"><span class="s3-mark">S3</span></div>
           <div class="body">
             <h2>S3</h2>
-            <p>JM24–JM35 · S3 topics</p>
-            <span class="tag">JM24–JM35</span>
+            <p>JM24?�JM35 · S3 topics</p>
+            <span class="tag">JM24?�JM35</span>
           </div>
         </button>
       </div>
     </section>
 
     <section class="view" id="lessons">
-      <button class="back" type="button" data-go="home">← All levels</button>
+      <button class="back" type="button" data-go="home">??All levels</button>
       <p class="eyebrow">S3 Mathematics</p>
       <h1>S3 Lessons</h1>
 
@@ -473,5 +470,6 @@
     // Open lessons view if returning with #lessons
     if (location.hash === "#lessons") show("lessons");
   </script>
+  <script defer src="shared/suppress-ui-caret.js?v=20260820"></script>
 </body>
 </html>
