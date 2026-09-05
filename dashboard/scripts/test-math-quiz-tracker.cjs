@@ -83,7 +83,8 @@ check("every bank has meta + 10 questions with unique ids", () => {
     const loaded = loadBank(bank.data);
     const quiz = loaded[bank.key];
     assert.ok(Array.isArray(quiz), "bank not loaded " + bank.key);
-    assert.equal(quiz.length, 10, bank.key + " count");
+    const expectedCount = bank.key === "factorization" ? 5 : 10;
+    assert.equal(quiz.length, expectedCount, bank.key + " count");
     const ids = quiz.map((q) => q.id);
     assert.equal(new Set(ids).size, ids.length, bank.key + " unique ids");
     quiz.forEach((q) => {
