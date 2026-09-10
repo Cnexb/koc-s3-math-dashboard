@@ -26,6 +26,11 @@ const BANKS = [
     runner: "topics/factorization/factorization-quiz.js",
   },
   {
+    key: "factorization-l02",
+    data: "topics/factorization/factorization-l02-quiz-data.js",
+    runner: "topics/factorization/factorization-l02-quiz.js",
+  },
+  {
     key: "inequality",
     data: "topics/inequality/inequality-quiz-data.js",
     runner: "topics/inequality/inequality-quiz.js",
@@ -83,7 +88,7 @@ check("every bank has meta + 10 questions with unique ids", () => {
     const loaded = loadBank(bank.data);
     const quiz = loaded[bank.key];
     assert.ok(Array.isArray(quiz), "bank not loaded " + bank.key);
-    const expectedCount = bank.key === "factorization" ? 5 : 10;
+    const expectedCount = bank.key === "factorization" || bank.key === "factorization-l02" ? 5 : 10;
     assert.equal(quiz.length, expectedCount, bank.key + " count");
     const ids = quiz.map((q) => q.id);
     assert.equal(new Set(ids).size, ids.length, bank.key + " unique ids");
@@ -128,6 +133,13 @@ check("stemMode matches the pre-split runners", () => {
   assert.notEqual(facPayload.stem, fac.prompt);
   assert.equal(facPayload.questionId, "fac-q1");
   assert.equal(facPayload.quizId, "math-factorization");
+
+  const fac2 = loadBank("topics/factorization/factorization-l02-quiz-data.js")["factorization-l02"][0];
+  const fac2Payload = tracker.buildPayload(tracker.QUIZ_META["factorization-l02"], fac2, 3, true);
+  assert.equal(fac2Payload.quizId, "math-factorization-l02");
+  assert.equal(fac2Payload.questionId, "fac2-q1");
+  assert.equal(fac2Payload.selectedAnswer, "3");
+  assert.equal(fac2Payload.subject, "MATH");
 });
 
 check("iframe topic page: same-window tracker must receive each answer (no session = no fetch)", () => {

@@ -166,6 +166,13 @@
         stemMode: "stem-only",
         answerTextMode: "mc-only",
       },
+      "factorization-l02": {
+        quizId: "math-factorization-l02",
+        idPrefix: "fac2-q",
+        section: "factorization-l02",
+        stemMode: "stem-only",
+        answerTextMode: "mc-only",
+      },
       inequality: {
         quizId: "math-inequality",
         idPrefix: "ineq-q",
