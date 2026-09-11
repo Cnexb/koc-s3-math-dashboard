@@ -240,6 +240,7 @@
       if (q.prompt) {
         const prompt = document.createElement("span");
         prompt.className = "quiz-prompt";
+        prompt.style.whiteSpace = "pre-wrap";
         prompt.textContent = q.prompt;
         head.appendChild(prompt);
       }
