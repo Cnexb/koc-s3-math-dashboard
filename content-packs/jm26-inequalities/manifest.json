@@ -13,17 +13,41 @@
   "source": "dashboard/topics/inequality",
   "notes": [],
   "comics": [],
-  "tools": [
+  "concepts": [
     {
-      "slug": "jm26-inequalities",
-      "toolId": "jm26-inequalities-notes",
-      "section": "notes",
-      "query": "embed=1&tab=slides",
+      "topicId": "signs",
       "title": {
-        "en": "Inequalities I",
-        "zhHant": "不等式 I"
-      }
+        "en": "Signs & number line",
+        "zhHant": "符號與數線"
+      },
+      "slug": "jm26-inequalities",
+      "videos": [
+        "slides/inequality/signs/index_assets/c79eddb7a0cfe2952e8285a9e2a0022ed7858851acdaa0670cf686317a475bab.mp4",
+        "slides/inequality/signs/index_assets/12c6c30e6059620c6263737195e3817ede8438dfa999a96812fea5928d1d02a6.mp4",
+        "slides/inequality/signs/index_assets/9c1329f005d3c2676dd4aecafe989a557cd997ddede8738933c733ca120c7486.mp4",
+        "slides/inequality/signs/index_assets/cd111580b0311ff898203a8e22291cd1588b9476ee8df6131e5caee3e25ff6d3.mp4",
+        "slides/inequality/signs/index_assets/e784b1e992a0172dab106286de3ea923e536b0088583951314efb99c712c2de2.mp4",
+        "slides/inequality/signs/index_assets/e1a807a6855c64e2187cde4ca0bd35f7a51df23f7047f63bc240dd4b7165912e.mp4",
+        "slides/inequality/signs/index_assets/dc71b39606e1375492ed5580ba9108c1a9ae83bbabae689e29951611e706133f.mp4"
+      ]
     },
+    {
+      "topicId": "negative-coefficient",
+      "title": {
+        "en": "Multiply / divide by a negative",
+        "zhHant": "乘以或除以負數"
+      },
+      "slug": "jm26-inequalities",
+      "videos": [
+        "slides/inequality/negative-coefficient/index_assets/33b9ef7a90456171a63938aefd014512350beee4f5fc94dcde667ff5994c85b8.mp4",
+        "slides/inequality/negative-coefficient/index_assets/03e6588c9954c8c88156f8e68ceaf8669e06c5daaed6caddfd9ecb53a1b4a491.mp4",
+        "slides/inequality/negative-coefficient/index_assets/f0d7018b8c2a26effee60cb3b73085caed785b593b02ac9f16f9b680ccb8e786.mp4",
+        "slides/inequality/negative-coefficient/index_assets/cd9f643848e6be23cbc7ee0dc91d4954bf0070e55208687251aeade97f53b463.mp4",
+        "slides/inequality/negative-coefficient/index_assets/bf9f6ecd5a73a2def3d23baf0f6d63253b97834155c7d105d1522fd927939bd9.mp4"
+      ]
+    }
+  ],
+  "tools": [
     {
       "slug": "jm26-inequalities",
       "toolId": "jm26-inequalities-tools",

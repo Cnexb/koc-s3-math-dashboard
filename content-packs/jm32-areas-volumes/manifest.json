@@ -16,16 +16,6 @@
   "tools": [
     {
       "slug": "jm32-areas-volumes",
-      "toolId": "jm32-areas-volumes-notes",
-      "section": "notes",
-      "query": "embed=1&tab=slides",
-      "title": {
-        "en": "Areas and Volumes III",
-        "zhHant": "面積和體積 III"
-      }
-    },
-    {
-      "slug": "jm32-areas-volumes",
       "toolId": "jm32-areas-volumes-tools",
       "section": "tools",
       "query": "embed=1&tab=tools",
@@ -79,5 +69,43 @@
   ],
   "summaries": [],
   "flashcards": [],
-  "quiz": []
+  "quiz": [],
+  "concepts": [
+    {
+      "topicId": "plane-shapes",
+      "title": {
+        "en": "2D Shapes — Area",
+        "zhHant": "2D Shapes — Area"
+      },
+      "slug": "jm32-areas-volumes",
+      "videos": [
+        "slides/area_volume/plane-shapes/index_assets/7d78c3223f870f7e2636223388dedaad11dce228219ae2d7b984574ead93b05a.mp4",
+        "slides/area_volume/plane-shapes/index_assets/d46b99d4368c2d377e9d63b7dbd238ae9ee66a9270cfc31a264a87a01e6be0f1.mp4",
+        "slides/area_volume/plane-shapes/index_assets/b66a5a7dda5cad81a02c5aa024efa11c7d0670a22cd6fc7ebe8265e975870b47.mp4",
+        "slides/area_volume/plane-shapes/index_assets/977046e0fa55b225f5f05a84b6886c82adfd04b0b83631f7e50427785f738014.mp4",
+        "slides/area_volume/plane-shapes/index_assets/f7c2ffe908a80ed0d89537b75bed220c4bf8704af9fcf9a4d49bc276e19426fd.mp4",
+        "slides/area_volume/plane-shapes/index_assets/539776b616b32160fbf0d53a22dfceb12ec1c3f9ca4e0c453652574384eda00c.mp4",
+        "slides/area_volume/plane-shapes/index_assets/c0f902eed9ed2bb1f1f4378a962cf61cbec62b77329264f336c8267d292868d2.mp4",
+        "slides/area_volume/plane-shapes/index_assets/38d715bb1986280f21042b5265298ee3a88efdb2da579d88855e35ce6b82bb31.mp4",
+        "slides/area_volume/plane-shapes/index_assets/fd2a03b57d5883a04536854b6fb0dee96da402e41d5b92784ff2ad5b03db6e54.mp4"
+      ]
+    },
+    {
+      "topicId": "solids",
+      "title": {
+        "en": "3D Solids — Volume & Surface Area",
+        "zhHant": "3D Solids — Volume & Surface Area"
+      },
+      "slug": "jm32-areas-volumes",
+      "videos": [
+        "slides/area_volume/solids/index_assets/019e21b2e95a126da366fbbf55d6409c96137b7e48f6519f2775fef936cde15a.mp4",
+        "slides/area_volume/solids/index_assets/5c369216d6f633a2520383dc92cf91c5c36c966ba6e7d323247f5bc48270be68.mp4",
+        "slides/area_volume/solids/index_assets/9db7de1281bc69c6d8c00380fb18fc7fcd053df81ef36b4bd787a601699871d8.mp4",
+        "slides/area_volume/solids/index_assets/063d24155bad8f4da4bf030809bf327fa85602aa8557aeed954770b552940761.mp4",
+        "slides/area_volume/solids/index_assets/6f57661a8d1726c512849e88abeb56e38c09373418e8d518988e750e51781951.mp4",
+        "slides/area_volume/solids/index_assets/3cd5e7a2f31f286588f52268cc416adb7bb527404d48523f3cdff641a929f813.mp4",
+        "slides/area_volume/solids/index_assets/d60523ecaea56421db62e5283c51d668187425dab3c99591e91da26769aaa2b2.mp4"
+      ]
+    }
+  ]
 }

@@ -16,16 +16,6 @@
   "tools": [
     {
       "slug": "jm27-percentages",
-      "toolId": "jm27-percentages-notes",
-      "section": "notes",
-      "query": "embed=1&tab=slides",
-      "title": {
-        "en": "Percentages II",
-        "zhHant": "百分比 II"
-      }
-    },
-    {
-      "slug": "jm27-percentages",
       "toolId": "jm27-percentages-tools",
       "section": "tools",
       "query": "embed=1&tab=tools",
@@ -79,5 +69,184 @@
   ],
   "summaries": [],
   "flashcards": [],
-  "quiz": []
+  "quiz": [],
+  "concepts": [
+    {
+      "topicId": "change-factor",
+      "title": {
+        "en": "Change factor",
+        "zhHant": "Change factor"
+      },
+      "slug": "jm27-percentages",
+      "videos": [
+        "slides/percentage/change-factor/index_assets/2a638b35cfb8377628f59ea9cfec24d7c0cef5d353b7c7092ff26df0f9f0aa79.mp4",
+        "slides/percentage/change-factor/index_assets/4bcfa16497ed8597cb08d9ed810780a8ccbd15e90a2b9ab06b5cca2700c31dcd.mp4",
+        "slides/percentage/change-factor/index_assets/367928269905d7bfba474d3c84e4537102c74e093b8fcae1a303766ff9727ef6.mp4",
+        "slides/percentage/change-factor/index_assets/d8bbc224f754a0c0543df8d1d6b768f9219a8f431b21165217bca594b31de320.mp4",
+        "slides/percentage/change-factor/index_assets/bcfe5b1c0bc7f0fc562aaf9170a4454fa7109eb2107aa3330a55aa2b821a56cf.mp4",
+        "slides/percentage/change-factor/index_assets/5b4c4843156e5b8d0917c84fbb4be27ed934ca0dc32c371ff45667e04ee091c6.mp4",
+        "slides/percentage/change-factor/index_assets/ac9a6662a6f6bad8bb34560b97827983c7e1f5a61405814238ed926f961d3da7.mp4"
+      ]
+    },
+    {
+      "topicId": "profit-loss",
+      "title": {
+        "en": "Profit & discount",
+        "zhHant": "Profit & discount"
+      },
+      "slug": "jm27-percentages",
+      "videos": [
+        "slides/percentage/profit-loss/index_assets/d186da1670f8e2256622330cfaddff099f89746316469881e88a395e9a978d3b.mp4",
+        "slides/percentage/profit-loss/index_assets/81fb4ef5d959d0d928f7523d2e2e4e9bdf2f8054c1aa727a159d57cb0154cd5a.mp4",
+        "slides/percentage/profit-loss/index_assets/27176cc507f5bd2f6bff12c9abd7e62c51c5dcf3d65125e949682e4760dc9abc.mp4",
+        "slides/percentage/profit-loss/index_assets/af2f26bfc9e2e2165a9c7bd536bd9c720526347f8af5883b8cfd6eacbbe685db.mp4",
+        "slides/percentage/profit-loss/index_assets/a56a22c4c9b1e00f4e973507a01599aa09f09a649a49217261fb47848e2cb3f5.mp4",
+        "slides/percentage/profit-loss/index_assets/c8fa6416ff5c28ae7d6b3ad15470e07bfccec2ba5e133db30e16d446ca4efcc7.mp4",
+        "slides/percentage/profit-loss/index_assets/ab7de545f6a96500c26f3870bb66a811cce28854b21e8ec3c2248908008cec86.mp4",
+        "slides/percentage/profit-loss/index_assets/221894a5b95576c827df819cd8ac619b582f5515ff86408bff17dafd6ccae8f0.mp4",
+        "slides/percentage/profit-loss/index_assets/f1d0fb24db1c1b99fa78c9ad6a09507065276fc34971805499e14f633c9efacd.mp4",
+        "slides/percentage/profit-loss/index_assets/1ccbcdee7c59d0eb9ba083b1d5771116f7a8dc0079c2ac99b52960ad08e7ede1.mp4"
+      ]
+    },
+    {
+      "topicId": "interest",
+      "title": {
+        "en": "Simple & compound interest",
+        "zhHant": "Simple & compound interest"
+      },
+      "slug": "jm27-percentages",
+      "videos": [
+        "slides/percentage/interest/index_assets/5a396cc4e19c38d43b19ee244066208526175875f468385adecb3a99d2524d83.mp4",
+        "slides/percentage/interest/index_assets/107329696de459771ed042874de40518c3da19c73b0ed0411071d88d8b0df09d.mp4",
+        "slides/percentage/interest/index_assets/eec9254ccd7a072b9b12bd6994ab4047a4f805937b5d7f23a15dc5ed10861bfd.mp4",
+        "slides/percentage/interest/index_assets/c5c5111ff52e16e46344a9bb953e104664b7d06e10e99851a198433b349520ec.mp4",
+        "slides/percentage/interest/index_assets/960eeb26ec666b491ac4dffd93f857f7b759be446ac0c96a92c7e19581390839.mp4",
+        "slides/percentage/interest/index_assets/666a6026e3754f5941aee11a3560959eeb5a783ab28a2fdd5e036109d22a83c9.mp4",
+        "slides/percentage/interest/index_assets/b867bcc5433f74121069122ad7b39dc6ce0bc6c5bb53d3601dbe52cb2af5501a.mp4",
+        "slides/percentage/interest/index_assets/44e8c84b3ca16749b557bdc6bdd0397a275b3b56775325d6083e1585db636f2e.mp4",
+        "slides/percentage/interest/index_assets/8c03c8c79c79fb7f898a3fe670233cc033da6fefa9a5952c60d40e85eaffb3f4.mp4",
+        "slides/percentage/interest/index_assets/8776e252d2998d5a459599c8e0afbe2c83e4adb876ca2c292cd071a56892f58d.mp4",
+        "slides/percentage/interest/index_assets/16f1890eda0427ccc388ac071c387b50373f2228fdcb2aaed4caf2af45d63613.mp4",
+        "slides/percentage/interest/index_assets/9deb256f6e7ebd5126308976f7661488aaf1359d9fff589a676f4a337ce2bfac.mp4",
+        "slides/percentage/interest/index_assets/9eccb753d8197cd5ae5471f9ff1b5ed993a1b7f974fdab032a75415b637c970f.mp4",
+        "slides/percentage/interest/index_assets/4000ea3dbeb1a4d597d099f425b3a42c24d7880379b389a528400de60610091a.mp4",
+        "slides/percentage/interest/index_assets/105b64ecc0d6f251d2af90b6a2f3a59a41a2da4241e3314096a0e421fb9d55df.mp4"
+      ]
+    },
+    {
+      "topicId": "tax",
+      "title": {
+        "en": "Progressive salaries tax",
+        "zhHant": "Progressive salaries tax"
+      },
+      "slug": "jm27-percentages",
+      "videos": [
+        "slides/percentage/tax/index_assets/62fbbac60c7aeba78ad2065e45d2e4fae94d2536566eaf5c947e7c81e617adab.mp4",
+        "slides/percentage/tax/index_assets/35e7e1eaf4ef8d2e40441d98573cc9ead37b7e50f3270a6de0ab95c77f0c1f34.mp4",
+        "slides/percentage/tax/index_assets/e16f035c2efe7d82a71a8755ad2593c104754d9e561f667a0fe645d1c983e864.mp4",
+        "slides/percentage/tax/index_assets/07e7ceea72e63b8a1aca8d34255191666e08f38c1e840d593ac2abd73ddec12e.mp4",
+        "slides/percentage/tax/index_assets/9fbdbabd79d2bd78d2b083fcdbe9d96c0de3b65f502a94241da4c4aa0e964dab.mp4",
+        "slides/percentage/tax/index_assets/b4af3e02e0c1b620976383a7026a1fb810a889a184f91f16126a8bb247b524f3.mp4",
+        "slides/percentage/tax/index_assets/8c65de52493ff95f6098f4bf26deee438b4dbb7c510cb2f64716295a5f6fc26d.mp4",
+        "slides/percentage/tax/index_assets/2853161fc0828a221a411d10af53eedcc023ef3f42435ff03e8a7ac9f0517bb1.mp4",
+        "slides/percentage/tax/index_assets/4f4a127489b51d8c5bc68515c6c5c9ae81a9733df9b72d45d1e2088d8ddca9e9.mp4",
+        "slides/percentage/tax/index_assets/da7addf3bcfdb49cf7cc92f1ea99d70684ab67d9d39b8d47f3aaed9cf8b4d0c4.mp4",
+        "slides/percentage/tax/index_assets/e2fa9eda5c95f57c3bdc1ae76a698077e684655194eb74504258502cdb0a863f.mp4",
+        "slides/percentage/tax/index_assets/de8fdc788baa3b1c2253d3e942ae3fdd4eb240d5a32dc7b1bf4c81ff8b59c04a.mp4",
+        "slides/percentage/tax/index_assets/f7275f102599afd527c20e47cb07aab2a5f524299a78cacba47cb0f73b1574ef.mp4",
+        "slides/percentage/tax/index_assets/e3b1d9fb175ce62933cc67e1c9b321daf6f917cce9050432982bf04715ef47fe.mp4",
+        "slides/percentage/tax/index_assets/bdabcd0d176d476b1dea37a0e10152bfbc57184eeb413d6f6876b1f79cfd3f6a.mp4"
+      ]
+    },
+    {
+      "topicId": "car-checkpoint",
+      "title": {
+        "en": "Repeated increase",
+        "zhHant": "Repeated increase"
+      },
+      "slug": "jm27-percentages",
+      "videos": [
+        "slides/percentage/car-checkpoint/index_assets/c89db0e7fe79f6069b41f8db684f888ab42a63a9129df2a5de76bb0a1ebdabd6.mp4",
+        "slides/percentage/car-checkpoint/index_assets/8515f26b701ef37df95600950651d01c54a1f42f067f471b86f41984c0abd396.mp4",
+        "slides/percentage/car-checkpoint/index_assets/fc950f657fcc6b55e81fb7e8ecf420e7a61efa01e23735591c8ebe7d702a6810.mp4",
+        "slides/percentage/car-checkpoint/index_assets/b18133a8b14a68beccfcc189c9fa71bdfd4cff08f951312274a33dcfb8d5cebc.mp4",
+        "slides/percentage/car-checkpoint/index_assets/bf2f8bf5efc4d4c9be4f65219ef294a63c9095a1390b2851f59e24d633a90147.mp4",
+        "slides/percentage/car-checkpoint/index_assets/890091f0829de514ab967f1cd01720dbeb0389244acfa5b6129341caa1e70a74.mp4",
+        "slides/percentage/car-checkpoint/index_assets/b2a83fa7a266e648fcec6e5ae9d030d03cea77b2f2ba597cf7082528e776f51d.mp4",
+        "slides/percentage/car-checkpoint/index_assets/c063042f4f1dffe601255db71ca74eaa32d1f3807e6aaea59b9fc7e98fe72bd9.mp4",
+        "slides/percentage/car-checkpoint/index_assets/689842d9f8da39c59def797202705cfb38730df4719aef800e50e269757f4139.mp4"
+      ]
+    },
+    {
+      "topicId": "stamp-checkpoint",
+      "title": {
+        "en": "Stamp value",
+        "zhHant": "Stamp value"
+      },
+      "slug": "jm27-percentages",
+      "videos": [
+        "slides/percentage/stamp-checkpoint/index_assets/a5a26ae41e95b80f02cd8b56df96104b8b30e731145cd57a61c3af8de63a51af.mp4",
+        "slides/percentage/stamp-checkpoint/index_assets/68a4c5f03e0d7b5fb6c47c3e8f2570e4511902867f9fb09e5d14b7fac8d098f1.mp4",
+        "slides/percentage/stamp-checkpoint/index_assets/5642567083a43384e436e26d4e8dabb1fff88429c75f69d11a5d3e78a12e22b1.mp4",
+        "slides/percentage/stamp-checkpoint/index_assets/7a7e8657b38e4e5eba907179e92b867ce9f3a4869aec71cf79b79a9847f07765.mp4",
+        "slides/percentage/stamp-checkpoint/index_assets/e1425682b6b1678d85c5260a302f3599fe636f98075a370c30bf02d3bf428bfd.mp4",
+        "slides/percentage/stamp-checkpoint/index_assets/674ea4a283b8623c212be10e650380aeeb4a39ef242bda59380eac7706c5d3f5.mp4",
+        "slides/percentage/stamp-checkpoint/index_assets/9e9c66bd9cdca3093542a6fe2140aa6ab77287198eaeb662d9dd56043dce0200.mp4",
+        "slides/percentage/stamp-checkpoint/index_assets/b89ac33d1e67f694e3828ceec0aa3dae8612540a5d22b00b08a740b6242b851d.mp4",
+        "slides/percentage/stamp-checkpoint/index_assets/e4d65e77a963d81cf8e62db8bc77e9c70be9e5ff8cc6ab8c0bf3226b6b3a05e1.mp4",
+        "slides/percentage/stamp-checkpoint/index_assets/0bbcc83b77a66cba33db3f4e041b3749e8c829c74e7a81c8923e74c59be2108f.mp4"
+      ]
+    },
+    {
+      "topicId": "machine-depreciation",
+      "title": {
+        "en": "Find the rate",
+        "zhHant": "Find the rate"
+      },
+      "slug": "jm27-percentages",
+      "videos": [
+        "slides/percentage/machine-depreciation/index_assets/308c9558f8f67295435798c9eafad4708c45cd51024a82fdadab911e40fc5944.mp4",
+        "slides/percentage/machine-depreciation/index_assets/21c2216e57b762e055e7db15b9722152d33ebd39ad5662acd0094cf82967e9df.mp4",
+        "slides/percentage/machine-depreciation/index_assets/f78bcd009267e02cd20841a29231283f6e1d76e5658eb2c2e77932e86674d864.mp4",
+        "slides/percentage/machine-depreciation/index_assets/27b244837e5c11dcd3afe3a4e9a1ae2aa6a4d9badf12585b13a4c77561e80574.mp4",
+        "slides/percentage/machine-depreciation/index_assets/754b70ad6204dfa88aec94c9b47b24132d7a60742468644f889fa2dcf92c0ab6.mp4",
+        "slides/percentage/machine-depreciation/index_assets/b77740681cd9b1cc8dc335497ce2dcfd4073529afaa4b125db684a58726b9163.mp4",
+        "slides/percentage/machine-depreciation/index_assets/5450d04afe279acb52ba6199f320ff1a5792a4365ad45e0ac597fb69b5c26cfd.mp4"
+      ]
+    },
+    {
+      "topicId": "rainfall-change",
+      "title": {
+        "en": "Rainfall changes",
+        "zhHant": "Rainfall changes"
+      },
+      "slug": "jm27-percentages",
+      "videos": [
+        "slides/percentage/rainfall-change/index_assets/75d4e5dd67f57b5375d908766de67c8c8e05604ac48f31ae1e984becad664ed0.mp4",
+        "slides/percentage/rainfall-change/index_assets/3e81fb86e7b7ca874042b2c850eded7be4f87ac75095a1cf4c1395167070730c.mp4",
+        "slides/percentage/rainfall-change/index_assets/441959e88e110fc045a0f52fe3fc13d20652a26c1bbfb712a8bb4082acc299f8.mp4",
+        "slides/percentage/rainfall-change/index_assets/1b7c229ad528a13dcbca08d7b3ee13188a10687be411dc76af97f4ccab6b03f0.mp4",
+        "slides/percentage/rainfall-change/index_assets/755cb58d3f3ac5f246ceec7dcfd0553f137ad750f54c33babee5485f3c0f5a77.mp4",
+        "slides/percentage/rainfall-change/index_assets/83b3ab061d028b1d6009438a256ef2317d03aba63a7e3c82d7d9a8785108f622.mp4",
+        "slides/percentage/rainfall-change/index_assets/dd258f25f43611c36ef93cd4d49bc6d0aa128e9412c086f3e613948414035f6f.mp4"
+      ]
+    },
+    {
+      "topicId": "salary-checkpoint",
+      "title": {
+        "en": "Work backwards",
+        "zhHant": "Work backwards"
+      },
+      "slug": "jm27-percentages",
+      "videos": [
+        "slides/percentage/salary-checkpoint/index_assets/ca1eae08c1606de2e1de8ee777750f82673be8e38781ac8786da4afcce17388e.mp4",
+        "slides/percentage/salary-checkpoint/index_assets/67784137bf5332ffd5f1c77643609adf18fe3ac09243c4433ef466716743882a.mp4",
+        "slides/percentage/salary-checkpoint/index_assets/367775df0dadafb077bea064ac732cc0529e6bdaece47d680d78be595671f5db.mp4",
+        "slides/percentage/salary-checkpoint/index_assets/b1500b0eac6284a87b637c3d40d80ebd999fbc0bc56339d7a8301cbe3545e6d7.mp4",
+        "slides/percentage/salary-checkpoint/index_assets/e6621670c0d40e84073e2b4547d6171e3f4f9690c7774a7a599c8455805f13ac.mp4",
+        "slides/percentage/salary-checkpoint/index_assets/e750cdf652513263178351d99887917f45a27fc79bb02bfce24d467560cfdd26.mp4",
+        "slides/percentage/salary-checkpoint/index_assets/f91c6b512bf1462cb7327cdcfbaa00de22f6846ee93a17bb194fb193ad80f195.mp4"
+      ]
+    }
+  ]
 }
