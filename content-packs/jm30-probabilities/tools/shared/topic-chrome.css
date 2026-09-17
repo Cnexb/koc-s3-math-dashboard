@@ -1,0 +1,254 @@
+/**
+ * Restyle legacy KOC topic pages to match the comics gallery look.
+ * Content and behaviour stay the same ??appearance only.
+ */
+:root {
+  --ink: #1e293b;
+  --muted: #64748b;
+  --paper: #f1f5f9;
+  --card: #ffffff;
+  --line: rgba(30, 41, 59, 0.12);
+  --shadow: 0 12px 32px rgba(26, 31, 46, 0.08);
+  --radius: 16px;
+  --font: "Hanken Grotesk", "DM Sans", system-ui, sans-serif;
+  --display: "Hanken Grotesk", "Fraunces", Georgia, serif;
+  --accent: #4FC3F7;
+  --accent-soft: #e0f2fe;
+  --surface: var(--card);
+  --surface-2: #eef2f7;
+  --text: var(--ink);
+  --dim: var(--muted);
+  --bg: var(--paper);
+  --panel: var(--card);
+  --panel2: var(--surface-2);
+  --glow: #29B6F6;
+}
+
+html { scroll-behavior: smooth; caret-color: transparent; }
+
+html.in-embed a.back-link {
+  display: none !important;
+}
+
+body {
+  font-family: var(--font) !important;
+  color: var(--ink) !important;
+  caret-color: transparent !important;
+  background:
+    radial-gradient(ellipse 80% 50% at 10% 0%, rgba(14,165,233,.12), transparent 55%),
+    radial-gradient(ellipse 70% 45% at 92% 8%, rgba(56,189,248,.1), transparent 50%),
+    linear-gradient(180deg,#f8fafc,#f1f5f9) !important;
+  background-attachment: fixed;
+}
+
+.page,
+main {
+  max-width: min(960px, 100%);
+}
+
+.back,
+a.back,
+.back-link {
+  display: inline-flex !important;
+  align-items: center;
+  margin-bottom: 1rem;
+  padding: 0.45rem 0.85rem !important;
+  border: 1px solid var(--line) !important;
+  border-radius: 999px !important;
+  background: #fff !important;
+  color: var(--ink) !important;
+  text-decoration: none !important;
+  font: inherit !important;
+  font-size: 0.88rem !important;
+  font-weight: 700 !important;
+  cursor: pointer;
+}
+
+.back:hover,
+a.back:hover,
+.back-link:hover {
+  border-color: var(--accent) !important;
+  color: var(--accent) !important;
+}
+
+.eyebrow,
+.lesson-kicker {
+  margin: 0 0 0.35rem;
+  font-size: 0.72rem !important;
+  font-weight: 700;
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+  color: var(--accent) !important;
+}
+
+h1 {
+  font-family: var(--display) !important;
+  letter-spacing: -0.02em;
+}
+
+.lead {
+  color: var(--muted) !important;
+}
+
+header {
+  border-bottom-color: var(--line) !important;
+  background: rgba(244, 247, 251, 0.92);
+}
+
+.tabs,
+.tab-row .tabs,
+.main-tabs,
+.jm-tabs {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 4px 6px;
+  margin: 0 0 14px;
+  border-bottom: 1px solid var(--line) !important;
+  padding-bottom: 0 !important;
+}
+
+.tab,
+.main-tab,
+.jm-tab,
+.chip,
+.tool-pill {
+  transition: background 0.18s ease, border-color 0.18s ease, color 0.18s ease, transform 0.18s ease;
+}
+
+.tab,
+.main-tab,
+.jm-tab {
+  border: none !important;
+  background: none !important;
+  color: var(--muted) !important;
+  font: inherit !important;
+  font-weight: 600 !important;
+  font-size: 14px !important;
+  padding: 10px 12px !important;
+  border-radius: 10px 10px 0 0 !important;
+  cursor: pointer;
+  box-shadow: none !important;
+}
+
+.tab:hover,
+.main-tab:hover,
+.jm-tab:hover {
+  color: var(--ink) !important;
+  background: transparent !important;
+}
+
+.tab.active,
+.main-tab.is-active,
+.main-tab.active,
+.jm-tab.active {
+  color: var(--ink) !important;
+  background: var(--surface) !important;
+  box-shadow: inset 0 -2px 0 var(--accent) !important;
+}
+
+.jm-page,
+main.page {
+  position: relative;
+  z-index: 1;
+  width: min(860px, 100%);
+  margin: 0 auto;
+  padding: 28px 22px 80px;
+}
+
+.jm-back,
+.back,
+a.back,
+.back-link {
+  display: inline-flex !important;
+  align-items: center;
+  margin-bottom: 18px !important;
+  padding: 7px 12px !important;
+  border: 1px solid var(--line) !important;
+  border-radius: 8px !important;
+  background: var(--surface-2, #eef2f7) !important;
+  color: var(--ink) !important;
+  text-decoration: none !important;
+  font: inherit !important;
+  font-size: 13px !important;
+  font-weight: 600 !important;
+  cursor: pointer;
+}
+
+.jm-eyebrow,
+.eyebrow,
+.lesson-kicker {
+  margin: 0 0 6px !important;
+  font-size: 11px !important;
+  font-weight: 700;
+  letter-spacing: 0.12em;
+  text-transform: uppercase;
+  color: var(--accent) !important;
+}
+
+.jm-panel.hidden,
+.panel.hidden,
+.mode-panel.hidden,
+.view.hidden {
+  display: none !important;
+}
+
+.subnav {
+  gap: 0.5rem;
+  margin-bottom: 1rem;
+}
+
+.chip,
+.tool-pill {
+  background: #fff !important;
+  border: 1px solid var(--line) !important;
+  color: var(--muted) !important;
+  font: inherit !important;
+  font-weight: 600 !important;
+  padding: 0.45rem 0.9rem !important;
+  border-radius: 999px !important;
+  font-size: 0.88rem !important;
+  transition: color 0.15s, background 0.15s, border-color 0.15s;
+}
+
+.chip:hover,
+.tool-pill:hover {
+  color: var(--accent) !important;
+  border-color: rgba(61, 126, 166, 0.35) !important;
+}
+
+.chip.active,
+.tool-pill.is-active {
+  color: #fff !important;
+  background: var(--accent) !important;
+  border-color: var(--accent) !important;
+}
+
+section.block,
+.figure-card,
+.control-stack,
+.tool-layout > *,
+.soon,
+.coming-soon {
+  border: 1px solid var(--line) !important;
+  border-radius: var(--radius) !important;
+  background: var(--card) !important;
+  box-shadow: var(--shadow);
+}
+
+.part-title,
+.section-label {
+  color: var(--accent) !important;
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+  font-size: 0.78rem !important;
+}
+
+.btn,
+button.btn {
+  border-radius: 999px !important;
+  font-weight: 600 !important;
+}
+
+.mode-panel.hidden {
+  display: none !important;
+}

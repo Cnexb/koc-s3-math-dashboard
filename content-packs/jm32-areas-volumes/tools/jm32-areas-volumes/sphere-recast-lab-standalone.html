@@ -1,0 +1,1416 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Sphere Recasting Lab · QB11</title>
+  <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/katex@0.16.11/dist/katex.min.css" crossorigin="anonymous">
+  <script defer src="https://cdn.jsdelivr.net/npm/katex@0.16.11/dist/katex.min.js" crossorigin="anonymous"></script>
+  <link href="https://fonts.googleapis.com/css2?family=Hanken+Grotesk:wght@400;600;700&family=JetBrains+Mono:wght@400;700&display=swap" rel="stylesheet">
+  <style>
+    :root {
+      --bg: #fdfbf7; --panel: #ffffff; --panel2: #f5efe6; --ink: #2c2420; --dim: #5d544f;
+      --a: #4FC3F7; --line: rgba(0, 0, 0, 0.08);
+    }
+    * { box-sizing: border-box; }
+    body {
+      margin: 0; background: var(--bg); color: var(--ink);
+      font-family: "Hanken Grotesk", system-ui, sans-serif;
+    }
+    header {
+      padding: 18px 24px; border-bottom: 1px solid var(--line);
+      display: flex; align-items: baseline; gap: 12px; flex-wrap: wrap;
+    }
+    header h1 { font-size: 22px; margin: 0; font-weight: 700; }
+    header .crumb { color: var(--dim); font-size: 13px; }
+    main { padding: 20px 24px 32px; max-width: 1240px; margin: 0 auto; }
+
+    .control-card {
+      background: var(--panel); border: 1px solid var(--line); border-radius: 14px; padding: 18px;
+    }
+    .control-card h3 { margin: 2px 0 14px; font-size: 15px; color: var(--dim); font-weight: 600;
+      text-transform: uppercase; letter-spacing: .05em; }
+    .tool-instr { font-size: 14px; color: var(--dim); line-height: 1.5; margin: 0 0 14px; }
+    .tool-action { margin-top: 14px; width: 100%; background: var(--panel2); color: var(--ink); border: 1px solid var(--line);
+      font: inherit; font-weight: 600; padding: 10px; border-radius: 9px; cursor: pointer;
+      user-select: none; -webkit-user-select: none; caret-color: transparent; }
+    .tool-action:hover { border-color: var(--a); }
+    .step-card { border: 1px solid var(--line); border-radius: 12px; padding: 12px 14px; margin-bottom: 10px;
+      background: var(--panel2); transition: border-color .2s, box-shadow .2s; }
+    .step-card.active { border-color: var(--a); box-shadow: 0 4px 16px -6px rgba(79,195,247,.45); }
+    .step-head { display: flex; align-items: center; gap: 10px; margin-bottom: 8px; }
+    .step-index { width: 24px; height: 24px; border-radius: 50%; background: var(--panel); color: var(--dim);
+      display: flex; align-items: center; justify-content: center; font-weight: 700; font-size: 13px; flex: none; }
+    .step-card.active .step-index { background: var(--a); color: #06283d; }
+    .step-title { font-weight: 700; font-size: 12px; color: var(--ink); text-transform: uppercase; letter-spacing: .04em; }
+    .step-body { font-size: 17px; }
+    .tool-nav { display: flex; align-items: center; justify-content: space-between; gap: 10px; margin-top: 4px; }
+    .nav-btn { background: var(--panel2); border: 1px solid var(--line); color: var(--ink); font: inherit;
+      font-weight: 600; padding: 8px 16px; border-radius: 9px; cursor: pointer;
+      user-select: none; -webkit-user-select: none; caret-color: transparent; }
+    .nav-btn:hover:not(:disabled) { border-color: var(--a); }
+    .nav-btn:disabled { opacity: .4; cursor: default; }
+    .progress-label { color: var(--dim); font-size: 13px; font-weight: 700; user-select: none; }
+
+    button, .recast-step-link, .recast-choice, .recast-reveal-prompt, .recast-stage-btn {
+      user-select: none; -webkit-user-select: none; caret-color: transparent;
+    }
+
+    .recast-layout {
+      display: grid; grid-template-columns: minmax(330px, 440px) minmax(0, 1fr);
+      gap: 18px; align-items: start;
+    }
+    .recast-dashboard { min-width: 0; }
+    .recast-stage {
+      min-width: 0; overflow: hidden;
+      background: var(--panel); border: 1px solid var(--line); border-radius: 14px; padding: 10px;
+      position: relative;
+    }
+    #recast-svg {
+      width: 100%; height: auto; max-height: calc(100vh - 140px);
+      aspect-ratio: 720 / 420; display: block;
+    }
+    .recast-step-list {
+      display: grid; grid-template-columns: 1fr 1fr; gap: 6px 8px;
+      margin: 0 0 12px; padding: 10px; border: 1px solid var(--line);
+      background: var(--panel2); border-radius: 10px;
+    }
+    .recast-step-link {
+      display: flex; align-items: center; gap: 7px; min-width: 0; padding: 5px 6px;
+      border: 0; background: none; color: var(--dim); font: inherit; font-size: 12px;
+      text-align: left; cursor: pointer; border-radius: 6px; transition: background .12s;
+    }
+    .recast-step-link:hover:not(:disabled) { background: rgba(0,0,0,.03); }
+    .recast-step-link span:last-child { overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
+    .recast-step-link:disabled { cursor: default; opacity: .45; }
+    .recast-step-link.active { color: var(--ink); font-weight: 700; background: rgba(79,195,247,.1); }
+    .recast-step-link.complete { color: #2E7D32; font-weight: 600; }
+    .recast-step-dot {
+      width: 20px; height: 20px; flex: none; border-radius: 50%; display: grid; place-items: center;
+      background: var(--panel); border: 1px solid var(--line); font-size: 10px; font-weight: 700;
+    }
+    .recast-step-link.active .recast-step-dot { background: var(--a); border-color: var(--a); color: #06283d; }
+    .recast-step-link.complete .recast-step-dot { background: #dff3e1; border-color: #81C784; color: #1b5e20; }
+    .recast-note-viewport { perspective: 900px; margin: 0 -4px; padding: 4px; min-height: 240px; }
+    .recast-note {
+      transform-origin: bottom right;
+      transition: transform .34s cubic-bezier(.22, .75, .25, 1), opacity .26s ease;
+      will-change: transform, opacity;
+    }
+    .recast-note.card-flip-out-right {
+      transform: translate3d(92%, 40px, 0) rotate(14deg) scale(0.91); opacity: 0; pointer-events: none;
+    }
+    .recast-note.card-flip-out-top {
+      transform: translate3d(0, -26px, 0) scale(0.95); opacity: 0; pointer-events: none;
+    }
+    .recast-note.card-enter-from-top {
+      transform: translate3d(0, -18px, 0) scale(0.97); opacity: 0; transition: none;
+    }
+    .recast-note.card-enter-from-right {
+      transform: translate3d(92%, 40px, 0) rotate(14deg) scale(0.91); opacity: 0; transition: none;
+    }
+    .recast-notecard {
+      margin-bottom: 0; background: var(--panel2); border: 1px solid var(--line); border-radius: 12px;
+      padding: 14px 16px; box-shadow: 0 4px 14px -6px rgba(0,0,0,.08);
+      display: flex; flex-direction: column; gap: 10px; user-select: none;
+    }
+    .recast-notecard.active { border-color: var(--a); box-shadow: 0 4px 16px -6px rgba(79,195,247,.4); }
+    .recast-notecard.clickable-card { cursor: pointer; }
+    .recast-prose { margin: 4px 0; font-size: 14px; line-height: 1.55; color: var(--ink); }
+    .recast-prose .recast-math { margin: 0 2px; }
+    .recast-prose .recast-math .katex { font-size: 1.04em; }
+    .recast-eq { overflow-x: auto; font-size: 16.5px; margin: 6px 0; padding: 2px 0; }
+    .recast-vol-preview {
+      font-size: 13px; color: var(--dim); margin: 0 0 12px; padding: 8px 10px;
+      background: var(--panel2); border-radius: 9px; border: 1px solid var(--line);
+    }
+    .recast-vol-preview .recast-prose { margin: 0; font-size: 13px; }
+    .calc-line-block { display: flex; flex-direction: column; gap: 6px; margin-top: 4px; }
+    .calc-line { opacity: 0; transform: translateY(8px); transition: opacity .26s ease-out, transform .26s ease-out; display: none; }
+    .calc-line.revealed { opacity: 1; transform: translateY(0); display: block; }
+    .recast-reveal-prompt {
+      display: flex; align-items: center; justify-content: center; gap: 6px; margin-top: 8px;
+      padding: 9px 12px; background: rgba(79, 195, 247, 0.12); border: 1px dashed var(--a);
+      border-radius: 8px; color: #0277BD; font-size: 13px; font-weight: 700; cursor: pointer; user-select: none;
+      transition: background .15s, transform .12s;
+    }
+    .recast-reveal-prompt:hover { background: rgba(79, 195, 247, 0.22); transform: translateY(-1px); }
+    .recast-reveal-prompt:active { transform: translateY(0); }
+    .recast-reveal-done { text-align: center; margin-top: 6px; color: #2E7D32; font-size: 12px; font-weight: 600; }
+    .recast-card-inputs {
+      margin-top: 4px; padding-top: 10px; border-top: 1px dashed var(--line);
+      display: flex; flex-direction: column; gap: 10px;
+    }
+    .recast-setup-field {
+      display: flex; justify-content: space-between; align-items: center; gap: 10px;
+      font-size: 14px; font-weight: 600;
+    }
+    .recast-setup-field em { font-style: normal; color: var(--a); font-family: "JetBrains Mono", monospace; }
+    .recast-value-box { display: inline-flex; align-items: center; gap: 8px; }
+    .recast-setup-field input {
+      width: 64px; font: inherit; font-size: 16px; padding: 7px 9px;
+      border: 1px solid var(--line); border-radius: 8px; background: #fff;
+    }
+    .recast-setup-field input:focus { outline: none; border-color: var(--a); }
+    .recast-unit { color: var(--dim); font-size: 13px; font-weight: 600; }
+    .recast-range-note { margin: -2px 0 0; color: var(--dim); font-size: 11px; text-align: right; }
+    .recast-fb { font-size: 13.5px; line-height: 1.45; margin: 8px 0 0; min-height: 1.2em; }
+    .recast-fb.ok { color: #2E7D32; font-weight: 700; }
+    .recast-fb.bad { color: #C62828; font-weight: 600; }
+    .recast-mc { display: flex; flex-direction: column; gap: 8px; margin-top: 8px; }
+    .recast-choice {
+      text-align: left; background: var(--panel); border: 1.5px solid var(--line); border-radius: 9px;
+      padding: 10px 14px; cursor: pointer; font: inherit; font-size: 13.5px; color: var(--ink);
+      transition: border-color .15s, background .15s, color .15s, transform .12s;
+    }
+    .recast-choice:hover:not(:disabled) { border-color: var(--a); background: #f5fbfe; }
+    .recast-choice:disabled { cursor: default; }
+    .recast-choice.is-correct {
+      background: #e8f5e9 !important; border-color: #4caf50 !important; color: #1b5e20 !important; font-weight: 700;
+    }
+    .recast-choice.is-wrong {
+      background: #ffebee !important; border-color: #ef5350 !important; color: #c62828 !important; font-weight: 600;
+    }
+    .recast-stage-btn {
+      position: absolute; bottom: 20px; right: 24px; z-index: 10;
+      background: #0288D1; color: #fff; border: none; font: inherit; font-size: 14px;
+      font-weight: 700; padding: 10px 18px; border-radius: 20px; cursor: pointer;
+      box-shadow: 0 4px 14px rgba(2,136,209,.4); display: flex; align-items: center; gap: 6px;
+      transition: transform .15s, background .15s;
+    }
+    .recast-stage-btn:hover { background: #0277BD; transform: translateY(-1px); }
+    .recast-stage-btn:active { transform: translateY(0); }
+    @keyframes yellowBluePulse {
+      0%, 100% { stroke: #FFD54F; filter: drop-shadow(0 0 6px rgba(255, 213, 79, 0.85)); }
+      50% { stroke: #4FC3F7; filter: drop-shadow(0 0 8px rgba(79, 195, 247, 0.9)); }
+    }
+    .shimmer-edge { animation: yellowBluePulse 1.8s ease-in-out infinite; }
+    @media (max-width: 800px) {
+      .recast-layout { grid-template-columns: 1fr; }
+      .recast-stage { position: static; }
+      #recast-svg { max-height: none; }
+    }
+    @media (prefers-reduced-motion: reduce) {
+      .recast-note { transition-duration: .01ms; }
+      .shimmer-edge { animation: none; stroke: #FFD54F; }
+    }
+  </style>
+</head>
+<body>
+  <header>
+    <h1>Sphere Recasting Lab</h1>
+    <span class="crumb">JM32 &middot; QB11 &middot; Interactive teaching tool</span>
+  </header>
+  <main>
+    <div id="recast-tool-shell">
+      <div class="recast-layout">
+        <div class="recast-dashboard control-card">
+          <h3>Sphere recasting</h3>
+          <p class="tool-instr">Control the values and advance each teaching step here. The diagram responds on the right.</p>
+          <div id="recast-vol-preview" class="recast-vol-preview" aria-live="polite"></div>
+          <nav id="recast-step-list" class="recast-step-list" aria-label="Recasting steps"></nav>
+          <div class="recast-note-viewport">
+            <div id="recast-note" class="recast-note">
+              <div id="recast-card"></div>
+            </div>
+          </div>
+          <div class="tool-nav">
+            <button id="recast-back" class="nav-btn" type="button">&lsaquo; Back</button>
+            <span id="recast-progress" class="progress-label"></span>
+            <button id="recast-next" class="nav-btn" type="button">Next &rsaquo;</button>
+          </div>
+          <button id="recast-reset" class="tool-action" type="button">Reset</button>
+        </div>
+        <div class="recast-stage">
+          <svg id="recast-svg" viewBox="0 0 720 420" preserveAspectRatio="xMidYMid meet"
+            role="img" aria-label="Animated sphere recasting diagram"></svg>
+        </div>
+      </div>
+    </div>
+  </main>
+  <script>
+    document.addEventListener("DOMContentLoaded", function () {
+      document.querySelectorAll("button").forEach(function (btn) {
+        btn.addEventListener("mousedown", function (e) {
+          if (e.button === 0) e.preventDefault();
+        });
+      });
+    });
+  </script>
+  <script>
+/* JM32 — teacher-paced sphere recasting lab with flashcard flip animation. */
+(function () {
+  "use strict";
+
+  const NS = "http://www.w3.org/2000/svg";
+  const LARGE = "#E67E22";
+  const LARGE_FILL = "#FFB74D";
+  const SMALL = "#42A5F5";
+  const GREEN = "#2E7D32";
+  const GREEN_TEX = "#2E7D32";
+  const YELLOW = "#F59E0B";
+  const YELLOW_TEX = "#D97706";
+  const INK = "#372F2A";
+  const DIM = "#70665E";
+
+  const STEPS = [
+    "Set the values",
+    "Read the problem",
+    "Recast the metal",
+    "Find the radius r",
+    "Find surface area",
+    "Review quiz",
+  ];
+
+  function E(tag, attrs) {
+    const el = document.createElementNS(NS, tag);
+    Object.keys(attrs || {}).forEach((key) => el.setAttribute(key, attrs[key]));
+    return el;
+  }
+
+  function clear(el) {
+    while (el && el.firstChild) el.removeChild(el.firstChild);
+  }
+
+  function clamp(value, min, max) {
+    return Math.max(min, Math.min(max, value));
+  }
+
+  function ease(value) {
+    const t = clamp(value, 0, 1);
+    return t * t * (3 - 2 * t);
+  }
+
+  function fmt(value) {
+    if (!Number.isFinite(value)) return "?";
+    if (Math.abs(value - Math.round(value)) < 1e-7) return String(Math.round(value));
+    return (+value.toFixed(2)).toString();
+  }
+
+  function tc(colour, latex) {
+    return "\\textcolor{" + colour + "}{" + latex + "}";
+  }
+
+  function km(el, latex, display) {
+    try {
+      katex.render(latex, el, { throwOnError: false, displayMode: !!display });
+    } catch (error) {
+      el.textContent = latex;
+    }
+  }
+
+  function prose(container, parts) {
+    const line = document.createElement("p");
+    line.className = "recast-prose";
+    parts.forEach((part) => {
+      if (part.math) {
+        const span = document.createElement("span");
+        span.className = "recast-math";
+        km(span, part.math);
+        line.appendChild(span);
+      } else {
+        line.appendChild(document.createTextNode(part.text || ""));
+      }
+    });
+    container.appendChild(line);
+    return line;
+  }
+
+  function equation(container, latex) {
+    const line = document.createElement("div");
+    line.className = "recast-eq";
+    km(line, latex, true);
+    container.appendChild(line);
+    return line;
+  }
+
+  function svgText(parent, x, y, text, attrs) {
+    const el = E("text", Object.assign({
+      x, y, fill: INK, "font-size": 15, "font-family": "Inter, Arial, sans-serif",
+      "text-anchor": "middle",
+    }, attrs || {}));
+    el.textContent = text;
+    parent.appendChild(el);
+    return el;
+  }
+
+  function svgMath(parent, x, y, latex, options) {
+    const opts = options || {};
+    const width = opts.width || 100;
+    const height = opts.height || 30;
+    const fo = E("foreignObject", {
+      x: x - width / 2, y: y - height / 2, width, height, overflow: "visible",
+    });
+    const div = document.createElement("div");
+    div.style.cssText = [
+      "width:" + width + "px",
+      "height:" + height + "px",
+      "display:flex",
+      "align-items:center",
+      "justify-content:center",
+      "font-size:" + (opts.size || 15) + "px",
+      "font-weight:" + (opts.weight || "600"),
+      "white-space:nowrap",
+      "color:" + (opts.colour || INK),
+    ].join(";");
+    km(div, latex);
+    fo.appendChild(div);
+    parent.appendChild(fo);
+    return fo;
+  }
+
+  function drawSphere(parent, x, y, radius, strokeColour, opacity, customClass, fillColour) {
+    const group = E("g", customClass ? { class: customClass } : {});
+    const fc = fillColour || strokeColour;
+    group.appendChild(E("circle", {
+      cx: x, cy: y, r: radius, fill: fc, "fill-opacity": opacity == null ? 0.36 : opacity,
+      stroke: strokeColour, "stroke-width": 2.2,
+    }));
+    group.appendChild(E("ellipse", {
+      cx: x, cy: y, rx: radius, ry: radius * 0.27, fill: "none", stroke: strokeColour,
+      "stroke-width": 1.5, "stroke-dasharray": "5 4", opacity: 0.8,
+    }));
+    group.appendChild(E("ellipse", {
+      cx: x - radius * 0.27, cy: y - radius * 0.32, rx: radius * 0.2, ry: radius * 0.1,
+      fill: "#fff", opacity: 0.34, transform: "rotate(-28 " + x + " " + y + ")",
+    }));
+    parent.appendChild(group);
+    return group;
+  }
+
+  function drawArrow(parent, x1, y1, x2, y2, progress) {
+    const end = x1 + (x2 - x1) * ease(progress == null ? 1 : progress);
+    parent.appendChild(E("line", {
+      x1, y1, x2: end, y2, stroke: DIM, "stroke-width": 2.8, "stroke-linecap": "round",
+    }));
+    if (progress == null || progress > 0.82) {
+      parent.appendChild(E("path", {
+        d: "M " + (x2 - 12) + " " + (y2 - 8) + " L " + x2 + " " + y2 +
+          " L " + (x2 - 12) + " " + (y2 + 8),
+        fill: "none", stroke: DIM, "stroke-width": 2.8, "stroke-linecap": "round",
+        "stroke-linejoin": "round",
+      }));
+    }
+  }
+
+  function radiusFor(R) {
+    return 65 + (R / 39) * 35;
+  }
+
+  /* ───────────────── Pile Geometry Helper ───────────────── */
+
+  function getPilePositions(count, baseX, baseY, smR) {
+    const positions = [];
+    if (count <= 6) {
+      for (let i = 0; i < count; i++) {
+        const row = Math.floor(i / 3);
+        const col = i % 3;
+        positions.push({ x: baseX - 34 + col * 34, y: baseY - row * 34 });
+      }
+    } else {
+      // 10-sphere standard pyramid stack
+      // Row 0 (bottom, 4 spheres)
+      for (let c = 0; c < 4; c++) {
+        positions.push({ x: baseX - 51 + c * 34, y: baseY });
+      }
+      // Row 1 (3 spheres)
+      for (let c = 0; c < 3; c++) {
+        positions.push({ x: baseX - 34 + c * 34, y: baseY - 30 });
+      }
+      // Row 2 (2 spheres)
+      for (let c = 0; c < 2; c++) {
+        positions.push({ x: baseX - 17 + c * 34, y: baseY - 60 });
+      }
+      // Row 3 (peak, 1 sphere) - index 9 is the top sphere!
+      positions.push({ x: baseX, y: baseY - 90 });
+    }
+    return positions;
+  }
+
+  /* ───────────────── Step Diagrams ───────────────── */
+
+  /* Step 1: Centered large sphere with label BELOW */
+  function drawSetup(svg, ctx) {
+    clear(svg);
+    const radius = radiusFor(ctx.R);
+    const cy = 185;
+    drawSphere(svg, 360, cy, radius, LARGE, 0.38, null, LARGE_FILL);
+    // Label clearly placed BELOW the sphere
+    svgMath(svg, 360, cy + radius + 28, tc(LARGE, "R = " + fmt(ctx.R)), {
+      size: 20, width: 120, height: 34,
+    });
+  }
+
+  /* Step 2: Centered large sphere -> arrow -> small sphere x n */
+  function drawProblem(svg, ctx, t) {
+    clear(svg);
+    const p = ease(t == null ? 1 : t);
+    const bigR = 66;
+    const smR = 26;
+    const cy = 195;
+
+    // Large sphere on left
+    drawSphere(svg, 220, cy, bigR, LARGE, 0.36, null, LARGE_FILL);
+    svgMath(svg, 220, cy + bigR + 26, tc(LARGE, "R = " + fmt(ctx.R)), {
+      size: 18, width: 100, height: 30,
+    });
+
+    drawArrow(svg, 315, cy, 405, cy, p);
+
+    if (p > 0.35) {
+      const q = ease((p - 0.35) / 0.65);
+      const small = drawSphere(svg, 455, cy, smR * q, SMALL, 0.38);
+      small.setAttribute("opacity", q);
+      const label = svgMath(svg, 510, cy, "\\times " + ctx.n, {
+        size: 18, width: 75, height: 30, colour: SMALL,
+      });
+      label.setAttribute("opacity", q);
+    }
+  }
+
+  /* Beaker with completely flat base */
+  function drawFlatBeaker(parent, x, y, liquid, tilt, w, h) {
+    w = w || 86;
+    h = h || 108;
+    const hw = w / 2;
+    const group = E("g", {
+      transform: "rotate(" + (tilt || 0) + " " + (x + hw * 0.7) + " " + (y + 20) + ")",
+    });
+
+    const bottomHW = hw * 0.76;
+
+    // Beaker body with FLAT PLANE BASE
+    group.appendChild(E("path", {
+      d: "M " + (x - hw) + " " + y +
+        " L " + (x - bottomHW) + " " + (y + h) +
+        " L " + (x + bottomHW) + " " + (y + h) +
+        " L " + (x + hw) + " " + y,
+      fill: "#e3f4fc", "fill-opacity": 0.26, stroke: "#6ea7bf", "stroke-width": 2.6,
+      "stroke-linejoin": "round",
+    }));
+
+    // Beaker rim
+    group.appendChild(E("path", {
+      d: "M " + (x - hw - 8) + " " + y + " L " + (x + hw + 8) + " " + y,
+      stroke: "#6ea7bf", "stroke-width": 3.4, "stroke-linecap": "round",
+    }));
+
+    // Molten liquid with FLAT BASE
+    const level = clamp(liquid, 0, 1);
+    if (level > 0.006) {
+      const top = y + h - level * (h - 18);
+      const frac = 1 - (top - y) / h;
+      const fillW = bottomHW + (hw - bottomHW) * frac;
+      group.appendChild(E("path", {
+        d: "M " + (x - fillW) + " " + top +
+          " L " + (x - bottomHW + 1) + " " + (y + h - 1) +
+          " L " + (x + bottomHW - 1) + " " + (y + h - 1) +
+          " L " + (x + fillW) + " " + top + " Z",
+        fill: LARGE_FILL, "fill-opacity": 0.72, stroke: LARGE, "stroke-width": 1,
+      }));
+    }
+
+    parent.appendChild(group);
+    return group;
+  }
+
+  function drawConveyor(parent) {
+    parent.appendChild(E("rect", {
+      x: 60, y: 326, width: 600, height: 44, rx: 18, fill: "#dbe3e8",
+      stroke: "#808f98", "stroke-width": 2,
+    }));
+    parent.appendChild(E("rect", {
+      x: 70, y: 333, width: 580, height: 16, rx: 8, fill: "#8b9aa1",
+    }));
+    for (let x = 90; x <= 630; x += 38) {
+      parent.appendChild(E("circle", {
+        cx: x, cy: 358, r: 6.5, fill: "#fff", stroke: "#808f98", "stroke-width": 2,
+      }));
+    }
+  }
+
+  /* Two-part split mould completely containing the small sphere */
+  function drawMould(parent, x, y, smR, openFraction) {
+    const group = E("g", {});
+    const op = clamp(openFraction, 0, 1);
+    const separation = op * 28;
+    const mouldH = smR * 2 + 16;
+    const mouldW = smR + 12;
+
+    // Left half mould
+    const lx = x - separation;
+    group.appendChild(E("path", {
+      d: "M " + (lx - mouldW) + " " + (y - mouldH / 2) +
+        " L " + lx + " " + (y - mouldH / 2) +
+        " A " + smR + " " + smR + " 0 0 0 " + lx + " " + (y + mouldH / 2) +
+        " L " + (lx - mouldW) + " " + (y + mouldH / 2) + " Z",
+      fill: "#b0bcc3", stroke: "#56656c", "stroke-width": 2.4, "stroke-linejoin": "round",
+    }));
+
+    // Right half mould
+    const rx = x + separation;
+    group.appendChild(E("path", {
+      d: "M " + (rx + mouldW) + " " + (y - mouldH / 2) +
+        " L " + rx + " " + (y - mouldH / 2) +
+        " A " + smR + " " + smR + " 0 0 1 " + rx + " " + (y + mouldH / 2) +
+        " L " + (rx + mouldW) + " " + (y + mouldH / 2) + " Z",
+      fill: "#b0bcc3", stroke: "#56656c", "stroke-width": 2.4, "stroke-linejoin": "round",
+    }));
+
+    parent.appendChild(group);
+    return group;
+  }
+
+  /* Step 3: Phase 1 — Organic melting ball diminishing to extremely small, then dropping the piecemeal */
+  function drawOrganicMeltingPhase(svg, ctx, t) {
+    clear(svg);
+    const topY = 105;
+    const beakerY = 250;
+
+    if (t < 0.86) {
+      // Phase 1: Ball continuously melts, sags, and diminishes in size from full sphere to tiny remnant
+      const p = t / 0.86; // 0 -> 1
+      const easeP = ease(p);
+      const r = 62 * (1 - easeP * 0.93); // 62px down to ~4.3px (extremely small)
+      const scale = r / 62;
+      const liquidLevel = easeP * 0.94;
+
+      // Heat glow waves at top
+      if (p < 0.92) {
+        for (let i = -1; i <= 1; i++) {
+          svg.appendChild(E("path", {
+            d: "M " + (360 + i * 28) + " 38 Q " + (352 + i * 28) + " 24 " + (360 + i * 28) + " 10",
+            fill: "none", stroke: "#FF9800", "stroke-width": 2.4,
+            opacity: 0.25 + 0.5 * Math.sin(t * 12 + i * 1.5),
+          }));
+        }
+      }
+
+      const drip1 = 16 * scale;
+      const drip2 = 38 * scale;
+      const drip3 = 14 * scale;
+
+      // Organic melting contour scaled down proportionally
+      const dPath = [
+        "M", 360 - r, topY,
+        "A", r, r, 0, 0, 1, 360 + r, topY,
+        "C", 360 + r, topY + r * 0.5, 360 + r * 0.6, topY + r * 0.8, 360 + 22 * scale, topY + r * 0.7 + drip3,
+        "Q", 360 + 18 * scale, topY + r * 0.7 + drip3 + 6 * scale, 360 + 14 * scale, topY + r * 0.7 + drip3,
+        "C", 360 + 10 * scale, topY + r * 0.6, 360 + 6 * scale, topY + r * 0.8 + drip2, 360, topY + r * 0.8 + drip2 + 8 * scale,
+        "Q", 360 - 2 * scale, topY + r * 0.8 + drip2 + 12 * scale, 360 - 6 * scale, topY + r * 0.8 + drip2,
+        "C", 360 - 12 * scale, topY + r * 0.6, 360 - 18 * scale, topY + r * 0.7 + drip1, 360 - 22 * scale, topY + r * 0.7 + drip1,
+        "Q", 360 - 26 * scale, topY + r * 0.7 + drip1 + 6 * scale, 360 - 30 * scale, topY + r * 0.7 + drip1 - 4 * scale,
+        "C", 360 - r * 0.7, topY + r * 0.6, 360 - r, topY + r * 0.4, 360 - r, topY,
+        "Z"
+      ].join(" ");
+
+      svg.appendChild(E("path", {
+        d: dPath,
+        fill: LARGE_FILL, "fill-opacity": 0.46,
+        stroke: LARGE, "stroke-width": Math.max(1.2, 2.2 * scale), "stroke-linejoin": "round",
+      }));
+
+      // Highlight inside melting ball
+      if (r > 12) {
+        svg.appendChild(E("ellipse", {
+          cx: 360 - r * 0.28, cy: topY - r * 0.28, rx: r * 0.22, ry: r * 0.12,
+          fill: "#fff", opacity: 0.34, transform: "rotate(-24 " + (360 - r * 0.28) + " " + (topY - r * 0.28) + ")",
+        }));
+      }
+
+      // Continuous falling pinch-off droplets
+      if (p > 0.08 && p < 0.94) {
+        const dropCycle = (p * 7) % 1;
+        const dropStartY = topY + r * 0.8 + drip2 + 8 * scale;
+        const dropTargetY = beakerY + 95 - liquidLevel * 85;
+        const dropY = dropStartY + dropCycle * (dropTargetY - dropStartY);
+        if (dropY < dropTargetY) {
+          svg.appendChild(E("path", {
+            d: "M 360 " + (dropY - 5) + " Q 363 " + dropY + " 360 " + (dropY + 6) + " Q 357 " + dropY + " 360 " + (dropY - 5) + " Z",
+            fill: LARGE_FILL, stroke: LARGE, "stroke-width": 1.2,
+          }));
+        }
+      }
+
+      drawFlatBeaker(svg, 360, beakerY, liquidLevel, 0, 92, 115);
+
+    } else if (t < 0.93) {
+      // Phase 2: The final tiny piecemeal droplet detaches and drops into the beaker
+      const dropT = (t - 0.86) / 0.07; // 0 -> 1
+      const fallProgress = Math.pow(dropT, 1.8);
+      const startY = topY + 6;
+      const targetY = beakerY + 18;
+      const dropY = startY + fallProgress * (targetY - startY);
+      const liquidLevel = 0.94 + dropT * 0.06; // rises to 1.0
+
+      if (dropY < targetY + 4) {
+        svg.appendChild(E("path", {
+          d: "M 360 " + (dropY - 4) + " Q 363 " + dropY + " 360 " + (dropY + 5) + " Q 357 " + dropY + " 360 " + (dropY - 4) + " Z",
+          fill: LARGE_FILL, stroke: LARGE, "stroke-width": 1.2,
+        }));
+      }
+
+      drawFlatBeaker(svg, 360, beakerY, liquidLevel, 0, 92, 115);
+
+    } else {
+      // Phase 3: Fully collected in beaker with expanding surface ripples
+      const rippleP = (t - 0.93) / 0.07; // 0 -> 1
+      drawFlatBeaker(svg, 360, beakerY, 1.0, 0, 92, 115);
+
+      if (rippleP < 0.95) {
+        const rippleR = 8 + rippleP * 34;
+        const rippleOp = (1 - rippleP) * 0.75;
+        svg.appendChild(E("ellipse", {
+          cx: 360, cy: beakerY + 18, rx: rippleR, ry: rippleR * 0.22,
+          fill: "none", stroke: LARGE, "stroke-width": 1.8, opacity: rippleOp,
+        }));
+      }
+    }
+  }
+
+  /* Progressive acceleration mapping for casting n spheres */
+  function getPouringTimeline(n) {
+    const durations = [];
+    for (let i = 0; i < n; i++) {
+      const speedIndex = Math.min(15, i);
+      const frac = speedIndex / 15;
+      const rate = 1 - Math.pow(1 - frac, 1.8);
+      const dur = 1.3 - rate * 1.06; // 1.3s -> 0.24s
+      durations.push(dur);
+    }
+    const totalDur = durations.reduce((a, b) => a + b, 0);
+    return { durations, totalDur };
+  }
+
+  /* Step 3: Phase 2 — Factory pouring, moulding, cooling, conveyor */
+  function drawPouringPhase(svg, ctx, t, timeline) {
+    clear(svg);
+    const n = ctx.n;
+    drawConveyor(svg);
+
+    const smR = 21;
+    const mouldX = 490; // Mould position directly under beaker spout
+    const mouldY = 240;
+
+    const elapsedSec = t * timeline.totalDur;
+    let acc = 0;
+    let currentIdx = 0;
+    let cycleT = 0;
+
+    for (let i = 0; i < n; i++) {
+      if (elapsedSec <= acc + timeline.durations[i]) {
+        currentIdx = i;
+        cycleT = (elapsedSec - acc) / timeline.durations[i];
+        break;
+      }
+      acc += timeline.durations[i];
+      if (i === n - 1) {
+        currentIdx = n;
+        cycleT = 1;
+      }
+    }
+
+    const complete = t >= 0.999;
+    const completedCount = complete ? n : currentIdx;
+    const liquidRemaining = complete ? 0 : Math.max(0, 1 - (completedCount + cycleT * 0.6) / n);
+
+    // Beaker tilted at top right
+    const spoutX = mouldX; // Spout aligns vertically with mould
+    const beakerX = spoutX + 42;
+    const beakerY = 60;
+    const isPouring = !complete && cycleT < 0.38;
+    const tilt = complete ? 0 : (isPouring ? -28 : -14);
+
+    drawFlatBeaker(svg, beakerX, beakerY, liquidRemaining, tilt, 80, 96);
+
+    // Label "molten metal" with leader line (disappears once empty)
+    if (liquidRemaining > 0.04) {
+      svgText(svg, beakerX - 98, beakerY + 36, "molten metal", {
+        fill: DIM, "font-size": 13, "font-weight": 600, "text-anchor": "end",
+      });
+      svg.appendChild(E("line", {
+        x1: beakerX - 90, y1: beakerY + 33, x2: beakerX - 18, y2: beakerY + 48,
+        stroke: DIM, "stroke-width": 1.6,
+      }));
+      svg.appendChild(E("circle", {
+        cx: beakerX - 18, cy: beakerY + 48, r: 2.5, fill: DIM,
+      }));
+    }
+
+    // Molten stream pouring vertically down from spout into mould
+    if (isPouring) {
+      svg.appendChild(E("line", {
+        x1: spoutX, y1: beakerY + 74, x2: spoutX, y2: mouldY - 8,
+        stroke: LARGE_FILL, "stroke-width": 6.5, "stroke-linecap": "round", opacity: 0.9,
+      }));
+    }
+
+    // Sphere inside mould during forming/cooling/release
+    let sphereInMould = null;
+    let mouldOpenFrac = 0;
+
+    if (!complete) {
+      if (cycleT < 0.38) {
+        mouldOpenFrac = 0;
+        const fillP = cycleT / 0.38;
+        sphereInMould = drawSphere(svg, mouldX, mouldY, smR * fillP, LARGE, 0.6 * fillP, null, LARGE_FILL);
+      } else if (cycleT < 0.68) {
+        mouldOpenFrac = 0;
+        const coolP = (cycleT - 0.38) / 0.3;
+        sphereInMould = drawSphere(svg, mouldX, mouldY, smR, SMALL, 0.38 + 0.15 * coolP);
+      } else {
+        const dropP = ease((cycleT - 0.68) / 0.32);
+        mouldOpenFrac = dropP;
+        const dropY = mouldY + (326 - smR - mouldY) * dropP;
+        sphereInMould = drawSphere(svg, mouldX, dropY, smR, SMALL, 0.38);
+      }
+    } else {
+      mouldOpenFrac = 1;
+    }
+
+    // MOULD IS DRAWN AFTER SPHERE -> Mould layer is ABOVE the sphere during release!
+    drawMould(svg, mouldX, mouldY, smR, mouldOpenFrac);
+
+    // Completed spheres travelling left on conveyor
+    const visibleSpheres = Math.min(8, completedCount);
+    for (let j = 0; j < visibleSpheres; j++) {
+      const shift = complete ? 0 : cycleT * 42;
+      const sx = mouldX - 52 - j * 48 - shift;
+      if (sx > 78) {
+        drawSphere(svg, sx, 326 - smR, smR, SMALL, 0.38);
+      }
+    }
+
+    // Count indicator in top-left
+    svgText(svg, 110, 50, completedCount + " / " + n + " complete", {
+      fill: complete ? GREEN : INK, "font-size": 16, "font-weight": 700, "text-anchor": "start",
+    });
+  }
+
+  /* Step 4: Find Radius r — Volume conservation with small spheres pile */
+  function drawGroupStep(svg, ctx, isFinalLineRevealed) {
+    clear(svg);
+    const bigR = 66;
+    const smR = 19;
+    const cy = 195;
+
+    // Large sphere on left with label BELOW
+    drawSphere(svg, 200, cy, bigR, LARGE, 0.36, null, LARGE_FILL);
+    svgMath(svg, 200, cy + bigR + 26, tc(LARGE, "R = " + fmt(ctx.R)), {
+      size: 18, width: 90, height: 30,
+    });
+
+    // Equal sign in middle
+    svgMath(svg, 335, cy, "=", { size: 28, width: 45, height: 40 });
+
+    // Small spheres pile on right
+    const pileBaseX = 485;
+    const pileBaseY = 245;
+    const count = ctx.n;
+    const positions = getPilePositions(count, pileBaseX, pileBaseY, smR);
+
+    positions.forEach((pos) => {
+      drawSphere(svg, pos.x, pos.y, smR, SMALL, 0.38);
+    });
+
+    // Label: n = ... (underneath pile)
+    svgMath(svg, pileBaseX, pileBaseY + 44, tc(SMALL, "n = " + count), {
+      size: 18, width: 100, height: 30,
+    });
+
+    // Label: r = 5 cm (above pile) — ONLY SHOWN AFTER FINAL LINE REVEALED!
+    if (isFinalLineRevealed) {
+      svgMath(svg, pileBaseX, pileBaseY - 128, tc(GREEN, "r = " + fmt(ctx.r) + "\\text{ cm}"), {
+        size: 19, width: 130, height: 32,
+      });
+    }
+  }
+
+  /* Step 5: Surface Area — Picked sphere enlarged with EXACT same pile in background */
+  function drawSurfaceAreaStep(svg, ctx, t, isFinalLineRevealed) {
+    clear(svg);
+    const p = ease(t == null ? 1 : t);
+    const pileBaseX = 485;
+    const pileBaseY = 245;
+    const smR = 19;
+    const count = ctx.n;
+
+    // Get exact same pile positions as Step 4
+    const positions = getPilePositions(count, pileBaseX, pileBaseY, smR);
+    const pickedIdx = positions.length - 1; // Top/peak sphere is picked
+    const pickedPos = positions[pickedIdx] || { x: pileBaseX, y: pileBaseY - 90 };
+
+    // Draw remaining pile in background
+    for (let i = 0; i < pickedIdx; i++) {
+      drawSphere(svg, positions[i].x, positions[i].y, smR, SMALL, 0.22);
+    }
+
+    // Picked sphere animates to center (360, 185) and enlarges
+    const cx = pickedPos.x + (360 - pickedPos.x) * p;
+    const cy = pickedPos.y + (185 - pickedPos.y) * p;
+    const r = smR + (65 - smR) * p;
+
+    // Draw main sphere
+    drawSphere(svg, cx, cy, r, SMALL, 0.36);
+
+    // Aesthetic Yellow-Blue shimmering edge along the perimeter
+    if (p > 0.6) {
+      const edgePulse = E("circle", {
+        cx, cy, r: r + 1, fill: "none", "stroke-width": 4.5,
+        class: "shimmer-edge",
+      });
+      svg.appendChild(edgePulse);
+    }
+
+    // Inside radius label
+    svgMath(svg, cx, cy, tc(GREEN, "r = " + fmt(ctx.r)), {
+      size: 19, width: 100, height: 32,
+    });
+
+    // Surface area label underneath — ONLY SHOWN AFTER FINAL LINE REVEALED!
+    if (isFinalLineRevealed && p > 0.4) {
+      svgMath(svg, cx, cy + r + 34, tc(YELLOW_TEX, "SA = " + fmt(ctx.sa) + "\\pi\\text{ cm}^2"), {
+        size: 19, width: 190, height: 34,
+      });
+    }
+  }
+
+  /* Step 6: Review Quiz — Summary diagram with full values and units */
+  function drawReviewSummary(svg, ctx) {
+    clear(svg);
+    const bigR = 66;
+    const smR = 26;
+    const cy = 195;
+
+    // Large sphere on left with unit
+    drawSphere(svg, 210, cy, bigR, LARGE, 0.36, null, LARGE_FILL);
+    svgMath(svg, 210, cy + bigR + 26, tc(LARGE, "R = " + fmt(ctx.R) + "\\text{ cm}"), {
+      size: 18, width: 110, height: 30,
+    });
+
+    // Arrow in middle
+    drawArrow(svg, 305, cy, 395, cy, 1);
+
+    // Small sphere on right with solved r and SA (all with units!)
+    drawSphere(svg, 450, cy, smR, SMALL, 0.38);
+
+    // r with unit above
+    svgMath(svg, 450, cy - smR - 26, tc(GREEN, "r = " + fmt(ctx.r) + "\\text{ cm}"), {
+      size: 17, width: 110, height: 28,
+    });
+
+    // SA with unit below
+    svgMath(svg, 450, cy + smR + 26, tc(YELLOW_TEX, "SA = " + fmt(ctx.sa) + "\\pi\\text{ cm}^2"), {
+      size: 17, width: 140, height: 28,
+    });
+
+    // Label n = ... beside small sphere
+    svgMath(svg, 525, cy, tc(SMALL, "n = " + ctx.n), {
+      size: 17, width: 80, height: 28,
+    });
+  }
+
+  /* ───────────────── Step Notecard Contents ───────────────── */
+
+  function buildNotecardBody(step, ctx, cardBody, revealedCount, onCardClick) {
+    const R = fmt(ctx.R);
+    const n = ctx.n;
+    const r = fmt(ctx.r);
+    const R3 = fmt(ctx.R * ctx.R * ctx.R);
+    const rCubed = fmt((ctx.R * ctx.R * ctx.R) / n);
+    const rSq = fmt(ctx.r * ctx.r);
+    const sa = fmt(ctx.sa);
+
+    if (step === 0) {
+      prose(cardBody, [
+        { text: "Choose the radius of the large sphere and the number of identical small spheres to cast." },
+      ]);
+      const inputs = document.createElement("div");
+      inputs.className = "recast-card-inputs";
+      inputs.innerHTML =
+        '<label class="recast-setup-field"><span>Large radius <em>R</em></span>' +
+        '<span class="recast-value-box"><input type="number" id="recast-R" min="1" max="39" step="1" value="' +
+        ctx.R + '"><span class="recast-unit">cm</span></span></label>' +
+        '<label class="recast-setup-field"><span>Number of small spheres <em>n</em></span>' +
+        '<span class="recast-value-box"><input type="number" id="recast-n" min="1" max="39" step="1" value="' +
+        ctx.n + '"></span></label>' +
+        '<p class="recast-range-note">Allowed range: 1–39</p>';
+      cardBody.appendChild(inputs);
+      return;
+    }
+
+    if (step === 1) {
+      prose(cardBody, [
+        { text: "A large solid metal sphere of radius " },
+        { math: tc(LARGE, R) },
+        { text: " cm is melted and recast into " },
+        { math: tc(SMALL, String(n)) },
+        { text: " identical small solid metal spheres." },
+      ]);
+      prose(cardBody, [{ text: "Find (a) the radius of each small sphere;" }]);
+      prose(cardBody, [
+        { text: "Find (b) the surface area of each small sphere in terms of " },
+        { math: "\\pi" },
+        { text: "." },
+      ]);
+      return;
+    }
+
+    if (step === 2) {
+      prose(cardBody, [
+        { text: "The large metal sphere is melted into liquid and poured into moulds to cast the small spheres." },
+      ]);
+      prose(cardBody, [{ text: "The total volume of metal remains unchanged:" }]);
+      equation(cardBody, "V_{\\text{large}} = V_{\\text{small total}}");
+      return;
+    }
+
+    if (step === 3) {
+      // Step 4: Combined volume conservation & radius calculation (6 progressive lines)
+      const totalLines = 6;
+      const linesBlock = document.createElement("div");
+      linesBlock.className = "calc-line-block";
+
+      const line1 = document.createElement("div");
+      line1.className = "calc-line" + (revealedCount >= 1 ? " revealed" : "");
+      prose(line1, [{ text: "Formula for volume of a sphere:" }]);
+      equation(line1, "V = \\tfrac{4}{3}\\pi r^3");
+      linesBlock.appendChild(line1);
+
+      const line2 = document.createElement("div");
+      line2.className = "calc-line" + (revealedCount >= 2 ? " revealed" : "");
+      prose(line2, [{ text: "Volume of large sphere = Total volume of small spheres:" }]);
+      equation(line2, "V_{\\text{large}} = " + n + " \\times V_{\\text{small}}");
+      linesBlock.appendChild(line2);
+
+      const line3 = document.createElement("div");
+      line3.className = "calc-line" + (revealedCount >= 3 ? " revealed" : "");
+      equation(line3, "\\tfrac{4}{3}\\pi R^3 = " + n + " \\times \\left(\\tfrac{4}{3}\\pi r^3\\right)");
+      linesBlock.appendChild(line3);
+
+      const line4 = document.createElement("div");
+      line4.className = "calc-line" + (revealedCount >= 4 ? " revealed" : "");
+      prose(line4, [{ text: "Divide both sides by " }, { math: "\\tfrac{4}{3}\\pi" }, { text: " and substitute values:" }]);
+      equation(line4, "(" + R + ")^3 = " + n + " \\cdot r^3");
+      linesBlock.appendChild(line4);
+
+      const line5 = document.createElement("div");
+      line5.className = "calc-line" + (revealedCount >= 5 ? " revealed" : "");
+      equation(line5, R3 + " = " + n + " r^3 \\implies r^3 = " + rCubed);
+      linesBlock.appendChild(line5);
+
+      const line6 = document.createElement("div");
+      line6.className = "calc-line" + (revealedCount >= 6 ? " revealed" : "");
+      equation(line6, "r = \\sqrt[3]{" + rCubed + "} = " + tc(GREEN_TEX, r) + "\\text{ cm}");
+      linesBlock.appendChild(line6);
+
+      cardBody.appendChild(linesBlock);
+
+      // Prompt button
+      if (revealedCount < totalLines) {
+        const promptBtn = document.createElement("div");
+        promptBtn.className = "recast-reveal-prompt";
+        promptBtn.innerHTML = "<span>👆 Click card to reveal next step</span> <span>(" + revealedCount + " / " + totalLines + ")</span>";
+        cardBody.appendChild(promptBtn);
+      } else {
+        const doneNote = document.createElement("div");
+        doneNote.className = "recast-reveal-done";
+        doneNote.textContent = "✓ All calculation steps revealed";
+        cardBody.appendChild(doneNote);
+      }
+      return;
+    }
+
+    if (step === 4) {
+      // Step 5: Surface area calculation (cracked into distinct substitution + evaluation steps)
+      const totalLines = 3;
+      const linesBlock = document.createElement("div");
+      linesBlock.className = "calc-line-block";
+
+      const line1 = document.createElement("div");
+      line1.className = "calc-line" + (revealedCount >= 1 ? " revealed" : "");
+      prose(line1, [{ text: "Surface area formula of a sphere:" }]);
+      equation(line1, "SA = 4\\pi r^2");
+      linesBlock.appendChild(line1);
+
+      const line2 = document.createElement("div");
+      line2.className = "calc-line" + (revealedCount >= 2 ? " revealed" : "");
+      prose(line2, [{ text: "Substitute " }, { math: "r = " + tc(GREEN_TEX, r) }, { text: " cm:" }]);
+      equation(line2, "SA = 4\\pi(" + tc(GREEN_TEX, r) + ")^2");
+      linesBlock.appendChild(line2);
+
+      const line3 = document.createElement("div");
+      line3.className = "calc-line" + (revealedCount >= 3 ? " revealed" : "");
+      prose(line3, [{ text: "Evaluate the coefficient of " }, { math: "\\pi" }, { text: ":" }]);
+      equation(line3, "SA = 4\\pi(" + rSq + ") = " + tc(YELLOW_TEX, sa + "\\pi") + "\\text{ cm}^2");
+      linesBlock.appendChild(line3);
+
+      cardBody.appendChild(linesBlock);
+
+      // Prompt button
+      if (revealedCount < totalLines) {
+        const promptBtn = document.createElement("div");
+        promptBtn.className = "recast-reveal-prompt";
+        promptBtn.innerHTML = "<span>👆 Click card to reveal next step</span> <span>(" + revealedCount + " / " + totalLines + ")</span>";
+        cardBody.appendChild(promptBtn);
+      } else {
+        const doneNote = document.createElement("div");
+        doneNote.className = "recast-reveal-done";
+        doneNote.textContent = "✓ All calculation steps revealed";
+        cardBody.appendChild(doneNote);
+      }
+      return;
+    }
+
+    if (step === 5) {
+      // Review quiz
+      prose(cardBody, [{ text: "When a solid metal sphere is melted and recast, what quantity must stay the same?" }]);
+      const mcWrap = document.createElement("div");
+      mcWrap.className = "recast-mc";
+      const options = [
+        { text: "Total volume of metal", ok: true },
+        { text: "Total surface area", ok: false },
+        { text: "Radius of each small sphere", ok: false },
+      ];
+      options.forEach((opt) => {
+        const btn = document.createElement("button");
+        btn.type = "button";
+        btn.className = "recast-choice";
+        btn.textContent = opt.text;
+        btn.addEventListener("click", () => {
+          const fb = cardBody.querySelector("#recast-fb");
+          if (opt.ok) {
+            btn.classList.remove("is-wrong");
+            btn.classList.add("is-correct");
+            mcWrap.querySelectorAll("button").forEach((b) => {
+              b.disabled = true;
+              if (b !== btn) b.classList.remove("is-wrong");
+            });
+            if (fb) {
+              fb.className = "recast-fb ok";
+              fb.textContent = "Correct! The total amount and volume of metal is conserved.";
+            }
+          } else {
+            btn.classList.add("is-wrong");
+            if (fb) {
+              fb.className = "recast-fb bad";
+              fb.textContent = "Try again. Melting and reshaping changes the surface area, but not the total volume.";
+            }
+          }
+        });
+        mcWrap.appendChild(btn);
+      });
+      cardBody.appendChild(mcWrap);
+      const fbP = document.createElement("p");
+      fbP.id = "recast-fb";
+      fbP.className = "recast-fb";
+      cardBody.appendChild(fbP);
+    }
+  }
+
+  function postHeight() {
+    if (!/[?&]jmTools=1(?:&|$)/.test(location.search || "")) return;
+    const height = Math.max(
+      document.documentElement.scrollHeight || 0,
+      document.body ? document.body.scrollHeight : 0,
+      500
+    );
+    try {
+      parent.postMessage({ type: "jm-tools-height", height }, "*");
+    } catch (e) {}
+  }
+
+  /* ───────────────── Controller Initialization ───────────────── */
+
+  function initRecastLab() {
+    const shell = document.getElementById("recast-tool-shell");
+    if (!shell || shell.dataset.initialized === "1") return;
+    shell.dataset.initialized = "1";
+
+    const svg = document.getElementById("recast-svg");
+    const cardBox = document.getElementById("recast-card");
+    const backBtn = document.getElementById("recast-back");
+    const nextBtn = document.getElementById("recast-next");
+    const resetBtn = document.getElementById("recast-reset");
+    const progress = document.getElementById("recast-progress");
+    const preview = document.getElementById("recast-vol-preview");
+    const stepList = document.getElementById("recast-step-list");
+    const note = document.getElementById("recast-note");
+    const stage = document.querySelector(".recast-stage");
+
+    let step = 0;
+    let animFrame = null;
+    let isTransitioning = false;
+    let stageBtnEl = null;
+    const revealedLines = { 3: 0, 4: 0 };
+    const ctx = { R: 15, n: 27, r: 5, sa: 100 };
+
+    function calculate() {
+      ctx.r = ctx.R / Math.cbrt(ctx.n);
+      ctx.sa = 4 * ctx.r * ctx.r;
+    }
+
+    function stopAnim() {
+      if (animFrame != null) cancelAnimationFrame(animFrame);
+      animFrame = null;
+    }
+
+    function removeStageBtn() {
+      if (stageBtnEl && stageBtnEl.parentNode) {
+        stageBtnEl.parentNode.removeChild(stageBtnEl);
+      }
+      stageBtnEl = null;
+    }
+
+    function updatePreview() {
+      clear(preview);
+      const vVal = (4 / 3) * Math.pow(ctx.R, 3);
+      prose(preview, [
+        { text: "Large sphere volume = " },
+        { math: fmt(vVal) + "\\pi" },
+        { text: " cm³" },
+      ]);
+    }
+
+    function renderStepList() {
+      clear(stepList);
+      STEPS.forEach((label, index) => {
+        const item = document.createElement("button");
+        item.type = "button";
+        item.className = "recast-step-link";
+        if (index === step) item.classList.add("active");
+        if (index < step) item.classList.add("complete");
+        item.disabled = index > step;
+        item.innerHTML = '<span class="recast-step-dot">' + (index < step ? "✓" : index + 1) +
+          '</span><span>' + label + "</span>";
+        if (index <= step) {
+          item.addEventListener("click", () => goTo(index, index < step ? -1 : 1));
+        }
+        stepList.appendChild(item);
+      });
+    }
+
+    function updateStageOnReveal() {
+      if (step === 3) {
+        drawGroupStep(svg, ctx, revealedLines[3] >= 6);
+      } else if (step === 4) {
+        drawSurfaceAreaStep(svg, ctx, 1, revealedLines[4] >= 3);
+      }
+    }
+
+    function advanceLineReveal() {
+      if (step === 3 && revealedLines[3] < 6) {
+        revealedLines[3]++;
+        renderCard();
+        updateStageOnReveal();
+        postHeight();
+      } else if (step === 4 && revealedLines[4] < 3) {
+        revealedLines[4]++;
+        renderCard();
+        updateStageOnReveal();
+        postHeight();
+      }
+    }
+
+    function renderCard() {
+      clear(cardBox);
+      const card = document.createElement("article");
+      const isClickable = (step === 3 && revealedLines[3] < 6) || (step === 4 && revealedLines[4] < 3);
+      card.className = "step-card active recast-notecard" + (isClickable ? " clickable-card" : "");
+
+      const head = document.createElement("header");
+      head.className = "step-head";
+      head.innerHTML = '<span class="step-index">' + (step + 1) +
+        '</span><span class="step-title">' + STEPS[step] + "</span>";
+      card.appendChild(head);
+
+      const body = document.createElement("div");
+      body.className = "step-body";
+
+      const curRevealed = step === 3 ? revealedLines[3] : (step === 4 ? revealedLines[4] : 0);
+      buildNotecardBody(step, ctx, body, curRevealed, advanceLineReveal);
+
+      card.appendChild(body);
+      cardBox.appendChild(card);
+
+      // Card click listener for progressive reveal
+      if (isClickable) {
+        card.addEventListener("click", (e) => {
+          if (e.target.tagName === "INPUT" || e.target.tagName === "BUTTON") return;
+          advanceLineReveal();
+        });
+      }
+
+      // Wire inputs if step 0
+      if (step === 0) {
+        const rIn = card.querySelector("#recast-R");
+        const nIn = card.querySelector("#recast-n");
+        if (rIn && nIn) {
+          const sync = () => {
+            ctx.R = clamp(Math.round(+rIn.value || 15), 1, 39);
+            ctx.n = clamp(Math.round(+nIn.value || 27), 1, 39);
+            rIn.value = ctx.R;
+            nIn.value = ctx.n;
+            calculate();
+            updatePreview();
+            drawSetup(svg, ctx);
+            postHeight();
+          };
+          rIn.addEventListener("change", sync);
+          nIn.addEventListener("change", sync);
+          rIn.addEventListener("input", () => { if (rIn.value !== "") sync(); });
+          nIn.addEventListener("input", () => { if (nIn.value !== "") sync(); });
+        }
+      }
+    }
+
+    function animateDiagram(drawFn, duration, onComplete) {
+      stopAnim();
+      const start = performance.now();
+      function frame(now) {
+        const t = clamp((now - start) / duration, 0, 1);
+        drawFn(t);
+        if (t < 1) {
+          animFrame = requestAnimationFrame(frame);
+        } else {
+          animFrame = null;
+          if (onComplete) onComplete();
+          updateNav();
+        }
+      }
+      animFrame = requestAnimationFrame(frame);
+    }
+
+    function startFactoryPhase2() {
+      removeStageBtn();
+      const timeline = getPouringTimeline(ctx.n);
+      const durationMs = timeline.totalDur * 1000;
+
+      animateDiagram((t) => drawPouringPhase(svg, ctx, t, timeline), durationMs, () => {
+        updateNav();
+      });
+    }
+
+    function renderStage() {
+      removeStageBtn();
+      stopAnim();
+
+      if (step === 0) {
+        drawSetup(svg, ctx);
+      } else if (step === 1) {
+        animateDiagram((t) => drawProblem(svg, ctx, t), 850);
+      } else if (step === 2) {
+        // Step 3: Organic melting animation
+        animateDiagram((t) => drawOrganicMeltingPhase(svg, ctx, t), 3200, () => {
+          stageBtnEl = document.createElement("button");
+          stageBtnEl.type = "button";
+          stageBtnEl.className = "recast-stage-btn";
+          stageBtnEl.innerHTML = "Start Moulding & Pouring &rsaquo;";
+          stageBtnEl.addEventListener("click", startFactoryPhase2);
+          stage.appendChild(stageBtnEl);
+        });
+      } else if (step === 3) {
+        const isFinal = revealedLines[3] >= 6;
+        drawGroupStep(svg, ctx, isFinal);
+      } else if (step === 4) {
+        const isFinal = revealedLines[4] >= 3;
+        animateDiagram((t) => drawSurfaceAreaStep(svg, ctx, t, isFinal), 1200);
+      } else if (step === 5) {
+        drawReviewSummary(svg, ctx);
+      }
+    }
+
+    function updateNav() {
+      backBtn.disabled = step === 0 || isTransitioning;
+      // User is allowed to click Next even during Step 3 animation!
+      nextBtn.disabled = step === STEPS.length - 1 || isTransitioning;
+      progress.textContent = "Step " + (step + 1) + " / " + STEPS.length;
+    }
+
+    function render() {
+      stopAnim();
+      calculate();
+      updatePreview();
+      renderStepList();
+      renderCard();
+      renderStage();
+      updateNav();
+      postHeight();
+    }
+
+    /* Flashcard disposal flip transition */
+    function goTo(target, direction) {
+      if (isTransitioning || target === step || target < 0 || target >= STEPS.length) return;
+      isTransitioning = true;
+      stopAnim();
+      removeStageBtn();
+
+      // Animate current card out
+      note.classList.remove("card-flip-out-right", "card-flip-out-top", "card-enter-from-top", "card-enter-from-right");
+      if (direction >= 0) {
+        // Next: flies out to right
+        note.classList.add("card-flip-out-right");
+      } else {
+        // Back: flies out to top
+        note.classList.add("card-flip-out-top");
+      }
+      updateNav();
+
+      window.setTimeout(() => {
+        step = target;
+        note.classList.remove("card-flip-out-right", "card-flip-out-top");
+        if (direction >= 0) {
+          // Next: new card enters from top/deck
+          note.classList.add("card-enter-from-top");
+        } else {
+          // Back: previous card flies back in from right bottom
+          note.classList.add("card-enter-from-right");
+        }
+        render();
+
+        requestAnimationFrame(() => {
+          requestAnimationFrame(() => {
+            note.classList.remove("card-enter-from-top", "card-enter-from-right");
+            isTransitioning = false;
+            updateNav();
+          });
+        });
+      }, 300);
+    }
+
+    backBtn.addEventListener("click", () => goTo(step - 1, -1));
+    nextBtn.addEventListener("click", () => goTo(step + 1, 1));
+    resetBtn.addEventListener("click", () => {
+      stopAnim();
+      removeStageBtn();
+      step = 0;
+      ctx.R = 15;
+      ctx.n = 27;
+      revealedLines[3] = 0;
+      revealedLines[4] = 0;
+      isTransitioning = false;
+      note.className = "recast-note";
+      render();
+    });
+
+    calculate();
+    render();
+  }
+
+  window.AVRecastLab = { init: initRecastLab };
+
+  function boot() {
+    if (window.katex) initRecastLab();
+    else window.setTimeout(boot, 30);
+  }
+
+  if (document.readyState === "loading") {
+    document.addEventListener("DOMContentLoaded", boot);
+  } else {
+    boot();
+  }
+})();
+
+</script>
+</body>
+</html>

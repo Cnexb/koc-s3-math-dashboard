@@ -1,0 +1,83 @@
+{
+  "packId": "math-jm31-central-tendency-v1",
+  "subject": "MATH",
+  "chapter": "JM31 Measures of Central Tendencies",
+  "chapterCode": "JM31",
+  "scope": "central-tendency",
+  "order": 31,
+  "published": true,
+  "title": {
+    "en": "Measures of Central Tendencies",
+    "zhHant": "趨勢測量"
+  },
+  "source": "dashboard/topics/central_tendency",
+  "notes": [],
+  "comics": [],
+  "tools": [
+    {
+      "slug": "jm31-central-tendency",
+      "toolId": "jm31-central-tendency-notes",
+      "section": "notes",
+      "query": "embed=1&tab=concept",
+      "title": {
+        "en": "Measures of Central Tendencies",
+        "zhHant": "趨勢測量"
+      }
+    },
+    {
+      "slug": "jm31-central-tendency",
+      "toolId": "jm31-central-tendency-tools",
+      "section": "tools",
+      "query": "embed=1&tab=tools",
+      "title": {
+        "en": "Measures of Central Tendencies",
+        "zhHant": "趨勢測量"
+      }
+    },
+    {
+      "slug": "jm31-central-tendency",
+      "toolId": "jm31-central-tendency-comics",
+      "section": "comics",
+      "query": "embed=1&tab=comics",
+      "title": {
+        "en": "Measures of Central Tendencies",
+        "zhHant": "趨勢測量"
+      }
+    },
+    {
+      "slug": "jm31-central-tendency",
+      "toolId": "jm31-central-tendency-summaries",
+      "section": "summaries",
+      "query": "embed=1&tab=summary",
+      "title": {
+        "en": "Measures of Central Tendencies",
+        "zhHant": "趨勢測量"
+      }
+    },
+    {
+      "slug": "jm31-central-tendency",
+      "toolId": "jm31-central-tendency-quizzes",
+      "section": "quizzes",
+      "query": "embed=1&tab=quiz",
+      "title": {
+        "en": "Measures of Central Tendencies",
+        "zhHant": "趨勢測量"
+      }
+    }
+  ],
+  "games": [
+    {
+      "slug": "jm31-central-tendency",
+      "toolId": "jm31-central-tendency-games",
+      "section": "games",
+      "query": "embed=1&tab=games",
+      "title": {
+        "en": "Measures of Central Tendencies",
+        "zhHant": "趨勢測量"
+      }
+    }
+  ],
+  "summaries": [],
+  "flashcards": [],
+  "quiz": []
+}

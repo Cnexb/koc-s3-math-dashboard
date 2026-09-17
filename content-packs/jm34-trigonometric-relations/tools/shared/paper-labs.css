@@ -1,0 +1,134 @@
+/* Paper-lab look ??light canvas, soft motion. Content unchanged. */
+.paper-labs {
+  --lab-paper: #f1f5f9;
+  --lab-ink: #1e293b;
+}
+
+body.paper-labs {
+  --surface: #ffffff;
+  --surface-2: #eef2f7;
+  --text: #1e293b;
+  --muted: #64748b;
+  --line: rgba(30, 41, 59, 0.12);
+  --accent: #4FC3F7;
+  --glow: #29B6F6;
+  --a: #4FC3F7;
+  --ink: #1e293b;
+  --dim: #64748b;
+  --panel: #ffffff;
+  --bg: #f8fafc;
+  margin: 0;
+  min-height: 100vh;
+  color: var(--text);
+  font-family: "Hanken Grotesk", system-ui, sans-serif;
+  background:
+    radial-gradient(ellipse 80% 50% at 10% 0%, rgba(14,165,233,.12), transparent 55%),
+    radial-gradient(ellipse 70% 45% at 92% 8%, rgba(56,189,248,.1), transparent 50%),
+    linear-gradient(180deg,#f8fafc,#f1f5f9) !important;
+  background-attachment: fixed;
+}
+
+body.paper-labs h1 {
+  color: var(--text, #1e293b);
+}
+
+body.paper-labs .jm-eyebrow,
+body.paper-labs .eyebrow {
+  color: var(--glow, #29B6F6) !important;
+}
+
+body.paper-labs .jm-tab.active,
+body.paper-labs .tab.active {
+  color: var(--text) !important;
+  background: var(--surface) !important;
+  box-shadow: inset 0 -2px 0 #4FC3F7 !important;
+}
+
+body.paper-labs .subnav .chip.active,
+body.paper-labs .chip.active,
+body.paper-labs .btn.active {
+  color: #fff !important;
+  background: #4FC3F7 !important;
+  border-color: #4FC3F7 !important;
+}
+
+.paper-labs .lab-svg,
+.paper-labs .centre-fig,
+.paper-labs .lab-svg-fill,
+.paper-labs .tri-card,
+.paper-labs .tri-card svg,
+.paper-labs .mini-tri,
+.paper-labs .hand-stage,
+.paper-labs .curve-box,
+.paper-labs .idtan-tri,
+.paper-labs .numline-svg,
+.paper-labs .bar-chart-fixed {
+  background:
+    linear-gradient(180deg, #f8fbfe 0%, var(--lab-paper) 100%) !important;
+  border: 1px solid rgba(30, 42, 50, 0.1) !important;
+  border-radius: 18px !important;
+  box-shadow: 0 10px 28px rgba(30, 50, 60, 0.08);
+  overflow: hidden;
+}
+
+.paper-labs .lab-svg,
+.paper-labs .centre-fig,
+.paper-labs .lab-svg-fill,
+.paper-labs .mini-tri,
+.paper-labs .idtan-tri,
+.paper-labs .numline-svg,
+.paper-labs .bar-chart-fixed {
+  clip-path: inset(0 round 18px);
+}
+
+.paper-labs .tri-card .badge {
+  color: #5c6578 !important;
+  background: rgba(244, 247, 251, 0.92) !important;
+  box-shadow: 0 1px 4px rgba(30, 42, 50, 0.08);
+}
+
+.paper-labs .tri-card.ready .badge {
+  color: #234e70 !important;
+}
+
+.paper-labs .curve-box .ttl {
+  color: #5a6b74 !important;
+}
+
+.paper-labs section.block {
+  background: rgba(244, 247, 251, 0.92) !important;
+  border: 1px solid rgba(30, 42, 50, 0.08) !important;
+  box-shadow: 0 12px 32px rgba(30, 50, 60, 0.08);
+}
+
+.paper-labs .note-box {
+  background: rgba(15, 122, 122, 0.07) !important;
+  border-color: rgba(15, 122, 122, 0.18) !important;
+}
+
+.paper-labs .tool-toggle-row .btn,
+.paper-labs .subnav .chip,
+.paper-labs .chip {
+  transition: background 0.18s ease, border-color 0.18s ease, color 0.18s ease, transform 0.18s ease;
+}
+
+.paper-labs .tool-toggle-row .btn:hover,
+.paper-labs .subnav .chip:hover,
+.paper-labs .chip:hover {
+  transform: translateY(-1px);
+}
+
+.paper-labs .lab.active {
+  animation: paper-lab-in 0.35s ease;
+}
+
+@keyframes paper-lab-in {
+  from {
+    opacity: 0;
+    transform: translateY(10px);
+  }
+  to {
+    opacity: 1;
+    transform: none;
+  }
+}
