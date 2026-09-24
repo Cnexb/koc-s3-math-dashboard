@@ -1,0 +1,242 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+  <title>JM24 · Power of Power &amp; Fractional Indices Proof</title>
+  <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/reveal.js@6.0.1/dist/reveal.css">
+  <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/reveal.js@6.0.1/dist/theme/black.css">
+  <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/katex@0.16.11/dist/katex.min.css">
+  <style>
+    *, *::before, *::after {
+      box-sizing: border-box;
+    }
+    html, body {
+      width: 100%;
+      height: 100%;
+      margin: 0;
+      padding: 0;
+      overflow: hidden;
+      background: #0f172a;
+    }
+    .reveal {
+      width: 100%;
+      height: 100%;
+      background: #0f172a;
+      color: #f8fafc;
+      font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, "Helvetica Neue", Arial, sans-serif;
+    }
+    .reveal .slides {
+      text-align: center;
+    }
+    .manim-title {
+      font-family: "Times New Roman", Times, Georgia, serif;
+      font-size: 2em !important;
+      font-weight: normal;
+      color: #ffffff;
+      margin: 0 0 4px !important;
+      letter-spacing: 0.02em;
+    }
+    .manim-line {
+      width: 240px;
+      height: 3px;
+      background: linear-gradient(90deg, transparent, #e2b714, transparent);
+      margin: 0 auto 20px;
+    }
+    .manim-card {
+      background: rgba(30, 41, 59, 0.85);
+      border: 1px solid rgba(79, 195, 247, 0.25);
+      border-radius: 16px;
+      padding: 22px 32px;
+      max-width: 960px;
+      margin: 0 auto;
+      box-shadow: 0 10px 30px rgba(0,0,0,0.45);
+    }
+    .pill-badge {
+      display: inline-block;
+      background: rgba(79, 195, 247, 0.15);
+      border: 1px solid #4FC3F7;
+      color: #4FC3F7;
+      padding: 4px 16px;
+      border-radius: 999px;
+      font-size: 0.82em;
+      font-weight: 600;
+      letter-spacing: 0.05em;
+      margin-bottom: 10px;
+      text-transform: uppercase;
+    }
+    .step-prompt {
+      font-size: 1.1em;
+      color: #94a3b8;
+      margin: 10px 0 6px;
+    }
+    .math-row {
+      font-size: 1.55em;
+      color: #ffffff;
+      margin: 14px 0;
+      line-height: 1.5;
+    }
+    .math-highlight {
+      color: #4FC3F7;
+      text-shadow: 0 0 16px rgba(79,195,247,0.35);
+    }
+    .math-accent {
+      color: #facc15;
+    }
+    .theorem-box {
+      border: 2px solid #38bdf8;
+      background: rgba(56, 189, 248, 0.12);
+      border-radius: 12px;
+      padding: 14px 22px;
+      margin-top: 18px;
+      font-size: 1.35em;
+      color: #38bdf8;
+      box-shadow: 0 0 20px rgba(56, 189, 248, 0.2);
+      font-weight: bold;
+    }
+  </style>
+</head>
+<body>
+  <div class="reveal">
+    <div class="slides">
+
+      <!-- SLIDE 1: Power of a Power Proof -->
+      <section>
+        <span class="pill-badge">Law 5 · Proof</span>
+        <h2 class="manim-title">Power of a Power</h2>
+        <div class="manim-line"></div>
+        <div class="manim-card">
+          <p class="step-prompt">Why do we multiply indices when raising a power to a power?</p>
+          <div class="math-row math-highlight">
+            \[ (a^m)^n = a^{mn} \]
+          </div>
+          <div class="fragment" data-fragment-index="1">
+            <p class="step-prompt">For example, \((a^3)^2\) means 2 groups of \(a^3\):</p>
+            <div class="math-row">
+              \[ (a^3)^2 = a^3 \times a^3 = a^{3+3} = a^{3 \times 2} = a^6 \]
+            </div>
+          </div>
+          <div class="fragment" data-fragment-index="2">
+            <p class="step-prompt">In general, \(n\) groups of \(m\) factors:</p>
+            <div class="math-row math-accent">
+              \[ (a^m)^n = \underbrace{a^m \times a^m \times \cdots \times a^m}_{n\text{ factors}} = a^{\overbrace{m + m + \cdots + m}^{n\text{ times}}} = a^{mn} \]
+            </div>
+          </div>
+          <div class="fragment theorem-box" data-fragment-index="3">
+            In general: &nbsp; \((a^m)^n = a^{mn}\)
+          </div>
+        </div>
+      </section>
+
+      <!-- SLIDE 2: Fractional Indices Proof -->
+      <section>
+        <span class="pill-badge">Law 6 · Proof</span>
+        <h2 class="manim-title">Fractional Indices</h2>
+        <div class="manim-line"></div>
+        <div class="manim-card">
+          <p class="step-prompt">What number does \(a^{\frac{1}{2}}\) represent?</p>
+          <div class="fragment" data-fragment-index="1">
+            <p class="step-prompt">Square it using the Power of a Power rule:</p>
+            <div class="math-row math-accent">
+              \[ \left(a^{\frac{1}{2}}\right)^2 = a^{\frac{1}{2} \times 2} = a^1 = a \]
+            </div>
+          </div>
+          <div class="fragment" data-fragment-index="2">
+            <p class="step-prompt">Since squaring \(a^{\frac{1}{2}}\) produces \(a\), by definition:</p>
+            <div class="math-row math-highlight">
+              \[ a^{\frac{1}{2}} = \sqrt{a} \]
+            </div>
+          </div>
+          <div class="fragment theorem-box" data-fragment-index="3">
+            In general: &nbsp; \(a^{\frac{1}{n}} = \sqrt[n]{a} \quad\text{and}\quad a^{\frac{m}{n}} = \sqrt[n]{a^m} = (\sqrt[n]{a})^m\)
+          </div>
+        </div>
+      </section>
+
+      <!-- SLIDE 3: Complete Law Summary -->
+      <section>
+        <span class="pill-badge">Complete Summary</span>
+        <h2 class="manim-title">All 6 Laws of Indices</h2>
+        <div class="manim-line"></div>
+        <div class="manim-card" style="text-align: left; padding: 22px 36px;">
+          <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 14px 28px;">
+            <div>
+              <span style="color: #facc15; font-size: 0.9em; font-weight: bold;">1. Product:</span><br>
+              <span style="font-size: 1.15em; color: #fff;">\(a^m \times a^n = a^{m+n}\)</span>
+            </div>
+            <div>
+              <span style="color: #38bdf8; font-size: 0.9em; font-weight: bold;">2. Quotient:</span><br>
+              <span style="font-size: 1.15em; color: #fff;">\(a^m \div a^n = a^{m-n}\)</span>
+            </div>
+            <div>
+              <span style="color: #facc15; font-size: 0.9em; font-weight: bold;">3. Power of Power:</span><br>
+              <span style="font-size: 1.15em; color: #fff;">\((a^m)^n = a^{mn}\)</span>
+            </div>
+            <div>
+              <span style="color: #38bdf8; font-size: 0.9em; font-weight: bold;">4. Zero Index:</span><br>
+              <span style="font-size: 1.15em; color: #fff;">\(a^0 = 1 \quad (a \neq 0)\)</span>
+            </div>
+            <div>
+              <span style="color: #facc15; font-size: 0.9em; font-weight: bold;">5. Negative Index:</span><br>
+              <span style="font-size: 1.15em; color: #fff;">\(a^{-n} = \dfrac{1}{a^n}\)</span>
+            </div>
+            <div>
+              <span style="color: #38bdf8; font-size: 0.9em; font-weight: bold;">6. Fractional Index:</span><br>
+              <span style="font-size: 1.15em; color: #fff;">\(a^{\frac{m}{n}} = \sqrt[n]{a^m}\)</span>
+            </div>
+          </div>
+        </div>
+      </section>
+
+    </div>
+  </div>
+
+  <script src="https://cdn.jsdelivr.net/npm/reveal.js@6.0.1/dist/reveal.js"></script>
+  <script src="https://cdn.jsdelivr.net/npm/katex@0.16.11/dist/katex.min.js"></script>
+  <script src="https://cdn.jsdelivr.net/npm/katex@0.16.11/dist/contrib/auto-render.min.js"></script>
+  <script>
+    Reveal.initialize({
+      width: 1280,
+      height: 720,
+      margin: 0.04,
+      minScale: 0.2,
+      maxScale: 2.0,
+      controls: false,
+      progress: true,
+      slideNumber: false,
+      history: false,
+      keyboard: true,
+      touch: true,
+      center: true,
+      embedded: false,
+      transition: 'fade',
+      backgroundTransition: 'fade'
+    });
+
+    function renderMath() {
+      if (window.renderMathInElement) {
+        renderMathInElement(document.body, {
+          delimiters: [
+            { left: "\\(", right: "\\)", display: false },
+            { left: "\\[", right: "\\]", display: true }
+          ]
+        });
+      }
+    }
+
+    if (Reveal.isReady && Reveal.isReady()) {
+      renderMath();
+    } else if (Reveal.on) {
+      Reveal.on('ready', renderMath);
+    } else {
+      setTimeout(renderMath, 60);
+    }
+
+    document.addEventListener("click", function(e) {
+      if (e.target.closest("a, button, input, select, textarea")) return;
+      Reveal.next();
+    });
+  </script>
+  <script src="../../../shared/manim-deck-nav.js?v=20260904"></script>
+</body>
+</html>

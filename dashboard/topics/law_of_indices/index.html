@@ -362,9 +362,18 @@
   </nav>
 
     <section id="panel-concept" class="jm-panel">
-      <section class="block">
-        <h2>Concept &amp; Formula</h2>
-        <p class="hint">Coming soon.</p>
+      <section class="block jm-deck-panel">
+        <div class="subnav">
+          <button class="chip active" type="button" data-deck="../../slides/law_of_indices/positive-indices/index.html?v=20260918k">Laws of Positive Indices</button>
+          <button class="chip" type="button" data-deck="../../slides/law_of_indices/scientific-notation/index.html?v=20260918e">Scientific Notation</button>
+          <button class="chip" type="button" data-deck="../../slides/law_of_indices/denary-binary/index.html?v=20260918e">Denary &amp; Binary</button>
+        </div>
+        <div class="deck-slideshow"><div class="deck-wrap">
+            <iframe id="deck-frame" src="../../slides/law_of_indices/positive-indices/index.html?v=20260918k" title="Law of Indices concept and formula slides"></iframe>
+          </div></div>
+        <p class="hint hint-deck-desktop" style="display:block;">Use &rarr; / Enter / click to advance, &larr; to go back. Each slide builds the idea step by step.</p>
+        <p class="hint hint-deck-tablet" style="display:none;">Swipe left for next slide, right for previous &mdash; or use the arrows. Each slide builds the idea step by step.</p>
+        <p class="hint hint-deck-phone" style="display:none;">Tap the &larr; and &rarr; buttons below the slide. Each slide builds the idea step by step.</p>
       </section>
     </section>
     <section id="panel-tools" class="jm-panel hidden">
@@ -1352,6 +1361,18 @@
   <script>
     document.addEventListener('DOMContentLoaded', function () {
       if (window.initJmTabs) window.initJmTabs();
+      var frame = document.getElementById("deck-frame");
+      var btns = document.querySelectorAll("#panel-concept [data-deck]");
+      if (!frame || !btns.length) return;
+      if (window.KOCDeckTouch) window.KOCDeckTouch.initDeckTouchNav(frame);
+      btns.forEach(function (b) {
+        b.addEventListener("click", function () {
+          btns.forEach(function (x) { x.classList.toggle("active", x === b); });
+          if (b.dataset.deck && frame.getAttribute("src") !== b.dataset.deck) {
+            frame.src = b.dataset.deck;
+          }
+        });
+      });
     });
   </script>
   <script src="../../shared/suppress-ui-caret.js?v=20260904a"></script>
