@@ -1225,15 +1225,31 @@
       if (btn) btn.hidden = false;
     },
     switchTo: switchJM28Game,
+    redraw: function redraw() {
+      var game = getLessonGame();
+      if (game && game.onShow) game.onShow();
+    },
   };
 
-  window.addEventListener("hashchange", function () {
-    switchTab(parseHash(), true);
-  });
+  function startLessonShell() {
+    if (!document.getElementById("app") && document.getElementById("view-game")) {
+      renderGameView(getTopic() || {
+        id: "jm28",
+        code: "JM28",
+        lesson: 28,
+        title: "Special Line and Centres in Triangles",
+      });
+      return;
+    }
+    window.addEventListener("hashchange", function () {
+      switchTab(parseHash(), true);
+    });
+    renderShell();
+  }
 
   if (document.readyState === "loading") {
-    document.addEventListener("DOMContentLoaded", renderShell);
+    document.addEventListener("DOMContentLoaded", startLessonShell);
   } else {
-    renderShell();
+    startLessonShell();
   }
 })();
