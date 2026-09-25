@@ -27,6 +27,7 @@ content-packs/jm24-law-of-indices/
 1. Copy an existing pack folder. Rename it (`jm36-…`).
 2. In `manifest.json`: `subject` `"MATH"`, unique lowercase `scope`, `chapterCode`, `published: true`.
 3. List every tool, game, quiz, comic, summary, and concept video. Unlisted files are invisible.
+4. Tag items with a syllabus **Symbol** from `content/topics/math-topics.json` (`Index`, `MFact`). Do not invent Symbols.
 
 ## Quizzes
 

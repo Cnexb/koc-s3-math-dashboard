@@ -1,0 +1,669 @@
+{
+  "source": "Maths Topics List Update 4 (Syllabus Updated V4)",
+  "topics": [
+    {
+      "symbol": "BasC",
+      "topicNumber": "JM00 Basic Computation (基礎計算).",
+      "level": "(S1)",
+      "department": "Junior Maths",
+      "subTopics": [
+        "JM01.1 Four Operations",
+        "JM01.2 Prime and Prime Factorization",
+        "JM01.3 L.C.M. and H.C.F.",
+        "JM01.4 Test of Divisibility"
+      ]
+    },
+    {
+      "symbol": "DirNu",
+      "topicNumber": "JM01 Directed Numbers (定向數).",
+      "level": "(S1)",
+      "department": "Junior Maths",
+      "subTopics": [
+        "JM02.1 Number Line",
+        "JM02.2 Method for removing brackets",
+        "JM02.3 Multiplying and Diving Integers",
+        "JM02.4 Integration"
+      ]
+    },
+    {
+      "symbol": "AlgEq",
+      "topicNumber": "JM02 Algebraic Equations (代數方程).",
+      "level": "(S1)",
+      "department": "Junior Maths",
+      "subTopics": [
+        "JM03.1 Basic Algebra",
+        "JM03.2 Substitution",
+        "JM03.3 Algebra Equation",
+        "JM03.4 Removing Brackets in Equation",
+        "JM03.5 Cancelling Denominators in Equation",
+        "JM03.6 Application"
+      ]
+    },
+    {
+      "symbol": "Perc1",
+      "topicNumber": "JM03 Percentages I (百分比 I).",
+      "level": "(S1)",
+      "department": "Junior Maths",
+      "subTopics": [
+        "JM04.1 Percentage",
+        "JM04.2 Percentage change",
+        "JM04.3 Profit %",
+        "JM04.4 Loss %",
+        "JM04.5 Mark and Selling Price"
+      ]
+    },
+    {
+      "symbol": "Esti",
+      "topicNumber": "JM04 Appoximation and Estimation (估算).",
+      "level": "(S1)",
+      "department": "Junior Maths",
+      "subTopics": [
+        "JM05.1 Calculating by estimating",
+        "JM05.2 Significant figures",
+        "JM05.3 Cluster Value",
+        "JM05.4 Compatible Numbers",
+        "JM05.5 Compensation Strategy",
+        "JM05.6 Translation Strategy"
+      ]
+    },
+    {
+      "symbol": "InGeo",
+      "topicNumber": "JM05 Intro. to Geometry (幾何簡介).",
+      "level": "(S1)",
+      "department": "Junior Maths",
+      "subTopics": [
+        "JM06.1 Types of Angles",
+        "JM06.2 Types of Triangles",
+        "JM06.3 Types of Polygons",
+        "JM06.4 Angle sum of triangle",
+        "JM06.5 Polyhedra and Non-polyhedra",
+        "JM06.6 Faces, Edges and Vertices",
+        "JM06.7 Cross Section of solids",
+        "JM06.8 Drawing Solid"
+      ]
+    },
+    {
+      "symbol": "Stat1",
+      "topicNumber": "JM06 Statistics I (統計一).",
+      "level": "(S1)",
+      "department": "Junior Maths",
+      "subTopics": [
+        "JM12.1 Collection and Classification of Data",
+        "JM12.2 Organization of Data",
+        "JM12.3 Simple Statistical Diagrams",
+        "JM12.4 Stem-and-Leaf Diagrams",
+        "JM12.5 Histograms",
+        "JM12.6 Scatter Diagrams"
+      ]
+    },
+    {
+      "symbol": "ArVo1",
+      "topicNumber": "JM07 Areas and Volumes I (面積和體積 I).",
+      "level": "(S1)",
+      "department": "Junior Maths",
+      "subTopics": [
+        "JM07.1 Area of different shapes",
+        "JM07.2 Volum of Prisms",
+        "JM07.3 Total surface Areas of Prisms"
+      ]
+    },
+    {
+      "symbol": "InCoo",
+      "topicNumber": "JM08 Intro. to Coordinates (坐標簡介).",
+      "level": "(S1)",
+      "department": "Junior Maths",
+      "subTopics": [
+        "JM09.1 Basic Coordinate",
+        "JM09.2 Distance of Coordinate",
+        "JM09.3 Area of Coordinate",
+        "JM09.4 Translation",
+        "JM09.5 Reflection across the axes",
+        "JM09.6 Rotation about the origin",
+        "JM09.7 Polar Coordinate"
+      ]
+    },
+    {
+      "symbol": "AnL",
+      "topicNumber": "JM09 Angles related to Lines (線與角度).",
+      "level": "(S1)",
+      "department": "Junior Maths",
+      "subTopics": [
+        "JM10.1 Angles related to intersecting lines",
+        "JM10.2  Angles related to parallel lines",
+        "JM10.3  Identifying parallel lines"
+      ]
+    },
+    {
+      "symbol": "SiPol",
+      "topicNumber": "JM10 Simple Polynomials (簡單多項式).",
+      "level": "(S1)",
+      "department": "Junior Maths",
+      "subTopics": [
+        "JM11.1 Laws of Positive Integral Indices",
+        "JM11.2 Monomials",
+        "JM11.3 Polynomials",
+        "JM11.4 Addition and Subtraction of polynomial",
+        "JM11.5 Multiplication of polynomial"
+      ]
+    },
+    {
+      "symbol": "Fact",
+      "topicNumber": "JM11 Errors (誤差).",
+      "level": "(S2)",
+      "department": "Junior Maths",
+      "subTopics": [
+        "JM16.1 Significant Figures",
+        "JM16.2 Errors"
+      ]
+    },
+    {
+      "symbol": "IdFac",
+      "topicNumber": "JM12 Identities and Factorization (恆等式和因式分解).",
+      "level": "(S2)",
+      "department": "Junior Maths",
+      "subTopics": [
+        "JM14.1 Meaning of Identities",
+        "JM14.2 Algebraic Identities",
+        "JM14.3 Factorization of Simple Algebraic Expressions"
+      ]
+    },
+    {
+      "symbol": "AlgFF",
+      "topicNumber": "JM13 Algebraic Fractions and Formulae (代數分數和公式).",
+      "level": "(S2)",
+      "department": "Junior Maths",
+      "subTopics": [
+        "JM15.1 Manipulation of Simple Algebraic Fractions",
+        "JM15.2 Formulas and their Manipulations"
+      ]
+    },
+    {
+      "symbol": "AnF",
+      "topicNumber": "JM14 Angles related to Figures (與圖相關的角度).",
+      "level": "(S2)",
+      "department": "Junior Maths",
+      "subTopics": [
+        "JM17.1 Angles and Sides of a Triangle",
+        "JM17.2 Angles of a Polygon"
+      ]
+    },
+    {
+      "symbol": "Con",
+      "topicNumber": "JM15 Congruence (全等三角型).",
+      "level": "(S1)",
+      "department": "Junior Maths",
+      "subTopics": [
+        "JM08.1 Properties of congruent triangles",
+        "JM08.2 Condition of congruent triangles",
+        "JM08.3 Properties of similar triangles",
+        "JM08.4 Condition of similar triangles"
+      ]
+    },
+    {
+      "symbol": "RaRat",
+      "topicNumber": "JM16 Rate, Ratio and Proportion (率及比).",
+      "level": "(S1)",
+      "department": "Junior Maths",
+      "subTopics": [
+        "JM08.1 Properties of congruent triangles",
+        "JM08.2 Condition of congruent triangles",
+        "JM08.3 Properties of similar triangles",
+        "JM08.4 Condition of similar triangles"
+      ]
+    },
+    {
+      "symbol": "Sim",
+      "topicNumber": "JM17 Similarity (相似三角形).",
+      "level": "(S1)",
+      "department": "Junior Maths",
+      "subTopics": [
+        "JM08.1 Properties of congruent triangles",
+        "JM08.2 Condition of congruent triangles",
+        "JM08.3 Properties of similar triangles",
+        "JM08.4 Condition of similar triangles"
+      ]
+    },
+    {
+      "symbol": "Stat2",
+      "topicNumber": "JM18 Statistics II (統計二).",
+      "level": "(S2)",
+      "department": "Junior Maths",
+      "subTopics": [
+        "JM18.1 Frequency Distribution and its Graphical Representation",
+        "JM18.2 Choosing an Appropriate Diagram to Present Data",
+        "JM18.3 Abuses of Statistical Diagrams"
+      ]
+    },
+    {
+      "symbol": "SimEq",
+      "topicNumber": "JM19 Simultaneous Equations (聯立方程).",
+      "level": "(S2)",
+      "department": "Junior Maths",
+      "subTopics": [
+        "JM19.1 Linear Equations in Two Unknowns and their Graphs",
+        "JM19.2 Simultaneous Linear Equations in Two Unknowns and their Solutions",
+        "JM19.3 Applications of Simultaneous Linear Equations in Two Unknowns"
+      ]
+    },
+    {
+      "symbol": "Pyth",
+      "topicNumber": "JM20 Pythagoras' Theorem (畢氏定理).",
+      "level": "(S2)",
+      "department": "Junior Maths",
+      "subTopics": [
+        "JM20.1 Laws of Positive Integral Indices",
+        "JM20.2 Zero and Negative Integral Indices",
+        "JM20.3 Scientific Notation",
+        "JM20.4 Different Numeral Systems"
+      ]
+    },
+    {
+      "symbol": "DeGeo",
+      "topicNumber": "JM21 Deductive Geometry (幾何).",
+      "level": "(S2)",
+      "department": "Junior Maths",
+      "subTopics": [
+        "JM21.1 Deductive Reasoning",
+        "JM21.2 Deductive Geometry",
+        "JM21.3 Deductive Proofs about Angles related to Lines",
+        "JM21.4 Deductive Proofs about Congruent, Isosceles and Similar Triangles"
+      ]
+    },
+    {
+      "symbol": "TriRa",
+      "topicNumber": "JM22 Trigonometric Ratios (三角比率).",
+      "level": "(S2)",
+      "department": "Junior Maths",
+      "subTopics": [
+        "JM22.1 Pythagoras' Theorem",
+        "JM22.2 Converse of Pythagoras' Theorem",
+        "JM22.3 Applications of Pythagoras' Theorem and its Converse"
+      ]
+    },
+    {
+      "symbol": "ArVo2",
+      "topicNumber": "JM23 Areas and Volumes II (面積和體積 II).",
+      "level": "(S2)",
+      "department": "Junior Maths",
+      "subTopics": [
+        "JM23.1 Circles",
+        "JM23.2 Arcs and Sectors",
+        "JM23.3 Cylinders"
+      ]
+    },
+    {
+      "symbol": "Index",
+      "topicNumber": "JM24 Laws of Indices (指數定律).",
+      "level": "(S2)",
+      "department": "Junior Maths",
+      "subTopics": [
+        "JM24.1 Sine Ratio",
+        "JM24.2 Cosine Ratio",
+        "JM24.3 Tangent Ratio",
+        "JM24.4 Simple Applications of Trigonometric Ratios",
+        "JM24.5 Trigonometric Ratios on a Unit Circle"
+      ]
+    },
+    {
+      "symbol": "MFact",
+      "topicNumber": "JM25 More about Factorization of Polynomials (續多項式因式分解).",
+      "level": "(S3)",
+      "department": "Junior Maths",
+      "subTopics": [
+        "JM25.1 Factorization by Cross-method"
+      ]
+    },
+    {
+      "symbol": "Ine1",
+      "topicNumber": "JM26 Inequalities I (不等式 I).",
+      "level": "(S3)",
+      "department": "Junior Maths",
+      "subTopics": [
+        "JM26.1 Basic Inequalities",
+        "JM26.2 Linear Inequalities in One Unknown"
+      ]
+    },
+    {
+      "symbol": "Perc2",
+      "topicNumber": "JM27 Percentages II (百分比 II).",
+      "level": "(S3)",
+      "department": "Junior Maths",
+      "subTopics": [
+        "JM27.1 More about Percentage Increase and Decrease",
+        "JM27.2 Increase or Decrease at a Constant Rate",
+        "JM27.3 Interest",
+        "JM27.4 Taxation"
+      ]
+    },
+    {
+      "symbol": "SLiCe",
+      "topicNumber": "JM28 Special Lines and Centres in Triangles (三角形的特殊線和中心).",
+      "level": "(S3)",
+      "department": "Junior Maths",
+      "subTopics": [
+        "JM28.1 Important Lines in a Triangle",
+        "JM28.2 Relationship among the Three Sides of a Triangle",
+        "JM28.3 Centres of a Triangle"
+      ]
+    },
+    {
+      "symbol": "Quad",
+      "topicNumber": "JM29 Quadrilaterals (四邊形).",
+      "level": "(S3)",
+      "department": "Junior Maths",
+      "subTopics": [
+        "JM29.1 Quadrilaterals",
+        "JM29.2 Parallelograms",
+        "JM29.3 Rectangles, Squares, Rhombuses, Trapeziums and Kites",
+        "JM29.4 Simple Proofs related to Parallelograms",
+        "JM29.5 Mid-point Theorem",
+        "JM29.6 Intercept Theorem"
+      ]
+    },
+    {
+      "symbol": "Prob1",
+      "topicNumber": "JM30 Probabilities (概率).",
+      "level": "(S3)",
+      "department": "Junior Maths",
+      "subTopics": [
+        "JM30.1 Symmetries of Solids",
+        "JM30.2 Nets of Solids",
+        "JM30.3 2D of Solids",
+        "JM30.4 Points, Lines and Planes in Solids",
+        "JM30.5 More about Solids"
+      ]
+    },
+    {
+      "symbol": "CeTen",
+      "topicNumber": "JM31 Measures of Central Tendencies (趨勢測量).",
+      "level": "(S3)",
+      "department": "Junior Maths",
+      "subTopics": [
+        "JM31.1 Central Tendency",
+        "JM31.2 Arithmetic Means",
+        "JM31.3 Medians",
+        "JM31.4 Modes and Modal Classes",
+        "JM31.5 Comparing Different Types of Average",
+        "JM31.6 Misuses of Averages and the Consequences of Misuses",
+        "JM31.7 Weighted Mean"
+      ]
+    },
+    {
+      "symbol": "ArVo3",
+      "topicNumber": "JM32 Areas and Volumes III (面積和體積 III).",
+      "level": "(S3)",
+      "department": "Junior Maths",
+      "subTopics": [
+        "JM32.1 Pyramids",
+        "JM32.2 Circular Cones",
+        "JM32.3 Spheres",
+        "JM32.4 Formulas for Lengths, Areas and Volumes",
+        "JM32.5 Similar Shapes"
+      ]
+    },
+    {
+      "symbol": "CoStL",
+      "topicNumber": "JM33 Coordinates of Straight Lines (直線坐標).",
+      "level": "(S3)",
+      "department": "Junior Maths",
+      "subTopics": [
+        "JM33.1 Distanc of Two Points on a Plane",
+        "JM33.2 Slope of a Straight Line",
+        "JM33.3 Parallel and Perpendicular Lines",
+        "JM33.4 Point of Division"
+      ]
+    },
+    {
+      "symbol": "TriRe",
+      "topicNumber": "JM34 Trigonometric Relations (三角關係).",
+      "level": "(S3)",
+      "department": "Junior Maths",
+      "subTopics": [
+        "JM34.1 Trigonometric Ratios of Special Angles",
+        "JM34.2 Finding Trigonometric Ratios by Constructing Right-Angled Triangles",
+        "JM34.3 Trigonometric Identities"
+      ]
+    },
+    {
+      "symbol": "ApTri",
+      "topicNumber": "JM35 Application of Trigonometry (三角學應用).",
+      "level": "(S3)",
+      "department": "Junior Maths",
+      "subTopics": [
+        "JM35.1 Gradients",
+        "JM35.2 Angles of Elevation and Depression",
+        "JM35.3 Bearings",
+        "JM35.4 Applications of Trigonometry to Rectilinear Figures"
+      ]
+    },
+    {
+      "symbol": "CNum",
+      "topicNumber": "SM01 Number System (數系).",
+      "level": "(S4)",
+      "department": "Senior Maths",
+      "subTopics": [
+        "SM01.1 Complex Number",
+        "SM01.2 Quadratic Equation with Complex Number"
+      ]
+    },
+    {
+      "symbol": "QEq",
+      "topicNumber": "SM02 Quadratic Equations in One Unknown (一元二次方程).",
+      "level": "(S4)",
+      "department": "Senior Maths",
+      "subTopics": [
+        "SM02.1 Quadratic formula",
+        "SM02.2 Nature of Roots of a Quadratic Equation",
+        "SM02.3 Solving Problems Involving Quadratic Equations",
+        "SM02.4 Forming a Quadratic Equation"
+      ]
+    },
+    {
+      "symbol": "FnG1",
+      "topicNumber": "SM03 Functions and Graphs (函數及其圖像).",
+      "level": "(S4)",
+      "department": "Senior Maths",
+      "subTopics": [
+        "SM03.1 Functions",
+        "SM03.2 Quadratic Functions and Graphs",
+        "SM03.3 Extreme Values of Quadratic Functions by Algebraic Method"
+      ]
+    },
+    {
+      "symbol": "EqL",
+      "topicNumber": "SM04 Equations of Straight Lines (直線方程).",
+      "level": "(S4)",
+      "department": "Senior Maths",
+      "subTopics": [
+        "SM04.1 Equation of a Straight Line",
+        "SM04.2 Point of Intersection of Two Straight Lines"
+      ]
+    },
+    {
+      "symbol": "Poly2",
+      "topicNumber": "SM05 More about Polynomials (續多項式).",
+      "level": "(S4)",
+      "department": "Senior Maths",
+      "subTopics": [
+        "SM05.1 Operations on Polynomials",
+        "SM05.2 Method of Long Division",
+        "SM05.3 Remainder Theorems",
+        "SM05.4 Factor Theorems",
+        "SM05.5 H.C.F. & L.C.M."
+      ]
+    },
+    {
+      "symbol": "ExpLg",
+      "topicNumber": "SM06 Exponential and logarithmic Functions (指數函數與對數函數).",
+      "level": "(S4)",
+      "department": "Senior Maths",
+      "subTopics": [
+        "SM06.1 Surds",
+        "SM06.2 Exponential Function",
+        "SM06.3 Logarithm Function"
+      ]
+    },
+    {
+      "symbol": "Eq2",
+      "topicNumber": "SM07 More about Equations (續方程).",
+      "level": "(S4)",
+      "department": "Senior Maths",
+      "subTopics": [
+        "SM07.1 Solving Simultaneous Equations by Graphical Method",
+        "SM07.2 Solving Simultaneous Equations by Algecraic Method"
+      ]
+    },
+    {
+      "symbol": "Var",
+      "topicNumber": "SM08 Variations (變分).",
+      "level": "(S4)",
+      "department": "Senior Maths",
+      "subTopics": [
+        "SM08.1 Direct & Inverse Variations",
+        "SM08.2 Joint & Partial Variations",
+        "SM08.3 Real-Life Application of Variations"
+      ]
+    },
+    {
+      "symbol": "Trig2",
+      "topicNumber": "SM09 More About Trigonometry (續三角學).",
+      "level": "(S5)",
+      "department": "Senior Maths",
+      "subTopics": [
+        "SM09.1 Trigonometric Relationships",
+        "SM09.2 Trigonometric Identities",
+        "SM09.3 Trigonometric Graphs"
+      ]
+    },
+    {
+      "symbol": "Circ",
+      "topicNumber": "SM10 Basic Properties of Circles + Tangents to Circles (圓的基本性質 + 圓的切線).",
+      "level": "(S5)",
+      "department": "Senior Maths",
+      "subTopics": [
+        "SM10.1 Basic Properties of Circles",
+        "SM10.2 Tangents of Circles"
+      ]
+    },
+    {
+      "symbol": "Ine2",
+      "topicNumber": "SM11 Inequalities II (不等式 II).",
+      "level": "(S5)",
+      "department": "Senior Maths",
+      "subTopics": [
+        "SM11.1 Linear Inequalities",
+        "SM11.2 Quadratic Inequalities"
+      ]
+    },
+    {
+      "symbol": "LP",
+      "topicNumber": "SM12 Linear programming (線性規劃).",
+      "level": "(S5)",
+      "department": "Senior Maths",
+      "subTopics": [
+        "SM12.1 Graph and System of Linear Inequalities in Two Unknowns",
+        "SM12.2 Linear Programming"
+      ]
+    },
+    {
+      "symbol": "2D",
+      "topicNumber": "SM13 Application of Trigonometry in 2D (三角學在平面圖形中的應用).",
+      "level": "(S5)",
+      "department": "Senior Maths",
+      "subTopics": [
+        "SM13.1 Sine & Cosine formula",
+        "SM13.2 Cosine formula",
+        "SM13.3 Area of a Triangle",
+        "SM13.4 Bearings & Elevation"
+      ]
+    },
+    {
+      "symbol": "3D",
+      "topicNumber": "SM14 Application of Trigonometry in 3D (三角學在三維立體圖形中的應用).",
+      "level": "(S5)",
+      "department": "Senior Maths",
+      "subTopics": [
+        "SM14.1 Angles and Lines in 3D Figures",
+        "SM14.2 Problems in 3D"
+      ]
+    },
+    {
+      "symbol": "EqC",
+      "topicNumber": "SM15 Equations of Circles (圓方程).",
+      "level": "(S5)",
+      "department": "Senior Maths",
+      "subTopics": [
+        "SM15.1 Different Forms of the Equations of Circles",
+        "SM15.2 Features of Circles from the Equations",
+        "SM15.3 Intersection of a Straight line and a Circle"
+      ]
+    },
+    {
+      "symbol": "Locus",
+      "topicNumber": "SM16 Locus (軌跡).",
+      "level": "(S5)",
+      "department": "Senior Maths",
+      "subTopics": [
+        "SM16.1 Sketching Simple Locus",
+        "SM16.2 Describing Locus with an Algebraic Equation"
+      ]
+    },
+    {
+      "symbol": "Stat3",
+      "topicNumber": "SM17 Statistics III (統計 III).",
+      "level": "(S5)",
+      "department": "Senior Maths",
+      "subTopics": [
+        "SM17.1 Measures of central tendency",
+        "SM17.2 Measures of dispersion",
+        "SM17.3 Standard Score",
+        "SM17.4 Sampling Techniques"
+      ]
+    },
+    {
+      "symbol": "PC",
+      "topicNumber": "SM18 Permutation and Combination (排列與組合).",
+      "level": "(S5)",
+      "department": "Senior Maths",
+      "subTopics": [
+        "SM18.1 The Counting Principle",
+        "SM18.2 Permutation",
+        "SM18.3 Combination"
+      ]
+    },
+    {
+      "symbol": "Prob2",
+      "topicNumber": "SM19 More About Probability (續概率).",
+      "level": "(S5)",
+      "department": "Senior Maths",
+      "subTopics": [
+        "SM19.1 Addition Law of Probability",
+        "SM19.2 Multiplication Law of Probability",
+        "SM19.3 The Concept of Set"
+      ]
+    },
+    {
+      "symbol": "ASGS",
+      "topicNumber": "SM20 Arithmetic and geometric sequences (等差數列與等比數列及其求和法).",
+      "level": "(S6)",
+      "department": "Senior Maths",
+      "subTopics": [
+        "SM20.1 General Sequences",
+        "SM20.2 Arithmetic Sequences",
+        "SM20.3 Geometric Sequences",
+        "SM20.4 Summation of ASGS"
+      ]
+    },
+    {
+      "symbol": "FnG2",
+      "topicNumber": "SM21 More about Graphs of Functions(Transformation) (續函數圖像).",
+      "level": "(S6)",
+      "department": "Senior Maths",
+      "subTopics": [
+        "SM21.1 Translation",
+        "SM21.2 Enlargement and Reduction",
+        "SM21.3 Reflection"
+      ]
+    }
+  ]
+}
