@@ -10,6 +10,8 @@
     "en": "Laws of Indices",
     "zhHant": "指數定律"
   },
+  "symbol": "aˣ",
+  "symbols": ["aˣ", "aᵐ · aⁿ = aᵐ⁺ⁿ", "(aᵐ)ⁿ = aᵐⁿ", "a⁰ = 1", "a⁻ⁿ = 1 / aⁿ"],
   "source": "dashboard/topics/law_of_indices",
   "notes": [],
   "comics": [],

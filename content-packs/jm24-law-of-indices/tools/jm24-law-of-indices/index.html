@@ -925,8 +925,9 @@
   <script defer src="https://cdn.jsdelivr.net/npm/katex@0.16.11/dist/contrib/auto-render.min.js"></script>
   <script defer src="law-of-indices-binary.js?v=20260730-bin8"></script>
   <script defer src="law-of-indices-scientific.js?v=20260810-sci3"></script>
-  <script src="comics-manifest.js?v=20260829c"></script>
-  <script src="../shared/jm-comics-engine.js?v=20260830-fu"></script>
+  <script src="comics-manifest.js?v=20260923-local"></script>
+  <script src="../shared/jm-comics-engine.js?v=20260923-engine"></script>
+  <script src="indices-comics.js?v=20260923-local"></script>
   <script src="sci-notation-content.js?v=20260828-sel1"></script>
   <script src="sci-notation-tool.js?v=20260828-sel1"></script>
   <script>
@@ -1283,6 +1284,9 @@
         panel.classList.toggle("hidden", panel.id !== "panel-" + name);
         panel.classList.toggle("active", panel.id === "panel-" + name);
       });
+      if (name === "comics" && typeof window.startJm24Comics === "function") {
+        window.startJm24Comics();
+      }
       if (name === "tools") {
         const activeLab = document.querySelector(".lab.active");
         if (activeLab) renderKatex(activeLab);
@@ -1333,6 +1337,7 @@
       resetPow();
       if (window.initBinaryLab) window.initBinaryLab();
       if (window.initScientificLab) window.initScientificLab();
+      if (typeof window.startJm24Comics === "function") window.startJm24Comics();
       const hash = (location.hash || "").replace("#", "");
       const topTabs = ["concept", "games", "comics", "summary", "quiz"];
       if (topTabs.indexOf(hash) >= 0) showTab(hash);

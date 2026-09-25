@@ -10,6 +10,8 @@
     "en": "Quadrilaterals",
     "zhHant": "四邊形"
   },
+  "symbol": "AB // CD",
+  "symbols": ["AB // CD", "∠A + ∠B = 180°", "360°", "AD = BC", "//"],
   "source": "dashboard/topics/quadrilaterals",
   "notes": [],
   "comics": [],

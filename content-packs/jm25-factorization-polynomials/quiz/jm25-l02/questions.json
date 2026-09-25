@@ -1,0 +1,75 @@
+{
+  "quizId": "jm25-l02",
+  "items": [
+    {
+      "id": "jm25-l02-1",
+      "topic": "JM25",
+      "section": "L02",
+      "difficulty": "Standard",
+      "stem": "Factorize 22w + 70 − 12w²",
+      "options": [
+        { "key": "A", "text": "2(5 − w)(6w + 7)" },
+        { "key": "B", "text": "2(w + 5)(7 − 6w)" },
+        { "key": "C", "text": "2(7 − 2w)(3w + 5)" },
+        { "key": "D", "text": "2(2w + 7)(5 − 3w)" }
+      ],
+      "answer": "C"
+    },
+    {
+      "id": "jm25-l02-2",
+      "topic": "JM25",
+      "section": "L02",
+      "difficulty": "Standard",
+      "stem": "Which of the following is/are the factor(s) of p²q² − 4pq − 21?\nI. pq\nII. pq + 3\nIII. pq − 7",
+      "options": [
+        { "key": "A", "text": "I only" },
+        { "key": "B", "text": "II only" },
+        { "key": "C", "text": "I and III only" },
+        { "key": "D", "text": "II and III only" }
+      ],
+      "answer": "D"
+    },
+    {
+      "id": "jm25-l02-3",
+      "topic": "JM25",
+      "section": "L02",
+      "difficulty": "Standard",
+      "stem": "Factorize (y − 4)(12 − y) − 2y",
+      "options": [
+        { "key": "A", "text": "(y + 6)(y − 8)" },
+        { "key": "B", "text": "(y + 6)(8 − y)" },
+        { "key": "C", "text": "(y − 6)(y − 8)" },
+        { "key": "D", "text": "(6 − y)(y − 8)" }
+      ],
+      "answer": "D"
+    },
+    {
+      "id": "jm25-l02-4",
+      "topic": "JM25",
+      "section": "L02",
+      "difficulty": "Standard",
+      "stem": "Simplify 1/(x² − 4x + 4) − 1/(x² + x − 6)",
+      "options": [
+        { "key": "A", "text": "1/((x − 2)(x + 3))" },
+        { "key": "B", "text": "1/((x − 2)²(x + 3))" },
+        { "key": "C", "text": "5/((x − 2)²(x + 3))" },
+        { "key": "D", "text": "(2x + 5)/((x − 2)²(x + 3))" }
+      ],
+      "answer": "C"
+    },
+    {
+      "id": "jm25-l02-5",
+      "topic": "JM25",
+      "section": "L02",
+      "difficulty": "Standard",
+      "stem": "If 2x² + kx + 9 ≡ (x + m)(2x + n), where m and n are positive integers, which of the following are possible values of k?\nI. 9\nII. 15\nIII. 19",
+      "options": [
+        { "key": "A", "text": "I and II only" },
+        { "key": "B", "text": "I and III only" },
+        { "key": "C", "text": "II and III only" },
+        { "key": "D", "text": "I, II and III" }
+      ],
+      "answer": "B"
+    }
+  ]
+}

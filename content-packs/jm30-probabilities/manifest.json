@@ -10,6 +10,8 @@
     "en": "Probabilities",
     "zhHant": "概率"
   },
+  "symbol": "P(A)",
+  "symbols": ["P(A)", "P(A′) = 1 − P(A)", "0 ≤ P(A) ≤ 1", "n / N"],
   "source": "dashboard/topics/probability",
   "notes": [],
   "comics": [],
@@ -79,10 +81,10 @@
       },
       "slug": "jm30-probabilities",
       "videos": [
-        "slides/probability/formula/index_assets/cbb071ffde65084a6f6e0f57857649b20fc0adad13668f43cb3b3296e8016307.mp4",
-        "slides/probability/formula/index_assets/c29a835c65daf8e53728cdb1be3afdc7de6b20781acbb937ced99636ff1b5ea2.mp4",
-        "slides/probability/formula/index_assets/cb3db58bf9e4155ae01825f9f5e3a8be9b8e8ab177f1c30758a8de2378840229.mp4",
-        "slides/probability/formula/index_assets/f8bf4391cde74b94e9274424097b4e0ecd06e9d2901954c226022706e85cce9c.mp4"
+        "concepts/formula/cbb071ffde65084a6f6e0f57857649b20fc0adad13668f43cb3b3296e8016307.mp4",
+        "concepts/formula/c29a835c65daf8e53728cdb1be3afdc7de6b20781acbb937ced99636ff1b5ea2.mp4",
+        "concepts/formula/cb3db58bf9e4155ae01825f9f5e3a8be9b8e8ab177f1c30758a8de2378840229.mp4",
+        "concepts/formula/f8bf4391cde74b94e9274424097b4e0ecd06e9d2901954c226022706e85cce9c.mp4"
       ]
     },
     {
@@ -93,11 +95,11 @@
       },
       "slug": "jm30-probabilities",
       "videos": [
-        "slides/probability/tree-diagram/index_assets/a959031d017b3d7c580bff0f7da05f59860f3f2e9eb9735faeff9bda22a81839.mp4",
-        "slides/probability/tree-diagram/index_assets/baa691e3a8b7ab7e6b28bc742e58df673f9b9e23552df5795db925abda565ada.mp4",
-        "slides/probability/tree-diagram/index_assets/5f1d0902c389ebbc3e30415c0d021a5a39f9a58f921738d3ea3d6121663fb8e7.mp4",
-        "slides/probability/tree-diagram/index_assets/3cf9d34af5273a565b0c659999e9c6a8f19f36d9b0198373477db5817e1d9048.mp4",
-        "slides/probability/tree-diagram/index_assets/155e472be40ba5f50c26c879bfed4681f4aa7452af87e5784f5089a7d63f9668.mp4"
+        "concepts/tree-diagram/a959031d017b3d7c580bff0f7da05f59860f3f2e9eb9735faeff9bda22a81839.mp4",
+        "concepts/tree-diagram/baa691e3a8b7ab7e6b28bc742e58df673f9b9e23552df5795db925abda565ada.mp4",
+        "concepts/tree-diagram/5f1d0902c389ebbc3e30415c0d021a5a39f9a58f921738d3ea3d6121663fb8e7.mp4",
+        "concepts/tree-diagram/3cf9d34af5273a565b0c659999e9c6a8f19f36d9b0198373477db5817e1d9048.mp4",
+        "concepts/tree-diagram/155e472be40ba5f50c26c879bfed4681f4aa7452af87e5784f5089a7d63f9668.mp4"
       ]
     },
     {
@@ -108,10 +110,10 @@
       },
       "slug": "jm30-probabilities",
       "videos": [
-        "slides/probability/tabulation/index_assets/4fd9e684edfe11cc64d1558c93e782e5add62c6e74c1fade2371bfc6eccc90db.mp4",
-        "slides/probability/tabulation/index_assets/300928789e26e99ab64a9af8bfb33c7f7ca3c82526e5e4ca7909b169db99f8f1.mp4",
-        "slides/probability/tabulation/index_assets/43015321f73bcc39f04d3f5db893eb134e3cf0968f138d317ae76fde2f51bfc7.mp4",
-        "slides/probability/tabulation/index_assets/30bd6f03723e0c4dc4305e99516610b6223f89eb568ab7d0193dbfb7fe2500ba.mp4"
+        "concepts/tabulation/4fd9e684edfe11cc64d1558c93e782e5add62c6e74c1fade2371bfc6eccc90db.mp4",
+        "concepts/tabulation/300928789e26e99ab64a9af8bfb33c7f7ca3c82526e5e4ca7909b169db99f8f1.mp4",
+        "concepts/tabulation/43015321f73bcc39f04d3f5db893eb134e3cf0968f138d317ae76fde2f51bfc7.mp4",
+        "concepts/tabulation/30bd6f03723e0c4dc4305e99516610b6223f89eb568ab7d0193dbfb7fe2500ba.mp4"
       ]
     }
   ]

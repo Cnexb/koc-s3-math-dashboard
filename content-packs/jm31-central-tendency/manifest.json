@@ -10,6 +10,8 @@
     "en": "Measures of Central Tendencies",
     "zhHant": "趨勢測量"
   },
+  "symbol": "x̄",
+  "symbols": ["x̄", "Σx / n", "Mo", "Md", "Σx"],
   "source": "dashboard/topics/central_tendency",
   "notes": [],
   "comics": [],

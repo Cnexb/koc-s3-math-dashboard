@@ -10,6 +10,8 @@
     "en": "Special Lines and Centres in Triangles",
     "zhHant": "三角形的特殊線和中心"
   },
+  "symbol": "△ABC",
+  "symbols": ["△ABC", "∠", "⊥", "G", "H", "I"],
   "source": "dashboard/topics/triangle_centres",
   "notes": [],
   "comics": [],
