@@ -1,6 +1,0 @@
-# Manim render intermediates (the self-contained HTML decks in slides/ are kept)
-.manim-media/
-.preview/
-slides/*.json
-slides/files/
-__pycache__/

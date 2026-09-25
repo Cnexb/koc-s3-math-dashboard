@@ -2,10 +2,6 @@
 
 All-In-One lists MATH Learning Tools by scanning `CONTENT_PACK_ROOTS` for `*/manifest.json`.
 
-S3 lessons **JM24–JM35** match the Maths Topics List and the dashboard gallery. Each chapter copies the topic HTML into `tools/<slug>/` plus shared CSS/JS. Concept, tools, games, comics, summary, and quiz are the same embed with `?embed=1&tab=`.
+S3 lessons **JM24–JM35** match the Maths Topics List. Each chapter keeps its files in that chapter folder: hub HTML and related JS/CSS in `tools/<slug>/`, native Concept & Formula videos in `concepts/<topicId>/`. Tools, games, comics, summary, and quiz stay in the same pack.
 
-Do not point `CONTENT_PACK_ROOT` at a single chapter folder.
-
-```bash
-node scripts/build-content-packs.mjs
-```
+Do not point `CONTENT_PACK_ROOT` at a single chapter folder. Do not nest packs under a year folder.

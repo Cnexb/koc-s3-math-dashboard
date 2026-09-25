@@ -1,23 +1,5 @@
-# PowerPoint slide exports (reference images)
-.ppt_export/
-
-# IDE / debug
-.cursor/*
-!.cursor/rules/
-!.cursor/rules/**
-debug-*.log
-
-# Python
-__pycache__/
-*.py[cod]
-.venv/
-venv/
-.manim-media/
-
-# Node
-node_modules/
-
-# OS
-Thumbs.db
-.Desktop
+node_modules
 .DS_Store
+*.log
+.eslintcache
+__pycache__/
