@@ -106,6 +106,7 @@
     .section-gap { margin-top: 20px; padding-top: 4px; }
   </style>  <link rel="stylesheet" href="../../shared/jm28-panel.css?v=20260904-jm28c">
   <link rel="stylesheet" href="../../shared/page-motion.css?v=20260904-jm28c">
+  <link rel="stylesheet" href="../../shared/quiz-sets.css?v=20260928-sections"><link rel="stylesheet" href="../../shared/section-quiz.css?v=20260928-sections">
 </head>
 <body class="paper-labs">
   <main class="jm-page">
@@ -251,14 +252,24 @@
       </section>
     </section>
     <section id="panel-quiz" class="jm-panel hidden">
-      <section class="block">
-        <h2>Quiz</h2>
-        <p class="hint">Coming soon.</p>
-      </section>
+      <div class="quiz-wrap">
+        <div class="quiz-progress-wrap" id="quiz-progress-wrap">
+          <div class="quiz-progress-label" id="quiz-progress-label">Question 1 of 1</div>
+          <div class="quiz-progress-track"><div class="quiz-progress-fill" id="quiz-progress-fill"><span class="quiz-progress-ok" id="quiz-progress-ok" aria-hidden="true"></span><span class="quiz-progress-bad" id="quiz-progress-bad" aria-hidden="true"></span></div></div>
+        </div>
+        <div id="quiz-root"></div>
+        <div class="quiz-nav" id="quiz-nav">
+          <button type="button" class="quiz-nav-btn" id="quiz-back">Back</button>
+          <button type="button" class="quiz-nav-btn primary" id="quiz-next">Next</button>
+        </div>
+      </div>
+      <p class="hint">Pick a section quiz, answer each question, use Next to move on. Submit on the last question to see all results.</p>
     </section>
   </main>
   <script defer src="https://cdn.jsdelivr.net/npm/katex@0.16.11/dist/katex.min.js"></script>
   <script defer src="https://cdn.jsdelivr.net/npm/katex@0.16.11/dist/contrib/auto-render.min.js"></script>
+  <script defer src="../../shared/section-quiz.js?v=20260928-sections"></script>
+  <script defer src="central-tendency-quiz.js?v=20260928-sections"></script>
   <script defer src="../../shared/jm-tabs.js?v=20260830b"></script>
   <script defer src="central-tendency-tools.js?v=20260829h"></script>
   <script defer src="../../shared/jm-comics-engine.js?v=20260830-fu"></script>

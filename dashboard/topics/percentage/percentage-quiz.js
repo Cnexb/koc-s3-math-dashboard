@@ -2,7 +2,7 @@
 (function () {
   "use strict";
 
-  const QUIZ = [
+  const QUIZ_PRACTICE = [
     {
       id: 1,
       type: "mc",
@@ -90,6 +90,52 @@
     },
   ];
 
+  const QUIZ_L01 = [
+    {
+      id: 1,
+      type: "mc",
+      prompt: "If the price of a computer is increased by 30% and then decreased by 40%, find the overall percentage change.",
+      choices: ["-78\\%", "-48\\%", "-22\\%", "-10\\%"],
+      answer: 2,
+    },
+    {
+      id: 2,
+      type: "mc",
+      prompt: "A number is first increased by 25% and then decreased by r%. The number remains unchanged. Find r.",
+      choices: ["20", "25", "75", "80"],
+      answer: 0,
+    },
+    {
+      id: 3,
+      type: "mc",
+      prompt: "If all sides of a rectangle are increased by 20%, the percentage change in its area is",
+      choices: ["+20\\%", "+40\\%", "+44\\%", "+144\\%"],
+      answer: 2,
+    },
+    {
+      id: 4,
+      type: "mc",
+      prompt: "Mr Lai borrowed $5000 at 8% p.a. simple interest. He repays the original sum plus simple interest after 4 years. Find the interest repaid.",
+      choices: ["\\$400", "\\$1600", "\\$1802", "\\$6600"],
+      answer: 1,
+    },
+    {
+      id: 5,
+      type: "mc",
+      prompt: "Peter deposits $20 000 at 5% p.a. compounded yearly. Find the compound interest after 2 years.",
+      choices: ["\\$2000", "\\$2050", "\\$22\\,000", "\\$22\\,050"],
+      answer: 1,
+    },
+  ];
+
+  const QUIZ_SETS = [
+    { key: "l01", label: "L01 \u00b7 Successive Change, Simple Interest and Compound Interest", idPrefix: "pct-l01-q", questions: QUIZ_L01 },
+    { key: "practice", label: "Practice \u00b7 10 Questions", idPrefix: "pct-q", questions: QUIZ_PRACTICE },
+  ];
+
+  let activeSet = QUIZ_SETS[0];
+  let QUIZ = activeSet.questions;
+
   function kx(el, tex, display) {
     try { katex.render(tex, el, { throwOnError: false, displayMode: !!display }); }
     catch (e) { el.textContent = tex; }
@@ -122,6 +168,46 @@
     if (!root || !nextBtn) return;
 
     const state = { index: 0, answers: {}, submitted: false, phase: "quiz" };
+
+    function buildSetBar() {
+      const wrap = document.createElement("div");
+      wrap.className = "quiz-set-bar";
+      QUIZ_SETS.forEach((set) => {
+        const btn = document.createElement("button");
+        btn.type = "button";
+        btn.className = "quiz-nav-btn quiz-set-btn";
+        btn.dataset.set = set.key;
+        btn.textContent = set.label;
+        btn.addEventListener("click", () => selectSet(set));
+        wrap.appendChild(btn);
+      });
+      const anchor = progressWrap || root;
+      if (anchor && anchor.parentNode) anchor.parentNode.insertBefore(wrap, anchor);
+      return wrap;
+    }
+
+    function syncSetBar() {
+      Array.prototype.forEach.call(setBar.children, (btn) => {
+        const on = btn.dataset.set === activeSet.key;
+        btn.classList.toggle("primary", on);
+        btn.setAttribute("aria-pressed", on ? "true" : "false");
+      });
+    }
+
+    // Each set reuses question ids from 1, so answers must be dropped on switch.
+    function selectSet(set) {
+      if (set === activeSet) return;
+      activeSet = set;
+      QUIZ = set.questions;
+      state.index = 0;
+      state.answers = {};
+      state.submitted = false;
+      state.phase = "quiz";
+      state.activeInputId = null;
+      render();
+    }
+
+    const setBar = buildSetBar();
 
     function updateProgress() {
       if (!progressWrap) return;
@@ -161,6 +247,7 @@
       root.innerHTML = "";
       updateProgress();
       updateNav();
+      syncSetBar();
       if (state.phase === "review") { renderReview(); return; }
       const q = QUIZ[state.index];
       if (q) root.appendChild(buildCard(q, false));
@@ -294,7 +381,7 @@
               type: 'uniplus:quizAnswer',
               subject: 'MATH',
               quizId: 'Perc2',
-              questionId: 'pct-q' + q.id,
+              questionId: activeSet.idPrefix + q.id,
               section: 'JM27 Percentages II',
               difficulty: 'standard',
               stem: q.stem || q.prompt || null,
