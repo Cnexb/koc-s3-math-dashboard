@@ -1,0 +1,135 @@
+{
+  "quizId": "jm24-l01",
+  "items": [
+    {
+      "id": "jm24-l01-1",
+      "topic": "JM24",
+      "section": "L01",
+      "difficulty": "Standard",
+      "stem": "Evaluate 5^{-2}",
+      "options": [
+        {
+          "key": "A",
+          "text": "\\frac{-1}{25}"
+        },
+        {
+          "key": "B",
+          "text": "\\frac{1}{25}"
+        },
+        {
+          "key": "C",
+          "text": "-25"
+        },
+        {
+          "key": "D",
+          "text": "25"
+        }
+      ],
+      "answer": "B"
+    },
+    {
+      "id": "jm24-l01-2",
+      "topic": "JM24",
+      "section": "L01",
+      "difficulty": "Standard",
+      "stem": "Simplify \\left(5x^{4}y\\right)^{3}",
+      "options": [
+        {
+          "key": "A",
+          "text": "15x^{4}y^{3}"
+        },
+        {
+          "key": "B",
+          "text": "15x^{7}y^{3}"
+        },
+        {
+          "key": "C",
+          "text": "125x^{7}y^{3}"
+        },
+        {
+          "key": "D",
+          "text": "125x^{12}y^{3}"
+        }
+      ],
+      "answer": "D"
+    },
+    {
+      "id": "jm24-l01-3",
+      "topic": "JM24",
+      "section": "L01",
+      "difficulty": "Standard",
+      "stem": "Simplify \\frac{a^{10}}{a^{-5}}",
+      "options": [
+        {
+          "key": "A",
+          "text": "\\frac{1}{a^{2}}"
+        },
+        {
+          "key": "B",
+          "text": "a^{-2}"
+        },
+        {
+          "key": "C",
+          "text": "a^{-5}"
+        },
+        {
+          "key": "D",
+          "text": "a^{15}"
+        }
+      ],
+      "answer": "D"
+    },
+    {
+      "id": "jm24-l01-4",
+      "topic": "JM24",
+      "section": "L01",
+      "difficulty": "Standard",
+      "stem": "If x > 1, which of the following must be true? I. \\left(x^{2}\\right)^{0} = 0 II. \\left(x^{5}\\right)^{-2} = \\frac{1}{x^{10}} III. x^{3-2} \\times x^{6} = \\frac{1}{x}",
+      "options": [
+        {
+          "key": "A",
+          "text": "\\text{I only}"
+        },
+        {
+          "key": "B",
+          "text": "\\text{II only}"
+        },
+        {
+          "key": "C",
+          "text": "\\text{I and III only}"
+        },
+        {
+          "key": "D",
+          "text": "\\text{II and III only}"
+        }
+      ],
+      "answer": "B"
+    },
+    {
+      "id": "jm24-l01-5",
+      "topic": "JM24",
+      "section": "L01",
+      "difficulty": "Standard",
+      "stem": "Simplify \\frac{\\left(x^{-1}y^{-2}\\right)^{4}}{y^{-3}}",
+      "options": [
+        {
+          "key": "A",
+          "text": "x^{3}y^{10}"
+        },
+        {
+          "key": "B",
+          "text": "\\frac{1}{x^{4}y^{5}}"
+        },
+        {
+          "key": "C",
+          "text": "\\frac{x^{3}}{y^{10}}"
+        },
+        {
+          "key": "D",
+          "text": "\\frac{y^{2}}{x}"
+        }
+      ],
+      "answer": "B"
+    }
+  ]
+}

@@ -1,0 +1,135 @@
+{
+  "quizId": "jm24-l02",
+  "items": [
+    {
+      "id": "jm24-l02-1",
+      "topic": "JM24",
+      "section": "L02",
+      "difficulty": "Standard",
+      "stem": "Express in scientific notation 0.000\\,073\\,09",
+      "options": [
+        {
+          "key": "A",
+          "text": "7.309 \\times 10^{-5}"
+        },
+        {
+          "key": "B",
+          "text": "7.309 \\times 10^{-6}"
+        },
+        {
+          "key": "C",
+          "text": "73.09 \\times 10^{-5}"
+        },
+        {
+          "key": "D",
+          "text": "73.09 \\times 10^{-6}"
+        }
+      ],
+      "answer": "A"
+    },
+    {
+      "id": "jm24-l02-2",
+      "topic": "JM24",
+      "section": "L02",
+      "difficulty": "Standard",
+      "stem": "The length of the longest bridge in the world is about 16 490 000 cm. Express the length in scientific notation.",
+      "options": [
+        {
+          "key": "A",
+          "text": "1.649 \\times 10^{6}\\text{ cm}"
+        },
+        {
+          "key": "B",
+          "text": "16.49 \\times 10^{6}\\text{ cm}"
+        },
+        {
+          "key": "C",
+          "text": "1.649 \\times 10^{7}\\text{ cm}"
+        },
+        {
+          "key": "D",
+          "text": "16.49 \\times 10^{7}\\text{ cm}"
+        }
+      ],
+      "answer": "C"
+    },
+    {
+      "id": "jm24-l02-3",
+      "topic": "JM24",
+      "section": "L02",
+      "difficulty": "Standard",
+      "stem": "Evaluate 2.74 \\times 10^{-6} + 9.05 \\times 10^{-5}",
+      "options": [
+        {
+          "key": "A",
+          "text": "1.179 \\times 10^{-11}"
+        },
+        {
+          "key": "B",
+          "text": "1.179 \\times 10^{-6}"
+        },
+        {
+          "key": "C",
+          "text": "9.324 \\times 10^{-6}"
+        },
+        {
+          "key": "D",
+          "text": "9.324 \\times 10^{-5}"
+        }
+      ],
+      "answer": "D"
+    },
+    {
+      "id": "jm24-l02-4",
+      "topic": "JM24",
+      "section": "L02",
+      "difficulty": "Standard",
+      "stem": "Which of the following numbers is the smallest?",
+      "options": [
+        {
+          "key": "A",
+          "text": "-7.9 \\times 10^{-11}"
+        },
+        {
+          "key": "B",
+          "text": "7.9 \\times 10^{-11}"
+        },
+        {
+          "key": "C",
+          "text": "-7.9 \\times 10^{11}"
+        },
+        {
+          "key": "D",
+          "text": "7.9 \\times 10^{11}"
+        }
+      ],
+      "answer": "C"
+    },
+    {
+      "id": "jm24-l02-5",
+      "topic": "JM24",
+      "section": "L02",
+      "difficulty": "Standard",
+      "stem": "The speed of light is 3 × 10⁵ km/s and the speed of sound is 300 m/s. The speed of light is how many times the speed of sound?",
+      "options": [
+        {
+          "key": "A",
+          "text": "10^{7}"
+        },
+        {
+          "key": "B",
+          "text": "10^{6}"
+        },
+        {
+          "key": "C",
+          "text": "10^{5}"
+        },
+        {
+          "key": "D",
+          "text": "10^{4}"
+        }
+      ],
+      "answer": "B"
+    }
+  ]
+}

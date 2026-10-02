@@ -1,0 +1,135 @@
+{
+  "quizId": "jm24-l03",
+  "items": [
+    {
+      "id": "jm24-l03-1",
+      "topic": "JM24",
+      "section": "L03",
+      "difficulty": "Standard",
+      "stem": "What is the place value of the digit 0 in 110111_{2}",
+      "options": [
+        {
+          "key": "A",
+          "text": "4"
+        },
+        {
+          "key": "B",
+          "text": "6"
+        },
+        {
+          "key": "C",
+          "text": "8"
+        },
+        {
+          "key": "D",
+          "text": "16"
+        }
+      ],
+      "answer": "C"
+    },
+    {
+      "id": "jm24-l03-2",
+      "topic": "JM24",
+      "section": "L03",
+      "difficulty": "Standard",
+      "stem": "Convert into a denary number 10111_{2}",
+      "options": [
+        {
+          "key": "A",
+          "text": "7_{10}"
+        },
+        {
+          "key": "B",
+          "text": "23_{10}"
+        },
+        {
+          "key": "C",
+          "text": "33_{10}"
+        },
+        {
+          "key": "D",
+          "text": "47_{10}"
+        }
+      ],
+      "answer": "B"
+    },
+    {
+      "id": "jm24-l03-3",
+      "topic": "JM24",
+      "section": "L03",
+      "difficulty": "Standard",
+      "stem": "Convert into a binary number 28_{10}",
+      "options": [
+        {
+          "key": "A",
+          "text": "10101_{2}"
+        },
+        {
+          "key": "B",
+          "text": "11001_{2}"
+        },
+        {
+          "key": "C",
+          "text": "11011_{2}"
+        },
+        {
+          "key": "D",
+          "text": "11100_{2}"
+        }
+      ],
+      "answer": "D"
+    },
+    {
+      "id": "jm24-l03-4",
+      "topic": "JM24",
+      "section": "L03",
+      "difficulty": "Standard",
+      "stem": "Which of the following numbers lies between 11001110_{2}\\quad\\text{and}\\quad 208_{10}",
+      "options": [
+        {
+          "key": "A",
+          "text": "98_{10}"
+        },
+        {
+          "key": "B",
+          "text": "156_{10}"
+        },
+        {
+          "key": "C",
+          "text": "207_{10}"
+        },
+        {
+          "key": "D",
+          "text": "310_{10}"
+        }
+      ],
+      "answer": "C"
+    },
+    {
+      "id": "jm24-l03-5",
+      "topic": "JM24",
+      "section": "L03",
+      "difficulty": "Standard",
+      "stem": "Write the following denary number as a binary number 2^{9} + 2^{6} + 5 \\times 2^{3}",
+      "options": [
+        {
+          "key": "A",
+          "text": "100110010_{2}"
+        },
+        {
+          "key": "B",
+          "text": "100110100_{2}"
+        },
+        {
+          "key": "C",
+          "text": "1001100100_{2}"
+        },
+        {
+          "key": "D",
+          "text": "1001101000_{2}"
+        }
+      ],
+      "answer": "D"
+    }
+  ]
+}

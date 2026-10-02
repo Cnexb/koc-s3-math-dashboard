@@ -11,7 +11,13 @@
     "zhHant": "指數定律"
   },
   "symbol": "aˣ",
-  "symbols": ["aˣ", "aᵐ · aⁿ = aᵐ⁺ⁿ", "(aᵐ)ⁿ = aᵐⁿ", "a⁰ = 1", "a⁻ⁿ = 1 / aⁿ"],
+  "symbols": [
+    "aˣ",
+    "aᵐ · aⁿ = aᵐ⁺ⁿ",
+    "(aᵐ)ⁿ = aᵐⁿ",
+    "a⁰ = 1",
+    "a⁻ⁿ = 1 / aⁿ"
+  ],
   "source": "dashboard/topics/law_of_indices",
   "notes": [],
   "comics": [],
@@ -81,5 +87,30 @@
   ],
   "summaries": [],
   "flashcards": [],
-  "quiz": []
+  "quiz": [
+    {
+      "slug": "jm24-l01",
+      "path": "content-packs/jm24-law-of-indices/quiz/jm24-l01",
+      "title": {
+        "en": "Positive, zero and negative indices",
+        "zhHant": "正指數、零指數與負指數"
+      }
+    },
+    {
+      "slug": "jm24-l02",
+      "path": "content-packs/jm24-law-of-indices/quiz/jm24-l02",
+      "title": {
+        "en": "Scientific notation",
+        "zhHant": "科學記數法"
+      }
+    },
+    {
+      "slug": "jm24-l03",
+      "path": "content-packs/jm24-law-of-indices/quiz/jm24-l03",
+      "title": {
+        "en": "Binary and denary numbers",
+        "zhHant": "二進制與十進制"
+      }
+    }
+  ]
 }
