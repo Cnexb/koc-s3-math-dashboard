@@ -59,11 +59,14 @@
       });
     });
 
+    var embedTab = document.documentElement.getAttribute("data-uni-embed-tab");
+    var queryTab = new URLSearchParams(location.search).get("tab");
     var hash = (location.hash || "").replace("#", "");
-    var normHash = normalizeTab(hash);
-    if (hash && (normHash === "comic" || normHash === "game" || normHash === "tools" || normHash === "summary" || normHash === "quiz")) {
+    var requested = embedTab || queryTab || hash;
+    var normHash = normalizeTab(requested);
+    if (requested && (normHash === "comic" || normHash === "game" || normHash === "tools" || normHash === "summary" || normHash === "quiz")) {
       showTab(normHash);
-    } else if (!hash || normHash === "concept") {
+    } else if (!requested || normHash === "concept") {
       showTab("concept");
     }
   };
