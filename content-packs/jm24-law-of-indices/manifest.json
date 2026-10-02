@@ -121,6 +121,22 @@
         "concepts/positive-indices/3fd2e1170739178aa0f760c09121f735f48186b5b5733191e478ede6239f66f4.mp4",
         "concepts/positive-indices/e64fb6e4082b0d16a5594a736b38cbb67462cb73999dd67276c4366b31555e49.mp4"
       ]
+    },
+    {
+      "topicId": "scientific-notation",
+      "title": {
+        "en": "Scientific Notation",
+        "zhHant": "\u79d1\u5b78\u8a18\u6578\u6cd5"
+      },
+      "slug": "jm24-law-of-indices",
+      "videos": [
+        "concepts/scientific-notation/925562b92e99fe719ff00471b4866464c30d0ada9f970a0452934021a7749efe.mp4",
+        "concepts/scientific-notation/4d1c4f6c6641aafaed05b2ff0b631e2003be0d6c92495518805074604cdb6498.mp4",
+        "concepts/scientific-notation/2a8b1945c87af21ec6efaf3023f5206586e0cb31e58ebbdb80dd94f33daf4472.mp4",
+        "concepts/scientific-notation/f300480a324a0b1c45476b4c002d7570e974a981f4ca49fecbce14090ca0fb25.mp4",
+        "concepts/scientific-notation/592af405d0cf8a8b2f28aa60ac89885ae100b8ba567a336b14f05a821209585a.mp4",
+        "concepts/scientific-notation/367ff67a468d83d8e72ffb2fb99c2e2831779f22ea549e627591336d15ad8950.mp4"
+      ]
     }
   ]
 }
