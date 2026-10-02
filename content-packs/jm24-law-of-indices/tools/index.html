@@ -434,7 +434,7 @@
   <link rel="stylesheet" href="../shared/topic-shell.css?v=20260904-indices">
   <link rel="stylesheet" href="../shared/jm-comics.css?v=20260830-fu"><link rel="stylesheet" href="../shared/jm-lesson.css?v=20260904-jm29b"><link rel="stylesheet" href="../shared/paper-labs.css?v=20260904-jm29">  <link rel="stylesheet" href="../shared/jm28-panel.css?v=20260904-jm28c">
   <link rel="stylesheet" href="../shared/page-motion.css?v=20260904-jm28c">
-  <link rel="stylesheet" href="law-of-indices/jm24-quiz.css?v=20260917-l01-l03">
+  <link rel="stylesheet" href="jm24-quiz.css?v=20260917-l01-l03">
   <style>
     #panel-game .game-overlay { display: none; }
     #panel-game .game-overlay.is-visible { display: flex; }
@@ -457,13 +457,12 @@
     <section id="panel-concept" class="jm-panel">
       <section class="block jm-deck-panel">
         <div class="subnav">
-          <button class="chip active" data-deck="slides/law-of-indices/positive-indices/index.html?v=20260926i">Laws of Positive Indices</button>
-          <button class="chip" data-deck="slides/law-of-indices/scientific-notation/index.html?v=20260926i">Scientific Notation</button>
-          <button class="chip" data-deck="slides/law-of-indices/denary-binary/index.html?v=20260926i">Denary &amp; Binary</button>
-          <a class="chip" href="concept-only.html" target="_blank" rel="noopener">Share Concept only</a>
+          <button class="chip active" data-deck="slides/positive-indices/index.html?v=20260926i">Laws of Positive Indices</button>
+          <button class="chip" data-deck="slides/scientific-notation/index.html?v=20260926i">Scientific Notation</button>
+          <button class="chip" data-deck="slides/denary-binary/index.html?v=20260926i">Denary &amp; Binary</button>
         </div>
         <div class="deck-slideshow"><div class="deck-wrap">
-            <iframe id="deck-frame" src="slides/law-of-indices/positive-indices/index.html?v=20260926i" title="Law of Indices concept &amp; formula slides"></iframe>
+            <iframe id="deck-frame" src="slides/positive-indices/index.html?v=20260926i" title="Law of Indices concept &amp; formula slides"></iframe>
           </div></div>
         <p class="hint hint-deck-desktop" style="display:block;">Use &rarr; / Enter / click to advance, &larr; to go back. Each slide builds the idea step by step.</p>
         <p class="hint hint-deck-tablet" style="display:none;">Swipe left for next slide, right for previous &mdash; or use the arrows. Each slide builds the idea step by step.</p>
@@ -1060,17 +1059,19 @@
 
   <script defer src="https://cdn.jsdelivr.net/npm/katex@0.16.11/dist/katex.min.js"></script>
   <script defer src="https://cdn.jsdelivr.net/npm/katex@0.16.11/dist/contrib/auto-render.min.js"></script>
-  <script defer src="law-of-indices/law-of-indices-binary.js?v=20260917-tools"></script>
-  <script defer src="law-of-indices/law-of-indices-scientific.js?v=20260917-tools"></script>
+  <script defer src="law-of-indices-binary.js?v=20260917-tools"></script>
+  <script defer src="law-of-indices-scientific.js?v=20260917-tools"></script>
   <script src="https://uni-education-elearning.pages.dev/tracker/uni-tracker.js?v=8" defer></script>
   <script defer src="../shared/math-quiz-tracker.js?v=20260904-iframe-listen"></script>
-  <script defer src="law-of-indices/law-of-indices-quiz.js?v=20260925-labels"></script>
+  <script defer src="law-of-indices-quiz.js?v=20260925-labels"></script>
   <script src="comics-manifest.js?v=20260829c"></script>
   <script src="../shared/jm-comics-engine.js?v=20260830-fu"></script>
-  <script src="law-of-indices/game-questions.js?v=20260919-indexonly"></script>
-  <script src="law-of-indices/indices-game.js?v=20260919-speed"></script>
-  <script src="law-of-indices/sci-notation-content.js?v=20260828-sel1"></script>
-  <script src="law-of-indices/sci-notation-tool.js?v=20260828-sel1"></script>
+  <script src="indices-comics.js?v=20260830-fu"></script>
+  <script src="comics-quiz.js?v=20260829c"></script>
+  <script src="game-questions.js?v=20260919-indexonly"></script>
+  <script src="indices-game.js?v=20260919-speed"></script>
+  <script src="sci-notation-content.js?v=20260828-sel1"></script>
+  <script src="sci-notation-tool.js?v=20260828-sel1"></script>
   <script>
     function renderKatex(root) {
       if (!window.renderMathInElement) return;
@@ -1483,6 +1484,25 @@
       btn.addEventListener("click", () => showLab(btn.dataset.lab));
     });
 
+    function requestedSection() {
+      const embedTab = document.documentElement.getAttribute("data-uni-embed-tab") || "";
+      const queryTab = new URLSearchParams(location.search).get("tab") || "";
+      const hash = (location.hash || "").replace("#", "");
+      return embedTab || queryTab || hash;
+    }
+
+    function openRequestedSection() {
+      const section = requestedSection();
+      const topTabs = ["concept", "game", "games", "comic", "comics", "summary", "quiz", "tools", "notes", "slides"];
+      if (topTabs.indexOf(section) >= 0) showTab(section === "notes" || section === "slides" ? "concept" : section);
+      else if (section === "binary") showLab("binary");
+      else if (section === "scientific") showLab("scientific");
+      else if (section === "powers") showLab("powers");
+      else if (!section) showTab("concept");
+    }
+
+    window.showJm24Tab = showTab;
+
     waitKatex().then(() => {
       ["intro", "twox", "root"].forEach(initStepper);
       resetProd();
@@ -1490,19 +1510,14 @@
       resetPow();
       if (window.initBinaryLab) window.initBinaryLab();
       if (window.initScientificLab) window.initScientificLab();
-      const hash = (location.hash || "").replace("#", "");
-      const topTabs = ["concept", "game", "games", "comic", "comics", "summary", "quiz"];
-      if (topTabs.indexOf(hash) >= 0) showTab(hash);
-      else if (hash === "binary") showLab("binary");
-      else if (hash === "scientific") showLab("scientific");
-      else if (hash === "powers" || hash === "tools") showLab("powers");
-      else showTab("concept");
+      openRequestedSection();
     });
   </script>
-    <script defer src="../shared/jm-tabs.js?v=20260917-tools"></script>
   <script>
     document.addEventListener('DOMContentLoaded', function () {
-      if (window.initJmTabs) window.initJmTabs();
+      const queryTab = new URLSearchParams(location.search).get("tab")
+        || document.documentElement.getAttribute("data-uni-embed-tab");
+      if (queryTab && window.showJm24Tab) window.showJm24Tab(queryTab);
       const frame = document.getElementById('deck-frame');
       const btns = document.querySelectorAll('#panel-concept [data-deck]');
       if (frame && btns.length) {
