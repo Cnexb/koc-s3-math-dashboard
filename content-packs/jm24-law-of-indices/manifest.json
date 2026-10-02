@@ -8,15 +8,15 @@
   "published": true,
   "title": {
     "en": "Laws of Indices",
-    "zhHant": "\u6307\u6578\u5b9a\u5f8b"
+    "zhHant": "指數定律"
   },
-  "symbol": "a\u02e3",
+  "symbol": "aˣ",
   "symbols": [
-    "a\u02e3",
-    "a\u1d50 \u00b7 a\u207f = a\u1d50\u207a\u207f",
-    "(a\u1d50)\u207f = a\u1d50\u207f",
-    "a\u2070 = 1",
-    "a\u207b\u207f = 1 / a\u207f"
+    "aˣ",
+    "aᵐ · aⁿ = aᵐ⁺ⁿ",
+    "(aᵐ)ⁿ = aᵐⁿ",
+    "a⁰ = 1",
+    "a⁻ⁿ = 1 / aⁿ"
   ],
   "source": "dashboard/topics/law_of_indices",
   "notes": [],
@@ -29,7 +29,7 @@
       "query": "embed=1&tab=tools",
       "title": {
         "en": "Laws of Indices",
-        "zhHant": "\u6307\u6578\u5b9a\u5f8b"
+        "zhHant": "指數定律"
       }
     },
     {
@@ -39,7 +39,7 @@
       "query": "embed=1&tab=comics",
       "title": {
         "en": "Laws of Indices",
-        "zhHant": "\u6307\u6578\u5b9a\u5f8b"
+        "zhHant": "指數定律"
       }
     },
     {
@@ -49,7 +49,7 @@
       "query": "embed=1&tab=summary",
       "title": {
         "en": "Laws of Indices",
-        "zhHant": "\u6307\u6578\u5b9a\u5f8b"
+        "zhHant": "指數定律"
       }
     },
     {
@@ -59,7 +59,7 @@
       "query": "embed=1&tab=quiz",
       "title": {
         "en": "Laws of Indices",
-        "zhHant": "\u6307\u6578\u5b9a\u5f8b"
+        "zhHant": "指數定律"
       }
     }
   ],
@@ -71,7 +71,7 @@
       "query": "embed=1&tab=games",
       "title": {
         "en": "Laws of Indices",
-        "zhHant": "\u6307\u6578\u5b9a\u5f8b"
+        "zhHant": "指數定律"
       }
     }
   ],
@@ -83,7 +83,7 @@
       "path": "content-packs/jm24-law-of-indices/quiz/jm24-l01",
       "title": {
         "en": "Positive, zero and negative indices",
-        "zhHant": "\u6b63\u6307\u6578\u3001\u96f6\u6307\u6578\u8207\u8ca0\u6307\u6578"
+        "zhHant": "正指數、零指數與負指數"
       }
     },
     {
@@ -91,7 +91,7 @@
       "path": "content-packs/jm24-law-of-indices/quiz/jm24-l02",
       "title": {
         "en": "Scientific notation",
-        "zhHant": "\u79d1\u5b78\u8a18\u6578\u6cd5"
+        "zhHant": "科學記數法"
       }
     },
     {
@@ -99,7 +99,7 @@
       "path": "content-packs/jm24-law-of-indices/quiz/jm24-l03",
       "title": {
         "en": "Binary and denary numbers",
-        "zhHant": "\u4e8c\u9032\u5236\u8207\u5341\u9032\u5236"
+        "zhHant": "二進制與十進制"
       }
     }
   ],
@@ -108,7 +108,7 @@
       "topicId": "positive-indices",
       "title": {
         "en": "Laws of Positive Indices",
-        "zhHant": "\u6b63\u6307\u6578\u5b9a\u5f8b"
+        "zhHant": "正指數定律"
       },
       "slug": "jm24-law-of-indices",
       "videos": [
@@ -126,7 +126,7 @@
       "topicId": "scientific-notation",
       "title": {
         "en": "Scientific Notation",
-        "zhHant": "\u79d1\u5b78\u8a18\u6578\u6cd5"
+        "zhHant": "科學記數法"
       },
       "slug": "jm24-law-of-indices",
       "videos": [
@@ -136,6 +136,21 @@
         "concepts/scientific-notation/f300480a324a0b1c45476b4c002d7570e974a981f4ca49fecbce14090ca0fb25.mp4",
         "concepts/scientific-notation/592af405d0cf8a8b2f28aa60ac89885ae100b8ba567a336b14f05a821209585a.mp4",
         "concepts/scientific-notation/367ff67a468d83d8e72ffb2fb99c2e2831779f22ea549e627591336d15ad8950.mp4"
+      ]
+    },
+    {
+      "topicId": "denary-binary",
+      "title": {
+        "en": "Denary & Binary",
+        "zhHant": "十進制與二進制"
+      },
+      "slug": "jm24-law-of-indices",
+      "videos": [
+        "concepts/denary-binary/7d3ea7a9a073c85080eb32f3ac5218381f2f3573e6aa16535ffb26c38426bd04.mp4",
+        "concepts/denary-binary/63ed708d9cc8b14f8c31e337ed82b09b7660d244839fd6f9307bf656457ba6d4.mp4",
+        "concepts/denary-binary/38735437ef95c1dd3b674357fa8d73f9462954bebecc1df97b51cf8c5da50c2c.mp4",
+        "concepts/denary-binary/7b7580ef5457b40eae1cdf6986c6a073e89c59e7c11bec631ae94aa0198633d7.mp4",
+        "concepts/denary-binary/9bac710b0eb9d2a13cb7125ef1ec18acf0565d9f69ecabfaa330ba98bc3ecb17.mp4"
       ]
     }
   ]
