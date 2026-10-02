@@ -14,7 +14,7 @@
   "use strict";
 
   var GH =
-    "https://unipluseducationact-ctrl.github.io/koc-s3-math-dashboard/dashboard";
+    "https://unikoc5.github.io/s3-maths";
 
   function rewriteToGitHub() {
     // Only rewrite when not already on GitHub Pages (local / CF / custom domain).
@@ -58,12 +58,14 @@
         if (!isCurrent) {
           bg.style.visibility = "hidden";
           bg.style.opacity = "0";
+          bg.style.display = "none";
           bg.querySelectorAll("video").forEach(function (v) {
-            try { v.pause(); } catch (e) { /* ignore */ }
+            try { v.pause(); v.style.display = "none"; } catch (e) { /* ignore */ }
           });
         } else {
-          bg.style.visibility = "";
-          bg.style.opacity = "";
+          bg.style.visibility = "visible";
+          bg.style.opacity = "1";
+          bg.style.display = "block";
         }
       });
 
@@ -72,9 +74,13 @@
     var vids = current.querySelectorAll("video");
     for (var i = 0; i < vids.length - 1; i++) {
       vids[i].style.display = "none";
+      vids[i].style.visibility = "hidden";
       try { vids[i].pause(); } catch (e) { /* ignore */ }
     }
-    if (vids.length) vids[vids.length - 1].style.display = "";
+    if (vids.length) {
+      vids[vids.length - 1].style.display = "block";
+      vids[vids.length - 1].style.visibility = "visible";
+    }
   }
 
   function hookReveal() {

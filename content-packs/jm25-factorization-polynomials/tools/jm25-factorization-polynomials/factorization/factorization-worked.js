@@ -43,7 +43,7 @@
 
   const QZ1 = {
     n: "1", short: "x^2-6x-7", title: "Factorize (cross method)", sub: "x^2-6x-7 — pick the option",
-    deck: "../../slides/factorization/qz1-solution/index.html", solved: true,
+    deck: "../slides/factorization/qz1-solution/index.html", solved: true,
     question: [{ tag: "", tex: "x^2-6x-7" }],
     methods: { cross: { expr: "x^2-6x-7", first: "x", t1: "-7", t2: "+1", p1: "-7x", p2: "+x", mid: "-6x", last: "-7", factors: "(x-7)(x+1)" } },
     steps: [
@@ -60,7 +60,7 @@
   const QZ9 = {
     n: "9", short: "x^2-2xy-35y^2\\ (\\text{+ hence})", title: "Factorize",
     sub: "Cross method, then grouping",
-    deck: "../../slides/factorization/q9-solution/index.html",
+    deck: "../slides/factorization/q9-solution/index.html",
     solved: true,
     question: [
       { tag: "(a)", tex: "x^2-2xy-35y^2" },
@@ -72,7 +72,7 @@
     },
   };
 
-  function deckPath(id) { return "../../slides/factorization/" + id + "/index.html"; }
+  function deckPath(id) { return "../slides/factorization" + id + "/index.html"; }
 
   const QZ2 = {
     n: "2", short: "49p^2+9q^2-42pq", title: "Factorize (perfect square)", sub: "49p^2+9q^2-42pq",

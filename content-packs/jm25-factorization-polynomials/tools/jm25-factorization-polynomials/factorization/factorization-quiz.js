@@ -2,9 +2,257 @@
 (function () {
   "use strict";
 
-  const QUIZ = (window.MATH_QUIZ_BANKS || {})['factorization'];
-  if (!QUIZ) return;
+  const QUIZ_PRACTICE = [
+    {
+      id: 1,
+      type: "mc",
+      prompt: "Factorize",
+      stem: "x^2 - 6x - 7",
+      choices: ["(x+1)(x+7)", "(x+1)(x-7)", "(x-1)(x+7)", "(x-1)(x-7)"],
+      answer: 1,
+    },
+    {
+      id: 2,
+      type: "mc",
+      prompt: "Factorize",
+      stem: "49p^2 + 9q^2 - 42pq",
+      choices: [
+        "(7p+3q)(7p-3q)",
+        "(7p+3q)^2",
+        "(7p-3q)^2",
+        "(49p+9q)^2",
+      ],
+      answer: 2,
+    },
+    {
+      id: 3,
+      type: "mc",
+      prompt: "Which of the following do(es) not have x+2 as a factor?",
+      items: [
+        { tag: "I.", tex: "x^2+4" },
+        { tag: "II.", tex: "x^2-4" },
+        { tag: "III.", tex: "(x-3)^2-25" },
+      ],
+      choices: [
+        "\\text{I only}",
+        "\\text{II only}",
+        "\\text{I and III only}",
+        "\\text{II and III only}",
+      ],
+      answer: 0,
+    },
+    {
+      id: 4,
+      type: "mc",
+      prompt: "Factorize",
+      stem: "x^2 - 8xy + 15y^2 - 5x + 15y",
+      choices: [
+        "(x-3y)(x-5y-5)",
+        "(x-5y)(x-3y-5)",
+        "(x+3y)(x-5y-5)",
+        "(x+5y)(x-3y-5)",
+      ],
+      answer: 0,
+    },
+    {
+      id: 5,
+      type: "mc",
+      prompt: "Factorize",
+      stem: "x^2(x+y) - y^2(y+x)",
+      choices: [
+        "(x+y)^2(x-y)",
+        "(x+y)(x^2+xy+y^2)",
+        "(x-y)^2(x+y)",
+        "(x-y)(x^2-xy+y^2)",
+      ],
+      answer: 0,
+    },
+    {
+      id: 6,
+      type: "mc",
+      prompt: "Factorize",
+      stem: "y^2 + 4y - 12",
+      choices: [
+        "(y+2)(y-6)",
+        "(y+3)(y-4)",
+        "(y-2)(y+6)",
+        "(y-3)(y+4)",
+      ],
+      answer: 2,
+    },
+    {
+      id: 7,
+      type: "mc",
+      prompt: "Factorize",
+      stem: "n^2 + 12n + 35",
+      choices: [
+        "(n+5)(n+7)",
+        "(n+5)(n-7)",
+        "(n-5)(n+7)",
+        "(n-5)(n-7)",
+      ],
+      answer: 0,
+    },
+    {
+      id: 8,
+      type: "mc",
+      prompt: "Factorize",
+      stem: "x^2 - 2xy - 35y^2 - 7x + 49y",
+      choices: [
+        "(x-7y)(x+5y)",
+        "(x-7y)(x+5y+7)",
+        "(x-7y)(x+5y-7)",
+        "(x-7y-7)(x+5y)",
+      ],
+      answer: 2,
+    },
+    {
+      id: 9,
+      type: "mc",
+      prompt: "Factorize",
+      stem: "63xy^2 + 28xz^2 + 84xyz",
+      choices: [
+        "7(3y+2z)^2",
+        "7x(3y+2z)^2",
+        "7x(3y-2z)^2",
+        "7x(9y^2+12yz+4z^2)",
+      ],
+      answer: 1,
+    },
+    {
+      id: 10,
+      type: "mc",
+      prompt: "Factorize",
+      stem: "a^4 - a^2 - 2a^2b^2 - 2ab + b^4 - b^2",
+      choices: [
+        "(a+b)^2[(a-b)^2-1]",
+        "(a+b)^2(a+b-1)(a+b+1)",
+        "(a-b)^2(a+b-1)(a+b+1)",
+        "(a+b)^2(a-b-1)(a-b+1)",
+      ],
+      answer: 3,
+    },
+  ];
 
+  const QUIZ_L01 = [
+    {
+      id: 1,
+      type: "mc",
+      prompt: "Factorize",
+      stem: "2a^{3}b + 10ab^{2}",
+      choices: ["2ab(a^{2} + 5b)", "2ab(a + 5b)", "2a^{2}b(a + 5)", "2ab(a^{2} + 5b^{2})"],
+      answer: 0,
+    },
+    {
+      id: 2,
+      type: "mc",
+      prompt: "Factorize",
+      stem: "2cd + 6c - 5d - 15",
+      choices: ["(2c - 5)(d + 3)", "(2c + 5)(d - 3)", "(2c - 5)(d - 3)", "(2c + 5)(d + 3)"],
+      answer: 0,
+    },
+    {
+      id: 3,
+      type: "mc",
+      prompt: "Factorize",
+      stem: "9x^{2} - 121y^{2}",
+      choices: ["(3x - 11y)^{2}", "(3x - 11y)(3x + 11y)", "(9x - 11y)(x + 11y)", "(3x - 121y)(3x + y)"],
+      answer: 1,
+    },
+    {
+      id: 4,
+      type: "mc",
+      prompt: "Factorize",
+      stem: "16a^{2} - 56a + 49",
+      choices: ["(4a - 7)(4a + 7)", "(8a - 7)^{2}", "(4a - 7)^{2}", "(16a - 7)(a - 7)"],
+      answer: 2,
+    },
+    {
+      id: 5,
+      type: "mc",
+      prompt: "Which of the following is a factor of",
+      stem: "x^{2} + 7x + 6",
+      choices: ["x + 3", "x + 6", "x - 1", "x - 2"],
+      answer: 1,
+    },
+  ];
+
+  const QUIZ_L02 = [
+    {
+      id: 1,
+      type: "mc",
+      prompt: "Factorize",
+      stem: "22w + 70 - 12w^{2}",
+      choices: ["2(5 - w)(6w + 7)", "2(w + 5)(7 - 6w)", "2(7 - 2w)(3w + 5)", "2(2w + 7)(5 - 3w)"],
+      answer: 2,
+    },
+    {
+      id: 2,
+      type: "mc",
+      prompt: "Which of the following is/are the factor(s) of",
+      stem: "p^{2}q^{2} - 4pq - 21",
+      items: [
+        { tag: "I.", tex: "pq" },
+        { tag: "II.", tex: "pq + 3" },
+        { tag: "III.", tex: "pq - 7" },
+      ],
+      choices: [
+        "\\text{I only}",
+        "\\text{II only}",
+        "\\text{I and III only}",
+        "\\text{II and III only}",
+      ],
+      answer: 3,
+    },
+    {
+      id: 3,
+      type: "mc",
+      prompt: "Factorize",
+      stem: "(y - 4)(12 - y) - 2y",
+      choices: ["(y + 6)(y - 8)", "(y + 6)(8 - y)", "(y - 6)(y - 8)", "(6 - y)(y - 8)"],
+      answer: 3,
+    },
+    {
+      id: 4,
+      type: "mc",
+      prompt: "Simplify",
+      stem: "\\frac{1}{x^{2} - 4x + 4} - \\frac{1}{x^{2} + x - 6}",
+      choices: [
+        "\\frac{1}{(x - 2)(x + 3)}",
+        "\\frac{1}{(x - 2)^{2}(x + 3)}",
+        "\\frac{5}{(x - 2)^{2}(x + 3)}",
+        "\\frac{2x + 5}{(x - 2)^{2}(x + 3)}",
+      ],
+      answer: 2,
+    },
+    {
+      id: 5,
+      type: "mc",
+      prompt: "If the identity below holds, where m and n are positive integers, which of the following are possible values of k?",
+      stem: "2x^{2} + kx + 9 \\equiv (x + m)(2x + n)",
+      items: [
+        { tag: "I.", tex: "9" },
+        { tag: "II.", tex: "15" },
+        { tag: "III.", tex: "19" },
+      ],
+      choices: [
+        "\\text{I and II only}",
+        "\\text{I and III only}",
+        "\\text{II and III only}",
+        "\\text{I, II and III}",
+      ],
+      answer: 1,
+    },
+  ];
+
+  const QUIZ_SETS = [
+    { key: "l01", label: "L01 \u00b7 Fundamental Factorization", idPrefix: "fac-l01-q", questions: QUIZ_L01 },
+    { key: "l02", label: "L02 \u00b7 Hence and Further Factorization", idPrefix: "fac-l02-q", questions: QUIZ_L02 },
+    { key: "practice", label: "Practice \u00b7 10 Questions", idPrefix: "fac-q", questions: QUIZ_PRACTICE },
+  ];
+
+  let activeSet = QUIZ_SETS[0];
+  let QUIZ = activeSet.questions;
 
   const SYMBOLS = [
     { label: "x", insert: "x" },
@@ -157,6 +405,46 @@
       activeInputId: null,
     };
 
+    function buildSetBar() {
+      const wrap = document.createElement("div");
+      wrap.className = "quiz-set-bar";
+      QUIZ_SETS.forEach((set) => {
+        const btn = document.createElement("button");
+        btn.type = "button";
+        btn.className = "quiz-nav-btn quiz-set-btn";
+        btn.dataset.set = set.key;
+        btn.textContent = set.label;
+        btn.addEventListener("click", () => selectSet(set));
+        wrap.appendChild(btn);
+      });
+      const anchor = progressWrap || root;
+      if (anchor && anchor.parentNode) anchor.parentNode.insertBefore(wrap, anchor);
+      return wrap;
+    }
+
+    function syncSetBar() {
+      Array.prototype.forEach.call(setBar.children, (btn) => {
+        const on = btn.dataset.set === activeSet.key;
+        btn.classList.toggle("primary", on);
+        btn.setAttribute("aria-pressed", on ? "true" : "false");
+      });
+    }
+
+    // Each set reuses question ids from 1, so answers must be dropped on switch.
+    function selectSet(set) {
+      if (set === activeSet) return;
+      activeSet = set;
+      QUIZ = set.questions;
+      state.index = 0;
+      state.answers = {};
+      state.submitted = false;
+      state.phase = "quiz";
+      state.activeInputId = null;
+      render();
+    }
+
+    const setBar = buildSetBar();
+
     function saveCurrentShort() {
       const q = QUIZ[state.index];
       if (!q || q.type !== "short") return;
@@ -218,6 +506,7 @@
       root.innerHTML = "";
       updateProgress();
       updateNav();
+      syncSetBar();
       if (state.phase === "review") {
         renderReview();
         return;
@@ -577,13 +866,16 @@
         try {
           if (window.MathQuizTracker) {
             window.MathQuizTracker.reportQuiz(
-              window.MathQuizTracker.QUIZ_META['factorization'],
+              {
+                quizId: "MFact",
+                idPrefix: activeSet.idPrefix,
+                section: "JM25 More about Factorization of Polynomials",
+                stemMode: "stem-only",
+                answerTextMode: "mc-only",
+              },
               QUIZ,
               state.answers,
-              function (q, answers) {
-                var userAnswerIdx = answers[q.id];
-                return checkQuestion(q, answers);
-              }
+              checkQuestion
             );
           }
         } catch(_) {}

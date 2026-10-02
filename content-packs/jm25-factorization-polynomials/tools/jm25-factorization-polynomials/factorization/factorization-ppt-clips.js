@@ -2,7 +2,7 @@
 (function () {
   "use strict";
 
-  var CLIP_VIEWER = "../../slides/factorization/ppt-clip/index.html";
+  var CLIP_VIEWER = "../slides/factorization/ppt-clip/index.html";
 
   function clipDeck(videoRel, sourceName, start, end, title) {
     var q = new URLSearchParams({
@@ -81,14 +81,14 @@
       id: "lecture",
       label: "Lecture",
       source: LECTURE_SOURCE,
-      fullDeck: "../../slides/factorization/l01-02-main-deck/index.html",
+      fullDeck: "../slides/factorization/l01-02-main-deck/index.html",
       groups: LECTURE_GROUPS,
     },
     {
       id: "quiz",
       label: "Quiz",
       source: QUIZ_SOURCE,
-      fullDeck: "../../slides/factorization/l01-02-quiz-deck/index.html",
+      fullDeck: "../slides/factorization/l01-02-quiz-deck/index.html",
       groups: [],
     },
   ];

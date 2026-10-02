@@ -68,6 +68,8 @@
     var el = e.target;
     if (!el || el.closest("input, textarea, select, [contenteditable='true']")) return;
     if (el.closest("button, a, [role='button'], [role='tab'], [tabindex]:not([tabindex='-1'])")) return;
-    if (el.closest(SELECTABLE) || el.closest(DRAG_CHROME)) e.preventDefault();
+    if (el.closest("[draggable='true'], [data-drop-accept], .sf-sign-tile, .sf-dot-tile, .sf-drag-chip, .sf-drag-target")) return;
+    if (el.closest(SELECTABLE) || el.closest("p, span, td, th, b, i, em, strong, label, figcaption, h1, h2, h3, .sf-card, .pcard, .step-body, .card-body")) return;
+    if (el.closest(DRAG_CHROME)) e.preventDefault();
   });
 })();

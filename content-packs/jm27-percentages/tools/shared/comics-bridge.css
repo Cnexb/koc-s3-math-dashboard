@@ -444,6 +444,8 @@
 .reader-nav {
   border: 1px solid var(--line);
   background: #fff;
+}
+
 .sci-tool {
   margin-top: 0.5rem;
 }

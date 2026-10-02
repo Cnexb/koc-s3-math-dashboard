@@ -7,7 +7,7 @@
     var mt = K.mt, cchip = K.cchip;
     function st(slide, focus, title, body) { return { slide: slide, focus: focus, title: title, body: body }; }
     function fig(type, data) { return { type: type, data: data || {} }; }
-    function deckPath(id) { return "slides/probability/" + id + "/index.html"; }
+    function deckPath(id) { return "slides/probability" + id + "/index.html"; }
     function stub(n, opts) {
       opts = opts || {};
       return { n: n, solved: false, title: opts.title || "", sub: opts.sub || "",

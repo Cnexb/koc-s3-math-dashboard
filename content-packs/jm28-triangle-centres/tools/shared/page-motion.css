@@ -182,3 +182,24 @@ body.paper-labs .btn.active {
   background: #4FC3F7 !important;
   border-color: #4FC3F7 !important;
 }
+
+/* Hide inactive deck instructions */
+body.paper-labs .hint-deck-tablet,
+body.paper-labs .hint-deck-phone,
+.hint-deck-tablet,
+.hint-deck-phone {
+  display: none !important;
+}
+html.tablet-touch body.paper-labs .hint-deck-desktop,
+html.phone-compact body.paper-labs .hint-deck-desktop {
+  display: none !important;
+}
+html.tablet-touch body.paper-labs .hint-deck-tablet {
+  display: block !important;
+}
+html.phone-compact body.paper-labs .hint-deck-tablet {
+  display: none !important;
+}
+html.phone-compact body.paper-labs .hint-deck-phone {
+  display: block !important;
+}

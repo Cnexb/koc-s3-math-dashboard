@@ -294,6 +294,14 @@
     setGameMode(qGame === "doors" ? "doors" : "matchup");
   }
 
+  document.addEventListener("click", (e) => {
+    const chip = e.target.closest("[data-ineq-game]");
+    if (chip) {
+      e.preventDefault();
+      setGameMode(chip.dataset.ineqGame);
+    }
+  });
+
   if (window.katex) window.addEventListener("DOMContentLoaded", init);
   else window.addEventListener("DOMContentLoaded", () => {
     (function wait() { if (window.katex) init(); else setTimeout(wait, 30); })();

@@ -822,7 +822,7 @@
     const crossLab = document.getElementById("cross-lab");
     function activate(key) {
       const isCross = key === "cross";
-      toolBtns.forEach((b) => b.classList.toggle("active", b.dataset.tool === key));
+      document.querySelectorAll("[data-tool]").forEach((b) => b.classList.toggle("active", b.dataset.tool === key));
       if (toolLayout) toolLayout.classList.toggle("hidden", isCross);
       if (crossLab) crossLab.classList.toggle("hidden", !isCross);
       if (isCross) {
@@ -831,6 +831,7 @@
         loadTool(key);
       }
     }
+    window.FZ_ACTIVATE_TOOL = activate;
     toolBtns.forEach((b) => b.addEventListener("click", () => activate(b.dataset.tool)));
     const onLayoutChange = () => {
       if (animating) return;
@@ -1541,6 +1542,13 @@
     // KaTeX is deferred; ensure it is present before first render.
     (function wait() { if (window.katex) start(); else setTimeout(wait, 30); })();
   }); }
+
+  document.addEventListener("click", (e) => {
+    const chip = e.target.closest("[data-tool]");
+    if (chip && chip.dataset.tool && window.FZ_ACTIVATE_TOOL) {
+      window.FZ_ACTIVATE_TOOL(chip.dataset.tool);
+    }
+  });
 
   window.FZPhone = { isPhoneCompact, isTouchUI, initPhoneCompact, labelScale };
 })();

@@ -2,9 +2,169 @@
 (function () {
   "use strict";
 
-  const QUIZ = (window.MATH_QUIZ_BANKS || {})['inequality'];
-  if (!QUIZ) return;
+  const QUIZ_PRACTICE = [
+    {
+      id: 1,
+      type: "mc",
+      prompt: "Find the sum of all the negative integers x satisfying the inequality",
+      stem: "x > -2\\pi",
+      choices: ["-21\\pi", "-21", "-5", "0"],
+      answer: 1,
+    },
+    {
+      id: 2,
+      type: "mc",
+      prompt: "If 2x \u2264 3, which of the following is not true?",
+      choices: [
+        "4x \\le 2x + 3",
+        "1 - 2x \\le -2",
+        "2x + 3 \\le 6",
+        "\\frac{2x}{3} \\le 1",
+      ],
+      answer: 1,
+    },
+    {
+      id: 3,
+      type: "mc",
+      prompt: "If x \u2264 y and z > y, where z is a negative number, which of the following is not true?",
+      choices: [
+        "x \\le y < z",
+        "y - x < z - x",
+        "xz < xy",
+        "-\\frac{x}{4} < -\\frac{z}{4}",
+      ],
+      answer: 3,
+    },
+    {
+      id: 4,
+      type: "mc",
+      prompt: "Solve the inequality",
+      stem: "3(x + 2) < 5(6 - x)",
+      choices: ["x > 3", "x < 3", "x > -3", "x < -3"],
+      answer: 1,
+    },
+    {
+      id: 5,
+      type: "mc",
+      prompt: "Which of the following groups of numbers can all satisfy the inequality",
+      stem: "7x + 3 > 17",
+      choices: [
+        "-1,\\; 0,\\; 1",
+        "1,\\; 3,\\; 5",
+        "2,\\; 3,\\; 4",
+        "2.1,\\; 3.2,\\; 4.3",
+      ],
+      answer: 3,
+    },
+    {
+      id: 6,
+      type: "mc",
+      prompt: "Solve the inequality",
+      stem: "\\frac{x}{4} - 2 \\le 0.8 - \\frac{x}{3}",
+      choices: ["x > \\frac{24}{5}", "x \\le \\frac{24}{5}", "x \\le 5", "x \\ge 4.8"],
+      answer: 1,
+    },
+    {
+      id: 7,
+      type: "mc",
+      prompt: "Write down all positive integers satisfying",
+      stem: "x \\le \\frac{24}{5}",
+      choices: [
+        "1,\\; 2,\\; 3,\\; 4",
+        "1,\\; 2,\\; 3,\\; 4,\\; 5",
+        "1,\\; 2,\\; 3",
+        "2,\\; 3,\\; 4",
+      ],
+      answer: 0,
+    },
+    {
+      id: 8,
+      type: "mc",
+      prompt: "Write down all positive integers satisfying the inequality",
+      stem: "\\frac{4x + 3}{5} < \\frac{1 - 3x}{6} + 4",
+      choices: [
+        "1,\\; 2",
+        "1,\\; 2,\\; 3",
+        "1 \\text{ only}",
+        "2,\\; 3",
+      ],
+      answer: 0,
+    },
+    {
+      id: 9,
+      type: "mc",
+      prompt: "A non-negative number x satisfies the equation below, where k is a positive integral constant. How many possible values of k?",
+      stem: "\\frac{2x-k}{3} = \\frac{5x-7}{4} + \\frac{x+k}{6}",
+      choices: ["1", "2", "3", "4"],
+      answer: 2,
+    },
+    {
+      id: 10,
+      type: "mc",
+      prompt: "Using the same equation as above, find x when k = 3.",
+      stem: "\\frac{2x-k}{3} = \\frac{5x-7}{4} + \\frac{x+k}{6}",
+      choices: ["x = \\frac{1}{3}", "x = -\\frac{1}{3}", "x = \\frac{7}{3}", "x = 3"],
+      answer: 0,
+    },
+  ];
 
+  const QUIZ_L01 = [
+    {
+      id: 1,
+      type: "mc",
+      prompt: "If x < y, which of the following must be true?",
+      choices: ["x - 3 > y - 3", "3x > 3y", "y - x > 0", "x + y > 2y"],
+      answer: 2,
+    },
+    {
+      id: 2,
+      type: "mc",
+      prompt: "If m \u2265 n and k > 0, which of the following must be true?",
+      items: [
+        { tag: "I.", tex: "k + m \\ge k + n" },
+        { tag: "II.", tex: "kn \\le km" },
+        { tag: "III.", tex: "m^{2} \\ge n^{2}" },
+      ],
+      choices: [
+        "\\text{I and II only}",
+        "\\text{I and III only}",
+        "\\text{II and III only}",
+        "\\text{I, II and III}",
+      ],
+      answer: 0,
+    },
+    {
+      id: 3,
+      type: "mc",
+      prompt: "Solve the inequality",
+      stem: "4x + 7 > 6x - 11",
+      choices: ["x > 2", "x < 2", "x > 9", "x < 9"],
+      answer: 3,
+    },
+    {
+      id: 4,
+      type: "mc",
+      prompt: "The smallest integer that satisfies the inequality below is",
+      stem: "-5(x - 25) \\le -125",
+      choices: ["0", "1", "50", "51"],
+      answer: 2,
+    },
+    {
+      id: 5,
+      type: "mc",
+      prompt: "Which inequality represents \u201c2 times the sum of x and 3 is not greater than 1\u201d?",
+      choices: ["2x + 3 < 1", "2x + 3 \\le 1", "2(x + 3) < 1", "2(x + 3) \\le 1"],
+      answer: 3,
+    },
+  ];
+
+  const QUIZ_SETS = [
+    { key: "l01", label: "L01 \u00b7 Linear Inequalities in One Unknown", idPrefix: "ineq-l01-q", questions: QUIZ_L01 },
+    { key: "practice", label: "Practice \u00b7 10 Questions", idPrefix: "ineq-q", questions: QUIZ_PRACTICE },
+  ];
+
+  let activeSet = QUIZ_SETS[0];
+  let QUIZ = activeSet.questions;
 
   const SYMBOLS = [
     { label: "x", insert: "x" },
@@ -150,6 +310,46 @@
       activeInputId: null,
     };
 
+    function buildSetBar() {
+      const wrap = document.createElement("div");
+      wrap.className = "quiz-set-bar";
+      QUIZ_SETS.forEach((set) => {
+        const btn = document.createElement("button");
+        btn.type = "button";
+        btn.className = "quiz-nav-btn quiz-set-btn";
+        btn.dataset.set = set.key;
+        btn.textContent = set.label;
+        btn.addEventListener("click", () => selectSet(set));
+        wrap.appendChild(btn);
+      });
+      const anchor = progressWrap || root;
+      if (anchor && anchor.parentNode) anchor.parentNode.insertBefore(wrap, anchor);
+      return wrap;
+    }
+
+    function syncSetBar() {
+      Array.prototype.forEach.call(setBar.children, (btn) => {
+        const on = btn.dataset.set === activeSet.key;
+        btn.classList.toggle("primary", on);
+        btn.setAttribute("aria-pressed", on ? "true" : "false");
+      });
+    }
+
+    // Each set reuses question ids from 1, so answers must be dropped on switch.
+    function selectSet(set) {
+      if (set === activeSet) return;
+      activeSet = set;
+      QUIZ = set.questions;
+      state.index = 0;
+      state.answers = {};
+      state.submitted = false;
+      state.phase = "quiz";
+      state.activeInputId = null;
+      render();
+    }
+
+    const setBar = buildSetBar();
+
     function saveCurrentShort() {
       const q = QUIZ[state.index];
       if (!q || q.type !== "short") return;
@@ -211,6 +411,7 @@
       root.innerHTML = "";
       updateProgress();
       updateNav();
+      syncSetBar();
       if (state.phase === "review") {
         renderReview();
         return;
@@ -573,13 +774,16 @@
         try {
           if (window.MathQuizTracker) {
             window.MathQuizTracker.reportQuiz(
-              window.MathQuizTracker.QUIZ_META['inequality'],
+              {
+                quizId: "Ine1",
+                idPrefix: activeSet.idPrefix,
+                section: "JM26 Inequalities I",
+                stemMode: "stem-only",
+                answerTextMode: "mc-only",
+              },
               QUIZ,
               state.answers,
-              function (q, answers) {
-                var userAnswerIdx = answers[q.id];
-                return checkQuestion(q, answers);
-              }
+              checkQuestion
             );
           }
         } catch(_) {}

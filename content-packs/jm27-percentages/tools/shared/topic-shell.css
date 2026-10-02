@@ -143,14 +143,7 @@ html.phone-compact #panel-concept .deck-wrap,
   min-width: 0;
   touch-action: pan-y pinch-zoom;
 }
-html.phone-compact .deck-prev {
-  grid-column: 1;
-  grid-row: 2;
-}
-html.phone-compact .deck-next {
-  grid-column: 2;
-  grid-row: 2;
-}
+.deck-nav-btn, #deck-prev, #deck-next, .deck-prev, .deck-next { display: none !important; opacity: 0 !important; pointer-events: none !important; }
 html.tablet-touch .hint-deck-desktop,
 html.phone-compact .hint-deck-desktop {
   display: none;
