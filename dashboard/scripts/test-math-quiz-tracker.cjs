@@ -228,6 +228,19 @@ check("uni-tracker mapping would POST math_quiz_attempts without a network call"
   assert.equal(mapped.body.is_correct, true);
 });
 
+check("new section quizzes report through MathQuizTracker", () => {
+  const sectionQuiz = fs.readFileSync(path.join(root, "shared/section-quiz.js"), "utf8");
+  const lawQuiz = fs.readFileSync(path.join(root, "topics/law_of_indices/law-of-indices-quiz.js"), "utf8");
+  assert.ok(sectionQuiz.includes("MathQuizTracker.reportQuiz"), "section-quiz missing reportQuiz");
+  assert.ok(lawQuiz.includes("MathQuizTracker.reportQuiz"), "law of indices quiz missing reportQuiz");
+  assert.ok(!/fetch\s*\(/.test(sectionQuiz), "section-quiz must not fetch");
+  assert.ok(!/fetch\s*\(/.test(lawQuiz), "law of indices quiz must not fetch");
+  ["quadrilaterals", "triangle-centres", "central-tendency", "law-of-indices"].forEach((key) => {
+    assert.ok(tracker.QUIZ_META[key], "missing meta " + key);
+    assert.ok(tracker.QUIZ_META[key].quizId, key + " quizId");
+  });
+});
+
 check("runners still call MathQuizTracker.reportQuiz and do not inline fetch", () => {
   for (const bank of BANKS) {
     const src = fs.readFileSync(path.join(root, bank.runner), "utf8");
@@ -244,6 +257,10 @@ check("topic quiz pages load uni-tracker.js so iframe sessions can save", () => 
     "topics/inequality/index.html",
     "topics/probability/index.html",
     "topics/area_volume/index.html",
+    "topics/law_of_indices/index.html",
+    "topics/quadrilaterals/index.html",
+    "topics/triangle_centres/index.html",
+    "topics/central_tendency/index.html",
   ];
   pages.forEach((rel) => {
     const html = fs.readFileSync(path.join(root, rel), "utf8");

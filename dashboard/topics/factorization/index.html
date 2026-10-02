@@ -17,8 +17,7 @@
   <script defer src="factorization-game.js?v=20260719-ipad-snake"></script>
   <script src="https://uni-education-elearning.pages.dev/tracker/uni-tracker.js?v=8" defer></script>
   <script defer src="../../shared/math-quiz-tracker.js?v=20260904-iframe-listen"></script>
-  <script defer src="factorization-quiz-data.js?v=20260905-l01-pdf"></script>
-  <script defer src="factorization-quiz.js?v=20260904-tracker-split"></script>
+  <script defer src="factorization-quiz.js?v=20260928-sections"></script>
   <style>
     :root {
       --surface: #ffffff;
@@ -1037,6 +1036,7 @@
   </style>
   <link rel="stylesheet" href="../../shared/chem-light-theme.css?v=20260710-deck-16x9">  <link rel="stylesheet" href="../../shared/jm28-panel.css?v=20260904-jm28c">
   <link rel="stylesheet" href="../../shared/page-motion.css?v=20260904-jm28c">
+  <link rel="stylesheet" href="../../shared/quiz-sets.css?v=20260928-sections">
 </head>
 <body class="paper-labs">
   <main class="jm-page">
@@ -1045,10 +1045,10 @@
     <h1>More about Factorization and Polynomials</h1>
     <p class="lead">Interactive tools and comics for factorization and polynomials.</p>
 <nav class="jm-tabs" aria-label="Lesson sections">
-      <button class="jm-tab active" type="button" data-tab="slides">Concept &amp; Formula</button>
+      <button class="jm-tab active" type="button" data-tab="concept">Concept &amp; Formula</button>
       <button class="jm-tab" type="button" data-tab="tools">Interactive Tool</button>
-      <button class="jm-tab" type="button" data-tab="game">Games</button>
-      <button class="jm-tab" type="button" data-tab="comics">Comics</button>
+      <button class="jm-tab" type="button" data-tab="game">Game</button>
+      <button class="jm-tab" type="button" data-tab="comic">Comic</button>
       <button class="jm-tab" type="button" data-tab="summary">Summary</button>
       <button class="jm-tab" type="button" data-tab="quiz">Quiz</button>
     </nav>
@@ -1057,17 +1057,13 @@
       <section class="block jm-deck-panel">
 
     <div class="subnav">
-      <button class="chip active" data-deck="../../slides/factorization/perfect-square-sum/index.html" data-tex="(a+b)^2"></button>
-      <button class="chip" data-deck="../../slides/factorization/perfect-square-diff/index.html" data-tex="(a-b)^2"></button>
-      <button class="chip" data-deck="../../slides/factorization/difference-of-squares/index.html" data-tex="a^2-b^2"></button>
+      <button class="chip active" data-deck="../../slides/factorization/perfect-square-sum/index.html" data-tex="(a+b)^2">\( (a+b)^2 \)</button>
+      <button class="chip" data-deck="../../slides/factorization/perfect-square-diff/index.html" data-tex="(a-b)^2">\( (a-b)^2 \)</button>
+      <button class="chip" data-deck="../../slides/factorization/difference-of-squares/index.html" data-tex="a^2-b^2">\( a^2-b^2 \)</button>
     </div>
-    <div class="deck-slideshow">
-      <button type="button" class="deck-nav-btn deck-prev" id="deck-prev" aria-label="Previous slide">&larr;</button>
-      <div class="deck-wrap">
+    <div class="deck-slideshow"><div class="deck-wrap">
         <iframe id="deck-frame" src="../../slides/factorization/perfect-square-sum/index.html" title="Algebraic proof slides"></iframe>
-      </div>
-      <button type="button" class="deck-nav-btn deck-next" id="deck-next" aria-label="Next slide">&rarr;</button>
-    </div>
+      </div></div>
     <p class="hint hint-deck-desktop">Use &rarr; / Enter / click to advance, &larr; to go back. Each slide animates the algebraic (expansion) proof.</p>
     <p class="hint hint-deck-tablet">Swipe left for next slide, right for previous &mdash; or use the arrows. Each slide animates the algebraic (expansion) proof.</p>
     <p class="hint hint-deck-phone">Tap the &larr; and &rarr; buttons below the slide. Each slide animates the algebraic (expansion) proof.</p>
@@ -1078,9 +1074,9 @@
   <!-- TAB 2: interactive tools -->
   <section id="panel-tools" class="jm-panel hidden">
     <div class="subnav">
-      <button class="chip active" data-tool="sum" data-tex="(a+b)^2"></button>
-      <button class="chip" data-tool="diff" data-tex="(a-b)^2"></button>
-      <button class="chip" data-tool="dos" data-tex="a^2-b^2"></button>
+      <button class="chip active" data-tool="sum" data-tex="(a+b)^2">\( (a+b)^2 \)</button>
+      <button class="chip" data-tool="diff" data-tex="(a-b)^2">\( (a-b)^2 \)</button>
+      <button class="chip" data-tool="dos" data-tex="a^2-b^2">\( a^2-b^2 \)</button>
       <button class="chip" data-tool="cross">Cross method</button>
     </div>
     <div class="tool-layout">
@@ -1304,7 +1300,7 @@
     </div>
   </section>
 
-  <section id="panel-comics" class="jm-panel hidden">
+  <section id="panel-comic" class="jm-panel hidden">
     <p class="hint">Comics for this lesson are coming soon.</p>
   </section>
 
@@ -1378,7 +1374,7 @@
         <button type="button" class="quiz-nav-btn primary" id="quiz-next">Next</button>
       </div>
     </div>
-    <p class="hint">Answer each question, use Next to move on. Submit on the last question to see all results.</p>
+    <p class="hint">Pick a section quiz, answer each question, use Next to move on. Submit on the last question to see all results.</p>
   </section>
 
 

@@ -1048,5 +1048,20 @@
     },
   };
 
+  document.addEventListener("click", (e) => {
+    const chip = e.target.closest("[data-factor-game]");
+    if (chip) {
+      e.preventDefault();
+      Game.mount();
+      setFactorGame(chip.dataset.factorGame);
+    }
+  });
+
+  if (document.readyState === "loading") {
+    document.addEventListener("DOMContentLoaded", () => Game.mount());
+  } else {
+    setTimeout(() => Game.mount(), 0);
+  }
+
   window.FactGame = Game;
 })();

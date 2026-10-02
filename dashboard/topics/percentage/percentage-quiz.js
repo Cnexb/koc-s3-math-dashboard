@@ -2,9 +2,139 @@
 (function () {
   "use strict";
 
-  const QUIZ = (window.MATH_QUIZ_BANKS || {})['percentages'];
-  if (!QUIZ) return;
+  const QUIZ_PRACTICE = [
+    {
+      id: 1,
+      type: "mc",
+      prompt:
+        "The original weight of a panda was 80 kg. Its weight first decreased by 10% due to illness and then increased by 10% after recovery. After recovery, what was the change in its weight as compared to the original weight?",
+      choices: [
+        "\\text{no change}",
+        "\\text{an increase of }0.8\\text{ kg}",
+        "\\text{a decrease of }0.8\\text{ kg}",
+        "\\text{a decrease of }8\\text{ kg}",
+      ],
+      answer: 2,
+    },
+    {
+      id: 2,
+      type: "mc",
+      prompt:
+        "Last Christmas, an artist sold 40 postcards at the price of $90 each for charity. This Christmas, the price of each postcard increases by 30% but the number of postcards sold decreases by 15%. Find the percentage change in the amount of money to charity.",
+      choices: ["-15\\%", "+15\\%", "-10.5\\%", "+10.5\\%"],
+      answer: 3,
+    },
+    {
+      id: 3,
+      type: "mc",
+      prompt:
+        "Bob deposits 50000 in bank A at a simple interest rate of 6% p.a. and $40000 in bank B at a simple interest rate of 7% p.a. Find the total amount he will receive after 10 years.",
+      choices: ["\\$148000", "\\$74000", "\\$58000", "\\$12000"],
+      answer: 0,
+    },
+    {
+      id: 4,
+      type: "mc",
+      prompt:
+        "A sum of money is deposited in a bank at an interest rate of 12% p.a. compounded yearly. If the interest received after 7 years is $6000, find the principal.\n(Give the answer correct to the nearest $1000.)",
+      choices: ["\\$3000", "\\$4000", "\\$5000", "\\$6000"],
+      answer: 2,
+    },
+    {
+      id: 5,
+      type: "mc",
+      prompt:
+        "In this financial year, Tom has a total allowance of $140000 and he has to pay a salaries tax of $15300. If his net chargeable income is greater than $150000 but less than $200000, find his annual income.",
+      choices: ["\\$109000", "\\$195000", "\\$249000", "\\$335000"],
+      answer: 3,
+    },
+    {
+      id: 6,
+      type: "mc",
+      prompt:
+        "The value of an antique oil painting increases at a steady rate of 25% every 5 years. Its present value is $150000.\nFind its value 20 years ago.",
+      choices: ["\\$61440", "\\$614400", "\\$150000", "\\$88560"],
+      answer: 0,
+    },
+    {
+      id: 7,
+      type: "mc",
+      prompt:
+        "A retailer buys goods for $480 and wants a profit of 25% on the selling price. Find the selling price.",
+      choices: ["\\$600", "\\$520", "\\$640", "\\$720"],
+      answer: 2,
+    },
+    {
+      id: 8,
+      type: "mc",
+      prompt:
+        "David borrows $5000 from a bank at an interest rate of 7.8% p.a. compounded monthly. Find the amount he should repay after 3 years.\n(Give the answer correct to the nearest dollar.)",
+      choices: ["\\$5800", "\\$6000", "\\$6313", "\\$6500"],
+      answer: 2,
+    },
+    {
+      id: 9,
+      type: "mc",
+      prompt:
+        "A dress is marked at $960. During a sale, a customer gets a discount of 25% off the marked price, followed by an extra 10% off the reduced price. Find the amount the customer pays.",
+      choices: ["\\$648", "\\$720", "\\$672", "\\$864"],
+      answer: 0,
+    },
+    {
+      id: 10,
+      type: "mc",
+      prompt:
+        "A car depreciates in value by 12% each year. If its present value is $50000, find its value after 2 years.",
+      choices: ["\\$38720", "\\$40000", "\\$44000", "\\$38000"],
+      answer: 0,
+    },
+  ];
 
+  const QUIZ_L01 = [
+    {
+      id: 1,
+      type: "mc",
+      prompt: "If the price of a computer is increased by 30% and then decreased by 40%, find the overall percentage change.",
+      choices: ["-78\\%", "-48\\%", "-22\\%", "-10\\%"],
+      answer: 2,
+    },
+    {
+      id: 2,
+      type: "mc",
+      prompt: "A number is first increased by 25% and then decreased by r%. The number remains unchanged. Find r.",
+      choices: ["20", "25", "75", "80"],
+      answer: 0,
+    },
+    {
+      id: 3,
+      type: "mc",
+      prompt: "If all sides of a rectangle are increased by 20%, the percentage change in its area is",
+      choices: ["+20\\%", "+40\\%", "+44\\%", "+144\\%"],
+      answer: 2,
+    },
+    {
+      id: 4,
+      type: "mc",
+      prompt: "Mr Lai borrowed $5000 at 8% p.a. simple interest. He repays the original sum plus simple interest after 4 years. Find the interest repaid.",
+      choices: ["\\$400", "\\$1600", "\\$1802", "\\$6600"],
+      answer: 1,
+    },
+    {
+      id: 5,
+      type: "mc",
+      prompt: "Peter deposits $20 000 at 5% p.a. compounded yearly. Find the compound interest after 2 years.",
+      choices: ["\\$2000", "\\$2050", "\\$22\\,000", "\\$22\\,050"],
+      answer: 1,
+    },
+  ];
+
+  const QUIZ_SETS = [
+    { key: "l01", label: "L01 \u00b7 Successive Change, Simple Interest and Compound Interest", idPrefix: "pct-l01-q", questions: QUIZ_L01 },
+    { key: "practice", label: "Practice \u00b7 10 Questions", idPrefix: "pct-q", questions: QUIZ_PRACTICE },
+  ];
+
+  let activeSet = QUIZ_SETS[0];
+  let QUIZ = activeSet.questions;
 
   function kx(el, tex, display) {
     try { katex.render(tex, el, { throwOnError: false, displayMode: !!display }); }
@@ -38,6 +168,46 @@
     if (!root || !nextBtn) return;
 
     const state = { index: 0, answers: {}, submitted: false, phase: "quiz" };
+
+    function buildSetBar() {
+      const wrap = document.createElement("div");
+      wrap.className = "quiz-set-bar";
+      QUIZ_SETS.forEach((set) => {
+        const btn = document.createElement("button");
+        btn.type = "button";
+        btn.className = "quiz-nav-btn quiz-set-btn";
+        btn.dataset.set = set.key;
+        btn.textContent = set.label;
+        btn.addEventListener("click", () => selectSet(set));
+        wrap.appendChild(btn);
+      });
+      const anchor = progressWrap || root;
+      if (anchor && anchor.parentNode) anchor.parentNode.insertBefore(wrap, anchor);
+      return wrap;
+    }
+
+    function syncSetBar() {
+      Array.prototype.forEach.call(setBar.children, (btn) => {
+        const on = btn.dataset.set === activeSet.key;
+        btn.classList.toggle("primary", on);
+        btn.setAttribute("aria-pressed", on ? "true" : "false");
+      });
+    }
+
+    // Each set reuses question ids from 1, so answers must be dropped on switch.
+    function selectSet(set) {
+      if (set === activeSet) return;
+      activeSet = set;
+      QUIZ = set.questions;
+      state.index = 0;
+      state.answers = {};
+      state.submitted = false;
+      state.phase = "quiz";
+      state.activeInputId = null;
+      render();
+    }
+
+    const setBar = buildSetBar();
 
     function updateProgress() {
       if (!progressWrap) return;
@@ -77,6 +247,7 @@
       root.innerHTML = "";
       updateProgress();
       updateNav();
+      syncSetBar();
       if (state.phase === "review") { renderReview(); return; }
       const q = QUIZ[state.index];
       if (q) root.appendChild(buildCard(q, false));
@@ -205,13 +376,15 @@
         try {
           if (window.MathQuizTracker) {
             window.MathQuizTracker.reportQuiz(
-              window.MathQuizTracker.QUIZ_META['percentages'],
+              {
+                quizId: "Perc2",
+                idPrefix: activeSet.idPrefix,
+                section: "JM27 Percentages II",
+                stemMode: "stem-or-prompt",
+                answerTextMode: "always-choices",
+              },
               QUIZ,
-              state.answers,
-              function (q, answers) {
-                var userAnswerIdx = answers[q.id];
-                return userAnswerIdx === q.answer;
-              }
+              state.answers
             );
           }
         } catch(_) {}

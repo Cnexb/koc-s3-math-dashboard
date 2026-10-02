@@ -389,7 +389,6 @@
     }
 
     el.addEventListener("pointerdown", (e) => {
-      if (e.pointerType === "mouse") return;
       pointerDrag = true;
       chips.forEach((c) => c.classList.toggle("selected", c === el));
       dragGhost = el.cloneNode(true);
@@ -403,13 +402,13 @@
     });
 
     el.addEventListener("pointermove", (e) => {
-      if (!pointerDrag || e.pointerType === "mouse") return;
+      if (!pointerDrag) return;
       moveGhost(e.clientX, e.clientY);
       e.preventDefault();
     });
 
     el.addEventListener("pointerup", (e) => {
-      if (!pointerDrag || e.pointerType === "mouse") return;
+      if (!pointerDrag) return;
       pointerDrag = false;
       try { el.releasePointerCapture(e.pointerId); } catch (err) { /* ignore */ }
       const hit = document.elementFromPoint(e.clientX, e.clientY);

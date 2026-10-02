@@ -2,7 +2,14 @@
   "use strict";
 
   function renderKatex(root) {
-    if (window.renderMathInElement && root) {
+    if (!root) root = document.body;
+    root.querySelectorAll("[data-tex]").forEach(function (el) {
+      if (!el.children.length && (!el.textContent || !el.textContent.trim())) {
+        var tex = el.getAttribute("data-tex");
+        if (tex) el.innerHTML = "\\(" + tex + "\\)";
+      }
+    });
+    if (window.renderMathInElement) {
       window.renderMathInElement(root, {
         delimiters: [
           { left: "\\(", right: "\\)", display: false },
@@ -13,16 +20,37 @@
   }
 
   window.initJmTabs = function () {
+    function normalizeTab(tabName) {
+      if (!tabName) return "concept";
+      if (tabName === "slides" || tabName === "concept") return "concept";
+      if (tabName === "games" || tabName === "game") return "game";
+      if (tabName === "comics" || tabName === "comic") return "comic";
+      return tabName;
+    }
+
     function showTab(name) {
+      var norm = normalizeTab(name);
       document.querySelectorAll(".jm-tab").forEach(function (btn) {
-        btn.classList.toggle("active", btn.dataset.tab === name);
+        var btnNorm = normalizeTab(btn.dataset.tab);
+        btn.classList.toggle("active", btnNorm === norm);
       });
       document.querySelectorAll(".jm-panel").forEach(function (panel) {
-        panel.classList.toggle("hidden", panel.id !== "panel-" + name);
+        var pid = panel.id.replace(/^panel-/, "");
+        var pidNorm = normalizeTab(pid);
+        var isActive = pidNorm === norm;
+        panel.classList.toggle("hidden", !isActive);
+        panel.classList.toggle("active", isActive);
       });
-      history.replaceState(null, "", "#" + name);
-      if (name === "tools") renderKatex(document.getElementById("panel-tools"));
-      if (name === "comics") renderKatex(document.getElementById("panel-comics"));
+      history.replaceState(null, "", "#" + norm);
+      if (norm === "tools") {
+        renderKatex(document.getElementById("panel-tools"));
+        if (window.FZ_ACTIVATE_TOOL) {
+          var activeChip = document.querySelector("#panel-tools [data-tool].active");
+          window.FZ_ACTIVATE_TOOL(activeChip ? activeChip.dataset.tool : "sum");
+        }
+      }
+      if (norm === "comic") renderKatex(document.getElementById("panel-comic") || document.getElementById("panel-comics"));
+      if (norm === "concept") renderKatex(document.getElementById("panel-concept") || document.getElementById("panel-slides"));
     }
 
     document.querySelectorAll(".jm-tab").forEach(function (btn) {
@@ -32,8 +60,12 @@
     });
 
     var hash = (location.hash || "").replace("#", "");
-    if (hash === "comics") showTab("comics");
-    else renderKatex(document.body);
+    var normHash = normalizeTab(hash);
+    if (hash && (normHash === "comic" || normHash === "game" || normHash === "tools" || normHash === "summary" || normHash === "quiz")) {
+      showTab(normHash);
+    } else if (!hash || normHash === "concept") {
+      showTab("concept");
+    }
   };
 })();
 

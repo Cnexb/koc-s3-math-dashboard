@@ -21,10 +21,9 @@
   <script defer src="percentage-tools.js?v=20260828-eric-jm27"></script>
   <script src="https://uni-education-elearning.pages.dev/tracker/uni-tracker.js?v=8" defer></script>
   <script defer src="../../shared/math-quiz-tracker.js?v=20260904-iframe-listen"></script>
-  <script defer src="percentage-quiz-data.js?v=20260904-tracker-split"></script>
-  <script defer src="percentage-quiz.js?v=20260904-tracker-split"></script>
-  <script defer src="../../shared/jm-comics-engine.js?v=20260923-engine"></script>
-  <script defer src="percentage-comics.js?v=20260923-local"></script>
+  <script defer src="percentage-quiz.js?v=20260928-sections"></script>
+  <script defer src="../../shared/jm-comics-engine.js?v=20260830-fu"></script>
+  <script defer src="percentage-comics.js?v=20260830-fu"></script>
   <style>
     :root {
       --surface: #ffffff;
@@ -623,6 +622,7 @@
   <link rel="stylesheet" href="../../shared/chem-light-theme.css?v=20260710-deck-16x9">
   <link rel="stylesheet" href="../../shared/jm-comics.css?v=20260830-fu">  <link rel="stylesheet" href="../../shared/jm28-panel.css?v=20260904-jm28c">
   <link rel="stylesheet" href="../../shared/page-motion.css?v=20260904-jm28c">
+  <link rel="stylesheet" href="../../shared/quiz-sets.css?v=20260928-sections">
 </head>
 <body class="paper-labs">
 <main class="jm-page">
@@ -632,10 +632,10 @@
   <p class="lead">Change factor, interest, and tax: explorer, RPG games, comics, and quiz.</p>
 
   <nav class="jm-tabs" aria-label="Lesson sections">
-    <button class="jm-tab active" type="button" data-tab="slides">Concept &amp; Formula</button>
+    <button class="jm-tab active" type="button" data-tab="concept">Concept &amp; Formula</button>
     <button class="jm-tab" type="button" data-tab="tools">Interactive Tool</button>
-    <button class="jm-tab" type="button" data-tab="game">Games</button>
-    <button class="jm-tab" type="button" data-tab="comics">Comics</button>
+    <button class="jm-tab" type="button" data-tab="game">Game</button>
+    <button class="jm-tab" type="button" data-tab="comic">Comic</button>
     <button class="jm-tab" type="button" data-tab="summary">Summary</button>
     <button class="jm-tab" type="button" data-tab="quiz">Quiz</button>
   </nav>
@@ -654,13 +654,9 @@
       <button class="chip" data-deck="../../slides/percentage/rainfall-change/index.html?v=20260725-persist">Rainfall changes</button>
       <button class="chip" data-deck="../../slides/percentage/salary-checkpoint/index.html?v=20260725-persist">Work backwards</button>
     </div>
-    <div class="deck-slideshow">
-      <button type="button" class="deck-nav-btn deck-prev" id="deck-prev" aria-label="Previous slide">&larr;</button>
-      <div class="deck-wrap">
+    <div class="deck-slideshow"><div class="deck-wrap">
         <iframe id="deck-frame" src="../../slides/percentage/change-factor/index.html" title="Percentages concept slides"></iframe>
-      </div>
-      <button type="button" class="deck-nav-btn deck-next" id="deck-next" aria-label="Next slide">&rarr;</button>
-    </div>
+      </div></div>
     <p class="hint hint-deck-desktop">Use &rarr; / Space to advance, &larr; to go back. Each slide builds the idea step by step.</p>
     <p class="hint hint-deck-tablet">Swipe left for next slide, right for previous &mdash; or use the arrows. Each slide builds the idea step by step.</p>
     <p class="hint hint-deck-phone">Tap the &larr; and &rarr; buttons below the slide. Each slide builds the idea step by step.</p>
@@ -937,7 +933,7 @@
   </section>
 
   <!-- TAB: comics story + concept checks (separate from quiz DB) -->
-  <section id="panel-comics" class="jm-panel hidden">
+  <section id="panel-comic" class="jm-panel hidden">
     <div class="subnav" id="comics-subnav"></div>
     <div id="comics-stage"></div>
     <p class="hint">Read each page. When a concept finishes, answer the two follow-up questions. They stay on this tab only.</p>
@@ -956,7 +952,7 @@
         <button type="button" class="quiz-nav-btn primary" id="quiz-next">Next</button>
       </div>
     </div>
-    <p class="hint">Pre S3 L04–6 Percentage Quiz — answer each question, use Next to move on. Submit on Q8 to see all results.</p>
+    <p class="hint">Pick a section quiz, answer each question, use Next to move on. Submit on the last question to see all results.</p>
   </section>
 
 

@@ -14,7 +14,7 @@
   <link rel="stylesheet" href="../../shared/paper-labs.css?v=20260829s">
   <style>
     body { margin:0; min-height:100vh; color:var(--text); font-family:"Hanken Grotesk",system-ui,sans-serif;
-      user-select:none; }
+       }
     h1 { margin:0 0 8px; font-size:clamp(26px,4vw,36px); }
     .lead { margin:0 0 18px; color:var(--muted); font-size:15px; line-height:1.55; }
     .note-box {
@@ -37,35 +37,10 @@
       height: auto;
       vertical-align: middle;
     }
-    .summary-reference-grid {
-      display: grid;
-      grid-template-columns: repeat(2, minmax(0, 1fr));
-      gap: 18px;
-    }
-    .summary-reference-card {
-      margin: 0;
-      overflow: hidden;
-      border: 1px solid var(--line);
-      border-radius: 14px;
-      background: #fff;
-    }
-    .summary-reference-card img {
-      display: block;
-      width: 100%;
-      height: auto;
-    }
-    .summary-reference-card figcaption {
-      padding: 10px 12px;
-      border-top: 1px solid var(--line);
-      font-weight: 700;
-      text-align: center;
-    }
-    @media (max-width: 760px) {
-      .summary-reference-grid { grid-template-columns: 1fr; }
-    }
     .comics-mode.hidden, .comics-pane.hidden { display: none; }
   </style>  <link rel="stylesheet" href="../../shared/jm28-panel.css?v=20260904-jm28c">
   <link rel="stylesheet" href="../../shared/page-motion.css?v=20260904-jm28c">
+  <link rel="stylesheet" href="../../shared/quiz-sets.css?v=20260928-sections"><link rel="stylesheet" href="../../shared/section-quiz.css?v=20260928-sections">
 </head>
 <body class="paper-labs">
   <main class="jm-page">
@@ -76,8 +51,8 @@
         <nav class="jm-tabs" aria-label="Lesson sections">
       <button class="jm-tab active" type="button" data-tab="concept">Concept &amp; Formula</button>
       <button class="jm-tab" type="button" data-tab="tools">Interactive Tool</button>
-      <button class="jm-tab" type="button" data-tab="games">Games</button>
-      <button class="jm-tab" type="button" data-tab="comics">Comics</button>
+      <button class="jm-tab" type="button" data-tab="game">Game</button>
+      <button class="jm-tab" type="button" data-tab="comic">Comic</button>
       <button class="jm-tab" type="button" data-tab="summary">Summary</button>
       <button class="jm-tab" type="button" data-tab="quiz">Quiz</button>
     </nav>
@@ -138,10 +113,13 @@
         </section>
       </div>
     </section>
-        <section id="panel-games" class="jm-panel hidden">
-      <div id="view-game"></div>
+        <section id="panel-game" class="jm-panel hidden">
+      <section class="block">
+        <h2>Game</h2>
+        <p class="hint">Coming soon.</p>
+      </section>
     </section>
-    <section id="panel-comics" class="jm-panel hidden">
+    <section id="panel-comic" class="jm-panel hidden">
       <div class="subnav" id="comics-series-nav" aria-label="Comic series"></div>
       <div class="subnav" id="comics-subnav" aria-label="Comic pages"></div>
       <div id="comics-stage"></div>
@@ -150,57 +128,38 @@
     <section id="panel-summary" class="jm-panel hidden">
       <section class="block">
         <h2>Summary</h2>
-        <div class="summary-reference-grid">
-          <figure class="summary-reference-card">
-            <img
-              src="../../comics/Special lines and centres in triangles/triangle-lines-laws-card-color.png"
-              alt="Four special lines in a triangle quick reference"
-              loading="lazy">
-            <figcaption>Four Special Lines — Quick Reference</figcaption>
-          </figure>
-          <figure class="summary-reference-card">
-            <img
-              src="../../comics/Special lines and centres in triangles/triangle-centres-quick-reference-color.png"
-              alt="Four triangle centres quick reference"
-              loading="lazy">
-            <figcaption>Four Triangle Centres — Quick Reference</figcaption>
-          </figure>
-        </div>
+        <p class="hint">Coming soon.</p>
       </section>
     </section>
     <section id="panel-quiz" class="jm-panel hidden">
-      <section class="block">
-        <h2>Quiz</h2>
-        <p class="hint">Coming soon.</p>
-      </section>
+      <div class="quiz-wrap">
+        <div class="quiz-progress-wrap" id="quiz-progress-wrap">
+          <div class="quiz-progress-label" id="quiz-progress-label">Question 1 of 1</div>
+          <div class="quiz-progress-track"><div class="quiz-progress-fill" id="quiz-progress-fill"><span class="quiz-progress-ok" id="quiz-progress-ok" aria-hidden="true"></span><span class="quiz-progress-bad" id="quiz-progress-bad" aria-hidden="true"></span></div></div>
+        </div>
+        <div id="quiz-root"></div>
+        <div class="quiz-nav" id="quiz-nav">
+          <button type="button" class="quiz-nav-btn" id="quiz-back">Back</button>
+          <button type="button" class="quiz-nav-btn primary" id="quiz-next">Next</button>
+        </div>
+      </div>
+      <p class="hint">Pick a section quiz, answer each question, use Next to move on. Submit on the last question to see all results.</p>
     </section>
   </main>
   <script defer src="https://cdn.jsdelivr.net/npm/katex@0.16.11/dist/katex.min.js"></script>
   <script defer src="https://cdn.jsdelivr.net/npm/katex@0.16.11/dist/contrib/auto-render.min.js"></script>
-  <script src="comics-manifest.js?v=20260923-local"></script>
-  <script defer src="../../shared/jm-comics-engine.js?v=20260923-engine"></script>
-  <script defer src="triangle-centres-comics.js?v=20260923-local"></script>
+  <script src="https://uni-education-elearning.pages.dev/tracker/uni-tracker.js?v=8" defer></script>
+  <script defer src="../../shared/math-quiz-tracker.js?v=20260904-iframe-listen"></script>
+  <script defer src="../../shared/section-quiz.js?v=20260928-sections"></script>
+  <script defer src="triangle-centres-quiz.js?v=20260928-sections"></script>
+  <script src="comics-manifest.js?v=20260830-merge"></script>
+  <script defer src="../../shared/jm-comics-engine.js?v=20260830-fu"></script>
+  <script defer src="triangle-centres-comics.js?v=20260830-fu"></script>
   <script defer src="../../shared/jm-tabs.js?v=20260830b"></script>
-  <script defer src="triangle-centres-tools.js?v=20260923-local"></script>
-  <link rel="stylesheet" href="game/jm28-game.css?v=20260924-fuse">
-  <script src="game/topics.js?v=20260924-fuse"></script>
-  <script src="game/i18n.js?v=20260924-fuse"></script>
-  <script src="game/special-line-game.js?v=20260924-fuse"></script>
-  <script src="game/triangle-centre-game.js?v=20260924-fuse"></script>
-  <script src="game/angle-detective-game.js?v=20260924-fuse"></script>
-  <script src="game/center-run-game.js?v=20260924-fuse"></script>
-  <script src="game/factory-line-game.js?v=20260924-fuse"></script>
-  <script src="game/lesson-shell.js?v=20260924-fuse"></script>
+  <script defer src="triangle-centres-tools.js?v=20260830j"></script>
   <script>
     document.addEventListener("DOMContentLoaded", function () {
       if (window.initJmTabs) window.initJmTabs();
-      document.querySelectorAll(".jm-tab").forEach(function (btn) {
-        btn.addEventListener("click", function () {
-          if (btn.getAttribute("data-tab") === "games" && window.JM28Games && window.JM28Games.redraw) {
-            window.JM28Games.redraw();
-          }
-        });
-      });
     });
   </script>
   <script src="../../shared/suppress-ui-caret.js?v=20260904a"></script>

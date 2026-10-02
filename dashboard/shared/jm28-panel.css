@@ -268,6 +268,34 @@ main section.block h2 {
   line-height: 1.55 !important;
 }
 
+/* Deck hint instructions — desktop default vs mobile */
+.hint-deck-tablet,
+.hint-deck-phone,
+.jm-page .hint-deck-tablet,
+.jm-page .hint-deck-phone,
+.jm-panel .hint-deck-tablet,
+.jm-panel .hint-deck-phone {
+  display: none !important;
+}
+html.tablet-touch .hint-deck-desktop,
+html.phone-compact .hint-deck-desktop,
+html.tablet-touch .jm-page .hint-deck-desktop,
+html.phone-compact .jm-page .hint-deck-desktop {
+  display: none !important;
+}
+html.tablet-touch .hint-deck-tablet,
+html.tablet-touch .jm-page .hint-deck-tablet {
+  display: block !important;
+}
+html.phone-compact .hint-deck-tablet,
+html.phone-compact .jm-page .hint-deck-tablet {
+  display: none !important;
+}
+html.phone-compact .hint-deck-phone,
+html.phone-compact .jm-page .hint-deck-phone {
+  display: block !important;
+}
+
 /* Tools / games lab section titles */
 .jm-panel .lab > .part-title:first-of-type {
   margin-top: 4px !important;

@@ -18,16 +18,15 @@
   <script defer src="../../shared/deck-touch-nav.js?v=20260725-fixes6"></script>
   <script defer src="../../shared/phone-compact.js?v=20260711-phone"></script>
   <script defer src="../../shared/embed-nav.js?v=20260710-deck-16x9"></script>
-  <script src="comics-manifest.js?v=20260923-local"></script>
-  <script src="../../shared/jm-comics-engine.js?v=20260923-engine"></script>
-  <script src="inequalities-comics.js?v=20260923-local"></script>
+  <script src="comics-manifest.js?v=20260828-sel1"></script>
+  <script src="../../shared/jm-comics-engine.js?v=20260830-fu"></script>
+  <script src="inequalities-comics.js?v=20260830-fu"></script>
   <script defer src="inequality-tools.js?v=20260831-merge"></script>
   <script defer src="inequality-game.js?v=20260831-merge"></script>
   <script defer src="sign-flip-doors.js?v=20260706-quiz2"></script>
   <script src="https://uni-education-elearning.pages.dev/tracker/uni-tracker.js?v=8" defer></script>
   <script defer src="../../shared/math-quiz-tracker.js?v=20260904-iframe-listen"></script>
-  <script defer src="inequality-quiz-data.js?v=20260904-tracker-split"></script>
-  <script defer src="inequality-quiz.js?v=20260904-tracker-split"></script>
+  <script defer src="inequality-quiz.js?v=20260928-sections"></script>
   <style>
     :root {
       --surface: #ffffff;
@@ -463,6 +462,7 @@
   <link rel="stylesheet" href="../../shared/chem-light-theme.css?v=20260710-deck-16x9">
   <link rel="stylesheet" href="../../shared/jm-comics.css?v=20260830-fu">  <link rel="stylesheet" href="../../shared/jm28-panel.css?v=20260904-jm28c">
   <link rel="stylesheet" href="../../shared/page-motion.css?v=20260904-jm28c">
+  <link rel="stylesheet" href="../../shared/quiz-sets.css?v=20260928-sections">
 </head>
 <body class="paper-labs">
 <main class="jm-page">
@@ -472,10 +472,10 @@
   <p class="lead">Classroom manga, quiz, Boundary Runner, and inequality labs.</p>
 
   <nav class="jm-tabs" aria-label="Lesson sections">
-    <button class="jm-tab active" type="button" data-tab="slides">Concept &amp; Formula</button>
+    <button class="jm-tab active" type="button" data-tab="concept">Concept &amp; Formula</button>
     <button class="jm-tab" type="button" data-tab="tools">Interactive Tool</button>
-    <button class="jm-tab" type="button" data-tab="game">Games</button>
-    <button class="jm-tab" type="button" data-tab="comics">Comics</button>
+    <button class="jm-tab" type="button" data-tab="game">Game</button>
+    <button class="jm-tab" type="button" data-tab="comic">Comic</button>
     <button class="jm-tab" type="button" data-tab="summary">Summary</button>
     <button class="jm-tab" type="button" data-tab="quiz">Quiz</button>
   </nav>
@@ -488,13 +488,9 @@
       <button class="chip active" data-deck="../../slides/inequality/signs/index.html">Signs &amp; number line</button>
       <button class="chip" data-deck="../../slides/inequality/negative-coefficient/index.html">Multiply / divide by a negative</button>
     </div>
-    <div class="deck-slideshow">
-      <button type="button" class="deck-nav-btn deck-prev" id="deck-prev" aria-label="Previous slide">&larr;</button>
-      <div class="deck-wrap">
+    <div class="deck-slideshow"><div class="deck-wrap">
         <iframe id="deck-frame" src="../../slides/inequality/signs/index.html" title="Inequality concept slides"></iframe>
-      </div>
-      <button type="button" class="deck-nav-btn deck-next" id="deck-next" aria-label="Next slide">&rarr;</button>
-    </div>
+      </div></div>
     <p class="hint hint-deck-desktop">Use &rarr; / Space to advance, &larr; to go back. Each slide builds the idea step by step.</p>
     <p class="hint hint-deck-tablet">Swipe left for next slide, right for previous &mdash; or use the arrows. Each slide builds the idea step by step.</p>
     <p class="hint hint-deck-phone">Tap the &larr; and &rarr; buttons below the slide. Each slide builds the idea step by step.</p>
@@ -511,7 +507,7 @@
   </section>
 
   <!-- TAB 3: games -->
-  <section id="panel-comics" class="jm-panel hidden">
+  <section id="panel-comic" class="jm-panel hidden">
     <div class="subnav" id="comics-series-nav" aria-label="Comic series"></div>
     <div class="subnav" id="comics-subnav" aria-label="Comic pages"></div>
     <div id="comics-stage"></div>
@@ -773,7 +769,7 @@
         <button type="button" class="quiz-nav-btn primary" id="quiz-next">Next</button>
       </div>
     </div>
-    <p class="hint">Pre S3 L03 Inequality Quiz — answer each question, use Next to move on. Submit on Q8 to see all results.</p>
+    <p class="hint">Pick a section quiz, answer each question, use Next to move on. Submit on the last question to see all results.</p>
   </section>
 
   <script src="../../js/i18n.js"></script>

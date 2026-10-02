@@ -17,14 +17,11 @@
   <script defer src="../../shared/deck-touch-nav.js?v=20260725-fixes6"></script>
   <script defer src="../../shared/phone-compact.js?v=20260711-phone"></script>
   <script defer src="../../shared/embed-nav.js?v=20260710-deck-16x9"></script>
+  <script defer src="../factorization/factorization-game.js?v=20260831-merge"></script>
   <script src="https://uni-education-elearning.pages.dev/tracker/uni-tracker.js?v=8" defer></script>
-  <script defer src="../../shared/math-quiz-tracker.js?v=20260911-jm25-restore"></script>
-  <script defer src="../factorization/factorization-quiz-data.js?v=20260905-l01-pdf"></script>
-  <script defer src="../factorization/factorization-quiz.js?v=20260904-tracker-split"></script>
-  <script defer src="../factorization/factorization-l02-quiz-data.js?v=20260911-l02-prompt"></script>
-  <script defer src="../factorization/factorization-l02-quiz.js?v=20260911-l02-prompt"></script>
-  <script defer src="../factorization/factorization-game.js?v=20260911-jm25-restore"></script>
-  <script defer src="../factorization/factorization-tools.js?v=20260911-jm25-restore"></script>
+  <script defer src="../../shared/math-quiz-tracker.js?v=20260904-iframe-listen"></script>
+  <script defer src="../factorization/factorization-quiz.js?v=20260928-sections"></script>
+  <script defer src="../factorization/factorization-tools.js?v=20260831-merge"></script>
   <style>
     :root {
       --surface: #ffffff;
@@ -392,7 +389,7 @@
         radial-gradient(ellipse 60% 40% at 50% 100%, rgba(125, 211, 252, 0.14), transparent 55%),
         linear-gradient(180deg, #f8fafc 0%, #f1f5f9 100%);
       background-attachment: fixed;
-      user-select: none;
+      
     }
     .page {
       position: relative; z-index: 1; width: min(1100px, 100%);
@@ -434,6 +431,8 @@
   </style>
   <link rel="stylesheet" href="../../shared/jm-comics.css?v=20260830-fu">  <link rel="stylesheet" href="../../shared/jm28-panel.css?v=20260904-jm28c">
   <link rel="stylesheet" href="../../shared/page-motion.css?v=20260904-jm28c">
+  <link rel="stylesheet" href="../../shared/section-quiz.css?v=20260928-sections">
+  <link rel="stylesheet" href="../../shared/quiz-sets.css?v=20260928-sections">
 </head>
 <body class="paper-labs">
 <main class="jm-page">
@@ -445,8 +444,8 @@
     <nav class="jm-tabs" aria-label="Lesson sections">
       <button class="jm-tab active" type="button" data-tab="concept">Concept &amp; Formula</button>
       <button class="jm-tab" type="button" data-tab="tools">Interactive Tool</button>
-      <button class="jm-tab" type="button" data-tab="games">Games</button>
-      <button class="jm-tab" type="button" data-tab="comics">Comics</button>
+      <button class="jm-tab" type="button" data-tab="game">Game</button>
+      <button class="jm-tab" type="button" data-tab="comic">Comic</button>
       <button class="jm-tab" type="button" data-tab="summary">Summary</button>
       <button class="jm-tab" type="button" data-tab="quiz">Quiz</button>
     </nav>
@@ -455,26 +454,22 @@
       <section class="block jm-deck-panel">
 
       <div class="subnav">
-          <button class="chip active" data-deck="../../slides/factorization/perfect-square-sum/index.html" data-tex="(a+b)^2"></button>
-          <button class="chip" data-deck="../../slides/factorization/perfect-square-diff/index.html" data-tex="(a-b)^2"></button>
-          <button class="chip" data-deck="../../slides/factorization/difference-of-squares/index.html" data-tex="a^2-b^2"></button>
+          <button class="chip active" data-deck="../../slides/factorization/perfect-square-sum/index.html" data-tex="(a+b)^2">\( (a+b)^2 \)</button>
+          <button class="chip" data-deck="../../slides/factorization/perfect-square-diff/index.html" data-tex="(a-b)^2">\( (a-b)^2 \)</button>
+          <button class="chip" data-deck="../../slides/factorization/difference-of-squares/index.html" data-tex="a^2-b^2">\( a^2-b^2 \)</button>
         </div>
-        <div class="deck-slideshow">
-          <button type="button" class="deck-nav-btn deck-prev" id="deck-prev" aria-label="Previous slide">&larr;</button>
-          <div class="deck-wrap">
+        <div class="deck-slideshow"><div class="deck-wrap">
             <iframe id="deck-frame" src="../../slides/factorization/perfect-square-sum/index.html" title="Algebraic proof slides"></iframe>
-          </div>
-          <button type="button" class="deck-nav-btn deck-next" id="deck-next" aria-label="Next slide">&rarr;</button>
-        </div>
+          </div></div>
         <p class="hint hint-deck-desktop">Use &rarr; / Enter / click to advance, &larr; to go back. Each slide animates the algebraic (expansion) proof.</p>
         <p class="hint hint-deck-tablet">Swipe left for next slide, right for previous &mdash; or use the arrows. Each slide animates the algebraic (expansion) proof.</p>
         <p class="hint hint-deck-phone">Tap the &larr; and &rarr; buttons below the slide. Each slide animates the algebraic (expansion) proof.</p>
       </section>
     </section>    <section id="panel-tools" class="jm-panel hidden">
     <div class="subnav">
-      <button class="chip active" data-tool="sum" data-tex="(a+b)^2"></button>
-      <button class="chip" data-tool="diff" data-tex="(a-b)^2"></button>
-      <button class="chip" data-tool="dos" data-tex="a^2-b^2"></button>
+      <button class="chip active" data-tool="sum" data-tex="(a+b)^2">\( (a+b)^2 \)</button>
+      <button class="chip" data-tool="diff" data-tex="(a-b)^2">\( (a-b)^2 \)</button>
+      <button class="chip" data-tool="dos" data-tex="a^2-b^2">\( a^2-b^2 \)</button>
       <button class="chip" data-tool="cross">Cross method</button>
     </div>
     <div class="tool-layout">
@@ -600,8 +595,7 @@
       </div>
     </div>
   </section>
-    <section id="panel-games" class="jm-panel hidden">
-      <div id="panel-game">
+    <section id="panel-game" class="jm-panel hidden">
 <div class="subnav">
       <button type="button" class="chip active" data-factor-game="blaster">Factor Blaster</button>
       <button type="button" class="chip" data-factor-game="snake">Cross Method Snake</button>
@@ -695,9 +689,8 @@
       </div>
       <p class="hint">Controls: Arrow keys / WASD · Mobile: use the direction pad · Click <b>Start Snake</b> to begin</p>
     </div>
-        </div>
     </section>
-        <section id="panel-comics" class="jm-panel hidden">
+        <section id="panel-comic" class="jm-panel hidden">
           <div class="subnav" id="comics-series-nav" aria-label="Comic series"></div>
           <div class="subnav" id="comics-subnav" aria-label="Comic pages"></div>
           <div id="comics-stage"></div>
@@ -759,11 +752,7 @@
     </div>
       </section>
 <section id="panel-quiz" class="jm-panel hidden">
-    <div class="subnav" id="quiz-paper-nav" style="margin-bottom:16px">
-      <button type="button" class="chip active" data-quiz-paper="l01">Quiz 1 · L01</button>
-      <button type="button" class="chip" data-quiz-paper="l02">Quiz 2 · L02</button>
-    </div>
-    <div class="quiz-wrap" id="quiz-paper-l01">
+    <div class="quiz-wrap">
       <div class="quiz-progress-wrap" id="quiz-progress-wrap">
         <div class="quiz-progress-label" id="quiz-progress-label">Question 1 of 1</div>
         <div class="quiz-progress-track"><div class="quiz-progress-fill" id="quiz-progress-fill"><span class="quiz-progress-ok" id="quiz-progress-ok" aria-hidden="true"></span><span class="quiz-progress-bad" id="quiz-progress-bad" aria-hidden="true"></span></div></div>
@@ -773,27 +762,15 @@
         <button type="button" class="quiz-nav-btn" id="quiz-back">Back</button>
         <button type="button" class="quiz-nav-btn primary" id="quiz-next">Next</button>
       </div>
-      <p class="hint">L01 Cross Method — submit on the last question to see all results.</p>
     </div>
-    <div class="quiz-wrap" id="quiz-paper-l02" hidden>
-      <div class="quiz-progress-wrap" id="quiz-progress-wrap-l02">
-        <div class="quiz-progress-label" id="quiz-progress-label-l02">Question 1 of 1</div>
-        <div class="quiz-progress-track"><div class="quiz-progress-fill" id="quiz-progress-fill-l02"><span class="quiz-progress-ok" id="quiz-progress-ok-l02" aria-hidden="true"></span><span class="quiz-progress-bad" id="quiz-progress-bad-l02" aria-hidden="true"></span></div></div>
-      </div>
-      <div id="quiz-root-l02"></div>
-      <div class="quiz-nav" id="quiz-nav-l02">
-        <button type="button" class="quiz-nav-btn" id="quiz-back-l02">Back</button>
-        <button type="button" class="quiz-nav-btn primary" id="quiz-next-l02">Next</button>
-      </div>
-      <p class="hint">L02 Extended Factorization — submit on the last question to see all results.</p>
-    </div>
+    <p class="hint">Pick a section quiz, answer each question, use Next to move on. Submit on the last question to see all results.</p>
       </section>
   </main>
 
   <script defer src="https://cdn.jsdelivr.net/npm/katex@0.16.11/dist/contrib/auto-render.min.js"></script>
-  <script src="comics-manifest.js?v=20260923-local"></script>
-  <script src="../../shared/jm-comics-engine.js?v=20260923-engine"></script>
-  <script src="factorization-comics.js?v=20260923-local"></script>
+  <script src="comics-manifest.js?v=20260828-sel1"></script>
+  <script src="../../shared/jm-comics-engine.js?v=20260830-fu"></script>
+  <script src="factorization-comics.js?v=20260830-fu"></script>
   <script>
     function renderKatex(root) {
       if (!window.renderMathInElement) return;
@@ -820,20 +797,6 @@
   <script>
     document.addEventListener('DOMContentLoaded', function () {
       if (window.initJmTabs) window.initJmTabs();
-      var nav = document.getElementById('quiz-paper-nav');
-      if (!nav) return;
-      nav.addEventListener('click', function (e) {
-        var btn = e.target.closest('[data-quiz-paper]');
-        if (!btn) return;
-        nav.querySelectorAll('[data-quiz-paper]').forEach(function (el) {
-          el.classList.toggle('active', el === btn);
-        });
-        var paper = btn.getAttribute('data-quiz-paper');
-        var l01 = document.getElementById('quiz-paper-l01');
-        var l02 = document.getElementById('quiz-paper-l02');
-        if (l01) l01.hidden = paper !== 'l01';
-        if (l02) l02.hidden = paper !== 'l02';
-      });
     });
   </script>
   <script src="../../shared/suppress-ui-caret.js?v=20260904a"></script>

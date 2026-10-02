@@ -113,7 +113,10 @@
   function updateBitReadout(bits, targets) {
     const den = bitsToDenary(bits);
     const binStr = bitsToBinaryStringTrimmed(bits);
-    if (targets.binary) targets.binary.textContent = binStr + "(2)";
+    if (targets.binary) {
+      targets.binary.innerHTML = "\\(" + binStr + "_{(2)}\\)";
+      renderKatexIn(targets.binary);
+    }
     if (targets.denary) targets.denary.innerHTML = "\\(= " + den + "_{(10)}\\)";
     if (targets.expanded) targets.expanded.innerHTML = expandedFormHtml(bits);
     if (targets.denary && targets.denary.parentElement) {
@@ -164,8 +167,10 @@
   }
 
   function slotUnder(ev) {
+    const wrap = document.getElementById("bin-order-wrap");
     const el = document.elementFromPoint(ev.clientX, ev.clientY);
-    return el && el.closest ? el.closest(".sort-slot, .sort-pool") : null;
+    if (!el || !el.closest || !wrap || !wrap.contains(el)) return null;
+    return el.closest(".sort-slot, .sort-pool");
   }
 
   function genLadderNumber() {
@@ -482,7 +487,7 @@
           btn,
           e,
           function (ev) {
-            document.querySelectorAll(".sort-slot.drag-over").forEach(function (n) {
+            document.querySelectorAll("#bin-order-wrap .sort-slot.drag-over").forEach(function (n) {
               n.classList.remove("drag-over");
             });
             const hit = slotUnder(ev);
@@ -491,10 +496,24 @@
             }
           },
           function (ev, moved) {
-            document.querySelectorAll(".sort-slot.drag-over").forEach(function (n) {
+            document.querySelectorAll("#bin-order-wrap .sort-slot.drag-over").forEach(function (n) {
               n.classList.remove("drag-over");
             });
-            if (!moved) return;
+            if (!moved) {
+              const empty = orderPlacements.slots.indexOf(null);
+              const fromSlot = orderPlacements.slots.indexOf(card.id);
+              if (fromSlot >= 0) {
+                orderPlacements.slots[fromSlot] = null;
+                if (orderPlacements.pool.indexOf(card.id) < 0) orderPlacements.pool.push(card.id);
+              } else if (empty >= 0) {
+                orderPlacements.pool = orderPlacements.pool.filter(function (id) {
+                  return id !== card.id;
+                });
+                orderPlacements.slots[empty] = card.id;
+              }
+              renderOrder();
+              return;
+            }
             const hit = slotUnder(ev);
             const cardId = card.id;
             const fromSlotIdx = orderPlacements.slots.indexOf(cardId);

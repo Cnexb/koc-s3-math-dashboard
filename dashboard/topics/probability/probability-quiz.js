@@ -2,13 +2,160 @@
 (function () {
   "use strict";
 
-  const QUIZ = (window.MATH_QUIZ_BANKS || {})['probability'];
-  if (!QUIZ) return;
+  const FIG = "quiz-figures/";
 
+  const QUIZ_PRACTICE = [
+    {
+      id: 1,
+      type: "mc",
+      prompt:
+        "A letter is chosen randomly from the word \u2018UNIVERSITY\u2019. Find the probability that is a vowel.",
+      choices: ["\\frac{1}{5}", "\\frac{3}{10}", "\\frac{2}{5}", "\\frac{1}{2}"],
+      answer: 2,
+    },
+    {
+      id: 2,
+      type: "mc",
+      prompt:
+        "Samuel can choose to go to work by bus, taxi or MTR. Suppose he randomly chooses a mean of transport in two working days. Find the probability that Samuel chooses the same mean of transport in these two working days.",
+      choices: ["\\frac{2}{3}", "\\frac{1}{3}", "\\frac{1}{4}", "\\frac{3}{5}"],
+      answer: 1,
+    },
+    {
+      id: 3,
+      type: "mc",
+      prompt:
+        "There are 20 basketball and 35 tennis ball in a box. Nick repeats the action of drawing a ball from the box at random and putting it back into the box. Find the expected number of times of getting a tennis ball if he repeats the action for 385 times.",
+      choices: ["20", "35", "140", "245"],
+      answer: 3,
+    },
+    {
+      id: 4,
+      type: "mc",
+      prompt:
+        "The figure shows a circular fortune wheel in a lucky draw. Dylan turns the wheel once. If the pointer points at the region \u2018c\u2019, \u2018e\u2019 or \u2018g\u2019, a prize will be given. Find the probability that he gets a prize.",
+      figures: [{ src: FIG + "q4-wheel.png", alt: "Circular fortune wheel with sectors a to g" }],
+      choices: ["\\frac{1}{4}", "\\frac{1}{6}", "\\frac{1}{10}", "\\frac{1}{12}"],
+      answer: 0,
+    },
+    {
+      id: 5,
+      type: "mc",
+      prompt:
+        "A bag contains five $1.4 stamps, five $0.2 stamps and ten $0.1 stamps. A stamp is drawn at random from the bag. Find the expected face value of the stamp.",
+      choices: ["\\$0.35", "\\$0.4", "\\$0.45", "\\$0.5"],
+      answer: 2,
+    },
+    {
+      id: 6,
+      type: "mc",
+      prompt:
+        "There are 24 bottles of water and x bottles of tea on a table. If a bottle of drink is drawn at random, the probability of drawing a bottle of tea is \\frac{3}{5}. Find the value of x.",
+      choices: ["36", "38", "40", "42"],
+      answer: 0,
+    },
+    {
+      id: 7,
+      type: "mc",
+      prompt:
+        "6\u25b2 is a 2-digit number, where \u25b2 is an integer from 0 to 9 inclusive. Find the probability that the 2-digit number is divisible by 5.",
+      choices: ["\\frac{1}{10}", "\\frac{1}{5}", "\\frac{2}{5}", "\\frac{1}{2}"],
+      answer: 1,
+    },
+    {
+      id: 8,
+      type: "mc",
+      prompt:
+        "There are 2000 candidates in an examination. If one of the candidates is chosen randomly, the probability of choosing a female candidate is \\frac{11}{20}. Find the number of male candidates in the examination.",
+      choices: ["800", "900", "1000", "1100"],
+      answer: 1,
+    },
+    {
+      id: 9,
+      type: "mc",
+      prompt:
+        "Two fair dice are thrown at the same time. By using tabulation, find the probability that the sum of the two number is less than 9.",
+      choices: ["\\frac{5}{9}", "\\frac{13}{18}", "\\frac{2}{3}", "\\frac{4}{9}"],
+      answer: 1,
+    },
+    {
+      id: 10,
+      type: "mc",
+      prompt:
+        "Winnie\u2019s purse contains two $2 coins, one $5 coin and one $10 coin. On a flag day, Winnie takes out two coins randomly from her purse at the same time for donation. Find the expected donation amount.",
+      choices: ["\\$7", "\\$8.5", "\\$9.5", "\\$10"],
+      answer: 2,
+    },
+  ];
+
+  const QUIZ_L01 = [
+    {
+      id: 1,
+      type: "mc",
+      prompt: "Which of the following is a certain event?",
+      choices: [
+        "\\text{Tossing 10 coins and getting a tail}",
+        "\\text{The product of the numbers on two dice is at least 1}",
+        "\\text{A person dies before the age of 120}",
+        "\\text{A 3-digit number is a composite number}",
+      ],
+      answer: 1,
+    },
+    {
+      id: 2,
+      type: "mc",
+      prompt: "Which of the following is an impossible event?",
+      choices: [
+        "\\text{A family has 10 sons}",
+        "\\text{A coin shows tails 8 times in a row}",
+        "\\text{A card drawn is the king of clubs}",
+        "\\text{The product of the numbers on two dice is 7}",
+      ],
+      answer: 3,
+    },
+    {
+      id: 3,
+      type: "mc",
+      prompt:
+        "A bag contains x red balls, 6 blue balls and 10 green balls. If the probability of drawing a green ball is \\frac{5}{14}, find x.",
+      choices: ["12", "14", "16", "28"],
+      answer: 0,
+    },
+    {
+      id: 4,
+      type: "mc",
+      prompt:
+        "A 3-digit number is formed as \u25a143, where \u25a1 is a digit from 0 to 9. Find the probability that the number is divisible by 3.",
+      choices: ["\\frac{1}{3}", "\\frac{1}{5}", "\\frac{2}{5}", "\\frac{3}{10}"],
+      answer: 3,
+    },
+    {
+      id: 5,
+      type: "mc",
+      prompt:
+        "Two cards are drawn at the same time from the cards 2, 6, 8 and 11. Find the probability that the product of the two numbers is less than 48.",
+      choices: ["\\frac{1}{2}", "\\frac{1}{3}", "\\frac{2}{3}", "\\frac{3}{8}"],
+      answer: 0,
+    },
+  ];
+
+  const QUIZ_SETS = [
+    { key: "l01", label: "L01 \u00b7 Introduction to Probability", idPrefix: "prob-l01-q", questions: QUIZ_L01 },
+    { key: "practice", label: "Practice \u00b7 10 Questions", idPrefix: "prob-q", questions: QUIZ_PRACTICE },
+  ];
+
+  let activeSet = QUIZ_SETS[0];
+  let QUIZ = activeSet.questions;
 
   function kx(el, tex, display) {
     try { katex.render(tex, el, { throwOnError: false, displayMode: !!display }); }
     catch (e) { el.textContent = tex; }
+  }
+
+  function kxChoice(el, tex) {
+    const m = /^\\text\{([^{}]*)\}$/.exec(tex);
+    if (m) el.textContent = m[1];
+    else kx(el, tex);
   }
 
   function checkQuestion(q, answers) {
@@ -43,6 +190,46 @@
     if (!root || !nextBtn) return;
 
     const state = { index: 0, answers: {}, submitted: false, phase: "quiz" };
+
+    function buildSetBar() {
+      const wrap = document.createElement("div");
+      wrap.className = "quiz-set-bar";
+      QUIZ_SETS.forEach((set) => {
+        const btn = document.createElement("button");
+        btn.type = "button";
+        btn.className = "quiz-nav-btn quiz-set-btn";
+        btn.dataset.set = set.key;
+        btn.textContent = set.label;
+        btn.addEventListener("click", () => selectSet(set));
+        wrap.appendChild(btn);
+      });
+      const anchor = progressWrap || root;
+      if (anchor && anchor.parentNode) anchor.parentNode.insertBefore(wrap, anchor);
+      return wrap;
+    }
+
+    function syncSetBar() {
+      Array.prototype.forEach.call(setBar.children, (btn) => {
+        const on = btn.dataset.set === activeSet.key;
+        btn.classList.toggle("primary", on);
+        btn.setAttribute("aria-pressed", on ? "true" : "false");
+      });
+    }
+
+    // Each set reuses question ids from 1, so answers must be dropped on switch.
+    function selectSet(set) {
+      if (set === activeSet) return;
+      activeSet = set;
+      QUIZ = set.questions;
+      state.index = 0;
+      state.answers = {};
+      state.submitted = false;
+      state.phase = "quiz";
+      state.activeInputId = null;
+      render();
+    }
+
+    const setBar = buildSetBar();
 
     function updateProgress() {
       if (!progressWrap) return;
@@ -90,6 +277,7 @@
       root.innerHTML = "";
       updateProgress();
       updateNav();
+      syncSetBar();
       if (state.phase === "review") { renderReview(); return; }
       const q = QUIZ[state.index];
       if (q) root.appendChild(buildCard(q, false));
@@ -170,7 +358,7 @@
       msg.textContent = "Correct answer: ";
       const ans = document.createElement("span");
       ans.className = "quiz-ans-tex";
-      kx(ans, q.choices[q.answer]);
+      kxChoice(ans, q.choices[q.answer]);
       msg.appendChild(ans);
       block.appendChild(msg);
       return block;
@@ -198,7 +386,7 @@
         label.appendChild(letter);
         const math = document.createElement("span");
         math.className = "quiz-mc-tex";
-        kx(math, tex);
+        kxChoice(math, tex);
         label.appendChild(math);
         if (reviewMode) {
           if (i === q.answer) label.classList.add("reveal-ok");
@@ -242,13 +430,15 @@
         try {
           if (window.MathQuizTracker) {
             window.MathQuizTracker.reportQuiz(
-              window.MathQuizTracker.QUIZ_META['probability'],
+              {
+                quizId: "Prob1",
+                idPrefix: activeSet.idPrefix,
+                section: "JM30 Probabilities",
+                stemMode: "stem-or-prompt",
+                answerTextMode: "always-choices",
+              },
               QUIZ,
-              state.answers,
-              function (q, answers) {
-                var userAnswerIdx = answers[q.id];
-                return userAnswerIdx === q.answer;
-              }
+              state.answers
             );
           }
         } catch(_) {}

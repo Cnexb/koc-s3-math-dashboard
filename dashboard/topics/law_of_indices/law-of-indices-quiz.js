@@ -1,166 +1,216 @@
-/* Inequality quiz — paginated MC (10), progress bar, submit on last → all results */
+/* Law of Indices quiz — paginated MC, progress bar, submit on last → all results */
 (function () {
   "use strict";
-
-  const QUIZ_PRACTICE = [
-    {
-      id: 1,
-      type: "mc",
-      prompt: "Find the sum of all the negative integers x satisfying the inequality",
-      stem: "x > -2\\pi",
-      choices: ["-21\\pi", "-21", "-5", "0"],
-      answer: 1,
-    },
-    {
-      id: 2,
-      type: "mc",
-      prompt: "If 2x \u2264 3, which of the following is not true?",
-      choices: [
-        "4x \\le 2x + 3",
-        "1 - 2x \\le -2",
-        "2x + 3 \\le 6",
-        "\\frac{2x}{3} \\le 1",
-      ],
-      answer: 1,
-    },
-    {
-      id: 3,
-      type: "mc",
-      prompt: "If x \u2264 y and z > y, where z is a negative number, which of the following is not true?",
-      choices: [
-        "x \\le y < z",
-        "y - x < z - x",
-        "xz < xy",
-        "-\\frac{x}{4} < -\\frac{z}{4}",
-      ],
-      answer: 3,
-    },
-    {
-      id: 4,
-      type: "mc",
-      prompt: "Solve the inequality",
-      stem: "3(x + 2) < 5(6 - x)",
-      choices: ["x > 3", "x < 3", "x > -3", "x < -3"],
-      answer: 1,
-    },
-    {
-      id: 5,
-      type: "mc",
-      prompt: "Which of the following groups of numbers can all satisfy the inequality",
-      stem: "7x + 3 > 17",
-      choices: [
-        "-1,\\; 0,\\; 1",
-        "1,\\; 3,\\; 5",
-        "2,\\; 3,\\; 4",
-        "2.1,\\; 3.2,\\; 4.3",
-      ],
-      answer: 3,
-    },
-    {
-      id: 6,
-      type: "mc",
-      prompt: "Solve the inequality",
-      stem: "\\frac{x}{4} - 2 \\le 0.8 - \\frac{x}{3}",
-      choices: ["x > \\frac{24}{5}", "x \\le \\frac{24}{5}", "x \\le 5", "x \\ge 4.8"],
-      answer: 1,
-    },
-    {
-      id: 7,
-      type: "mc",
-      prompt: "Write down all positive integers satisfying",
-      stem: "x \\le \\frac{24}{5}",
-      choices: [
-        "1,\\; 2,\\; 3,\\; 4",
-        "1,\\; 2,\\; 3,\\; 4,\\; 5",
-        "1,\\; 2,\\; 3",
-        "2,\\; 3,\\; 4",
-      ],
-      answer: 0,
-    },
-    {
-      id: 8,
-      type: "mc",
-      prompt: "Write down all positive integers satisfying the inequality",
-      stem: "\\frac{4x + 3}{5} < \\frac{1 - 3x}{6} + 4",
-      choices: [
-        "1,\\; 2",
-        "1,\\; 2,\\; 3",
-        "1 \\text{ only}",
-        "2,\\; 3",
-      ],
-      answer: 0,
-    },
-    {
-      id: 9,
-      type: "mc",
-      prompt: "A non-negative number x satisfies the equation below, where k is a positive integral constant. How many possible values of k?",
-      stem: "\\frac{2x-k}{3} = \\frac{5x-7}{4} + \\frac{x+k}{6}",
-      choices: ["1", "2", "3", "4"],
-      answer: 2,
-    },
-    {
-      id: 10,
-      type: "mc",
-      prompt: "Using the same equation as above, find x when k = 3.",
-      stem: "\\frac{2x-k}{3} = \\frac{5x-7}{4} + \\frac{x+k}{6}",
-      choices: ["x = \\frac{1}{3}", "x = -\\frac{1}{3}", "x = \\frac{7}{3}", "x = 3"],
-      answer: 0,
-    },
-  ];
 
   const QUIZ_L01 = [
     {
       id: 1,
       type: "mc",
-      prompt: "If x < y, which of the following must be true?",
-      choices: ["x - 3 > y - 3", "3x > 3y", "y - x > 0", "x + y > 2y"],
-      answer: 2,
+      prompt: "Evaluate",
+      stem: "5^{-2}",
+      choices: [
+        "\\frac{-1}{25}",
+        "\\frac{1}{25}",
+        "-25",
+        "25",
+      ],
+      answer: 1,
     },
     {
       id: 2,
       type: "mc",
-      prompt: "If m \u2265 n and k > 0, which of the following must be true?",
-      items: [
-        { tag: "I.", tex: "k + m \\ge k + n" },
-        { tag: "II.", tex: "kn \\le km" },
-        { tag: "III.", tex: "m^{2} \\ge n^{2}" },
-      ],
+      prompt: "Simplify",
+      stem: "\\left(5x^{4}y\\right)^{3}",
       choices: [
-        "\\text{I and II only}",
-        "\\text{I and III only}",
-        "\\text{II and III only}",
-        "\\text{I, II and III}",
+        "15x^{4}y^{3}",
+        "15x^{7}y^{3}",
+        "125x^{7}y^{3}",
+        "125x^{12}y^{3}",
       ],
-      answer: 0,
+      answer: 3,
     },
     {
       id: 3,
       type: "mc",
-      prompt: "Solve the inequality",
-      stem: "4x + 7 > 6x - 11",
-      choices: ["x > 2", "x < 2", "x > 9", "x < 9"],
+      prompt: "Simplify",
+      stem: "\\frac{a^{10}}{a^{-5}}",
+      choices: [
+        "\\frac{1}{a^{2}}",
+        "a^{-2}",
+        "a^{-5}",
+        "a^{15}",
+      ],
       answer: 3,
     },
     {
       id: 4,
       type: "mc",
-      prompt: "The smallest integer that satisfies the inequality below is",
-      stem: "-5(x - 25) \\le -125",
-      choices: ["0", "1", "50", "51"],
+      prompt: "If x > 1, which of the following must be true?",
+      items: [
+        { tag: "I.", tex: "\\left(x^{2}\\right)^{0} = 0" },
+        { tag: "II.", tex: "\\left(x^{5}\\right)^{-2} = \\frac{1}{x^{10}}" },
+        { tag: "III.", tex: "x^{3-2} \\times x^{6} = \\frac{1}{x}" },
+      ],
+      choices: [
+        "\\text{I only}",
+        "\\text{II only}",
+        "\\text{I and III only}",
+        "\\text{II and III only}",
+      ],
+      answer: 1,
+    },
+    {
+      id: 5,
+      type: "mc",
+      prompt: "Simplify",
+      stem: "\\frac{\\left(x^{-1}y^{-2}\\right)^{4}}{y^{-3}}",
+      choices: [
+        "x^{3}y^{10}",
+        "\\frac{1}{x^{4}y^{5}}",
+        "\\frac{x^{3}}{y^{10}}",
+        "\\frac{y^{2}}{x}",
+      ],
+      answer: 1,
+    },
+  ];
+
+  const QUIZ_L02 = [
+    {
+      id: 1,
+      type: "mc",
+      prompt: "Express in scientific notation",
+      stem: "0.000\\,073\\,09",
+      choices: [
+        "7.309 \\times 10^{-5}",
+        "7.309 \\times 10^{-6}",
+        "73.09 \\times 10^{-5}",
+        "73.09 \\times 10^{-6}",
+      ],
+      answer: 0,
+    },
+    {
+      id: 2,
+      type: "mc",
+      prompt: "The length of the longest bridge in the world is about 16 490 000 cm. Express the length in scientific notation.",
+      choices: [
+        "1.649 \\times 10^{6}\\text{ cm}",
+        "16.49 \\times 10^{6}\\text{ cm}",
+        "1.649 \\times 10^{7}\\text{ cm}",
+        "16.49 \\times 10^{7}\\text{ cm}",
+      ],
+      answer: 2,
+    },
+    {
+      id: 3,
+      type: "mc",
+      prompt: "Evaluate",
+      stem: "2.74 \\times 10^{-6} + 9.05 \\times 10^{-5}",
+      choices: [
+        "1.179 \\times 10^{-11}",
+        "1.179 \\times 10^{-6}",
+        "9.324 \\times 10^{-6}",
+        "9.324 \\times 10^{-5}",
+      ],
+      answer: 3,
+    },
+    {
+      id: 4,
+      type: "mc",
+      prompt: "Which of the following numbers is the smallest?",
+      choices: [
+        "-7.9 \\times 10^{-11}",
+        "7.9 \\times 10^{-11}",
+        "-7.9 \\times 10^{11}",
+        "7.9 \\times 10^{11}",
+      ],
       answer: 2,
     },
     {
       id: 5,
       type: "mc",
-      prompt: "Which inequality represents \u201c2 times the sum of x and 3 is not greater than 1\u201d?",
-      choices: ["2x + 3 < 1", "2x + 3 \\le 1", "2(x + 3) < 1", "2(x + 3) \\le 1"],
+      prompt: "The speed of light is 3 \u00d7 10\u2075 km/s and the speed of sound is 300 m/s. The speed of light is how many times the speed of sound?",
+      choices: [
+        "10^{7}",
+        "10^{6}",
+        "10^{5}",
+        "10^{4}",
+      ],
+      answer: 1,
+    },
+  ];
+
+  const QUIZ_L03 = [
+    {
+      id: 1,
+      type: "mc",
+      prompt: "What is the place value of the digit 0 in",
+      stem: "110111_{2}",
+      choices: [
+        "4",
+        "6",
+        "8",
+        "16",
+      ],
+      answer: 2,
+    },
+    {
+      id: 2,
+      type: "mc",
+      prompt: "Convert into a denary number",
+      stem: "10111_{2}",
+      choices: [
+        "7_{10}",
+        "23_{10}",
+        "33_{10}",
+        "47_{10}",
+      ],
+      answer: 1,
+    },
+    {
+      id: 3,
+      type: "mc",
+      prompt: "Convert into a binary number",
+      stem: "28_{10}",
+      choices: [
+        "10101_{2}",
+        "11001_{2}",
+        "11011_{2}",
+        "11100_{2}",
+      ],
+      answer: 3,
+    },
+    {
+      id: 4,
+      type: "mc",
+      prompt: "Which of the following numbers lies between",
+      stem: "11001110_{2}\\quad\\text{and}\\quad 208_{10}",
+      choices: [
+        "98_{10}",
+        "156_{10}",
+        "207_{10}",
+        "310_{10}",
+      ],
+      answer: 2,
+    },
+    {
+      id: 5,
+      type: "mc",
+      prompt: "Write the following denary number as a binary number",
+      stem: "2^{9} + 2^{6} + 5 \\times 2^{3}",
+      choices: [
+        "100110010_{2}",
+        "100110100_{2}",
+        "1001100100_{2}",
+        "1001101000_{2}",
+      ],
       answer: 3,
     },
   ];
 
   const QUIZ_SETS = [
-    { key: "l01", label: "L01 \u00b7 Linear Inequalities in One Unknown", idPrefix: "ineq-l01-q", questions: QUIZ_L01 },
-    { key: "practice", label: "Practice \u00b7 10 Questions", idPrefix: "ineq-q", questions: QUIZ_PRACTICE },
+    { key: "l01", label: "L01 \u00b7 Positive, Zero and Negative Indices", idPrefix: "loi-l01-q", questions: QUIZ_L01 },
+    { key: "l02", label: "L02 \u00b7 Scientific Notation", idPrefix: "loi-l02-q", questions: QUIZ_L02 },
+    { key: "l03", label: "L03 \u00b7 Binary and Denary Numbers", idPrefix: "loi-l03-q", questions: QUIZ_L03 },
   ];
 
   let activeSet = QUIZ_SETS[0];
@@ -169,35 +219,30 @@
   const SYMBOLS = [
     { label: "x", insert: "x" },
     { label: "y", insert: "y" },
+    { label: "a", insert: "a" },
+    { label: "b", insert: "b" },
+    { label: "n", insert: "n" },
+    { label: "p", insert: "p" },
+    { label: "q", insert: "q" },
+    { label: "u", insert: "u" },
+    { label: "v", insert: "v" },
     { label: "z", insert: "z" },
-    { label: "k", insert: "k" },
-    { label: "π", insert: "\\pi" },
-    { label: "≤", insert: "\\le" },
-    { label: "≥", insert: "\\ge" },
-    { label: "<", insert: "<" },
-    { label: ">", insert: ">" },
-    { label: "≤ frac", insert: "\\frac{}{}" },
+    { label: "x²", insert: "x^2" },
+    { label: "y²", insert: "y^2" },
+    { label: "()²", insert: "()^2" },
+    { label: "^", insert: "^{}" },
     { label: "+", insert: "+" },
     { label: "−", insert: "-" },
-    { label: "=", insert: "=" },
-    { label: ",", insert: ", " },
     { label: "(", insert: "(" },
     { label: ")", insert: ")" },
+    { label: "α", insert: "\\alpha" },
+    { label: "β", insert: "\\beta" },
+    { label: "γ", insert: "\\gamma" },
   ];
 
-  function prepTex(tex, mode) {
-    let t = String(tex).replace(/\\frac\{/g, "\\dfrac{");
-    if (mode === "block" && !t.includes("\\displaystyle")) {
-      t = "\\displaystyle " + t;
-    }
-    return t;
-  }
-
-  function kx(el, tex, display) {
-    const mode = display ? "block" : "inline";
-    try {
-      katex.render(prepTex(tex, mode), el, { throwOnError: false, displayMode: !!display });
-    } catch (e) { el.textContent = tex; }
+  function kx(el, tex) {
+    try { katex.render(tex, el, { throwOnError: false, displayMode: false }); }
+    catch (e) { el.textContent = tex; }
   }
 
   function partKey(qid, tag) { return qid + "-" + tag; }
@@ -207,80 +252,92 @@
       .replace(/\u2212/g, "-")
       .replace(/\u2013/g, "-")
       .replace(/\s+/g, "")
-      .replace(/\\leq/g, "\\le")
-      .replace(/\\geq/g, "\\ge")
-      .replace(/≤/g, "\\le")
-      .replace(/≥/g, "\\ge")
+      .replace(/\\cdot/g, "")
+      .replace(/\\times/g, "")
+      .replace(/\*/g, "")
       .toLowerCase();
   }
 
-  function parseIntList(s) {
-    const t = String(s || "")
-      .replace(/\band\b/gi, ",")
-      .replace(/\u2212/g, "-")
-      .replace(/;/g, ",");
-    const nums = t.match(/-?\d+(?:\.\d+)?/g);
-    if (!nums) return null;
-    return nums.map(Number).sort((a, b) => a - b);
-  }
-
-  function intListsEqual(a, b) {
-    const pa = parseIntList(a);
-    const pb = parseIntList(b);
-    if (!pa || !pb || pa.length !== pb.length) return false;
-    return pa.every((v, i) => v === pb[i]);
-  }
-
-  function fracToDecimal(tex) {
-    const m = tex.match(/\\frac\{(-?\d+(?:\.\d+)?)\}\{(-?\d+(?:\.\d+)?)\}/);
-    if (!m) return null;
-    const den = +m[2];
-    if (!den) return null;
-    return +m[1] / den;
-  }
-
-  function ineqBound(tex) {
-    const n = normalizeTex(tex);
-    const m = n.match(/^x([<>]|\\le|\\ge|\\leq|\\geq)(.+)$/);
-    if (!m) return null;
-    let op = m[1].replace("\\leq", "\\le").replace("\\geq", "\\ge");
-    let val = m[2];
-    const dec = fracToDecimal(val);
-    if (dec != null) val = String(dec);
-    else val = val.replace(/\\frac\{(\d+)\}\{(\d+)\}/g, (_, a, b) => String(+a / +b));
-    return op + val;
-  }
-
-  function equivIneq(a, b) {
-    if (normalizeTex(a) === normalizeTex(b)) return true;
-    const ia = ineqBound(a);
-    const ib = ineqBound(b);
-    if (ia && ib && ia === ib) return true;
-    return false;
-  }
-
-  function equivCount(a, b) {
-    const na = normalizeTex(a).replace(/values?/g, "");
-    const nb = normalizeTex(b);
-    if (na === nb) return true;
-    const da = na.match(/\d+/);
-    const db = nb.match(/\d+/);
-    if (da && db && da[0] === db[0]) {
-      const list = parseIntList(a);
-      if (list && list.length === +da[0]) return true;
+  // Flip (a-b) ↔ (b-a) for squared-binomial matching, e.g. (3u-5v)^2 ≡ (5v-3u)^2
+  function binomialTerms(inner) {
+    if (/^[+-]/.test(inner)) {
+      const first = inner.match(/^([+-][^+-]+)/);
+      const rest = inner.slice(first[1].length);
+      return [first[1]].concat(rest.match(/[+-][^+-]+/g) || []);
     }
+    const m = inner.match(/^([^+-]+)([+-].+)?$/);
+    if (!m) return [inner];
+    const out = [m[1]];
+    if (m[2]) out.push(...m[2].match(/[+-][^+-]+/g) || []);
+    return out;
+  }
+
+  function flipBinomial(inner) {
+    const terms = binomialTerms(inner);
+    if (terms.length !== 2) return inner;
+    const norm = (t) => (t[0] === "+" || t[0] === "-" ? t : "+" + t);
+    const flipSign = (t) => (t[0] === "-" ? "+" : "-") + t.slice(1);
+    const a = norm(terms[0]);
+    const b = norm(terms[1]);
+    return flipSign(b).replace(/^\+/, "") + flipSign(a);
+  }
+
+  function canonicalSquaredFactor(fac) {
+    const m = fac.match(/^\(([^()]+)\)\^2$/);
+    if (!m) return fac;
+    const inner = m[1];
+    const flipped = flipBinomial(inner);
+    const key = [inner, flipped].sort().join("|");
+    return "sq(" + key + ")";
+  }
+
+  function parseFactorProduct(s) {
+    const n = normalizeTex(s);
+    if (!n) return null;
+    let scalar = "1";
+    let rest = n;
+    const sm = rest.match(/^(-?\d+)(?=\()/);
+    if (sm) {
+      scalar = sm[1];
+      rest = rest.slice(sm[0].length);
+    }
+    const factors = [];
+    while (rest.length) {
+      if (rest[0] !== "(") return null;
+      let depth = 0;
+      let j = 0;
+      for (; j < rest.length; j++) {
+        if (rest[j] === "(") depth++;
+        else if (rest[j] === ")") {
+          depth--;
+          if (!depth) { j++; break; }
+        }
+      }
+      let fac = rest.slice(0, j);
+      rest = rest.slice(j);
+      if (rest.startsWith("^2")) {
+        fac += "^2";
+        rest = rest.slice(2);
+      }
+      factors.push(canonicalSquaredFactor(fac));
+    }
+    if (rest.length) return null;
+    factors.sort();
+    return scalar + "::" + factors.join("|");
+  }
+
+  function equivTex(a, b) {
+    if (normalizeTex(a) === normalizeTex(b)) return true;
+    const pa = parseFactorProduct(a);
+    const pb = parseFactorProduct(b);
+    if (pa && pb && pa === pb) return true;
     return false;
   }
 
   function checkPart(part, ans) {
     if (ans == null || String(ans).trim() === "") return false;
     const targets = [part.answer].concat(part.accept || []);
-    return targets.some((t) => {
-      if (intListsEqual(ans, t)) return true;
-      if (equivIneq(ans, t)) return true;
-      if (equivCount(ans, t)) return true;
-      return normalizeTex(ans) === normalizeTex(t);
-    });
+    return targets.some((t) => equivTex(ans, t));
   }
 
   function checkQuestion(q, answers) {
@@ -288,7 +345,7 @@
     if (q.parts) {
       return q.parts.every((p) => checkPart(p, answers[partKey(q.id, p.tag)]));
     }
-    return checkPart({ answer: q.answer, accept: q.accept }, answers[q.id]);
+    return checkPart({ answer: q.answer }, answers[q.id]);
   }
 
   function initQuiz() {
@@ -311,8 +368,10 @@
     };
 
     function buildSetBar() {
+      if (QUIZ_SETS.length < 2) return null;
       const wrap = document.createElement("div");
       wrap.className = "quiz-set-bar";
+      wrap.style.cssText = "display:flex;gap:8px;flex-wrap:wrap;margin-bottom:12px";
       QUIZ_SETS.forEach((set) => {
         const btn = document.createElement("button");
         btn.type = "button";
@@ -328,6 +387,7 @@
     }
 
     function syncSetBar() {
+      if (!setBar) return;
       Array.prototype.forEach.call(setBar.children, (btn) => {
         const on = btn.dataset.set === activeSet.key;
         btn.classList.toggle("primary", on);
@@ -335,7 +395,7 @@
       });
     }
 
-    // Each set reuses question ids from 1, so answers must be dropped on switch.
+    // Each set reuses question ids 1-5, so answers must be dropped on switch.
     function selectSet(set) {
       if (set === activeSet) return;
       activeSet = set;
@@ -431,6 +491,12 @@
       num.className = "quiz-num";
       num.textContent = q.id + ".";
       head.appendChild(num);
+      if (q.prompt) {
+        const prompt = document.createElement("span");
+        prompt.className = "quiz-prompt";
+        prompt.textContent = q.prompt;
+        head.appendChild(prompt);
+      }
       if (reviewMode) {
         const mark = document.createElement("span");
         mark.className = "quiz-mark " + (ok ? "ok" : "bad");
@@ -439,25 +505,13 @@
       }
       card.appendChild(head);
 
-      const content = document.createElement("div");
-      content.className = "quiz-content";
-      if (q.prompt || q.stem) {
+      if (q.stem) {
         const stem = document.createElement("div");
         stem.className = "quiz-stem";
-        if (q.prompt) {
-          const line = document.createElement("p");
-          line.className = "quiz-stem-line";
-          line.textContent = q.prompt;
-          stem.appendChild(line);
-        }
-        if (q.stem) {
-          const line = document.createElement("p");
-          line.className = "quiz-stem-line quiz-stem-math";
-          kx(line, q.stem, true);
-          stem.appendChild(line);
-        }
-        content.appendChild(stem);
+        kx(stem, q.stem);
+        card.appendChild(stem);
       }
+
       if (q.items) {
         const list = document.createElement("div");
         list.className = "quiz-item-list";
@@ -474,26 +528,24 @@
           row.appendChild(tex);
           list.appendChild(row);
         });
-        content.appendChild(list);
+        card.appendChild(list);
       }
+
       const body = document.createElement("div");
       body.className = "quiz-body";
-      if (q.type === "mc") body.appendChild(buildMc(q, reviewMode));
-      else if (q.parts) body.appendChild(buildShortParts(q, reviewMode));
-      else body.appendChild(buildShortSingle(q, reviewMode));
-      content.appendChild(body);
-
-      if (q.figures && q.figures.length) {
-        const main = document.createElement("div");
-        main.className = "quiz-main";
-        main.appendChild(content);
-        main.appendChild(buildFigures(q.figures));
-        card.appendChild(main);
+      if (q.type === "mc") {
+        body.appendChild(buildMc(q, reviewMode));
+      } else if (q.parts) {
+        body.appendChild(buildShortParts(q, reviewMode));
       } else {
-        card.appendChild(content);
+        body.appendChild(buildShortSingle(q, reviewMode));
+      }
+      card.appendChild(body);
+
+      if (reviewMode && !ok) {
+        card.appendChild(buildCorrectBlock(q));
       }
 
-      if (reviewMode && !ok) card.appendChild(buildCorrectBlock(q));
       return card;
     }
 
@@ -537,19 +589,6 @@
       return block;
     }
 
-    function buildFigures(figs) {
-      const wrap = document.createElement("div");
-      wrap.className = "quiz-figure" + (figs.length > 1 ? " quiz-figure-stack" : "");
-      figs.forEach((fig) => {
-        const img = document.createElement("img");
-        img.src = fig.src;
-        img.alt = fig.alt || "Figure";
-        img.loading = "lazy";
-        wrap.appendChild(img);
-      });
-      return wrap;
-    }
-
     function buildMc(q, reviewMode) {
       const list = document.createElement("div");
       list.className = "quiz-mc";
@@ -564,7 +603,9 @@
         inp.value = String(i);
         inp.disabled = reviewMode;
         if (state.answers[q.id] === i) inp.checked = true;
-        if (!reviewMode) inp.addEventListener("change", () => { state.answers[q.id] = i; });
+        if (!reviewMode) {
+          inp.addEventListener("change", () => { state.answers[q.id] = i; });
+        }
         label.appendChild(inp);
         const letter = document.createElement("span");
         letter.className = "quiz-mc-letter";
@@ -572,7 +613,7 @@
         label.appendChild(letter);
         const math = document.createElement("span");
         math.className = "quiz-mc-tex";
-        kx(math, tex, false);
+        kx(math, tex);
         label.appendChild(math);
         if (reviewMode) {
           if (i === q.answer) label.classList.add("reveal-ok");
@@ -602,11 +643,13 @@
       const wrap = document.createElement("div");
       wrap.className = "quiz-short-wrap";
       if (!reviewMode) wrap.appendChild(buildSymBar());
+
       q.parts.forEach((p) => {
         const key = partKey(q.id, p.tag);
         const partOk = checkPart(p, state.answers[key]);
         const block = document.createElement("div");
         block.className = "quiz-part";
+
         const head = document.createElement("div");
         head.className = "quiz-part-head";
         const lbl = document.createElement("span");
@@ -620,10 +663,12 @@
           head.appendChild(mark);
         }
         block.appendChild(head);
+
         const stem = document.createElement("div");
         stem.className = "quiz-part-stem";
         kx(stem, p.stem);
         block.appendChild(stem);
+
         if (reviewMode) {
           const yours = document.createElement("div");
           yours.className = "quiz-yours";
@@ -664,7 +709,9 @@
       const wrap = document.createElement("div");
       wrap.className = "quiz-short-wrap";
       const key = String(q.id);
+
       if (!reviewMode) wrap.appendChild(buildSymBar());
+
       if (reviewMode) {
         const yours = document.createElement("div");
         yours.className = "quiz-yours";
@@ -720,9 +767,19 @@
       const end = ta.selectionEnd;
       const val = ta.value;
       let ins = text;
-      if (text === "\\frac{}{}") {
-        ta.value = val.slice(0, start) + "\\frac{}{}" + val.slice(end);
-        ta.setSelectionRange(start + 6, start + 6);
+      if (text === "^{}") {
+        const sel = val.slice(start, end);
+        ins = sel ? "^{" + sel + "}" : "^{}";
+        ta.value = val.slice(0, start) + ins + val.slice(end);
+        ta.setSelectionRange(start + (sel ? ins.length : 2), start + (sel ? ins.length : 2));
+      } else if (text === "()^2") {
+        const sel = val.slice(start, end);
+        ins = sel ? "(" + sel + ")^2" : "( )^2";
+        ta.value = val.slice(0, start) + ins + val.slice(end);
+        ta.setSelectionRange(
+          sel ? start + ins.length : start + 1,
+          sel ? start + ins.length : start + 1
+        );
       } else {
         ta.value = val.slice(0, start) + ins + val.slice(end);
         ta.setSelectionRange(start + ins.length, start + ins.length);
@@ -775,9 +832,9 @@
           if (window.MathQuizTracker) {
             window.MathQuizTracker.reportQuiz(
               {
-                quizId: "Ine1",
+                quizId: "Index",
                 idPrefix: activeSet.idPrefix,
-                section: "JM26 Inequalities I",
+                section: "JM24 Law of Indices",
                 stemMode: "stem-only",
                 answerTextMode: "mc-only",
               },

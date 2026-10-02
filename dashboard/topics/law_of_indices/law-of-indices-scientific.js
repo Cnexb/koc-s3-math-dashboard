@@ -60,13 +60,17 @@
 
   function formatOrdinaryDisplay(n) {
     if (!isFinite(n)) return String(n);
-    if (Math.abs(n) >= 1 && Math.abs(n) < 1e12 && Math.abs(n) >= 1e-6) {
+    if (n === 0) return "0";
+    const abs = Math.abs(n);
+    if (abs >= 1e-6 && abs < 1e12) {
       return n.toLocaleString("en-US", { maximumFractionDigits: 12 });
     }
+    if (abs >= 1e-18 && abs < 1e18) {
+      const extra = Math.min(18, Math.max(0, Math.ceil(-Math.log10(abs)) + 6));
+      return n.toFixed(extra).replace(/(\.\d*?)0+$/, "$1").replace(/\.$/, "");
+    }
     const parts = n.toExponential(6).split("e");
-    const mant = parts[0];
-    const exp = Number(parts[1]);
-    return mant + " × 10^" + exp;
+    return Number(parts[0]) + " × 10^{" + Number(parts[1]) + "}";
   }
 
   function sciTex(m, e) {
@@ -74,8 +78,29 @@
     return m + " \\times " + em;
   }
 
-  function nearlyEqual(a, b, tol) {
-    return Math.abs(a - b) <= (tol || 1e-6) * Math.max(1, Math.abs(b));
+  function nearlyEqual(a, b, relTol) {
+    if (!isFinite(a) || !isFinite(b)) return false;
+    if (a === b) return true;
+    var scale = Math.max(Math.abs(a), Math.abs(b));
+    var rel = relTol == null ? 1e-6 : relTol;
+    if (scale === 0) return true;
+    return Math.abs(a - b) <= rel * scale;
+  }
+
+  function parseOrdinaryInput(raw) {
+    if (raw == null) return NaN;
+    var s = String(raw).trim().replace(/,/g, "").replace(/\s/g, "");
+    if (!s) return NaN;
+    s = s.replace(/[×xX]/g, "*");
+    var m = s.match(/^([+-]?\d*\.?\d+(?:e[+-]?\d+)?)\*10\^?\{?([+-]?\d+)\}?$/i);
+    if (m) return Number(m[1]) * Math.pow(10, Number(m[2]));
+    return Number(s);
+  }
+
+  function inStandardForm(m) {
+    if (!isFinite(m)) return false;
+    if (m === 0) return true;
+    return Math.abs(m) >= 1 && Math.abs(m) < 10;
   }
 
   function normalizeSciInput(m, e) {
@@ -170,16 +195,26 @@
   }
 
   function digitsFromNumber(n) {
-    let s = String(n);
-    if (s.includes("e")) {
-      s = n.toFixed(20).replace(/\.?0+$/, "");
+    if (!isFinite(n) || n === 0) return { digits: ["0"], decPos: 1, negative: n < 0 };
+    const sci = toScientific(n);
+    let ms = String(Math.abs(sci.mantissa));
+    if (ms.indexOf("e") >= 0) {
+      ms = Math.abs(sci.mantissa).toPrecision(8);
     }
-    s = s.replace(/,/g, "");
-    const parts = s.split(".");
-    const intPart = parts[0].replace("-", "");
-    const fracPart = parts[1] || "";
-    const digits = (intPart + fracPart).split("");
-    const decPos = intPart.length;
+    if (ms.indexOf(".") >= 0) {
+      ms = ms.replace(/0+$/, "").replace(/\.$/, "");
+    }
+    const parts = ms.split(".");
+    let digits = (parts[0] + (parts[1] || "")).replace(/^0+/, "");
+    if (!digits) digits = "0";
+    digits = digits.split("");
+    let decPos = (parts[0] === "0" || parts[0] === "") ? 0 : parts[0].replace(/^0+/, "").length;
+    decPos += sci.exp;
+    while (decPos <= 0) {
+      digits.unshift("0");
+      decPos++;
+    }
+    while (decPos > digits.length) digits.push("0");
     return { digits: digits, decPos: decPos, negative: n < 0 };
   }
 
@@ -317,7 +352,7 @@
       q.innerHTML =
         "Write \\(" + sciTex(sci.mantissa, sci.exp) + "\\) as an ordinary number.";
       fields.innerHTML =
-        '<label>Answer: <input id="sci-cv-val" type="number" step="any" style="width:min(220px,100%)"></label>';
+        '<label>Answer: <input id="sci-cv-val" type="text" inputmode="decimal" placeholder="e.g. 0.000504 or 5.04e-4" style="width:min(240px,100%)"></label>';
       renderKatexIn(q);
     }
     const fb = document.getElementById("fb-sci-convert");
@@ -331,28 +366,47 @@
     const q = window._sciConvertQuiz;
     if (!q) return;
     if (q.mode === "toSci") {
-      const a = Number(document.getElementById("sci-cv-a").value);
-      const n = Number(document.getElementById("sci-cv-n").value);
-      const norm = normalizeSciInput(a, n);
-      if (nearlyEqual(sciValue(norm.mantissa, norm.exp), q.n, 1e-3)) {
+      const aEl = document.getElementById("sci-cv-a");
+      const nEl = document.getElementById("sci-cv-n");
+      const a = Number(aEl && aEl.value);
+      const n = Number(nEl && nEl.value);
+      if (!isFinite(a) || !isFinite(n) || String(aEl.value).trim() === "" || String(nEl.value).trim() === "") {
+        fb.className = "feedback warn";
+        fb.textContent = "Enter both the coefficient a and the index n.";
+        return;
+      }
+      const valueOk = nearlyEqual(sciValue(a, n), q.n, 1e-6);
+      if (valueOk && inStandardForm(a)) {
+        const norm = normalizeSciInput(a, n);
         fb.className = "feedback ok";
-        fb.innerHTML = "Correct — \\(" + sciTex(norm.mantissa, norm.exp) + "\\).";
+        fb.innerHTML = "Correct — \\(" + sciTex(norm.mantissa, norm.exp) + "\\). One non-zero digit stands before the decimal.";
         revealFormula("formula-sci-convert", sciTex(norm.mantissa, norm.exp));
+      } else if (valueOk) {
+        fb.className = "feedback warn";
+        fb.innerHTML = "Same value, but standard form needs \\(1 \\le a < 10\\). Rewrite as \\(" +
+          sciTex(q.sci.mantissa, q.sci.exp) + "\\).";
+        revealFormula("formula-sci-convert", sciTex(q.sci.mantissa, q.sci.exp));
       } else {
         fb.className = "feedback bad";
-        fb.textContent = "Check: is \\(1 \\le a < 10\\)? Does \\(a \\times 10^n\\) equal the original number?";
-        renderKatexIn(fb);
+        fb.innerHTML = "Move the decimal until \\(1 \\le a < 10\\), then count the jumps. Answer: \\(" +
+          sciTex(q.sci.mantissa, q.sci.exp) + "\\).";
       }
     } else {
-      const val = Number(document.getElementById("sci-cv-val").value);
-      if (nearlyEqual(val, q.n, Math.max(1, Math.abs(q.n) * 1e-6))) {
+      const valEl = document.getElementById("sci-cv-val");
+      const val = parseOrdinaryInput(valEl && valEl.value);
+      if (!isFinite(val)) {
+        fb.className = "feedback warn";
+        fb.textContent = "Enter the ordinary number (you can use 5.04e-4).";
+        return;
+      }
+      if (nearlyEqual(val, q.n, 1e-6)) {
         fb.className = "feedback ok";
         fb.innerHTML = "Correct — \\(" + formatOrdinaryDisplay(q.n) + "\\).";
-        revealFormula("formula-sci-convert", sciTex(q.sci.mantissa, q.sci.exp) + " = " + q.n);
+        revealFormula("formula-sci-convert", sciTex(q.sci.mantissa, q.sci.exp) + " = " + formatOrdinaryDisplay(q.n));
       } else {
         fb.className = "feedback bad";
-        fb.textContent = "Expand the power of 10 — multiply the coefficient by \\(10^n\\).";
-        renderKatexIn(fb);
+        fb.innerHTML = "Multiply the coefficient by the power of 10. \\(" +
+          sciTex(q.sci.mantissa, q.sci.exp) + " = " + formatOrdinaryDisplay(q.n) + "\\).";
       }
     }
     renderKatexIn(fb);
@@ -394,8 +448,21 @@
         sciTex(ans.mantissa, ans.exp) + "\\).";
       revealFormula("formula-sci-arith", sciTex(ans.mantissa, ans.exp));
     } else {
+      const item = window._sciArith;
       fb.className = "feedback bad";
-      fb.textContent = "Combine coefficients, then add or subtract the indices.";
+      if (item && item.op === "×") {
+        fb.innerHTML =
+          "Multiply coefficients \\(" + item.m1 + "\\times" + item.m2 + "=" + (item.m1 * item.m2) +
+          "\\), add indices \\(" + item.e1 + "+" + item.e2 + "=" + (item.e1 + item.e2) +
+          "\\). Standard form: \\(" + sciTex(ans.mantissa, ans.exp) + "\\).";
+      } else if (item) {
+        fb.innerHTML =
+          "Divide coefficients \\(" + item.m1 + "\\div" + item.m2 + "=" + (item.m1 / item.m2) +
+          "\\), subtract indices \\(" + item.e1 + "-(" + item.e2 + ")=" + (item.e1 - item.e2) +
+          "\\). Standard form: \\(" + sciTex(ans.mantissa, ans.exp) + "\\).";
+      } else {
+        fb.textContent = "Combine coefficients, then add or subtract the indices.";
+      }
     }
     renderKatexIn(fb);
   }
@@ -443,8 +510,44 @@
   }
 
   function slotUnder(ev) {
+    const wrap = document.getElementById("sci-sort-wrap");
     const el = document.elementFromPoint(ev.clientX, ev.clientY);
-    return el && el.closest ? el.closest(".sort-slot, .sort-pool") : null;
+    if (!el || !el.closest || !wrap || !wrap.contains(el)) return null;
+    return el.closest(".sort-slot, .sort-pool");
+  }
+
+  function placeSortCard(idx, target) {
+    if (target && target.classList.contains("sort-pool")) {
+      sortSlots = sortSlots.map(function (x) {
+        return x === idx ? null : x;
+      });
+    } else if (target && target.classList.contains("sort-slot")) {
+      const slot = Number(target.dataset.slot);
+      sortSlots.forEach(function (x, i) {
+        if (x === idx) sortSlots[i] = null;
+      });
+      if (sortSlots[slot] != null && sortSlots[slot] !== idx) {
+        sortPool.push(sortSlots[slot]);
+      }
+      sortSlots[slot] = idx;
+      sortPool = sortPool.filter(function (x) {
+        return sortSlots.indexOf(x) < 0;
+      });
+    } else {
+      const empty = sortSlots.indexOf(null);
+      if (empty >= 0 && sortSlots.indexOf(idx) < 0) {
+        sortSlots[empty] = idx;
+        sortPool = sortPool.filter(function (x) {
+          return x !== idx;
+        });
+      } else if (sortSlots.indexOf(idx) >= 0) {
+        sortSlots = sortSlots.map(function (x) {
+          return x === idx ? null : x;
+        });
+        if (sortPool.indexOf(idx) < 0) sortPool.push(idx);
+      }
+    }
+    renderSortUI();
   }
 
   function makeSortCard(card, idx) {
@@ -456,34 +559,25 @@
     btn.addEventListener("pointerdown", function (e) {
       e.preventDefault();
       ghostDrag(btn, e, function (ev, moved) {
-        document.querySelectorAll(".sort-slot").forEach(function (s) {
+        const wrap = document.getElementById("sci-sort-wrap");
+        if (!wrap) return;
+        wrap.querySelectorAll(".sort-slot").forEach(function (s) {
           s.classList.toggle("drag-over", slotUnder(ev) === s);
         });
       }, function (ev, moved) {
-        document.querySelectorAll(".sort-slot").forEach(function (s) {
-          s.classList.remove("drag-over");
-        });
-        if (!moved) return;
-        const target = slotUnder(ev);
-        if (!target) return;
-        if (target.classList.contains("sort-pool")) {
-          sortSlots = sortSlots.map(function (x) {
-            return x === idx ? null : x;
-          });
-        } else if (target.classList.contains("sort-slot")) {
-          const slot = Number(target.dataset.slot);
-          sortSlots.forEach(function (x, i) {
-            if (x === idx) sortSlots[i] = null;
-          });
-          if (sortSlots[slot] != null && sortSlots[slot] !== idx) {
-            sortPool.push(sortSlots[slot]);
-          }
-          sortSlots[slot] = idx;
-          sortPool = sortPool.filter(function (x) {
-            return sortSlots.indexOf(x) < 0;
+        const wrap = document.getElementById("sci-sort-wrap");
+        if (wrap) {
+          wrap.querySelectorAll(".sort-slot").forEach(function (s) {
+            s.classList.remove("drag-over");
           });
         }
-        renderSortUI();
+        const target = slotUnder(ev);
+        if (!moved) {
+          placeSortCard(idx, null);
+          return;
+        }
+        if (!target) return;
+        placeSortCard(idx, target);
       });
     });
     return btn;
@@ -554,7 +648,11 @@
       revealFormula("formula-sci-sort", tex);
     } else {
       fb.className = "feedback bad";
-      fb.textContent = "Compare the actual values — rewrite each in \\(a\\times10^n\\) with \\(1\\le a<10\\) if needed.";
+      const tex = expect.map(function (v) {
+        const s = toScientific(v);
+        return sciTex(s.mantissa, s.exp);
+      }).join(set.asc ? " < " : " > ");
+      fb.innerHTML = "Rewrite each as \\(a\\times10^n\\) with \\(1\\le a<10\\), then compare the powers. Order: \\(" + tex + "\\).";
       renderKatexIn(fb);
     }
   }
@@ -587,6 +685,11 @@
 
     if (window.initStepper) {
       window.initStepper("sci-intro");
+    }
+    var walkHost = document.getElementById("sci-walkthrough-host");
+    if (walkHost && window.SciNotationTool && !walkHost.dataset.ready) {
+      window.SciNotationTool.init(walkHost);
+      walkHost.dataset.ready = "1";
     }
   }
 
