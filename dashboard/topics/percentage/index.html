@@ -19,7 +19,7 @@
   <script defer src="percentage-game.js"></script>
   <script defer src="percentage-bank-game.js"></script>
   <script defer src="percentage-tools.js?v=20260828-eric-jm27"></script>
-  <script defer src="percentage-quiz.js?v=20260928-sections"></script>
+  <script defer src="percentage-quiz.js?v=20261004-sections"></script>
   <script defer src="../../shared/jm-comics-engine.js?v=20260830-fu"></script>
   <script defer src="percentage-comics.js?v=20260830-fu"></script>
   <style>
@@ -556,6 +556,9 @@
     .quiz-stem { font-size: 17px; margin-bottom: 14px; max-width: 100%; overflow-x: auto; line-height: 1.55; color: var(--ink); -webkit-overflow-scrolling: touch; }
     .quiz-stem .katex, .quiz-stem .katex-display { font-size: 1em; max-width: 100%; }
     .quiz-stem .katex-display { margin: 0; text-align: left; overflow-x: auto; }
+    .quiz-item-list { margin: 0 0 14px; display: flex; flex-direction: column; gap: 6px; }
+    .quiz-item-row { display: flex; align-items: baseline; gap: 8px; font-size: 17px; }
+    .quiz-item-tag { font-weight: 700; color: var(--dim); min-width: 28px; font-family: "JetBrains Mono", monospace; }
     .quiz-mc { display: flex; flex-direction: column; gap: 8px; min-width: 0; }
     .quiz-mc-opt { display: flex; align-items: flex-start; gap: 10px; padding: 10px 12px; border-radius: 10px; border: 1px solid var(--line); background: var(--panel2); cursor: pointer; transition: border-color .15s; min-width: 0; }
     .quiz-mc-opt:hover:not(.locked) { border-color: var(--a); }
