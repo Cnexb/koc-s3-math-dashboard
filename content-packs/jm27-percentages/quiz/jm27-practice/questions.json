@@ -10,19 +10,19 @@
       "options": [
         {
           "key": "A",
-          "text": "\\text{no change}"
+          "text": "no change"
         },
         {
           "key": "B",
-          "text": "\\text{an increase of }0.8\\text{ kg}"
+          "text": "an increase of 0.8 kg"
         },
         {
           "key": "C",
-          "text": "\\text{a decrease of }0.8\\text{ kg}"
+          "text": "a decrease of 0.8 kg"
         },
         {
           "key": "D",
-          "text": "\\text{a decrease of }8\\text{ kg}"
+          "text": "a decrease of 8 kg"
         }
       ],
       "answer": "C"
@@ -36,19 +36,19 @@
       "options": [
         {
           "key": "A",
-          "text": "-15\\%"
+          "text": "-15%"
         },
         {
           "key": "B",
-          "text": "+15\\%"
+          "text": "+15%"
         },
         {
           "key": "C",
-          "text": "-10.5\\%"
+          "text": "-10.5%"
         },
         {
           "key": "D",
-          "text": "+10.5\\%"
+          "text": "+10.5%"
         }
       ],
       "answer": "D"
@@ -62,19 +62,19 @@
       "options": [
         {
           "key": "A",
-          "text": "\\$148000"
+          "text": "$148000"
         },
         {
           "key": "B",
-          "text": "\\$74000"
+          "text": "$74000"
         },
         {
           "key": "C",
-          "text": "\\$58000"
+          "text": "$58000"
         },
         {
           "key": "D",
-          "text": "\\$12000"
+          "text": "$12000"
         }
       ],
       "answer": "A"
@@ -88,19 +88,19 @@
       "options": [
         {
           "key": "A",
-          "text": "\\$3000"
+          "text": "$3000"
         },
         {
           "key": "B",
-          "text": "\\$4000"
+          "text": "$4000"
         },
         {
           "key": "C",
-          "text": "\\$5000"
+          "text": "$5000"
         },
         {
           "key": "D",
-          "text": "\\$6000"
+          "text": "$6000"
         }
       ],
       "answer": "C"
@@ -114,19 +114,19 @@
       "options": [
         {
           "key": "A",
-          "text": "\\$109000"
+          "text": "$109000"
         },
         {
           "key": "B",
-          "text": "\\$195000"
+          "text": "$195000"
         },
         {
           "key": "C",
-          "text": "\\$249000"
+          "text": "$249000"
         },
         {
           "key": "D",
-          "text": "\\$335000"
+          "text": "$335000"
         }
       ],
       "answer": "D"
@@ -140,19 +140,19 @@
       "options": [
         {
           "key": "A",
-          "text": "\\$61440"
+          "text": "$61440"
         },
         {
           "key": "B",
-          "text": "\\$614400"
+          "text": "$614400"
         },
         {
           "key": "C",
-          "text": "\\$150000"
+          "text": "$150000"
         },
         {
           "key": "D",
-          "text": "\\$88560"
+          "text": "$88560"
         }
       ],
       "answer": "A"
@@ -166,19 +166,19 @@
       "options": [
         {
           "key": "A",
-          "text": "\\$600"
+          "text": "$600"
         },
         {
           "key": "B",
-          "text": "\\$520"
+          "text": "$520"
         },
         {
           "key": "C",
-          "text": "\\$640"
+          "text": "$640"
         },
         {
           "key": "D",
-          "text": "\\$720"
+          "text": "$720"
         }
       ],
       "answer": "C"
@@ -192,19 +192,19 @@
       "options": [
         {
           "key": "A",
-          "text": "\\$5800"
+          "text": "$5800"
         },
         {
           "key": "B",
-          "text": "\\$6000"
+          "text": "$6000"
         },
         {
           "key": "C",
-          "text": "\\$6313"
+          "text": "$6313"
         },
         {
           "key": "D",
-          "text": "\\$6500"
+          "text": "$6500"
         }
       ],
       "answer": "C"
@@ -218,19 +218,19 @@
       "options": [
         {
           "key": "A",
-          "text": "\\$648"
+          "text": "$648"
         },
         {
           "key": "B",
-          "text": "\\$720"
+          "text": "$720"
         },
         {
           "key": "C",
-          "text": "\\$672"
+          "text": "$672"
         },
         {
           "key": "D",
-          "text": "\\$864"
+          "text": "$864"
         }
       ],
       "answer": "A"
@@ -244,19 +244,19 @@
       "options": [
         {
           "key": "A",
-          "text": "\\$38720"
+          "text": "$38720"
         },
         {
           "key": "B",
-          "text": "\\$40000"
+          "text": "$40000"
         },
         {
           "key": "C",
-          "text": "\\$44000"
+          "text": "$44000"
         },
         {
           "key": "D",
-          "text": "\\$38000"
+          "text": "$38000"
         }
       ],
       "answer": "A"

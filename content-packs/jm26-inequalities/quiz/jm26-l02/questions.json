@@ -88,19 +88,19 @@
       "options": [
         {
           "key": "A",
-          "text": "\\text{I and II only}"
+          "text": "I and II only"
         },
         {
           "key": "B",
-          "text": "\\text{I and III only}"
+          "text": "I and III only"
         },
         {
           "key": "C",
-          "text": "\\text{II and III only}"
+          "text": "II and III only"
         },
         {
           "key": "D",
-          "text": "\\text{I, II and III}"
+          "text": "I, II and III"
         }
       ],
       "answer": "A"

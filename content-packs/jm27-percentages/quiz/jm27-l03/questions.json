@@ -6,23 +6,23 @@
       "topic": "JM27",
       "section": "L03",
       "difficulty": "Standard",
-      "stem": "Refer to the progressive tax rates below. Amy's net chargeable income is $30 000. Find her salaries tax.\\n\\n\\text{On the first }\\$50\\,000:\\ 2\\%\\n\\text{On the next }\\$50\\,000:\\ 6\\%\\n\\text{On the next }\\$50\\,000:\\ 10\\%\\n\\text{On the next }\\$50\\,000:\\ 14\\%\\n\\text{Remainder: }17\\%",
+      "stem": "Refer to the progressive tax rates below. Amy's net chargeable income is $30 000. Find her salaries tax.\\n\\nOn the first $50,000: 2%\\nOn the next $50,000: 6%\\nOn the next $50,000: 10%\\nOn the next $50,000: 14%\\nRemainder: 17%",
       "options": [
         {
           "key": "A",
-          "text": "\\$400"
+          "text": "$400"
         },
         {
           "key": "B",
-          "text": "\\$600"
+          "text": "$600"
         },
         {
           "key": "C",
-          "text": "\\$800"
+          "text": "$800"
         },
         {
           "key": "D",
-          "text": "\\$1\\,500"
+          "text": "$1,500"
         }
       ],
       "answer": "B"
@@ -36,19 +36,19 @@
       "options": [
         {
           "key": "A",
-          "text": "\\$1\\,800"
+          "text": "$1,800"
         },
         {
           "key": "B",
-          "text": "\\$2\\,400"
+          "text": "$2,400"
         },
         {
           "key": "C",
-          "text": "\\$2\\,800"
+          "text": "$2,800"
         },
         {
           "key": "D",
-          "text": "\\$4\\,800"
+          "text": "$4,800"
         }
       ],
       "answer": "C"
@@ -62,19 +62,19 @@
       "options": [
         {
           "key": "A",
-          "text": "\\$7\\,000"
+          "text": "$7,000"
         },
         {
           "key": "B",
-          "text": "\\$8\\,000"
+          "text": "$8,000"
         },
         {
           "key": "C",
-          "text": "\\$9\\,000"
+          "text": "$9,000"
         },
         {
           "key": "D",
-          "text": "\\$10\\,500"
+          "text": "$10,500"
         }
       ],
       "answer": "C"
@@ -88,19 +88,19 @@
       "options": [
         {
           "key": "A",
-          "text": "\\$0"
+          "text": "$0"
         },
         {
           "key": "B",
-          "text": "\\$400"
+          "text": "$400"
         },
         {
           "key": "C",
-          "text": "\\$800"
+          "text": "$800"
         },
         {
           "key": "D",
-          "text": "\\$3\\,600"
+          "text": "$3,600"
         }
       ],
       "answer": "A"
@@ -114,19 +114,19 @@
       "options": [
         {
           "key": "A",
-          "text": "\\$3\\,000"
+          "text": "$3,000"
         },
         {
           "key": "B",
-          "text": "\\$4\\,000"
+          "text": "$4,000"
         },
         {
           "key": "C",
-          "text": "\\$5\\,000"
+          "text": "$5,000"
         },
         {
           "key": "D",
-          "text": "\\$6\\,400"
+          "text": "$6,400"
         }
       ],
       "answer": "B"
