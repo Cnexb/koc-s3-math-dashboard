@@ -112,17 +112,83 @@
     {
       id: 1,
       type: "mc",
-      prompt: "If x < y, which of the following must be true?",
-      choices: ["x - 3 > y - 3", "3x > 3y", "y - x > 0", "x + y > 2y"],
+      prompt: "Which of the following numbers does NOT satisfy",
+      stem: "x > -2",
+      choices: ["-1", "0", "-2", "3"],
       answer: 2,
     },
     {
       id: 2,
       type: "mc",
-      prompt: "If m \u2265 n and k > 0, which of the following must be true?",
+      prompt: "If a < b, which of the following must be true?",
       items: [
-        { tag: "I.", tex: "k + m \\ge k + n" },
-        { tag: "II.", tex: "kn \\le km" },
+        { tag: "I.", tex: "a - 3 < b - 3" },
+        { tag: "II.", tex: "-2a < -2b" },
+        { tag: "III.", tex: "a + b < 2b" },
+      ],
+      choices: [
+        "\\text{I only}",
+        "\\text{II only}",
+        "\\text{I and III only}",
+        "\\text{II and III only}",
+      ],
+      answer: 2,
+    },
+    {
+      id: 3,
+      type: "mc",
+      prompt: "Solve",
+      stem: "3 - 2x \\le 11",
+      choices: ["x \\le -4", "x \\ge -4", "x \\le 4", "x \\ge 4"],
+      answer: 1,
+    },
+    {
+      id: 4,
+      type: "mc",
+      prompt: "The greatest integer that satisfies the inequality below is",
+      stem: "5x + 8 < 3x - 2",
+      choices: ["-4", "-5", "-6", "-7"],
+      answer: 2,
+    },
+    {
+      id: 5,
+      type: "mc",
+      prompt: "Rewrite the inequality so that x is on the left-hand side.",
+      stem: "-4 \\ge x + 1",
+      choices: ["x \\ge -5", "x \\le -5", "x \\ge -3", "x \\le -3"],
+      answer: 1,
+    },
+  ];
+
+  const QUIZ_L02 = [
+    {
+      id: 1,
+      type: "mc",
+      prompt: "Subtracting 3 from twice x is at most 11. If x is an integer, the greatest possible value of x is",
+      choices: ["5", "6", "7", "8"],
+      answer: 2,
+    },
+    {
+      id: 2,
+      type: "mc",
+      prompt: "Each side of an n-sided regular polygon is 5 cm. If the perimeter is at least 35 cm, the least possible value of n is",
+      choices: ["5", "6", "7", "8"],
+      answer: 2,
+    },
+    {
+      id: 3,
+      type: "mc",
+      prompt: "The sum of two consecutive even numbers is less than 82. The greatest possible value of the larger number is",
+      choices: ["38", "40", "42", "44"],
+      answer: 1,
+    },
+    {
+      id: 4,
+      type: "mc",
+      prompt: "If m \u2265 n and k < 0, which of the following must be true?",
+      items: [
+        { tag: "I.", tex: "m + k \\ge n + k" },
+        { tag: "II.", tex: "km \\le kn" },
         { tag: "III.", tex: "m^{2} \\ge n^{2}" },
       ],
       choices: [
@@ -134,32 +200,17 @@
       answer: 0,
     },
     {
-      id: 3,
-      type: "mc",
-      prompt: "Solve the inequality",
-      stem: "4x + 7 > 6x - 11",
-      choices: ["x > 2", "x < 2", "x > 9", "x < 9"],
-      answer: 3,
-    },
-    {
-      id: 4,
-      type: "mc",
-      prompt: "The smallest integer that satisfies the inequality below is",
-      stem: "-5(x - 25) \\le -125",
-      choices: ["0", "1", "50", "51"],
-      answer: 2,
-    },
-    {
       id: 5,
       type: "mc",
-      prompt: "Which inequality represents \u201c2 times the sum of x and 3 is not greater than 1\u201d?",
-      choices: ["2x + 3 < 1", "2x + 3 \\le 1", "2(x + 3) < 1", "2(x + 3) \\le 1"],
+      prompt: "If x > y, which of the following is NOT always true?",
+      choices: ["x - y > 0", "-x < -y", "x + 2 > y + 2", "x^{2} > y^{2}"],
       answer: 3,
     },
   ];
 
   const QUIZ_SETS = [
-    { key: "l01", label: "L01 \u00b7 Linear Inequalities in One Unknown", idPrefix: "ineq-l01-q", questions: QUIZ_L01 },
+    { key: "l01", label: "L01 \u00b7 Representing Inequalities and Solving", idPrefix: "ineq-l01-q", questions: QUIZ_L01 },
+    { key: "l02", label: "L02 \u00b7 Practical Problems and Further Properties", idPrefix: "ineq-l02-q", questions: QUIZ_L02 },
     { key: "practice", label: "Practice \u00b7 10 Questions", idPrefix: "ineq-q", questions: QUIZ_PRACTICE },
   ];
 
