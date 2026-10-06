@@ -42,10 +42,10 @@ class InequalitySigns(IneqSlide):
         prev = None
         specs = [
             # parts,                 sign_col, name,                       ex,                                       boundary, right, closed, numbers, x_min, x_max
-            (("x", ">", "8"),        GREEN,  "Greater than",              r"e.g. $9,\ 10,\ 13,\ 28\,\ldots$",       8,  True,  False, [-2, 0, 2, 4, 6, 8, 10, 12], -3, 13),
-            (("x", r"\geq", "-3"),   VIOLET, "Greater than or equal to",  r"e.g. $-3,\ -2,\ -1,\ 0\,\ldots$",       -3, True,  True,  [-6, -4, -3, -2, 0, 2, 4],   -7, 5),
-            (("x", "<", "8"),        AMBER,  "Smaller than",              r"e.g. $7,\ 6,\ 5,\ 0\,\ldots$",          8,  False, False, [-2, 0, 2, 4, 6, 8, 10, 12], -3, 13),
-            (("x", r"\leq", "-3"),   BLUE,   "Smaller than or equal to",  r"e.g. $-3,\ -5,\ -10\,\ldots$",          -3, False, True,  [-6, -4, -3, -2, 0, 2, 4],   -7, 5),
+            (("x", ">", "8"),        GREEN,  "Greater than",              r"e.g. $9,\ 10,\ 13,\ 28\,\ldots$",       8,  True,  False, [0, 8], -3, 13),
+            (("x", r"\geq", "-3"),   VIOLET, "Greater than or equal to",  r"e.g. $-3,\ -2,\ -1,\ 0\,\ldots$",       -3, True,  True,  [-3, 0],   -7, 5),
+            (("x", "<", "8"),        AMBER,  "Smaller than",              r"e.g. $7,\ 6,\ 5,\ 0\,\ldots$",          8,  False, False, [0, 8], -3, 13),
+            (("x", r"\leq", "-3"),   BLUE,   "Smaller than or equal to",  r"e.g. $-3,\ -5,\ -10\,\ldots$",          -3, False, True,  [-3, 0],   -7, 5),
         ]
         for spec in specs:
             grp = self._sign_slide(*spec)

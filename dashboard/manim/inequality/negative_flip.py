@@ -129,7 +129,7 @@ class NegativeCoefficient(IneqSlide):
             run_time=0.55,
         )
 
-        nl = make_axis([-5, -3, 0, 3, 5], -6, 6, length=9.0, y=-1.9)
+        nl = make_axis([0], -6, 6, length=9.0, y=-1.9)
         dn5 = closed_dot(nl, -5, INK)
         dn3 = closed_dot(nl, -3, INK)
         l5 = MathTex("-5", font_size=30, color=MUTED).next_to(dn5, UP, buff=0.28)

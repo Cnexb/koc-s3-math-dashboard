@@ -295,8 +295,8 @@
   }
 
   function nlLayout(boundary) {
-    const min = Math.floor(boundary) - 2;
-    const max = Math.ceil(boundary) + 2;
+    const min = Math.min(0, Math.floor(boundary) - 2);
+    const max = Math.max(0, Math.ceil(boundary) + 2);
     const span = max - min || 1;
     const mapX = (v) => 36 + ((v - min) / span) * 208;
     return { min, max, mapX, cx: mapX(boundary) };
@@ -320,9 +320,14 @@
     let ticks = "";
     for (let i = min; i <= max; i++) {
       const tx = mapX(i);
-      const highlight = Math.abs(i - boundary) < 0.001;
-      ticks += `<line x1="${tx}" y1="${axisY - 5}" x2="${tx}" y2="${axisY + 5}" stroke="${highlight ? ACC : AXIS}" stroke-width="${highlight ? 2.5 : 1.5}"/>`;
-      ticks += `<text x="${tx}" y="90" fill="${highlight ? ACC : ZERO}" font-size="13" text-anchor="middle" font-family="JetBrains Mono, monospace">${i}</text>`;
+      const isBound = Math.abs(i - boundary) < 0.001;
+      ticks += `<line x1="${tx}" y1="${axisY - 5}" x2="${tx}" y2="${axisY + 5}" stroke="${isBound ? ACC : AXIS}" stroke-width="${isBound ? 2.5 : 1.5}"/>`;
+      if (i === 0 || isBound) {
+        ticks += `<text x="${tx}" y="90" fill="${isBound ? ACC : ZERO}" font-size="13" text-anchor="middle" font-family="JetBrains Mono, monospace">${i}</text>`;
+      }
+    }
+    if (Math.abs(boundary - Math.round(boundary)) >= 0.001) {
+      ticks += `<text x="${mapX(boundary)}" y="90" fill="${ACC}" font-size="13" text-anchor="middle" font-family="JetBrains Mono, monospace">${boundary}</text>`;
     }
 
     const rayClass = opts.animateRay ? ' class="sf-ray-anim"' : "";
