@@ -39,7 +39,7 @@
     const freqBtns = document.querySelectorAll(".it-freq-btn");
 
     let freq = "year"; // "year" | "half" | "month"
-    const YBASE = 256, TOPPAD = 46, RY = 7;
+    const YBASE = 248, TOPPAD = 40, RY = 8;
 
     function freqPeriodsPerYear(f) {
       if (f === "month") return 12;
@@ -73,7 +73,7 @@
     // render one lane. amountAt(y) = total amount after y years; interestAt(y) = interest portion
     function renderLane(svg, years, dy, rx, amountAt, interestAt, scale, accent, periodLabel) {
       clear(svg);
-      const n = years + 1, colW = Math.max(96, 700 / n), Wv = n * colW;
+      const n = years + 1, colW = Math.max(110, 760 / n), Wv = n * colW;
       svg.setAttribute("viewBox", "0 0 " + Wv + " 300");
       let prevIVis = 0;
       for (let y = 0; y <= years; y++) {
@@ -98,8 +98,8 @@
         }
         const topY = YBASE - 6 - (totalVis - 1) * dy;
         const lby = Math.max(16, topY - RY - 12);
-        label(svg, cx, lby, money(amt), "#e5e7eb", 13, 700);
-        label(svg, cx, 284, y === 0 ? "Start" : periodLabel(y), accent, 12, 600);
+        label(svg, cx, lby, money(amt), "#334155", 16, 700);
+        label(svg, cx, 284, y === 0 ? "Start" : periodLabel(y), accent, 15, 700);
         prevIVis = iVis;
       }
     }
@@ -126,9 +126,9 @@
       const maxAmt = Math.max(aSimple, aCompound, P);
       const scale = Math.max(1, maxAmt / MAX_VISUAL_COINS);
       const maxVis = Math.ceil(maxAmt / scale);
-      const dy = Math.min(11, Math.max(3, (YBASE - TOPPAD) / Math.max(maxVis, 1)));
-      const n = t + 1, colW = Math.max(96, 700 / n);
-      const rx = Math.min(26, colW * 0.34);
+      const dy = Math.min(13, Math.max(4, (YBASE - TOPPAD) / Math.max(maxVis, 1)));
+      const n = t + 1, colW = Math.max(110, 760 / n);
+      const rx = Math.min(30, colW * 0.36);
 
       const yearLbl = (y) => "Year " + y;
       renderLane(simpleSvg, t, dy, rx, simpleAmount, simpleInterest, scale, "#4FC3F7", yearLbl);
