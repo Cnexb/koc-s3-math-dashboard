@@ -31,7 +31,14 @@ content-packs/jm24-law-of-indices/
 
 ## Quizzes
 
-Edit the quiz data file inside that pack. Keep old `id` values; new items get new ids. List the quiz in `manifest.json`. Leave quiz runners, `postMessage`, and tracking unchanged.
+Edit `quiz/<id>/questions.json` in that pack. Keep old `id` values; new items get new ids. List the quiz in `manifest.json`. Leave quiz runners, `postMessage`, and tracking unchanged.
+
+All-In-One renders stems through KaTeX. Write the JSON for that renderer — do not add special cases in Uni+ TypeScript.
+
+- Math goes in `$…$` (or `\(` `\)`). Bare `\ge`, `\frac`, `x^{2}` will not render once a `$` is also in the string.
+- Line breaks are real JSON newlines, never the two characters `\n`.
+- Money is `\$30 000`, not `$30 000` (a bare `$` starts math).
+- After editing, run `bun --cwd content-packs run lint:quizzes` from this repo.
 
 ## HTML to keep
 

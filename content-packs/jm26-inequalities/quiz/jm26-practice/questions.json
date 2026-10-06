@@ -6,24 +6,12 @@
       "topic": "JM26",
       "section": "Practice",
       "difficulty": "Standard",
-      "stem": "Find the sum of all the negative integers x satisfying the inequality\\n\\nx > -2\\pi",
+      "stem": "Find the sum of all the negative integers $x$ satisfying the inequality\n\n$x > -2\\pi$",
       "options": [
-        {
-          "key": "A",
-          "text": "-21\\pi"
-        },
-        {
-          "key": "B",
-          "text": "-21"
-        },
-        {
-          "key": "C",
-          "text": "-5"
-        },
-        {
-          "key": "D",
-          "text": "0"
-        }
+        { "key": "A", "text": "-21\\pi" },
+        { "key": "B", "text": "-21" },
+        { "key": "C", "text": "-5" },
+        { "key": "D", "text": "0" }
       ],
       "answer": "B"
     },
@@ -32,24 +20,12 @@
       "topic": "JM26",
       "section": "Practice",
       "difficulty": "Standard",
-      "stem": "If 2x ≤ 3, which of the following is not true?",
+      "stem": "If $2x \\le 3$, which of the following is not true?",
       "options": [
-        {
-          "key": "A",
-          "text": "4x \\le 2x + 3"
-        },
-        {
-          "key": "B",
-          "text": "1 - 2x \\le -2"
-        },
-        {
-          "key": "C",
-          "text": "2x + 3 \\le 6"
-        },
-        {
-          "key": "D",
-          "text": "\\frac{2x}{3} \\le 1"
-        }
+        { "key": "A", "text": "4x \\le 2x + 3" },
+        { "key": "B", "text": "1 - 2x \\le -2" },
+        { "key": "C", "text": "2x + 3 \\le 6" },
+        { "key": "D", "text": "\\frac{2x}{3} \\le 1" }
       ],
       "answer": "B"
     },
@@ -58,24 +34,12 @@
       "topic": "JM26",
       "section": "Practice",
       "difficulty": "Standard",
-      "stem": "If x ≤ y and z > y, where z is a negative number, which of the following is not true?",
+      "stem": "If $x \\le y$ and $z > y$, where $z$ is a negative number, which of the following is not true?",
       "options": [
-        {
-          "key": "A",
-          "text": "x \\le y < z"
-        },
-        {
-          "key": "B",
-          "text": "y - x < z - x"
-        },
-        {
-          "key": "C",
-          "text": "xz < xy"
-        },
-        {
-          "key": "D",
-          "text": "-\\frac{x}{4} < -\\frac{z}{4}"
-        }
+        { "key": "A", "text": "x \\le y < z" },
+        { "key": "B", "text": "y - x < z - x" },
+        { "key": "C", "text": "xz < xy" },
+        { "key": "D", "text": "-\\frac{x}{4} < -\\frac{z}{4}" }
       ],
       "answer": "D"
     },
@@ -84,24 +48,12 @@
       "topic": "JM26",
       "section": "Practice",
       "difficulty": "Standard",
-      "stem": "Solve the inequality\\n\\n3(x + 2) < 5(6 - x)",
+      "stem": "Solve the inequality\n\n$3(x + 2) < 5(6 - x)$",
       "options": [
-        {
-          "key": "A",
-          "text": "x > 3"
-        },
-        {
-          "key": "B",
-          "text": "x < 3"
-        },
-        {
-          "key": "C",
-          "text": "x > -3"
-        },
-        {
-          "key": "D",
-          "text": "x < -3"
-        }
+        { "key": "A", "text": "x > 3" },
+        { "key": "B", "text": "x < 3" },
+        { "key": "C", "text": "x > -3" },
+        { "key": "D", "text": "x < -3" }
       ],
       "answer": "B"
     },
@@ -110,24 +62,12 @@
       "topic": "JM26",
       "section": "Practice",
       "difficulty": "Standard",
-      "stem": "Which of the following groups of numbers can all satisfy the inequality\\n\\n7x + 3 > 17",
+      "stem": "Which of the following groups of numbers can all satisfy the inequality\n\n$7x + 3 > 17$",
       "options": [
-        {
-          "key": "A",
-          "text": "-1, 0, 1"
-        },
-        {
-          "key": "B",
-          "text": "1, 3, 5"
-        },
-        {
-          "key": "C",
-          "text": "2, 3, 4"
-        },
-        {
-          "key": "D",
-          "text": "2.1, 3.2, 4.3"
-        }
+        { "key": "A", "text": "-1, 0, 1" },
+        { "key": "B", "text": "1, 3, 5" },
+        { "key": "C", "text": "2, 3, 4" },
+        { "key": "D", "text": "2.1, 3.2, 4.3" }
       ],
       "answer": "D"
     },
@@ -136,24 +76,12 @@
       "topic": "JM26",
       "section": "Practice",
       "difficulty": "Standard",
-      "stem": "Solve the inequality\\n\\n\\frac{x}{4} - 2 \\le 0.8 - \\frac{x}{3}",
+      "stem": "Solve the inequality\n\n$\\frac{x}{4} - 2 \\le 0.8 - \\frac{x}{3}$",
       "options": [
-        {
-          "key": "A",
-          "text": "x > \\frac{24}{5}"
-        },
-        {
-          "key": "B",
-          "text": "x \\le \\frac{24}{5}"
-        },
-        {
-          "key": "C",
-          "text": "x \\le 5"
-        },
-        {
-          "key": "D",
-          "text": "x \\ge 4.8"
-        }
+        { "key": "A", "text": "x > \\frac{24}{5}" },
+        { "key": "B", "text": "x \\le \\frac{24}{5}" },
+        { "key": "C", "text": "x \\le 5" },
+        { "key": "D", "text": "x \\ge 4.8" }
       ],
       "answer": "B"
     },
@@ -162,24 +90,12 @@
       "topic": "JM26",
       "section": "Practice",
       "difficulty": "Standard",
-      "stem": "Write down all positive integers satisfying\\n\\nx \\le \\frac{24}{5}",
+      "stem": "Write down all positive integers satisfying\n\n$x \\le \\frac{24}{5}$",
       "options": [
-        {
-          "key": "A",
-          "text": "1, 2, 3, 4"
-        },
-        {
-          "key": "B",
-          "text": "1, 2, 3, 4, 5"
-        },
-        {
-          "key": "C",
-          "text": "1, 2, 3"
-        },
-        {
-          "key": "D",
-          "text": "2, 3, 4"
-        }
+        { "key": "A", "text": "1, 2, 3, 4" },
+        { "key": "B", "text": "1, 2, 3, 4, 5" },
+        { "key": "C", "text": "1, 2, 3" },
+        { "key": "D", "text": "2, 3, 4" }
       ],
       "answer": "A"
     },
@@ -188,24 +104,12 @@
       "topic": "JM26",
       "section": "Practice",
       "difficulty": "Standard",
-      "stem": "Write down all positive integers satisfying the inequality\\n\\n\\frac{4x + 3}{5} < \\frac{1 - 3x}{6} + 4",
+      "stem": "Write down all positive integers satisfying the inequality\n\n$\\frac{4x + 3}{5} < \\frac{1 - 3x}{6} + 4$",
       "options": [
-        {
-          "key": "A",
-          "text": "1, 2"
-        },
-        {
-          "key": "B",
-          "text": "1, 2, 3"
-        },
-        {
-          "key": "C",
-          "text": "1 only"
-        },
-        {
-          "key": "D",
-          "text": "2, 3"
-        }
+        { "key": "A", "text": "1, 2" },
+        { "key": "B", "text": "1, 2, 3" },
+        { "key": "C", "text": "1 only" },
+        { "key": "D", "text": "2, 3" }
       ],
       "answer": "A"
     },
@@ -214,24 +118,12 @@
       "topic": "JM26",
       "section": "Practice",
       "difficulty": "Standard",
-      "stem": "A non-negative number x satisfies the equation below, where k is a positive integral constant. How many possible values of k?\\n\\n\\frac{2x-k}{3} = \\frac{5x-7}{4} + \\frac{x+k}{6}",
+      "stem": "A non-negative number $x$ satisfies the equation below, where $k$ is a positive integral constant. How many possible values of $k$?\n\n$\\frac{2x-k}{3} = \\frac{5x-7}{4} + \\frac{x+k}{6}$",
       "options": [
-        {
-          "key": "A",
-          "text": "1"
-        },
-        {
-          "key": "B",
-          "text": "2"
-        },
-        {
-          "key": "C",
-          "text": "3"
-        },
-        {
-          "key": "D",
-          "text": "4"
-        }
+        { "key": "A", "text": "1" },
+        { "key": "B", "text": "2" },
+        { "key": "C", "text": "3" },
+        { "key": "D", "text": "4" }
       ],
       "answer": "C"
     },
@@ -240,24 +132,12 @@
       "topic": "JM26",
       "section": "Practice",
       "difficulty": "Standard",
-      "stem": "Using the same equation as above, find x when k = 3.\\n\\n\\frac{2x-k}{3} = \\frac{5x-7}{4} + \\frac{x+k}{6}",
+      "stem": "Using the same equation as above, find $x$ when $k = 3$.\n\n$\\frac{2x-k}{3} = \\frac{5x-7}{4} + \\frac{x+k}{6}$",
       "options": [
-        {
-          "key": "A",
-          "text": "x = \\frac{1}{3}"
-        },
-        {
-          "key": "B",
-          "text": "x = -\\frac{1}{3}"
-        },
-        {
-          "key": "C",
-          "text": "x = \\frac{7}{3}"
-        },
-        {
-          "key": "D",
-          "text": "x = 3"
-        }
+        { "key": "A", "text": "x = \\frac{1}{3}" },
+        { "key": "B", "text": "x = -\\frac{1}{3}" },
+        { "key": "C", "text": "x = \\frac{7}{3}" },
+        { "key": "D", "text": "x = 3" }
       ],
       "answer": "A"
     }

@@ -6,24 +6,12 @@
       "topic": "JM26",
       "section": "L02",
       "difficulty": "Standard",
-      "stem": "Subtracting 3 from twice x is at most 11. If x is an integer, the greatest possible value of x is",
+      "stem": "Subtracting 3 from twice $x$ is at most 11. If $x$ is an integer, the greatest possible value of $x$ is",
       "options": [
-        {
-          "key": "A",
-          "text": "5"
-        },
-        {
-          "key": "B",
-          "text": "6"
-        },
-        {
-          "key": "C",
-          "text": "7"
-        },
-        {
-          "key": "D",
-          "text": "8"
-        }
+        { "key": "A", "text": "5" },
+        { "key": "B", "text": "6" },
+        { "key": "C", "text": "7" },
+        { "key": "D", "text": "8" }
       ],
       "answer": "C"
     },
@@ -32,24 +20,12 @@
       "topic": "JM26",
       "section": "L02",
       "difficulty": "Standard",
-      "stem": "Each side of an n-sided regular polygon is 5 cm. If the perimeter is at least 35 cm, the least possible value of n is",
+      "stem": "Each side of an $n$-sided regular polygon is 5 cm. If the perimeter is at least 35 cm, the least possible value of $n$ is",
       "options": [
-        {
-          "key": "A",
-          "text": "5"
-        },
-        {
-          "key": "B",
-          "text": "6"
-        },
-        {
-          "key": "C",
-          "text": "7"
-        },
-        {
-          "key": "D",
-          "text": "8"
-        }
+        { "key": "A", "text": "5" },
+        { "key": "B", "text": "6" },
+        { "key": "C", "text": "7" },
+        { "key": "D", "text": "8" }
       ],
       "answer": "C"
     },
@@ -60,22 +36,10 @@
       "difficulty": "Standard",
       "stem": "The sum of two consecutive even numbers is less than 82. The greatest possible value of the larger number is",
       "options": [
-        {
-          "key": "A",
-          "text": "38"
-        },
-        {
-          "key": "B",
-          "text": "40"
-        },
-        {
-          "key": "C",
-          "text": "42"
-        },
-        {
-          "key": "D",
-          "text": "44"
-        }
+        { "key": "A", "text": "38" },
+        { "key": "B", "text": "40" },
+        { "key": "C", "text": "42" },
+        { "key": "D", "text": "44" }
       ],
       "answer": "B"
     },
@@ -84,24 +48,12 @@
       "topic": "JM26",
       "section": "L02",
       "difficulty": "Standard",
-      "stem": "If m ≥ n and k < 0, which of the following must be true?\\n\\nI. m + k \\ge n + k\\nII. km \\le kn\\nIII. m^{2} \\ge n^{2}",
+      "stem": "If $m \\ge n$ and $k < 0$, which of the following must be true?\n\nI. $m + k \\ge n + k$\nII. $km \\le kn$\nIII. $m^{2} \\ge n^{2}$",
       "options": [
-        {
-          "key": "A",
-          "text": "I and II only"
-        },
-        {
-          "key": "B",
-          "text": "I and III only"
-        },
-        {
-          "key": "C",
-          "text": "II and III only"
-        },
-        {
-          "key": "D",
-          "text": "I, II and III"
-        }
+        { "key": "A", "text": "I and II only" },
+        { "key": "B", "text": "I and III only" },
+        { "key": "C", "text": "II and III only" },
+        { "key": "D", "text": "I, II and III" }
       ],
       "answer": "A"
     },
@@ -110,24 +62,12 @@
       "topic": "JM26",
       "section": "L02",
       "difficulty": "Standard",
-      "stem": "If x > y, which of the following is NOT always true?",
+      "stem": "If $x > y$, which of the following is NOT always true?",
       "options": [
-        {
-          "key": "A",
-          "text": "x - y > 0"
-        },
-        {
-          "key": "B",
-          "text": "-x < -y"
-        },
-        {
-          "key": "C",
-          "text": "x + 2 > y + 2"
-        },
-        {
-          "key": "D",
-          "text": "x^{2} > y^{2}"
-        }
+        { "key": "A", "text": "x - y > 0" },
+        { "key": "B", "text": "-x < -y" },
+        { "key": "C", "text": "x + 2 > y + 2" },
+        { "key": "D", "text": "x^{2} > y^{2}" }
       ],
       "answer": "D"
     }

@@ -6,24 +6,12 @@
       "topic": "JM26",
       "section": "L01",
       "difficulty": "Standard",
-      "stem": "Which of the following numbers does NOT satisfy\\n\\nx > -2",
+      "stem": "Which of the following numbers does NOT satisfy\n\n$x > -2$",
       "options": [
-        {
-          "key": "A",
-          "text": "-1"
-        },
-        {
-          "key": "B",
-          "text": "0"
-        },
-        {
-          "key": "C",
-          "text": "-2"
-        },
-        {
-          "key": "D",
-          "text": "3"
-        }
+        { "key": "A", "text": "-1" },
+        { "key": "B", "text": "0" },
+        { "key": "C", "text": "-2" },
+        { "key": "D", "text": "3" }
       ],
       "answer": "C"
     },
@@ -32,24 +20,12 @@
       "topic": "JM26",
       "section": "L01",
       "difficulty": "Standard",
-      "stem": "If a < b, which of the following must be true?\\n\\nI. a - 3 < b - 3\\nII. -2a < -2b\\nIII. a + b < 2b",
+      "stem": "If $a < b$, which of the following must be true?\n\nI. $a - 3 < b - 3$\nII. $-2a < -2b$\nIII. $a + b < 2b$",
       "options": [
-        {
-          "key": "A",
-          "text": "I only"
-        },
-        {
-          "key": "B",
-          "text": "II only"
-        },
-        {
-          "key": "C",
-          "text": "I and III only"
-        },
-        {
-          "key": "D",
-          "text": "II and III only"
-        }
+        { "key": "A", "text": "I only" },
+        { "key": "B", "text": "II only" },
+        { "key": "C", "text": "I and III only" },
+        { "key": "D", "text": "II and III only" }
       ],
       "answer": "C"
     },
@@ -58,24 +34,12 @@
       "topic": "JM26",
       "section": "L01",
       "difficulty": "Standard",
-      "stem": "Solve\\n\\n3 - 2x \\le 11",
+      "stem": "Solve\n\n$3 - 2x \\le 11$",
       "options": [
-        {
-          "key": "A",
-          "text": "x \\le -4"
-        },
-        {
-          "key": "B",
-          "text": "x \\ge -4"
-        },
-        {
-          "key": "C",
-          "text": "x \\le 4"
-        },
-        {
-          "key": "D",
-          "text": "x \\ge 4"
-        }
+        { "key": "A", "text": "x \\le -4" },
+        { "key": "B", "text": "x \\ge -4" },
+        { "key": "C", "text": "x \\le 4" },
+        { "key": "D", "text": "x \\ge 4" }
       ],
       "answer": "B"
     },
@@ -84,24 +48,12 @@
       "topic": "JM26",
       "section": "L01",
       "difficulty": "Standard",
-      "stem": "The greatest integer that satisfies the inequality below is\\n\\n5x + 8 < 3x - 2",
+      "stem": "The greatest integer that satisfies the inequality below is\n\n$5x + 8 < 3x - 2$",
       "options": [
-        {
-          "key": "A",
-          "text": "-4"
-        },
-        {
-          "key": "B",
-          "text": "-5"
-        },
-        {
-          "key": "C",
-          "text": "-6"
-        },
-        {
-          "key": "D",
-          "text": "-7"
-        }
+        { "key": "A", "text": "-4" },
+        { "key": "B", "text": "-5" },
+        { "key": "C", "text": "-6" },
+        { "key": "D", "text": "-7" }
       ],
       "answer": "C"
     },
@@ -110,24 +62,12 @@
       "topic": "JM26",
       "section": "L01",
       "difficulty": "Standard",
-      "stem": "Rewrite the inequality so that x is on the left-hand side.\\n\\n-4 \\ge x + 1",
+      "stem": "Rewrite the inequality so that $x$ is on the left-hand side.\n\n$-4 \\ge x + 1$",
       "options": [
-        {
-          "key": "A",
-          "text": "x \\ge -5"
-        },
-        {
-          "key": "B",
-          "text": "x \\le -5"
-        },
-        {
-          "key": "C",
-          "text": "x \\ge -3"
-        },
-        {
-          "key": "D",
-          "text": "x \\le -3"
-        }
+        { "key": "A", "text": "x \\ge -5" },
+        { "key": "B", "text": "x \\le -5" },
+        { "key": "C", "text": "x \\ge -3" },
+        { "key": "D", "text": "x \\le -3" }
       ],
       "answer": "B"
     }
