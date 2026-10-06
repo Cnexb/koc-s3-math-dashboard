@@ -1,0 +1,135 @@
+{
+  "quizId": "jm26-l01",
+  "items": [
+    {
+      "id": "jm26-l01-1",
+      "topic": "JM26",
+      "section": "L01",
+      "difficulty": "Standard",
+      "stem": "Which of the following numbers does NOT satisfy\\n\\nx > -2",
+      "options": [
+        {
+          "key": "A",
+          "text": "-1"
+        },
+        {
+          "key": "B",
+          "text": "0"
+        },
+        {
+          "key": "C",
+          "text": "-2"
+        },
+        {
+          "key": "D",
+          "text": "3"
+        }
+      ],
+      "answer": "C"
+    },
+    {
+      "id": "jm26-l01-2",
+      "topic": "JM26",
+      "section": "L01",
+      "difficulty": "Standard",
+      "stem": "If a < b, which of the following must be true?\\n\\nI. a - 3 < b - 3\\nII. -2a < -2b\\nIII. a + b < 2b",
+      "options": [
+        {
+          "key": "A",
+          "text": "\\text{I only}"
+        },
+        {
+          "key": "B",
+          "text": "\\text{II only}"
+        },
+        {
+          "key": "C",
+          "text": "\\text{I and III only}"
+        },
+        {
+          "key": "D",
+          "text": "\\text{II and III only}"
+        }
+      ],
+      "answer": "C"
+    },
+    {
+      "id": "jm26-l01-3",
+      "topic": "JM26",
+      "section": "L01",
+      "difficulty": "Standard",
+      "stem": "Solve\\n\\n3 - 2x \\le 11",
+      "options": [
+        {
+          "key": "A",
+          "text": "x \\le -4"
+        },
+        {
+          "key": "B",
+          "text": "x \\ge -4"
+        },
+        {
+          "key": "C",
+          "text": "x \\le 4"
+        },
+        {
+          "key": "D",
+          "text": "x \\ge 4"
+        }
+      ],
+      "answer": "B"
+    },
+    {
+      "id": "jm26-l01-4",
+      "topic": "JM26",
+      "section": "L01",
+      "difficulty": "Standard",
+      "stem": "The greatest integer that satisfies the inequality below is\\n\\n5x + 8 < 3x - 2",
+      "options": [
+        {
+          "key": "A",
+          "text": "-4"
+        },
+        {
+          "key": "B",
+          "text": "-5"
+        },
+        {
+          "key": "C",
+          "text": "-6"
+        },
+        {
+          "key": "D",
+          "text": "-7"
+        }
+      ],
+      "answer": "C"
+    },
+    {
+      "id": "jm26-l01-5",
+      "topic": "JM26",
+      "section": "L01",
+      "difficulty": "Standard",
+      "stem": "Rewrite the inequality so that x is on the left-hand side.\\n\\n-4 \\ge x + 1",
+      "options": [
+        {
+          "key": "A",
+          "text": "x \\ge -5"
+        },
+        {
+          "key": "B",
+          "text": "x \\le -5"
+        },
+        {
+          "key": "C",
+          "text": "x \\ge -3"
+        },
+        {
+          "key": "D",
+          "text": "x \\le -3"
+        }
+      ],
+      "answer": "B"
+    }
+  ]
+}
