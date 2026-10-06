@@ -1,0 +1,9 @@
+{
+  "name": "math-content-packs",
+  "private": true,
+  "type": "module",
+  "scripts": {
+    "lint:quizzes": "node scripts/lint-quiz-json.mjs",
+    "lint:quizzes:jm26": "node scripts/lint-quiz-json.mjs --pack jm26-inequalities"
+  }
+}
