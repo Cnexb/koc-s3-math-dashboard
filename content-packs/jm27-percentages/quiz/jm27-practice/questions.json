@@ -1,0 +1,265 @@
+{
+  "quizId": "jm27-practice",
+  "items": [
+    {
+      "id": "jm27-practice-1",
+      "topic": "JM27",
+      "section": "Practice",
+      "difficulty": "Standard",
+      "stem": "The original weight of a panda was 80 kg. Its weight first decreased by 10% due to illness and then increased by 10% after recovery. After recovery, what was the change in its weight as compared to the original weight?",
+      "options": [
+        {
+          "key": "A",
+          "text": "\\text{no change}"
+        },
+        {
+          "key": "B",
+          "text": "\\text{an increase of }0.8\\text{ kg}"
+        },
+        {
+          "key": "C",
+          "text": "\\text{a decrease of }0.8\\text{ kg}"
+        },
+        {
+          "key": "D",
+          "text": "\\text{a decrease of }8\\text{ kg}"
+        }
+      ],
+      "answer": "C"
+    },
+    {
+      "id": "jm27-practice-2",
+      "topic": "JM27",
+      "section": "Practice",
+      "difficulty": "Standard",
+      "stem": "Last Christmas, an artist sold 40 postcards at the price of $90 each for charity. This Christmas, the price of each postcard increases by 30% but the number of postcards sold decreases by 15%. Find the percentage change in the amount of money to charity.",
+      "options": [
+        {
+          "key": "A",
+          "text": "-15\\%"
+        },
+        {
+          "key": "B",
+          "text": "+15\\%"
+        },
+        {
+          "key": "C",
+          "text": "-10.5\\%"
+        },
+        {
+          "key": "D",
+          "text": "+10.5\\%"
+        }
+      ],
+      "answer": "D"
+    },
+    {
+      "id": "jm27-practice-3",
+      "topic": "JM27",
+      "section": "Practice",
+      "difficulty": "Standard",
+      "stem": "Bob deposits 50000 in bank A at a simple interest rate of 6% p.a. and $40000 in bank B at a simple interest rate of 7% p.a. Find the total amount he will receive after 10 years.",
+      "options": [
+        {
+          "key": "A",
+          "text": "\\$148000"
+        },
+        {
+          "key": "B",
+          "text": "\\$74000"
+        },
+        {
+          "key": "C",
+          "text": "\\$58000"
+        },
+        {
+          "key": "D",
+          "text": "\\$12000"
+        }
+      ],
+      "answer": "A"
+    },
+    {
+      "id": "jm27-practice-4",
+      "topic": "JM27",
+      "section": "Practice",
+      "difficulty": "Standard",
+      "stem": "A sum of money is deposited in a bank at an interest rate of 12% p.a. compounded yearly. If the interest received after 7 years is $6000, find the principal.\\n(Give the answer correct to the nearest $1000.)",
+      "options": [
+        {
+          "key": "A",
+          "text": "\\$3000"
+        },
+        {
+          "key": "B",
+          "text": "\\$4000"
+        },
+        {
+          "key": "C",
+          "text": "\\$5000"
+        },
+        {
+          "key": "D",
+          "text": "\\$6000"
+        }
+      ],
+      "answer": "C"
+    },
+    {
+      "id": "jm27-practice-5",
+      "topic": "JM27",
+      "section": "Practice",
+      "difficulty": "Standard",
+      "stem": "In this financial year, Tom has a total allowance of $140000 and he has to pay a salaries tax of $15300. If his net chargeable income is greater than $150000 but less than $200000, find his annual income.",
+      "options": [
+        {
+          "key": "A",
+          "text": "\\$109000"
+        },
+        {
+          "key": "B",
+          "text": "\\$195000"
+        },
+        {
+          "key": "C",
+          "text": "\\$249000"
+        },
+        {
+          "key": "D",
+          "text": "\\$335000"
+        }
+      ],
+      "answer": "D"
+    },
+    {
+      "id": "jm27-practice-6",
+      "topic": "JM27",
+      "section": "Practice",
+      "difficulty": "Standard",
+      "stem": "The value of an antique oil painting increases at a steady rate of 25% every 5 years. Its present value is $150000.\\nFind its value 20 years ago.",
+      "options": [
+        {
+          "key": "A",
+          "text": "\\$61440"
+        },
+        {
+          "key": "B",
+          "text": "\\$614400"
+        },
+        {
+          "key": "C",
+          "text": "\\$150000"
+        },
+        {
+          "key": "D",
+          "text": "\\$88560"
+        }
+      ],
+      "answer": "A"
+    },
+    {
+      "id": "jm27-practice-7",
+      "topic": "JM27",
+      "section": "Practice",
+      "difficulty": "Standard",
+      "stem": "A retailer buys goods for $480 and wants a profit of 25% on the selling price. Find the selling price.",
+      "options": [
+        {
+          "key": "A",
+          "text": "\\$600"
+        },
+        {
+          "key": "B",
+          "text": "\\$520"
+        },
+        {
+          "key": "C",
+          "text": "\\$640"
+        },
+        {
+          "key": "D",
+          "text": "\\$720"
+        }
+      ],
+      "answer": "C"
+    },
+    {
+      "id": "jm27-practice-8",
+      "topic": "JM27",
+      "section": "Practice",
+      "difficulty": "Standard",
+      "stem": "David borrows $5000 from a bank at an interest rate of 7.8% p.a. compounded monthly. Find the amount he should repay after 3 years.\\n(Give the answer correct to the nearest dollar.)",
+      "options": [
+        {
+          "key": "A",
+          "text": "\\$5800"
+        },
+        {
+          "key": "B",
+          "text": "\\$6000"
+        },
+        {
+          "key": "C",
+          "text": "\\$6313"
+        },
+        {
+          "key": "D",
+          "text": "\\$6500"
+        }
+      ],
+      "answer": "C"
+    },
+    {
+      "id": "jm27-practice-9",
+      "topic": "JM27",
+      "section": "Practice",
+      "difficulty": "Standard",
+      "stem": "A dress is marked at $960. During a sale, a customer gets a discount of 25% off the marked price, followed by an extra 10% off the reduced price. Find the amount the customer pays.",
+      "options": [
+        {
+          "key": "A",
+          "text": "\\$648"
+        },
+        {
+          "key": "B",
+          "text": "\\$720"
+        },
+        {
+          "key": "C",
+          "text": "\\$672"
+        },
+        {
+          "key": "D",
+          "text": "\\$864"
+        }
+      ],
+      "answer": "A"
+    },
+    {
+      "id": "jm27-practice-10",
+      "topic": "JM27",
+      "section": "Practice",
+      "difficulty": "Standard",
+      "stem": "A car depreciates in value by 12% each year. If its present value is $50000, find its value after 2 years.",
+      "options": [
+        {
+          "key": "A",
+          "text": "\\$38720"
+        },
+        {
+          "key": "B",
+          "text": "\\$40000"
+        },
+        {
+          "key": "C",
+          "text": "\\$44000"
+        },
+        {
+          "key": "D",
+          "text": "\\$38000"
+        }
+      ],
+      "answer": "A"
+    }
+  ]
+}

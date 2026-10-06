@@ -115,5 +115,30 @@
   ],
   "summaries": [],
   "flashcards": [],
-  "quiz": []
+  "quiz": [
+    {
+      "slug": "jm26-l01",
+      "path": "content-packs/jm26-inequalities/quiz/jm26-l01",
+      "title": {
+        "en": "L01 · Representing Inequalities and Solving",
+        "zhHant": "L01 · 表示不等式與求解"
+      }
+    },
+    {
+      "slug": "jm26-l02",
+      "path": "content-packs/jm26-inequalities/quiz/jm26-l02",
+      "title": {
+        "en": "L02 · Practical Problems and Further Properties",
+        "zhHant": "L02 · 應用題與進一步性質"
+      }
+    },
+    {
+      "slug": "jm26-practice",
+      "path": "content-packs/jm26-inequalities/quiz/jm26-practice",
+      "title": {
+        "en": "Practice · 10 Questions",
+        "zhHant": "練習 · 10 題"
+      }
+    }
+  ]
 }

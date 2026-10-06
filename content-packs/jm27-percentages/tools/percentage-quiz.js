@@ -94,42 +94,127 @@
     {
       id: 1,
       type: "mc",
-      prompt: "If the price of a computer is increased by 30% and then decreased by 40%, find the overall percentage change.",
-      choices: ["-78\\%", "-48\\%", "-22\\%", "-10\\%"],
-      answer: 2,
+      prompt: "A number is first decreased by 10% and then increased by 20%. The overall percentage change is",
+      choices: ["+8\\%", "+10\\%", "+12\\%", "+18\\%"],
+      answer: 0,
     },
     {
       id: 2,
       type: "mc",
-      prompt: "A number is first increased by 25% and then decreased by r%. The number remains unchanged. Find r.",
-      choices: ["20", "25", "75", "80"],
-      answer: 0,
+      prompt: "After an increase of 15%, a hall has 92 seats. Find the original number of seats.",
+      choices: ["78", "80", "85", "88"],
+      answer: 1,
     },
     {
       id: 3,
       type: "mc",
-      prompt: "If all sides of a rectangle are increased by 20%, the percentage change in its area is",
-      choices: ["+20\\%", "+40\\%", "+44\\%", "+144\\%"],
+      prompt: "Each side of a square is increased by 10%. The percentage change in its area is",
+      choices: ["+10\\%", "+20\\%", "+21\\%", "+121\\%"],
       answer: 2,
     },
     {
       id: 4,
       type: "mc",
-      prompt: "Mr Lai borrowed $5000 at 8% p.a. simple interest. He repays the original sum plus simple interest after 4 years. Find the interest repaid.",
-      choices: ["\\$400", "\\$1600", "\\$1802", "\\$6600"],
+      prompt: "The value of an antique is $5000 now. If the value increases by 10% per year, find its value after 2 years.",
+      choices: ["\\$5500", "\\$6000", "\\$6050", "\\$6100"],
+      answer: 2,
+    },
+    {
+      id: 5,
+      type: "mc",
+      prompt: "A machine is worth $4000 now and depreciates by 20% per year. Find its value after 2 years.",
+      choices: ["\\$2400", "\\$2560", "\\$3200", "\\$3600"],
+      answer: 1,
+    },
+  ];
+
+  const QUIZ_L02 = [
+    {
+      id: 1,
+      type: "mc",
+      prompt: "$8000 is deposited at 6% p.a. simple interest for 3 years. Find the simple interest.",
+      choices: ["\\$1440", "\\$1480", "\\$1520", "\\$9440"],
+      answer: 0,
+    },
+    {
+      id: 2,
+      type: "mc",
+      prompt: "A sum of money is deposited at 5% p.a. simple interest. After 4 years, the amount received is $4800. Find the principal.",
+      choices: ["\\$3600", "\\$3840", "\\$4000", "\\$4560"],
+      answer: 2,
+    },
+    {
+      id: 3,
+      type: "mc",
+      prompt: "How many years will it take for $5000, deposited at 8% p.a. simple interest, to earn $1200 interest?",
+      choices: ["2", "2.5", "3", "4"],
+      answer: 2,
+    },
+    {
+      id: 4,
+      type: "mc",
+      prompt: "$8000 is deposited at 5% p.a. compounded yearly. Find the compound interest after 2 years.",
+      choices: ["\\$800", "\\$820", "\\$840", "\\$880"],
       answer: 1,
     },
     {
       id: 5,
       type: "mc",
-      prompt: "Peter deposits $20 000 at 5% p.a. compounded yearly. Find the compound interest after 2 years.",
-      choices: ["\\$2000", "\\$2050", "\\$22\\,000", "\\$22\\,050"],
+      prompt: "$4000 is deposited at 10% p.a. compounded half-yearly. Find the amount after 1 year.",
+      choices: ["\\$4400", "\\$4410", "\\$4420", "\\$4440"],
+      answer: 1,
+    },
+  ];
+
+  const QUIZ_L03 = [
+    {
+      id: 1,
+      type: "mc",
+      prompt: "Refer to the progressive tax rates below. Amy\u2019s net chargeable income is $30 000. Find her salaries tax.",
+      items: [
+        { tag: "", tex: "\\text{On the first }\\$50\\,000:\\ 2\\%" },
+        { tag: "", tex: "\\text{On the next }\\$50\\,000:\\ 6\\%" },
+        { tag: "", tex: "\\text{On the next }\\$50\\,000:\\ 10\\%" },
+        { tag: "", tex: "\\text{On the next }\\$50\\,000:\\ 14\\%" },
+        { tag: "", tex: "\\text{Remainder: }17\\%" },
+      ],
+      choices: ["\\$400", "\\$600", "\\$800", "\\$1\\,500"],
+      answer: 1,
+    },
+    {
+      id: 2,
+      type: "mc",
+      prompt: "Using the same tax rates as in Question 1, Ben\u2019s net chargeable income is $80 000. Find his salaries tax.",
+      choices: ["\\$1\\,800", "\\$2\\,400", "\\$2\\,800", "\\$4\\,800"],
+      answer: 2,
+    },
+    {
+      id: 3,
+      type: "mc",
+      prompt: "Using the same tax rates as in Question 1, Chris has an annual income of $320 000 and an allowance of $170 000. Find his salaries tax.",
+      choices: ["\\$7\\,000", "\\$8\\,000", "\\$9\\,000", "\\$10\\,500"],
+      answer: 2,
+    },
+    {
+      id: 4,
+      type: "mc",
+      prompt: "Using the same tax rates as in Question 1, Dora\u2019s monthly income is $15 000 and her allowance is $200 000. Find her salaries tax.",
+      choices: ["\\$0", "\\$400", "\\$800", "\\$3\\,600"],
+      answer: 0,
+    },
+    {
+      id: 5,
+      type: "mc",
+      prompt: "Using the same tax rates as in Question 1, Eric\u2019s monthly income is $22 000 and his allowance is $164 000. Find his salaries tax.",
+      choices: ["\\$3\\,000", "\\$4\\,000", "\\$5\\,000", "\\$6\\,400"],
       answer: 1,
     },
   ];
 
   const QUIZ_SETS = [
-    { key: "l01", label: "L01 \u00b7 Successive Change, Simple Interest and Compound Interest", idPrefix: "pct-l01-q", questions: QUIZ_L01 },
+    { key: "l01", label: "L01 \u00b7 Percentage Change and Growth or Decay", idPrefix: "pct-l01-q", questions: QUIZ_L01 },
+    { key: "l02", label: "L02 \u00b7 Simple Interest and Compound Interest", idPrefix: "pct-l02-q", questions: QUIZ_L02 },
+    { key: "l03", label: "L03 \u00b7 Salaries Tax", idPrefix: "pct-l03-q", questions: QUIZ_L03 },
     { key: "practice", label: "Practice \u00b7 10 Questions", idPrefix: "pct-q", questions: QUIZ_PRACTICE },
   ];
 
@@ -285,6 +370,26 @@
         stem.className = "quiz-stem";
         kx(stem, q.stem, false);
         content.appendChild(stem);
+      }
+      if (q.items) {
+        const list = document.createElement("div");
+        list.className = "quiz-item-list";
+        q.items.forEach((item) => {
+          const row = document.createElement("div");
+          row.className = "quiz-item-row";
+          if (item.tag) {
+            const tag = document.createElement("span");
+            tag.className = "quiz-item-tag";
+            tag.textContent = item.tag;
+            row.appendChild(tag);
+          }
+          const tex = document.createElement("span");
+          tex.className = "quiz-item-tex";
+          kx(tex, item.tex);
+          row.appendChild(tex);
+          list.appendChild(row);
+        });
+        content.appendChild(list);
       }
       const body = document.createElement("div");
       body.className = "quiz-body";
