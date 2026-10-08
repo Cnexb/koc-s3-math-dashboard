@@ -4,47 +4,47 @@ window.JM28_COMICS = {
     label: "Special Lines in Triangles",
     labelKey: "comic.jm28.triangleLines",
     series: "Special Lines & Centres in Triangles",
-    basePath: "../../comics/Special lines and centres in triangles/",
+    basePath: "comics/",
     chapters: [
       {
         id: "ch1",
         title: "Chapter 1 — Altitude",
-        file: "triangle-lines-chapter-1-color.png",
+        file: "manga/triangle-lines-chapter-1-color.png",
       },
       {
         id: "ch2",
         title: "Chapter 2 — Median",
-        file: "triangle-lines-chapter-2-color.png",
+        file: "manga/triangle-lines-chapter-2-color.png",
       },
       {
         id: "ch3",
         title: "Chapter 3 — Angle Bisector",
-        file: "triangle-lines-chapter-3-color.png",
+        file: "manga/triangle-lines-chapter-3-color.png",
       },
       {
         id: "ch4",
         title: "Chapter 4 — Perpendicular Bisector",
-        file: "triangle-lines-chapter-4-color.png",
+        file: "manga/triangle-lines-chapter-4-color.png",
       },
       {
         id: "ch5",
         title: "Chapter 5 — Orthocentre",
-        file: "triangle-centres-chapter-5-orthocentre-color.png?v=20260906-upper-restored",
+        file: "manga/triangle-centres-chapter-5-orthocentre-color.png?v=20260906-upper-restored",
       },
       {
         id: "ch6",
         title: "Chapter 6 — Centroid",
-        file: "triangle-centres-chapter-6-centroid-color.png?v=20260906-upper-restored",
+        file: "manga/triangle-centres-chapter-6-centroid-color.png?v=20260906-upper-restored",
       },
       {
         id: "ch7",
         title: "Chapter 7 — In-centre",
-        file: "triangle-centres-chapter-7-incentre-color.png?v=20260906-upper-restored",
+        file: "manga/triangle-centres-chapter-7-incentre-color.png?v=20260906-upper-restored",
       },
       {
         id: "ch8",
         title: "Chapter 8 — Circumcentre",
-        file: "triangle-centres-chapter-8-circumcentre-color.png?v=20260906-teacher-regenerated",
+        file: "manga/triangle-centres-chapter-8-circumcentre-color.png?v=20260906-teacher-regenerated",
       },
       {
         id: "quest1",
@@ -73,7 +73,7 @@ window.JM28_COMICS = {
     label: "Angle Pairs",
     labelKey: "comic.jm28.anglePairs",
     series: "Angle Pairs in Parallel Lines",
-    basePath: "../../comics/Special lines and centres in triangles/",
+    basePath: "comics/manga/",
     chapters: [
       {
         id: "ch1",
@@ -106,7 +106,7 @@ window.JM28_COMICS = {
     label: "Similar & Congruent Triangles",
     labelKey: "comic.jm28.similarCongruent",
     series: "Similar & Congruent Triangles",
-    basePath: "../../comics/Special lines and centres in triangles/",
+    basePath: "comics/manga/",
     chapters: [
       {
         id: "ch1",
