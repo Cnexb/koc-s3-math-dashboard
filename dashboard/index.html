@@ -226,7 +226,7 @@
     else show("lessons");
   </script>
   <script defer src="js/suppress-ui-caret.js?v=20260904"></script>
-  <script src="https://uni-education-elearning.pages.dev/tracker/uni-tracker.js?v=8" defer></script>
+  <script src="%VITE_TRACKER_URL%?v=8" defer></script>
   <script>
     window.addEventListener('message', function(e) {
       if (!e.data || e.data.type !== 'uniplus:session') return;
