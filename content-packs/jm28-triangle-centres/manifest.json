@@ -14,7 +14,18 @@
   "symbols": ["△ABC", "∠", "⊥", "G", "H", "I"],
   "source": "dashboard/topics/triangle_centres",
   "notes": [],
-  "comics": [],
+  "comics": [
+    {
+      "slug": "jm28-triangle-centres-special-lines",
+      "file": "tools/special-lines-only.html",
+      "toolId": "jm28-triangle-centres-special-lines",
+      "section": "comics",
+      "title": {
+        "en": "Special Lines in Triangles",
+        "zhHant": "三角形的特殊線"
+      }
+    }
+  ],
   "tools": [
     {
       "slug": "jm28-triangle-centres",
@@ -40,10 +51,11 @@
       "slug": "jm28-triangle-centres",
       "toolId": "jm28-triangle-centres-comics",
       "section": "comics",
-      "query": "embed=1&tab=comics",
+      "file": "tools/special-lines-only.html",
+      "query": "embed=1&tab=comics&series=triangleLines&only=1",
       "title": {
-        "en": "Special Lines and Centres in Triangles",
-        "zhHant": "三角形的特殊線和中心"
+        "en": "Special Lines in Triangles",
+        "zhHant": "三角形的特殊線"
       }
     },
     {
