@@ -20,7 +20,18 @@
   ],
   "source": "dashboard/topics/law_of_indices",
   "notes": [],
-  "comics": [],
+  "comics": [
+    {
+      "slug": "jm24-law-of-indices-rules",
+      "file": "tools/rules-only.html",
+      "toolId": "jm24-law-of-indices-rules",
+      "section": "comics",
+      "title": {
+        "en": "Rules",
+        "zhHant": "指數定律"
+      }
+    }
+  ],
   "tools": [
     {
       "slug": "jm24-law-of-indices",
@@ -36,9 +47,10 @@
       "slug": "jm24-law-of-indices",
       "toolId": "jm24-law-of-indices-comics",
       "section": "comics",
-      "query": "embed=1&tab=comics",
+      "file": "tools/rules-only.html",
+      "query": "embed=1&tab=comics&series=rules",
       "title": {
-        "en": "Laws of Indices",
+        "en": "Rules",
         "zhHant": "指數定律"
       }
     },

@@ -318,6 +318,12 @@
 
   function start() {
     var map = window.JM24_COMICS;
+    if (window.JM24_COMICS_ONLY) {
+      var only = map && map[window.JM24_COMICS_ONLY];
+      if (!only || !window.initJmComics || !window.jmComicsFromTopic) return;
+      window.initJmComics(window.jmComicsFromTopic(only, CHECKS[window.JM24_COMICS_ONLY] || {}));
+      return;
+    }
     var order = window.JM24_COMIC_ORDER || ["rules", "scientific-notation", "binary"];
     if (!map || !window.initJmComicsBundle || !window.jmComicsFromTopic) return;
     var series = order.map(function (key) {
