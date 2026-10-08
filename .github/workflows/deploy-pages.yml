@@ -22,6 +22,8 @@ jobs:
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v4
+      - name: Fill environment placeholders (production)
+        run: node scripts/fill-env.mjs production dashboard
       - uses: actions/upload-pages-artifact@v3
         with:
           path: .

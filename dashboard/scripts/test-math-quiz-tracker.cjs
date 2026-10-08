@@ -265,7 +265,7 @@ check("topic quiz pages load uni-tracker.js so iframe sessions can save", () => 
   pages.forEach((rel) => {
     const html = fs.readFileSync(path.join(root, rel), "utf8");
     assert.ok(
-      html.includes("uni-education-elearning.pages.dev/tracker/uni-tracker.js"),
+      html.includes("%VITE_TRACKER_URL%"),
       rel + " missing uni-tracker.js"
     );
   });
