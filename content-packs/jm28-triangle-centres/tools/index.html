@@ -38,6 +38,14 @@
       vertical-align: middle;
     }
     .comics-mode.hidden, .comics-pane.hidden { display: none; }
+    .jm28-game-frame {
+      display: block;
+      width: 100%;
+      height: min(920px, 92vh);
+      border: 0;
+      border-radius: 14px;
+      background: #f4f7fb;
+    }
   </style>  <link rel="stylesheet" href="../shared/jm28-panel.css?v=20260904-jm28c">
   <link rel="stylesheet" href="../shared/page-motion.css?v=20260904-jm28c">
   <link rel="stylesheet" href="../shared/quiz-sets.css?v=20260928-sections"><link rel="stylesheet" href="../shared/section-quiz.css?v=20260928-sections">
@@ -115,8 +123,10 @@
     </section>
         <section id="panel-game" class="jm-panel hidden">
       <section class="block">
-        <h2>Game</h2>
-        <p class="hint">Coming soon.</p>
+        <p class="part-title">Games · Special lines in triangles</p>
+        <h2>Special Lines, Centres, and Angle Detective</h2>
+        <p class="hint">Special Lines, Four Centres, Angle Detective, Center Run, and Factory Line.</p>
+        <iframe id="jm28-game-frame" class="jm28-game-frame" title="JM28 special lines games"></iframe>
       </section>
     </section>
     <section id="panel-comic" class="jm-panel hidden">
@@ -160,6 +170,18 @@
   <script>
     document.addEventListener("DOMContentLoaded", function () {
       if (window.initJmTabs) window.initJmTabs();
+      var gameFrame = document.getElementById("jm28-game-frame");
+      function loadGames() {
+        if (!gameFrame || gameFrame.getAttribute("src")) return;
+        gameFrame.src = "game/index.html#game";
+      }
+      document.querySelectorAll('.jm-tab[data-tab="game"]').forEach(function (btn) {
+        btn.addEventListener("click", loadGames);
+      });
+      var requested = document.documentElement.getAttribute("data-uni-embed-tab")
+        || new URLSearchParams(location.search).get("tab")
+        || (location.hash || "").replace("#", "");
+      if (requested === "game" || requested === "games") loadGames();
     });
   </script>
   <script src="../shared/suppress-ui-caret.js?v=20260904a"></script>
