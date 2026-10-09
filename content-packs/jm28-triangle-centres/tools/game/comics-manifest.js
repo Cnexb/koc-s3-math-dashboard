@@ -4,7 +4,7 @@ window.JM28_COMICS = {
     label: "Special Lines in Triangles",
     labelKey: "comic.jm28.triangleLines",
     series: "Special Lines & Centres in Triangles",
-    basePath: "../../Special lines and centres in triangles/",
+    basePath: "../comics/manga/",
     chapters: [
       {
         id: "ch1",
@@ -67,7 +67,7 @@ window.JM28_COMICS = {
     label: "Angle Pairs",
     labelKey: "comic.jm28.anglePairs",
     series: "Angle Pairs in Parallel Lines",
-    basePath: "../../Special lines and centres in triangles/",
+    basePath: "../comics/manga/",
     chapters: [
       {
         id: "ch1",
@@ -100,7 +100,7 @@ window.JM28_COMICS = {
     label: "Similar & Congruent Triangles",
     labelKey: "comic.jm28.similarCongruent",
     series: "Similar & Congruent Triangles",
-    basePath: "../../Special lines and centres in triangles/",
+    basePath: "../comics/manga/",
     chapters: [
       {
         id: "ch1",

@@ -4,7 +4,7 @@ window.JM26_COMICS = {
     label: "Inequalities I",
     labelKey: "comic.jm26.inequalities",
     series: "Inequalities I — Step by Step",
-    basePath: "../../comics/Inequalities I/",
+    basePath: "comics/",
     chapters: [
       {
         id: "ch1",
