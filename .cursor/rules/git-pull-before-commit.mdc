@@ -1,0 +1,42 @@
+---
+description: Fetch origin/master before committing or opening a PR; pull if the branch is behind
+alwaysApply: true
+---
+
+# Update from master first
+
+Before a commit or pull request, check that this branch is based on the latest `origin/master`. Do not commit or open a PR on a stale tree. That makes GitHub show unrelated `dashboard/` files and blocks merge.
+
+The default branch is `master` (there is no `main`).
+
+## Check
+
+```bash
+git fetch origin master
+git merge-base HEAD origin/master
+git rev-list --left-right --count origin/master...HEAD
+```
+
+- No merge-base → stop. This branch does not share history with `origin/master`. Check out a fresh branch from `origin/master` and copy the intended files onto it.
+- Left count > 0 (`origin/master` is ahead) → **git pull** (or rebase onto `origin/master`) **before** committing or opening the PR.
+- Right count is this branch’s own commits. That is fine only after master is merged in.
+
+## Do this
+
+```bash
+git checkout master
+git pull origin master
+git checkout -b <topic-branch>
+# …then edit, commit, push, open the PR
+```
+
+If already on a topic branch that is behind:
+
+```bash
+git fetch origin master
+git merge origin/master
+```
+
+## Stop
+
+Opening or merging a PR whose branch never pulled current `master`. That is how a small quiz change becomes a 60-file conflict.

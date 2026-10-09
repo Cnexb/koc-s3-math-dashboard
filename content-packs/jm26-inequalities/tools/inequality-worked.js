@@ -60,6 +60,11 @@
     }
     if (rv >= 5 && d.answer) lab(svg, 340, 42, d.answer, acc, 22, 420, 40);
     lab(svg, cx, yA + 28, d.bound_latex || String(b), COL.dim, 15, 50, 24);
+    if (Math.abs(b) > 0.001 && 0 >= lo && 0 <= hi) {
+      const zx = X(0);
+      ln(svg, zx, yA - 10, zx, yA + 10, COL.dim, 2);
+      lab(svg, zx, yA + 28, "0", COL.dim, 15, 40, 24);
+    }
   }
 
   function figIntlist(svg, d, rv) {

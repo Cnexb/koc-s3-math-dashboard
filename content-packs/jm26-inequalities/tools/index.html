@@ -772,16 +772,13 @@
     <p class="hint">Pick a section quiz, answer each question, use Next to move on. Submit on the last question to see all results.</p>
   </section>
 
-  <script src="../../js/i18n.js"></script>
-  <script src="../../lessons/jm26/game-questions.js"></script>
-  <script src="../../lessons/jm26/runner-levels.js"></script>
-  <script src="../../lessons/jm26/boundary-runner.js"></script>
+</main>
+    <script defer src="../shared/jm-tabs.js?v=20260904-jm28"></script>
   <script>
-    document.addEventListener("DOMContentLoaded", function () {
-      if (window.BoundaryRunner && window.BoundaryRunner.init) window.BoundaryRunner.init();
+    document.addEventListener('DOMContentLoaded', function () {
+      if (window.initJmTabs) window.initJmTabs();
     });
   </script>
-</main>
   <script src="../shared/suppress-ui-caret.js?v=20260904a"></script>
 </body>
 </html>

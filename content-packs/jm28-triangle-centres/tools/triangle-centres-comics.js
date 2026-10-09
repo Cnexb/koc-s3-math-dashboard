@@ -534,6 +534,16 @@
 
   function start() {
     var map = window.JM28_COMICS;
+    var onlyKey = window.JM28_COMICS_ONLY || "";
+    var params;
+    try { params = new URLSearchParams(location.search); } catch (e) { params = null; }
+    if (!onlyKey && params && params.get("only") === "1") {
+      onlyKey = params.get("series") || "triangleLines";
+    }
+    if (onlyKey && map && map[onlyKey] && window.initJmComics && window.jmComicsFromTopic) {
+      window.initJmComics(window.jmComicsFromTopic(map[onlyKey], {}));
+      return;
+    }
     var order = window.JM28_COMIC_ORDER || ["triangleLines", "anglePairs", "similarCongruent"];
     if (!map || !window.initJmComicsBundle) return;
     var series = order.map(function (key) {
