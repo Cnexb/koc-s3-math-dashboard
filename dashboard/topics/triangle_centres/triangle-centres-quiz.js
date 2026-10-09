@@ -1,12 +1,12 @@
 /* JM28 Special Lines and Centres in Triangles — S3 Ch06 L01 section quiz */
 SectionQuiz.init({
-  quizId: "SLiCe",
-  section: "JM28 Special Lines and Centres in Triangles",
+  quizId: "math-jm28",
+  section: "JM28",
   sets: [
     {
       key: "l01",
       label: "L01 \u00b7 Special Lines and Centres in a Triangle",
-      idPrefix: "slice-l01-q",
+      idPrefix: "jm28-",
       questions: [
         {
           id: 1,

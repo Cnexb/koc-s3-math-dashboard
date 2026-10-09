@@ -2,8 +2,8 @@
  *
  * A topic page loads this file, then calls:
  *   SectionQuiz.init({
- *     quizId: "Quad",                 // Excel topic symbol, stored as math_quiz_attempts.quiz_id
- *     section: "JM29 Quadrilaterals", // stored as math_quiz_attempts.section
+ *     quizId: "math-jm29",            // New scheme: math-{code}; stored as math_quiz_attempts.quiz_id
+ *     section: "JM29",                // topic code only; stored as math_quiz_attempts.section
  *     sets: [{ key, label, idPrefix, questions: [{ id, prompt, stem?, items?, choices, answer }] }]
  *   });
  *
