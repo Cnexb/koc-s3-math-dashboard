@@ -1,0 +1,18 @@
+---
+description: Use Conventional Commits for every git commit message.
+alwaysApply: false
+---
+# Conventional Commits
+
+Every commit message must follow [Conventional Commits](https://www.conventionalcommits.org/):
+
+```
+<type>(optional-scope): <short description>
+```
+
+- `type`: `feat`, `fix`, `docs`, `style`, `refactor`, `perf`, `test`, `chore`, `ci`, `build`
+- Description: imperative, lowercase after the colon, no trailing period
+- Scope when it clarifies the area: `feat(content-api): list chapter tools`
+- Breaking change: `feat!:` or a `BREAKING CHANGE:` footer
+
+Do not write untyped messages such as "Add notes packs" or "Update UI".
