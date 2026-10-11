@@ -37,6 +37,15 @@
       height: auto;
       vertical-align: middle;
     }
+    .jm28-game-frame {
+      display: block;
+      width: 100%;
+      min-height: 720px;
+      height: min(920px, 92vh);
+      border: 0;
+      border-radius: 14px;
+      background: #f4f7fb;
+    }
     .comics-mode.hidden, .comics-pane.hidden { display: none; }
   </style>  <link rel="stylesheet" href="shared/jm28-panel.css?v=20260904-jm28c">
   <link rel="stylesheet" href="shared/page-motion.css?v=20260904-jm28c">
@@ -123,8 +132,10 @@
     </section>
         <section id="panel-game" class="jm-panel hidden">
       <section class="block">
-        <h2>Game</h2>
-        <p class="hint">Coming soon.</p>
+        <p class="part-title">Games · Special lines in triangles</p>
+        <h2>Special Lines, Centres, and Angle Detective</h2>
+        <p class="hint">Special Lines, Four Centres, Angle Detective, Center Run, and Factory Line.</p>
+        <iframe id="jm28-game-frame" class="jm28-game-frame" src="game/index.html#game" title="JM28 special lines games"></iframe>
       </section>
     </section>
     <section id="panel-comic" class="jm-panel hidden">

@@ -76,7 +76,7 @@
 
   const QUIZ_L02 = [
     {
-      id: 1,
+      id: 6,
       type: "mc",
       prompt: "Express in scientific notation",
       stem: "0.000\\,073\\,09",
@@ -89,7 +89,7 @@
       answer: 0,
     },
     {
-      id: 2,
+      id: 7,
       type: "mc",
       prompt: "The length of the longest bridge in the world is about 16 490 000 cm. Express the length in scientific notation.",
       choices: [
@@ -101,7 +101,7 @@
       answer: 2,
     },
     {
-      id: 3,
+      id: 8,
       type: "mc",
       prompt: "Evaluate",
       stem: "2.74 \\times 10^{-6} + 9.05 \\times 10^{-5}",
@@ -114,7 +114,7 @@
       answer: 3,
     },
     {
-      id: 4,
+      id: 9,
       type: "mc",
       prompt: "Which of the following numbers is the smallest?",
       choices: [
@@ -126,7 +126,7 @@
       answer: 2,
     },
     {
-      id: 5,
+      id: 10,
       type: "mc",
       prompt: "The speed of light is 3 \u00d7 10\u2075 km/s and the speed of sound is 300 m/s. The speed of light is how many times the speed of sound?",
       choices: [
@@ -141,7 +141,7 @@
 
   const QUIZ_L03 = [
     {
-      id: 1,
+      id: 11,
       type: "mc",
       prompt: "What is the place value of the digit 0 in",
       stem: "110111_{2}",
@@ -154,7 +154,7 @@
       answer: 2,
     },
     {
-      id: 2,
+      id: 12,
       type: "mc",
       prompt: "Convert into a denary number",
       stem: "10111_{2}",
@@ -167,7 +167,7 @@
       answer: 1,
     },
     {
-      id: 3,
+      id: 13,
       type: "mc",
       prompt: "Convert into a binary number",
       stem: "28_{10}",
@@ -180,7 +180,7 @@
       answer: 3,
     },
     {
-      id: 4,
+      id: 14,
       type: "mc",
       prompt: "Which of the following numbers lies between",
       stem: "11001110_{2}\\quad\\text{and}\\quad 208_{10}",
@@ -193,7 +193,7 @@
       answer: 2,
     },
     {
-      id: 5,
+      id: 15,
       type: "mc",
       prompt: "Write the following denary number as a binary number",
       stem: "2^{9} + 2^{6} + 5 \\times 2^{3}",
@@ -208,9 +208,9 @@
   ];
 
   const QUIZ_SETS = [
-    { key: "l01", label: "L01 \u00b7 Positive, Zero and Negative Indices", idPrefix: "loi-l01-q", questions: QUIZ_L01 },
-    { key: "l02", label: "L02 \u00b7 Scientific Notation", idPrefix: "loi-l02-q", questions: QUIZ_L02 },
-    { key: "l03", label: "L03 \u00b7 Binary and Denary Numbers", idPrefix: "loi-l03-q", questions: QUIZ_L03 },
+    { key: "l01", quizId: "math-jm24", label: "L01 \u00b7 Positive, Zero and Negative Indices", idPrefix: "jm24-", questions: QUIZ_L01 },
+    { key: "l02", quizId: "math-jm24-2", label: "L02 \u00b7 Scientific Notation", idPrefix: "jm24-", questions: QUIZ_L02 },
+    { key: "l03", quizId: "math-jm24-3", label: "L03 \u00b7 Binary and Denary Numbers", idPrefix: "jm24-", questions: QUIZ_L03 },
   ];
 
   let activeSet = QUIZ_SETS[0];
@@ -832,9 +832,9 @@
           if (window.MathQuizTracker) {
             window.MathQuizTracker.reportQuiz(
               {
-                quizId: "Index",
+                quizId: activeSet.quizId || "math-jm24",
                 idPrefix: activeSet.idPrefix,
-                section: "JM24 Law of Indices",
+                section: "JM24",
                 stemMode: "stem-only",
                 answerTextMode: "mc-only",
               },

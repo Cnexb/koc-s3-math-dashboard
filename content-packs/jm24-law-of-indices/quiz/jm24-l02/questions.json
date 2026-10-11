@@ -1,10 +1,10 @@
 {
-  "quizId": "jm24-l02",
+  "quizId": "math-jm24-2",
   "items": [
     {
-      "id": "jm24-l02-1",
-      "topic": "JM24",
-      "section": "L02",
+      "id": "jm24-6",
+      "topic": "JM24 Law of Indices",
+      "section": "JM24",
       "difficulty": "Standard",
       "stem": "Express in scientific notation 0.000\\,073\\,09",
       "options": [
@@ -28,9 +28,9 @@
       "answer": "A"
     },
     {
-      "id": "jm24-l02-2",
-      "topic": "JM24",
-      "section": "L02",
+      "id": "jm24-7",
+      "topic": "JM24 Law of Indices",
+      "section": "JM24",
       "difficulty": "Standard",
       "stem": "The length of the longest bridge in the world is about 16 490 000 cm. Express the length in scientific notation.",
       "options": [
@@ -54,9 +54,9 @@
       "answer": "C"
     },
     {
-      "id": "jm24-l02-3",
-      "topic": "JM24",
-      "section": "L02",
+      "id": "jm24-8",
+      "topic": "JM24 Law of Indices",
+      "section": "JM24",
       "difficulty": "Standard",
       "stem": "Evaluate 2.74 \\times 10^{-6} + 9.05 \\times 10^{-5}",
       "options": [
@@ -80,9 +80,9 @@
       "answer": "D"
     },
     {
-      "id": "jm24-l02-4",
-      "topic": "JM24",
-      "section": "L02",
+      "id": "jm24-9",
+      "topic": "JM24 Law of Indices",
+      "section": "JM24",
       "difficulty": "Standard",
       "stem": "Which of the following numbers is the smallest?",
       "options": [
@@ -106,9 +106,9 @@
       "answer": "C"
     },
     {
-      "id": "jm24-l02-5",
-      "topic": "JM24",
-      "section": "L02",
+      "id": "jm24-10",
+      "topic": "JM24 Law of Indices",
+      "section": "JM24",
       "difficulty": "Standard",
       "stem": "The speed of light is 3 × 10⁵ km/s and the speed of sound is 300 m/s. The speed of light is how many times the speed of sound?",
       "options": [

@@ -4,7 +4,7 @@
 
   const QUIZ_PRACTICE = [
     {
-      id: 1,
+      id: 11,
       type: "mc",
       prompt: "Factorize",
       stem: "x^2 - 6x - 7",
@@ -12,7 +12,7 @@
       answer: 1,
     },
     {
-      id: 2,
+      id: 12,
       type: "mc",
       prompt: "Factorize",
       stem: "49p^2 + 9q^2 - 42pq",
@@ -25,7 +25,7 @@
       answer: 2,
     },
     {
-      id: 3,
+      id: 13,
       type: "mc",
       prompt: "Which of the following do(es) not have x+2 as a factor?",
       items: [
@@ -42,7 +42,7 @@
       answer: 0,
     },
     {
-      id: 4,
+      id: 14,
       type: "mc",
       prompt: "Factorize",
       stem: "x^2 - 8xy + 15y^2 - 5x + 15y",
@@ -55,7 +55,7 @@
       answer: 0,
     },
     {
-      id: 5,
+      id: 15,
       type: "mc",
       prompt: "Factorize",
       stem: "x^2(x+y) - y^2(y+x)",
@@ -68,7 +68,7 @@
       answer: 0,
     },
     {
-      id: 6,
+      id: 16,
       type: "mc",
       prompt: "Factorize",
       stem: "y^2 + 4y - 12",
@@ -81,7 +81,7 @@
       answer: 2,
     },
     {
-      id: 7,
+      id: 17,
       type: "mc",
       prompt: "Factorize",
       stem: "n^2 + 12n + 35",
@@ -94,7 +94,7 @@
       answer: 0,
     },
     {
-      id: 8,
+      id: 18,
       type: "mc",
       prompt: "Factorize",
       stem: "x^2 - 2xy - 35y^2 - 7x + 49y",
@@ -107,7 +107,7 @@
       answer: 2,
     },
     {
-      id: 9,
+      id: 19,
       type: "mc",
       prompt: "Factorize",
       stem: "63xy^2 + 28xz^2 + 84xyz",
@@ -120,7 +120,7 @@
       answer: 1,
     },
     {
-      id: 10,
+      id: 20,
       type: "mc",
       prompt: "Factorize",
       stem: "a^4 - a^2 - 2a^2b^2 - 2ab + b^4 - b^2",
@@ -179,7 +179,7 @@
 
   const QUIZ_L02 = [
     {
-      id: 1,
+      id: 6,
       type: "mc",
       prompt: "Factorize",
       stem: "22w + 70 - 12w^{2}",
@@ -187,7 +187,7 @@
       answer: 2,
     },
     {
-      id: 2,
+      id: 7,
       type: "mc",
       prompt: "Which of the following is/are the factor(s) of",
       stem: "p^{2}q^{2} - 4pq - 21",
@@ -205,7 +205,7 @@
       answer: 3,
     },
     {
-      id: 3,
+      id: 8,
       type: "mc",
       prompt: "Factorize",
       stem: "(y - 4)(12 - y) - 2y",
@@ -213,7 +213,7 @@
       answer: 3,
     },
     {
-      id: 4,
+      id: 9,
       type: "mc",
       prompt: "Simplify",
       stem: "\\frac{1}{x^{2} - 4x + 4} - \\frac{1}{x^{2} + x - 6}",
@@ -226,7 +226,7 @@
       answer: 2,
     },
     {
-      id: 5,
+      id: 10,
       type: "mc",
       prompt: "If the identity below holds, where m and n are positive integers, which of the following are possible values of k?",
       stem: "2x^{2} + kx + 9 \\equiv (x + m)(2x + n)",
@@ -246,9 +246,9 @@
   ];
 
   const QUIZ_SETS = [
-    { key: "l01", label: "L01 \u00b7 Fundamental Factorization", idPrefix: "fac-l01-q", questions: QUIZ_L01 },
-    { key: "l02", label: "L02 \u00b7 Hence and Further Factorization", idPrefix: "fac-l02-q", questions: QUIZ_L02 },
-    { key: "practice", label: "Practice \u00b7 10 Questions", idPrefix: "fac-q", questions: QUIZ_PRACTICE },
+    { key: "l01", quizId: "math-jm25", label: "L01 \u00b7 Fundamental Factorization", idPrefix: "jm25-", questions: QUIZ_L01 },
+    { key: "l02", quizId: "math-jm25-2", label: "L02 \u00b7 Hence and Further Factorization", idPrefix: "jm25-", questions: QUIZ_L02 },
+    { key: "practice", quizId: "math-jm25-3", label: "Practice \u00b7 10 Questions", idPrefix: "jm25-", questions: QUIZ_PRACTICE },
   ];
 
   let activeSet = QUIZ_SETS[0];
@@ -867,9 +867,9 @@
           if (window.MathQuizTracker) {
             window.MathQuizTracker.reportQuiz(
               {
-                quizId: "MFact",
+                quizId: activeSet.quizId || "math-jm25",
                 idPrefix: activeSet.idPrefix,
-                section: "JM25 More about Factorization of Polynomials",
+                section: "JM25",
                 stemMode: "stem-only",
                 answerTextMode: "mc-only",
               },

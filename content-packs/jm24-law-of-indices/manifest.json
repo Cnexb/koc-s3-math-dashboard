@@ -84,7 +84,8 @@
       "title": {
         "en": "Positive, zero and negative indices",
         "zhHant": "正指數、零指數與負指數"
-      }
+      },
+      "quizId": "math-jm24"
     },
     {
       "slug": "jm24-l02",
@@ -92,7 +93,8 @@
       "title": {
         "en": "Scientific notation",
         "zhHant": "科學記數法"
-      }
+      },
+      "quizId": "math-jm24-2"
     },
     {
       "slug": "jm24-l03",
@@ -100,7 +102,8 @@
       "title": {
         "en": "Binary and denary numbers",
         "zhHant": "二進制與十進制"
-      }
+      },
+      "quizId": "math-jm24-3"
     }
   ],
   "concepts": [

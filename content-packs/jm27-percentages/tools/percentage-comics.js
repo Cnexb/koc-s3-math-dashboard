@@ -3,7 +3,7 @@
 (function () {
   "use strict";
 
-  const COMIC_ASSET_V = "20260725b";
+  const COMIC_ASSET_V = "20261011a";
 
   const COMICS = [
     {
@@ -154,7 +154,7 @@
   ];
 
   function initComics() {
-    const panel = document.getElementById("panel-comics");
+    const panel = document.getElementById("panel-comic") || document.getElementById("panel-comics");
     const subnav = document.getElementById("comics-subnav");
     const stage = document.getElementById("comics-stage");
     if (!panel || !subnav || !stage) return;

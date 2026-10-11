@@ -1,10 +1,10 @@
 {
-  "quizId": "jm24-l03",
+  "quizId": "math-jm24-3",
   "items": [
     {
-      "id": "jm24-l03-1",
-      "topic": "JM24",
-      "section": "L03",
+      "id": "jm24-11",
+      "topic": "JM24 Law of Indices",
+      "section": "JM24",
       "difficulty": "Standard",
       "stem": "What is the place value of the digit 0 in 110111_{2}",
       "options": [
@@ -28,9 +28,9 @@
       "answer": "C"
     },
     {
-      "id": "jm24-l03-2",
-      "topic": "JM24",
-      "section": "L03",
+      "id": "jm24-12",
+      "topic": "JM24 Law of Indices",
+      "section": "JM24",
       "difficulty": "Standard",
       "stem": "Convert into a denary number 10111_{2}",
       "options": [
@@ -54,9 +54,9 @@
       "answer": "B"
     },
     {
-      "id": "jm24-l03-3",
-      "topic": "JM24",
-      "section": "L03",
+      "id": "jm24-13",
+      "topic": "JM24 Law of Indices",
+      "section": "JM24",
       "difficulty": "Standard",
       "stem": "Convert into a binary number 28_{10}",
       "options": [
@@ -80,9 +80,9 @@
       "answer": "D"
     },
     {
-      "id": "jm24-l03-4",
-      "topic": "JM24",
-      "section": "L03",
+      "id": "jm24-14",
+      "topic": "JM24 Law of Indices",
+      "section": "JM24",
       "difficulty": "Standard",
       "stem": "Which of the following numbers lies between 11001110_{2}\\quad\\text{and}\\quad 208_{10}",
       "options": [
@@ -106,9 +106,9 @@
       "answer": "C"
     },
     {
-      "id": "jm24-l03-5",
-      "topic": "JM24",
-      "section": "L03",
+      "id": "jm24-15",
+      "topic": "JM24 Law of Indices",
+      "section": "JM24",
       "difficulty": "Standard",
       "stem": "Write the following denary number as a binary number 2^{9} + 2^{6} + 5 \\times 2^{3}",
       "options": [

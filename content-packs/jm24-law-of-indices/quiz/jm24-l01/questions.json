@@ -1,10 +1,10 @@
 {
-  "quizId": "jm24-l01",
+  "quizId": "math-jm24",
   "items": [
     {
-      "id": "jm24-l01-1",
-      "topic": "JM24",
-      "section": "L01",
+      "id": "jm24-1",
+      "topic": "JM24 Law of Indices",
+      "section": "JM24",
       "difficulty": "Standard",
       "stem": "Evaluate 5^{-2}",
       "options": [
@@ -28,9 +28,9 @@
       "answer": "B"
     },
     {
-      "id": "jm24-l01-2",
-      "topic": "JM24",
-      "section": "L01",
+      "id": "jm24-2",
+      "topic": "JM24 Law of Indices",
+      "section": "JM24",
       "difficulty": "Standard",
       "stem": "Simplify \\left(5x^{4}y\\right)^{3}",
       "options": [
@@ -54,9 +54,9 @@
       "answer": "D"
     },
     {
-      "id": "jm24-l01-3",
-      "topic": "JM24",
-      "section": "L01",
+      "id": "jm24-3",
+      "topic": "JM24 Law of Indices",
+      "section": "JM24",
       "difficulty": "Standard",
       "stem": "Simplify \\frac{a^{10}}{a^{-5}}",
       "options": [
@@ -80,9 +80,9 @@
       "answer": "D"
     },
     {
-      "id": "jm24-l01-4",
-      "topic": "JM24",
-      "section": "L01",
+      "id": "jm24-4",
+      "topic": "JM24 Law of Indices",
+      "section": "JM24",
       "difficulty": "Standard",
       "stem": "If x > 1, which of the following must be true? I. \\left(x^{2}\\right)^{0} = 0 II. \\left(x^{5}\\right)^{-2} = \\frac{1}{x^{10}} III. x^{3-2} \\times x^{6} = \\frac{1}{x}",
       "options": [
@@ -106,9 +106,9 @@
       "answer": "B"
     },
     {
-      "id": "jm24-l01-5",
-      "topic": "JM24",
-      "section": "L01",
+      "id": "jm24-5",
+      "topic": "JM24 Law of Indices",
+      "section": "JM24",
       "difficulty": "Standard",
       "stem": "Simplify \\frac{\\left(x^{-1}y^{-2}\\right)^{4}}{y^{-3}}",
       "options": [

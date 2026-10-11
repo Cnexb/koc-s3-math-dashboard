@@ -78,7 +78,8 @@
       "title": {
         "en": "Quiz 1",
         "zhHant": "測驗 1"
-      }
+      },
+      "quizId": "math-jm25"
     },
     {
       "slug": "jm25-l02",
@@ -86,7 +87,8 @@
       "title": {
         "en": "Quiz 2",
         "zhHant": "測驗 2"
-      }
+      },
+      "quizId": "math-jm25-2"
     }
   ],
   "concepts": [
