@@ -4,7 +4,7 @@
 
   const QUIZ_PRACTICE = [
     {
-      id: 1,
+      id: 11,
       type: "mc",
       prompt: "Find the sum of all the negative integers x satisfying the inequality",
       stem: "x > -2\\pi",
@@ -12,7 +12,7 @@
       answer: 1,
     },
     {
-      id: 2,
+      id: 12,
       type: "mc",
       prompt: "If 2x \u2264 3, which of the following is not true?",
       choices: [
@@ -24,7 +24,7 @@
       answer: 1,
     },
     {
-      id: 3,
+      id: 13,
       type: "mc",
       prompt: "If x \u2264 y and z > y, where z is a negative number, which of the following is not true?",
       choices: [
@@ -36,7 +36,7 @@
       answer: 3,
     },
     {
-      id: 4,
+      id: 14,
       type: "mc",
       prompt: "Solve the inequality",
       stem: "3(x + 2) < 5(6 - x)",
@@ -44,7 +44,7 @@
       answer: 1,
     },
     {
-      id: 5,
+      id: 15,
       type: "mc",
       prompt: "Which of the following groups of numbers can all satisfy the inequality",
       stem: "7x + 3 > 17",
@@ -57,7 +57,7 @@
       answer: 3,
     },
     {
-      id: 6,
+      id: 16,
       type: "mc",
       prompt: "Solve the inequality",
       stem: "\\frac{x}{4} - 2 \\le 0.8 - \\frac{x}{3}",
@@ -65,7 +65,7 @@
       answer: 1,
     },
     {
-      id: 7,
+      id: 17,
       type: "mc",
       prompt: "Write down all positive integers satisfying",
       stem: "x \\le \\frac{24}{5}",
@@ -78,7 +78,7 @@
       answer: 0,
     },
     {
-      id: 8,
+      id: 18,
       type: "mc",
       prompt: "Write down all positive integers satisfying the inequality",
       stem: "\\frac{4x + 3}{5} < \\frac{1 - 3x}{6} + 4",
@@ -91,7 +91,7 @@
       answer: 0,
     },
     {
-      id: 9,
+      id: 19,
       type: "mc",
       prompt: "A non-negative number x satisfies the equation below, where k is a positive integral constant. How many possible values of k?",
       stem: "\\frac{2x-k}{3} = \\frac{5x-7}{4} + \\frac{x+k}{6}",
@@ -99,7 +99,7 @@
       answer: 2,
     },
     {
-      id: 10,
+      id: 20,
       type: "mc",
       prompt: "Using the same equation as above, find x when k = 3.",
       stem: "\\frac{2x-k}{3} = \\frac{5x-7}{4} + \\frac{x+k}{6}",
@@ -162,28 +162,28 @@
 
   const QUIZ_L02 = [
     {
-      id: 1,
+      id: 6,
       type: "mc",
       prompt: "Subtracting 3 from twice x is at most 11. If x is an integer, the greatest possible value of x is",
       choices: ["5", "6", "7", "8"],
       answer: 2,
     },
     {
-      id: 2,
+      id: 7,
       type: "mc",
       prompt: "Each side of an n-sided regular polygon is 5 cm. If the perimeter is at least 35 cm, the least possible value of n is",
       choices: ["5", "6", "7", "8"],
       answer: 2,
     },
     {
-      id: 3,
+      id: 8,
       type: "mc",
       prompt: "The sum of two consecutive even numbers is less than 82. The greatest possible value of the larger number is",
       choices: ["38", "40", "42", "44"],
       answer: 1,
     },
     {
-      id: 4,
+      id: 9,
       type: "mc",
       prompt: "If m \u2265 n and k < 0, which of the following must be true?",
       items: [
@@ -200,7 +200,7 @@
       answer: 0,
     },
     {
-      id: 5,
+      id: 10,
       type: "mc",
       prompt: "If x > y, which of the following is NOT always true?",
       choices: ["x - y > 0", "-x < -y", "x + 2 > y + 2", "x^{2} > y^{2}"],
@@ -209,9 +209,9 @@
   ];
 
   const QUIZ_SETS = [
-    { key: "l01", label: "L01 \u00b7 Representing Inequalities and Solving", idPrefix: "ineq-l01-q", questions: QUIZ_L01 },
-    { key: "l02", label: "L02 \u00b7 Practical Problems and Further Properties", idPrefix: "ineq-l02-q", questions: QUIZ_L02 },
-    { key: "practice", label: "Practice \u00b7 10 Questions", idPrefix: "ineq-q", questions: QUIZ_PRACTICE },
+    { key: "l01", quizId: "math-jm26", label: "L01 \u00b7 Representing Inequalities and Solving", idPrefix: "jm26-", questions: QUIZ_L01 },
+    { key: "l02", quizId: "math-jm26-2", label: "L02 \u00b7 Practical Problems and Further Properties", idPrefix: "jm26-", questions: QUIZ_L02 },
+    { key: "practice", quizId: "math-jm26-3", label: "Practice \u00b7 10 Questions", idPrefix: "jm26-", questions: QUIZ_PRACTICE },
   ];
 
   let activeSet = QUIZ_SETS[0];
@@ -826,9 +826,9 @@
           if (window.MathQuizTracker) {
             window.MathQuizTracker.reportQuiz(
               {
-                quizId: "Ine1",
+                quizId: activeSet.quizId || "math-jm26",
                 idPrefix: activeSet.idPrefix,
-                section: "JM26 Inequalities I",
+                section: "JM26",
                 stemMode: "stem-only",
                 answerTextMode: "mc-only",
               },

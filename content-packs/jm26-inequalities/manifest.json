@@ -11,7 +11,14 @@
     "zhHant": "不等式 I"
   },
   "symbol": "≥",
-  "symbols": ["≥", "≤", ">", "<", "≠", "x > a"],
+  "symbols": [
+    "≥",
+    "≤",
+    ">",
+    "<",
+    "≠",
+    "x > a"
+  ],
   "source": "dashboard/topics/inequality",
   "notes": [],
   "comics": [],
@@ -122,7 +129,8 @@
       "title": {
         "en": "L01 · Representing Inequalities and Solving",
         "zhHant": "L01 · 表示不等式與求解"
-      }
+      },
+      "quizId": "math-jm26"
     },
     {
       "slug": "jm26-l02",
@@ -130,7 +138,8 @@
       "title": {
         "en": "L02 · Practical Problems and Further Properties",
         "zhHant": "L02 · 應用題與進一步性質"
-      }
+      },
+      "quizId": "math-jm26-2"
     },
     {
       "slug": "jm26-practice",
@@ -138,7 +147,8 @@
       "title": {
         "en": "Practice · 10 Questions",
         "zhHant": "練習 · 10 題"
-      }
+      },
+      "quizId": "math-jm26-3"
     }
   ]
 }

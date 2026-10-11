@@ -1,10 +1,10 @@
 {
-  "quizId": "jm27-l01",
+  "quizId": "math-jm27",
   "items": [
     {
-      "id": "jm27-l01-1",
+      "id": "jm27-1",
       "topic": "JM27",
-      "section": "L01",
+      "section": "JM27",
       "difficulty": "Standard",
       "stem": "A number is first decreased by 10% and then increased by 20%. The overall percentage change is",
       "options": [
@@ -28,9 +28,9 @@
       "answer": "A"
     },
     {
-      "id": "jm27-l01-2",
+      "id": "jm27-2",
       "topic": "JM27",
-      "section": "L01",
+      "section": "JM27",
       "difficulty": "Standard",
       "stem": "After an increase of 15%, a hall has 92 seats. Find the original number of seats.",
       "options": [
@@ -54,9 +54,9 @@
       "answer": "B"
     },
     {
-      "id": "jm27-l01-3",
+      "id": "jm27-3",
       "topic": "JM27",
-      "section": "L01",
+      "section": "JM27",
       "difficulty": "Standard",
       "stem": "Each side of a square is increased by 10%. The percentage change in its area is",
       "options": [
@@ -80,53 +80,53 @@
       "answer": "C"
     },
     {
-      "id": "jm27-l01-4",
+      "id": "jm27-4",
       "topic": "JM27",
-      "section": "L01",
+      "section": "JM27",
       "difficulty": "Standard",
-      "stem": "The value of an antique is $5000 now. If the value increases by 10% per year, find its value after 2 years.",
+      "stem": "The value of an antique is \\$5000 now. If the value increases by 10% per year, find its value after 2 years.",
       "options": [
         {
           "key": "A",
-          "text": "$5500"
+          "text": "\\$5500"
         },
         {
           "key": "B",
-          "text": "$6000"
+          "text": "\\$6000"
         },
         {
           "key": "C",
-          "text": "$6050"
+          "text": "\\$6050"
         },
         {
           "key": "D",
-          "text": "$6100"
+          "text": "\\$6100"
         }
       ],
       "answer": "C"
     },
     {
-      "id": "jm27-l01-5",
+      "id": "jm27-5",
       "topic": "JM27",
-      "section": "L01",
+      "section": "JM27",
       "difficulty": "Standard",
-      "stem": "A machine is worth $4000 now and depreciates by 20% per year. Find its value after 2 years.",
+      "stem": "A machine is worth \\$4000 now and depreciates by 20% per year. Find its value after 2 years.",
       "options": [
         {
           "key": "A",
-          "text": "$2400"
+          "text": "\\$2400"
         },
         {
           "key": "B",
-          "text": "$2560"
+          "text": "\\$2560"
         },
         {
           "key": "C",
-          "text": "$3200"
+          "text": "\\$3200"
         },
         {
           "key": "D",
-          "text": "$3600"
+          "text": "\\$3600"
         }
       ],
       "answer": "B"

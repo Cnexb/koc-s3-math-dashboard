@@ -11,7 +11,13 @@
     "zhHant": "百分比 II"
   },
   "symbol": "%",
-  "symbols": ["%", "A(1 + r%)ⁿ", "A(1 − r%)ⁿ", "× 100%", "new − old"],
+  "symbols": [
+    "%",
+    "A(1 + r%)ⁿ",
+    "A(1 − r%)ⁿ",
+    "× 100%",
+    "new − old"
+  ],
   "source": "dashboard/topics/percentage",
   "notes": [],
   "comics": [],
@@ -78,7 +84,8 @@
       "title": {
         "en": "L01 · Percentage Change and Growth or Decay",
         "zhHant": "L01 · 百分變化及增長或衰減"
-      }
+      },
+      "quizId": "math-jm27"
     },
     {
       "slug": "jm27-l02",
@@ -86,7 +93,8 @@
       "title": {
         "en": "L02 · Simple Interest and Compound Interest",
         "zhHant": "L02 · 單利息與複利息"
-      }
+      },
+      "quizId": "math-jm27-2"
     },
     {
       "slug": "jm27-l03",
@@ -94,7 +102,8 @@
       "title": {
         "en": "L03 · Salaries Tax",
         "zhHant": "L03 · 薪俸稅"
-      }
+      },
+      "quizId": "math-jm27-3"
     },
     {
       "slug": "jm27-practice",
@@ -102,7 +111,8 @@
       "title": {
         "en": "Practice · 10 Questions",
         "zhHant": "練習 · 10 題"
-      }
+      },
+      "quizId": "math-jm27-4"
     }
   ],
   "concepts": [

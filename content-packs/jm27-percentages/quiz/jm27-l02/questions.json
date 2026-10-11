@@ -1,64 +1,64 @@
 {
-  "quizId": "jm27-l02",
+  "quizId": "math-jm27-2",
   "items": [
     {
-      "id": "jm27-l02-1",
+      "id": "jm27-6",
       "topic": "JM27",
-      "section": "L02",
+      "section": "JM27",
       "difficulty": "Standard",
-      "stem": "$8000 is deposited at 6% p.a. simple interest for 3 years. Find the simple interest.",
+      "stem": "\\$8000 is deposited at 6% p.a. simple interest for 3 years. Find the simple interest.",
       "options": [
         {
           "key": "A",
-          "text": "$1440"
+          "text": "\\$1440"
         },
         {
           "key": "B",
-          "text": "$1480"
+          "text": "\\$1480"
         },
         {
           "key": "C",
-          "text": "$1520"
+          "text": "\\$1520"
         },
         {
           "key": "D",
-          "text": "$9440"
+          "text": "\\$9440"
         }
       ],
       "answer": "A"
     },
     {
-      "id": "jm27-l02-2",
+      "id": "jm27-7",
       "topic": "JM27",
-      "section": "L02",
+      "section": "JM27",
       "difficulty": "Standard",
-      "stem": "A sum of money is deposited at 5% p.a. simple interest. After 4 years, the amount received is $4800. Find the principal.",
+      "stem": "A sum of money is deposited at 5% p.a. simple interest. After 4 years, the amount received is \\$4800. Find the principal.",
       "options": [
         {
           "key": "A",
-          "text": "$3600"
+          "text": "\\$3600"
         },
         {
           "key": "B",
-          "text": "$3840"
+          "text": "\\$3840"
         },
         {
           "key": "C",
-          "text": "$4000"
+          "text": "\\$4000"
         },
         {
           "key": "D",
-          "text": "$4560"
+          "text": "\\$4560"
         }
       ],
       "answer": "C"
     },
     {
-      "id": "jm27-l02-3",
+      "id": "jm27-8",
       "topic": "JM27",
-      "section": "L02",
+      "section": "JM27",
       "difficulty": "Standard",
-      "stem": "How many years will it take for $5000, deposited at 8% p.a. simple interest, to earn $1200 interest?",
+      "stem": "How many years will it take for \\$5000, deposited at 8% p.a. simple interest, to earn \\$1200 interest?",
       "options": [
         {
           "key": "A",
@@ -80,53 +80,53 @@
       "answer": "C"
     },
     {
-      "id": "jm27-l02-4",
+      "id": "jm27-9",
       "topic": "JM27",
-      "section": "L02",
+      "section": "JM27",
       "difficulty": "Standard",
-      "stem": "$8000 is deposited at 5% p.a. compounded yearly. Find the compound interest after 2 years.",
+      "stem": "\\$8000 is deposited at 5% p.a. compounded yearly. Find the compound interest after 2 years.",
       "options": [
         {
           "key": "A",
-          "text": "$800"
+          "text": "\\$800"
         },
         {
           "key": "B",
-          "text": "$820"
+          "text": "\\$820"
         },
         {
           "key": "C",
-          "text": "$840"
+          "text": "\\$840"
         },
         {
           "key": "D",
-          "text": "$880"
+          "text": "\\$880"
         }
       ],
       "answer": "B"
     },
     {
-      "id": "jm27-l02-5",
+      "id": "jm27-10",
       "topic": "JM27",
-      "section": "L02",
+      "section": "JM27",
       "difficulty": "Standard",
-      "stem": "$4000 is deposited at 10% p.a. compounded half-yearly. Find the amount after 1 year.",
+      "stem": "\\$4000 is deposited at 10% p.a. compounded half-yearly. Find the amount after 1 year.",
       "options": [
         {
           "key": "A",
-          "text": "$4400"
+          "text": "\\$4400"
         },
         {
           "key": "B",
-          "text": "$4410"
+          "text": "\\$4410"
         },
         {
           "key": "C",
-          "text": "$4420"
+          "text": "\\$4420"
         },
         {
           "key": "D",
-          "text": "$4440"
+          "text": "\\$4440"
         }
       ],
       "answer": "B"
