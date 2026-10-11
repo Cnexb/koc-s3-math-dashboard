@@ -174,9 +174,9 @@
         answerTextMode: "mc-only",
       },
       inequality: {
-        quizId: "math-inequality",
-        idPrefix: "ineq-q",
-        section: "inequality",
+        quizId: "math-jm26",
+        idPrefix: "jm26-",
+        section: "JM26",
         stemMode: "stem-only",
         answerTextMode: "mc-only",
       },
