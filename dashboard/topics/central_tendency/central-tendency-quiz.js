@@ -1,12 +1,12 @@
 /* JM31 Measures of Central Tendencies — S3 Ch11 L01 section quiz */
 SectionQuiz.init({
-  quizId: "CeTen",
-  section: "JM31 Measures of Central Tendencies",
+  quizId: "math-jm31",
+  section: "JM31",
   sets: [
     {
       key: "l01",
       label: "L01 \u00b7 Measures of Central Tendency",
-      idPrefix: "ceten-l01-q",
+      idPrefix: "jm31-",
       questions: [
         {
           id: 1,

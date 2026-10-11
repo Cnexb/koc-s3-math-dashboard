@@ -123,7 +123,7 @@ check("stemMode matches the pre-split runners", () => {
   const pct = loadBank("topics/percentage/percentage-quiz-data.js").percentages[0];
   const pctPayload = tracker.buildPayload(tracker.QUIZ_META.percentages, pct, 2, true);
   assert.equal(pctPayload.stem, pct.prompt);
-  assert.equal(pctPayload.questionId, "pct-q1");
+  assert.equal(pctPayload.questionId, "jm27-1");
   assert.equal(pctPayload.selectedAnswer, "2");
   assert.equal(pctPayload.selectedAnswerText, pct.choices[2]);
 
@@ -131,13 +131,13 @@ check("stemMode matches the pre-split runners", () => {
   const facPayload = tracker.buildPayload(tracker.QUIZ_META.factorization, fac, 1, true);
   assert.equal(facPayload.stem, fac.stem);
   assert.notEqual(facPayload.stem, fac.prompt);
-  assert.equal(facPayload.questionId, "fac-q1");
-  assert.equal(facPayload.quizId, "math-factorization");
+  assert.equal(facPayload.questionId, "jm25-1");
+  assert.equal(facPayload.quizId, "math-jm25");
 
   const fac2 = loadBank("topics/factorization/factorization-l02-quiz-data.js")["factorization-l02"][0];
   const fac2Payload = tracker.buildPayload(tracker.QUIZ_META["factorization-l02"], fac2, 3, true);
-  assert.equal(fac2Payload.quizId, "math-factorization-l02");
-  assert.equal(fac2Payload.questionId, "fac2-q1");
+  assert.equal(fac2Payload.quizId, "math-jm25-2");
+  assert.equal(fac2Payload.questionId, "jm25-1");
   assert.equal(fac2Payload.selectedAnswer, "3");
   assert.equal(fac2Payload.subject, "MATH");
 });
@@ -175,7 +175,7 @@ check("iframe topic page: same-window tracker must receive each answer (no sessi
     receivedOnQuizPage.forEach((p) => {
       assert.equal(p.type, "uniplus:quizAnswer");
       assert.equal(p.subject, "MATH");
-      assert.equal(p.quizId, "math-probability");
+      assert.equal(p.quizId, "math-jm30");
     });
   } finally {
     globalThis.window = origWindow;
@@ -205,7 +205,7 @@ check("reportQuiz posts one parent message per question and never fetches", () =
     assert.equal(topPosts.length, 10);
     assert.equal(fetchCalls.length, 0);
     parentPosts.forEach((p, i) => {
-      assert.equal(p.data.questionId, "pct-q" + quiz[i].id);
+      assert.equal(p.data.questionId, "jm27-" + quiz[i].id);
       assert.equal(p.data.isCorrect, true);
       assert.equal(p.origin, "*");
     });
@@ -222,8 +222,8 @@ check("uni-tracker mapping would POST math_quiz_attempts without a network call"
   const mapped = tracker.supabaseBodyFromEvent(session, payload);
   assert.equal(mapped.table, "math_quiz_attempts");
   assert.equal(mapped.body.student_id, "test-user");
-  assert.equal(mapped.body.quiz_id, "math-probability");
-  assert.equal(mapped.body.question_id, "prob-q4");
+  assert.equal(mapped.body.quiz_id, "math-jm30");
+  assert.equal(mapped.body.question_id, "jm30-4");
   assert.equal(mapped.body.selected_answer, "0");
   assert.equal(mapped.body.is_correct, true);
 });

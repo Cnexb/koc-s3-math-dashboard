@@ -354,9 +354,9 @@
           if (window.MathQuizTracker) {
             window.MathQuizTracker.reportQuiz(
               {
-                quizId: "ArVo3",
-                idPrefix: "av-q",
-                section: "JM32 Areas and Volumes III",
+                quizId: "math-jm32",
+                idPrefix: "jm32-",
+                section: "JM32",
                 stemMode: "stem-or-prompt",
                 answerTextMode: "always-choices",
               },

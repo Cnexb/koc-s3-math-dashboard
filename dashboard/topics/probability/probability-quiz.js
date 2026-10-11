@@ -6,7 +6,7 @@
 
   const QUIZ_PRACTICE = [
     {
-      id: 1,
+      id: 6,
       type: "mc",
       prompt:
         "A letter is chosen randomly from the word \u2018UNIVERSITY\u2019. Find the probability that is a vowel.",
@@ -14,7 +14,7 @@
       answer: 2,
     },
     {
-      id: 2,
+      id: 7,
       type: "mc",
       prompt:
         "Samuel can choose to go to work by bus, taxi or MTR. Suppose he randomly chooses a mean of transport in two working days. Find the probability that Samuel chooses the same mean of transport in these two working days.",
@@ -22,7 +22,7 @@
       answer: 1,
     },
     {
-      id: 3,
+      id: 8,
       type: "mc",
       prompt:
         "There are 20 basketball and 35 tennis ball in a box. Nick repeats the action of drawing a ball from the box at random and putting it back into the box. Find the expected number of times of getting a tennis ball if he repeats the action for 385 times.",
@@ -30,7 +30,7 @@
       answer: 3,
     },
     {
-      id: 4,
+      id: 9,
       type: "mc",
       prompt:
         "The figure shows a circular fortune wheel in a lucky draw. Dylan turns the wheel once. If the pointer points at the region \u2018c\u2019, \u2018e\u2019 or \u2018g\u2019, a prize will be given. Find the probability that he gets a prize.",
@@ -39,7 +39,7 @@
       answer: 0,
     },
     {
-      id: 5,
+      id: 10,
       type: "mc",
       prompt:
         "A bag contains five $1.4 stamps, five $0.2 stamps and ten $0.1 stamps. A stamp is drawn at random from the bag. Find the expected face value of the stamp.",
@@ -47,7 +47,7 @@
       answer: 2,
     },
     {
-      id: 6,
+      id: 11,
       type: "mc",
       prompt:
         "There are 24 bottles of water and x bottles of tea on a table. If a bottle of drink is drawn at random, the probability of drawing a bottle of tea is \\frac{3}{5}. Find the value of x.",
@@ -55,7 +55,7 @@
       answer: 0,
     },
     {
-      id: 7,
+      id: 12,
       type: "mc",
       prompt:
         "6\u25b2 is a 2-digit number, where \u25b2 is an integer from 0 to 9 inclusive. Find the probability that the 2-digit number is divisible by 5.",
@@ -63,7 +63,7 @@
       answer: 1,
     },
     {
-      id: 8,
+      id: 13,
       type: "mc",
       prompt:
         "There are 2000 candidates in an examination. If one of the candidates is chosen randomly, the probability of choosing a female candidate is \\frac{11}{20}. Find the number of male candidates in the examination.",
@@ -71,7 +71,7 @@
       answer: 1,
     },
     {
-      id: 9,
+      id: 14,
       type: "mc",
       prompt:
         "Two fair dice are thrown at the same time. By using tabulation, find the probability that the sum of the two number is less than 9.",
@@ -79,7 +79,7 @@
       answer: 1,
     },
     {
-      id: 10,
+      id: 15,
       type: "mc",
       prompt:
         "Winnie\u2019s purse contains two $2 coins, one $5 coin and one $10 coin. On a flag day, Winnie takes out two coins randomly from her purse at the same time for donation. Find the expected donation amount.",
@@ -140,8 +140,8 @@
   ];
 
   const QUIZ_SETS = [
-    { key: "l01", label: "L01 \u00b7 Introduction to Probability", idPrefix: "prob-l01-q", questions: QUIZ_L01 },
-    { key: "practice", label: "Practice \u00b7 10 Questions", idPrefix: "prob-q", questions: QUIZ_PRACTICE },
+    { key: "l01", quizId: "math-jm30", label: "L01 \u00b7 Introduction to Probability", idPrefix: "jm30-", questions: QUIZ_L01 },
+    { key: "practice", quizId: "math-jm30-2", label: "Practice \u00b7 10 Questions", idPrefix: "jm30-", questions: QUIZ_PRACTICE },
   ];
 
   let activeSet = QUIZ_SETS[0];
@@ -431,9 +431,9 @@
           if (window.MathQuizTracker) {
             window.MathQuizTracker.reportQuiz(
               {
-                quizId: "Prob1",
+                quizId: activeSet.quizId || "math-jm30",
                 idPrefix: activeSet.idPrefix,
-                section: "JM30 Probabilities",
+                section: "JM30",
                 stemMode: "stem-or-prompt",
                 answerTextMode: "always-choices",
               },
