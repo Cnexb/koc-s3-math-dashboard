@@ -1008,12 +1008,19 @@
       slides: document.getElementById("panel-slides"),
       tools: document.getElementById("panel-tools"),
       game: document.getElementById("panel-game"),
+      comic: document.getElementById("panel-comic"),
       summary: document.getElementById("panel-summary"),
       quiz: document.getElementById("panel-quiz"),
     };
+    function tabKey(tab) {
+      if (tab === "concept" || tab === "slides") return "slides";
+      if (tab === "comics" || tab === "comic") return "comic";
+      return tab;
+    }
     tabs.forEach((t) => t.addEventListener("click", () => {
       tabs.forEach((x) => x.classList.toggle("active", x === t));
-      for (const k in panels) if (panels[k]) panels[k].classList.toggle("hidden", k !== t.dataset.tab);
+      const key = tabKey(t.dataset.tab);
+      for (const k in panels) if (panels[k]) panels[k].classList.toggle("hidden", k !== key);
       if (t.dataset.tab === "game" && window.IneqGame) requestAnimationFrame(window.IneqGame.onShow);
     }));
   }

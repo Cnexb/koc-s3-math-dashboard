@@ -1069,6 +1069,13 @@
   <script defer src="law-of-indices-quiz.js?v=20260925-labels"></script>
   <script src="comics-manifest.js?v=20260829c"></script>
   <script src="../../shared/jm-comics-engine.js?v=20260830-fu"></script>
+  <script>
+    (function () {
+      var series = new URLSearchParams(location.search).get("series");
+      if (series) window.JM24_COMICS_ONLY = series;
+    })();
+  </script>
+  <script src="indices-comics.js?v=20261008-rules"></script>
   <script src="game-questions.js?v=20260919-indexonly"></script>
   <script src="indices-game.js?v=20260919-speed"></script>
   <script src="sci-notation-content.js?v=20260828-sel1"></script>

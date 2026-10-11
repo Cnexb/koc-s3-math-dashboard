@@ -4,7 +4,7 @@
 
   const QUIZ_PRACTICE = [
     {
-      id: 1,
+      id: 16,
       type: "mc",
       prompt:
         "The original weight of a panda was 80 kg. Its weight first decreased by 10% due to illness and then increased by 10% after recovery. After recovery, what was the change in its weight as compared to the original weight?",
@@ -17,7 +17,7 @@
       answer: 2,
     },
     {
-      id: 2,
+      id: 17,
       type: "mc",
       prompt:
         "Last Christmas, an artist sold 40 postcards at the price of $90 each for charity. This Christmas, the price of each postcard increases by 30% but the number of postcards sold decreases by 15%. Find the percentage change in the amount of money to charity.",
@@ -25,7 +25,7 @@
       answer: 3,
     },
     {
-      id: 3,
+      id: 18,
       type: "mc",
       prompt:
         "Bob deposits 50000 in bank A at a simple interest rate of 6% p.a. and $40000 in bank B at a simple interest rate of 7% p.a. Find the total amount he will receive after 10 years.",
@@ -33,7 +33,7 @@
       answer: 0,
     },
     {
-      id: 4,
+      id: 19,
       type: "mc",
       prompt:
         "A sum of money is deposited in a bank at an interest rate of 12% p.a. compounded yearly. If the interest received after 7 years is $6000, find the principal.\n(Give the answer correct to the nearest $1000.)",
@@ -41,7 +41,7 @@
       answer: 2,
     },
     {
-      id: 5,
+      id: 20,
       type: "mc",
       prompt:
         "In this financial year, Tom has a total allowance of $140000 and he has to pay a salaries tax of $15300. If his net chargeable income is greater than $150000 but less than $200000, find his annual income.",
@@ -49,7 +49,7 @@
       answer: 3,
     },
     {
-      id: 6,
+      id: 21,
       type: "mc",
       prompt:
         "The value of an antique oil painting increases at a steady rate of 25% every 5 years. Its present value is $150000.\nFind its value 20 years ago.",
@@ -57,7 +57,7 @@
       answer: 0,
     },
     {
-      id: 7,
+      id: 22,
       type: "mc",
       prompt:
         "A retailer buys goods for $480 and wants a profit of 25% on the selling price. Find the selling price.",
@@ -65,7 +65,7 @@
       answer: 2,
     },
     {
-      id: 8,
+      id: 23,
       type: "mc",
       prompt:
         "David borrows $5000 from a bank at an interest rate of 7.8% p.a. compounded monthly. Find the amount he should repay after 3 years.\n(Give the answer correct to the nearest dollar.)",
@@ -73,7 +73,7 @@
       answer: 2,
     },
     {
-      id: 9,
+      id: 24,
       type: "mc",
       prompt:
         "A dress is marked at $960. During a sale, a customer gets a discount of 25% off the marked price, followed by an extra 10% off the reduced price. Find the amount the customer pays.",
@@ -81,7 +81,7 @@
       answer: 0,
     },
     {
-      id: 10,
+      id: 25,
       type: "mc",
       prompt:
         "A car depreciates in value by 12% each year. If its present value is $50000, find its value after 2 years.",
@@ -130,35 +130,35 @@
 
   const QUIZ_L02 = [
     {
-      id: 1,
+      id: 6,
       type: "mc",
       prompt: "$8000 is deposited at 6% p.a. simple interest for 3 years. Find the simple interest.",
       choices: ["\\$1440", "\\$1480", "\\$1520", "\\$9440"],
       answer: 0,
     },
     {
-      id: 2,
+      id: 7,
       type: "mc",
       prompt: "A sum of money is deposited at 5% p.a. simple interest. After 4 years, the amount received is $4800. Find the principal.",
       choices: ["\\$3600", "\\$3840", "\\$4000", "\\$4560"],
       answer: 2,
     },
     {
-      id: 3,
+      id: 8,
       type: "mc",
       prompt: "How many years will it take for $5000, deposited at 8% p.a. simple interest, to earn $1200 interest?",
       choices: ["2", "2.5", "3", "4"],
       answer: 2,
     },
     {
-      id: 4,
+      id: 9,
       type: "mc",
       prompt: "$8000 is deposited at 5% p.a. compounded yearly. Find the compound interest after 2 years.",
       choices: ["\\$800", "\\$820", "\\$840", "\\$880"],
       answer: 1,
     },
     {
-      id: 5,
+      id: 10,
       type: "mc",
       prompt: "$4000 is deposited at 10% p.a. compounded half-yearly. Find the amount after 1 year.",
       choices: ["\\$4400", "\\$4410", "\\$4420", "\\$4440"],
@@ -168,7 +168,7 @@
 
   const QUIZ_L03 = [
     {
-      id: 1,
+      id: 11,
       type: "mc",
       prompt: "Refer to the progressive tax rates below. Amy\u2019s net chargeable income is $30 000. Find her salaries tax.",
       items: [
@@ -182,28 +182,28 @@
       answer: 1,
     },
     {
-      id: 2,
+      id: 12,
       type: "mc",
       prompt: "Using the same tax rates as in Question 1, Ben\u2019s net chargeable income is $80 000. Find his salaries tax.",
       choices: ["\\$1\\,800", "\\$2\\,400", "\\$2\\,800", "\\$4\\,800"],
       answer: 2,
     },
     {
-      id: 3,
+      id: 13,
       type: "mc",
       prompt: "Using the same tax rates as in Question 1, Chris has an annual income of $320 000 and an allowance of $170 000. Find his salaries tax.",
       choices: ["\\$7\\,000", "\\$8\\,000", "\\$9\\,000", "\\$10\\,500"],
       answer: 2,
     },
     {
-      id: 4,
+      id: 14,
       type: "mc",
       prompt: "Using the same tax rates as in Question 1, Dora\u2019s monthly income is $15 000 and her allowance is $200 000. Find her salaries tax.",
       choices: ["\\$0", "\\$400", "\\$800", "\\$3\\,600"],
       answer: 0,
     },
     {
-      id: 5,
+      id: 15,
       type: "mc",
       prompt: "Using the same tax rates as in Question 1, Eric\u2019s monthly income is $22 000 and his allowance is $164 000. Find his salaries tax.",
       choices: ["\\$3\\,000", "\\$4\\,000", "\\$5\\,000", "\\$6\\,400"],
@@ -212,10 +212,10 @@
   ];
 
   const QUIZ_SETS = [
-    { key: "l01", label: "L01 \u00b7 Percentage Change and Growth or Decay", idPrefix: "pct-l01-q", questions: QUIZ_L01 },
-    { key: "l02", label: "L02 \u00b7 Simple Interest and Compound Interest", idPrefix: "pct-l02-q", questions: QUIZ_L02 },
-    { key: "l03", label: "L03 \u00b7 Salaries Tax", idPrefix: "pct-l03-q", questions: QUIZ_L03 },
-    { key: "practice", label: "Practice \u00b7 10 Questions", idPrefix: "pct-q", questions: QUIZ_PRACTICE },
+    { key: "l01", quizId: "math-jm27", label: "L01 \u00b7 Percentage Change and Growth or Decay", idPrefix: "jm27-", questions: QUIZ_L01 },
+    { key: "l02", quizId: "math-jm27-2", label: "L02 \u00b7 Simple Interest and Compound Interest", idPrefix: "jm27-", questions: QUIZ_L02 },
+    { key: "l03", quizId: "math-jm27-3", label: "L03 \u00b7 Salaries Tax", idPrefix: "jm27-", questions: QUIZ_L03 },
+    { key: "practice", quizId: "math-jm27-4", label: "Practice \u00b7 10 Questions", idPrefix: "jm27-", questions: QUIZ_PRACTICE },
   ];
 
   let activeSet = QUIZ_SETS[0];
@@ -482,9 +482,9 @@
           if (window.MathQuizTracker) {
             window.MathQuizTracker.reportQuiz(
               {
-                quizId: "Perc2",
+                quizId: activeSet.quizId || "math-jm27",
                 idPrefix: activeSet.idPrefix,
-                section: "JM27 Percentages II",
+                section: "JM27",
                 stemMode: "stem-or-prompt",
                 answerTextMode: "always-choices",
               },

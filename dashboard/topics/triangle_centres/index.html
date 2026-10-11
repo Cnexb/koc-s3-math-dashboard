@@ -38,6 +38,15 @@
       vertical-align: middle;
     }
     .comics-mode.hidden, .comics-pane.hidden { display: none; }
+    .jm28-game-frame {
+      display: block;
+      width: 100%;
+      min-height: 720px;
+      height: min(920px, 92vh);
+      border: 0;
+      border-radius: 14px;
+      background: #f4f7fb;
+    }
   </style>  <link rel="stylesheet" href="../../shared/jm28-panel.css?v=20260904-jm28c">
   <link rel="stylesheet" href="../../shared/page-motion.css?v=20260904-jm28c">
   <link rel="stylesheet" href="../../shared/quiz-sets.css?v=20260928-sections"><link rel="stylesheet" href="../../shared/section-quiz.css?v=20260928-sections">
@@ -57,9 +66,17 @@
       <button class="jm-tab" type="button" data-tab="quiz">Quiz</button>
     </nav>
         <section id="panel-concept" class="jm-panel">
-      <section class="block">
-        <h2>Concept &amp; Formula</h2>
-        <p class="hint">Coming soon.</p>
+      <section class="block jm-deck-panel">
+        <div class="subnav" aria-label="Concept decks">
+          <button class="chip active" type="button" data-deck="../../slides/triangle_centres/special-lines/index.html">Special lines</button>
+          <button class="chip" type="button" data-deck="../../slides/triangle_centres/centres/index.html">Centres</button>
+        </div>
+        <div class="deck-slideshow"><div class="deck-wrap">
+          <iframe id="deck-frame" src="../../slides/triangle_centres/special-lines/index.html" title="Special lines and centres concept slides"></iframe>
+        </div></div>
+        <p class="hint hint-deck-desktop">Use &rarr; / Space to advance, &larr; to go back. Each slide builds the idea step by step with standard markings.</p>
+        <p class="hint hint-deck-tablet">Swipe left for next slide, right for previous &mdash; or use the arrows. Each slide builds the idea step by step with standard markings.</p>
+        <p class="hint hint-deck-phone">Tap the &larr; and &rarr; buttons below the slide. Each slide builds the idea step by step with standard markings.</p>
       </section>
     </section>
 <section id="panel-tools" class="jm-panel hidden">
@@ -115,8 +132,10 @@
     </section>
         <section id="panel-game" class="jm-panel hidden">
       <section class="block">
-        <h2>Game</h2>
-        <p class="hint">Coming soon.</p>
+        <p class="part-title">Games · Special lines in triangles</p>
+        <h2>Special Lines, Centres, and Angle Detective</h2>
+        <p class="hint">Special Lines, Four Centres, Angle Detective, Center Run, and Factory Line.</p>
+        <iframe id="jm28-game-frame" class="jm28-game-frame" src="game/index.html#game" title="JM28 special lines games"></iframe>
       </section>
     </section>
     <section id="panel-comic" class="jm-panel hidden">
@@ -149,17 +168,27 @@
   <script defer src="https://cdn.jsdelivr.net/npm/katex@0.16.11/dist/katex.min.js"></script>
   <script defer src="https://cdn.jsdelivr.net/npm/katex@0.16.11/dist/contrib/auto-render.min.js"></script>
   <script src="https://uni-education-elearning.pages.dev/tracker/uni-tracker.js?v=8" defer></script>
-  <script defer src="../../shared/math-quiz-tracker.js?v=20260904-iframe-listen"></script>
-  <script defer src="../../shared/section-quiz.js?v=20260928-sections"></script>
-  <script defer src="triangle-centres-quiz.js?v=20260928-sections"></script>
+  <script defer src="../../shared/math-quiz-tracker.js?v=20261009-new-scheme"></script>
+  <script defer src="../../shared/section-quiz.js?v=20261009-new-scheme"></script>
+  <script defer src="triangle-centres-quiz.js?v=20261009-new-scheme"></script>
   <script src="comics-manifest.js?v=20260830-merge"></script>
   <script defer src="../../shared/jm-comics-engine.js?v=20260830-fu"></script>
-  <script defer src="triangle-centres-comics.js?v=20260830-fu"></script>
-  <script defer src="../../shared/jm-tabs.js?v=20260830b"></script>
+  <script defer src="triangle-centres-comics.js?v=20261008-special-lines"></script>
+  <script defer src="../../shared/deck-touch-nav.js?v=20260725-fixes6"></script>
+  <script defer src="../../shared/jm-tabs.js?v=20261011-embed-tab"></script>
   <script defer src="triangle-centres-tools.js?v=20260830j"></script>
   <script>
     document.addEventListener("DOMContentLoaded", function () {
       if (window.initJmTabs) window.initJmTabs();
+      var frame = document.getElementById("deck-frame");
+      var deckBtns = document.querySelectorAll("[data-deck]");
+      deckBtns.forEach(function (b) {
+        b.addEventListener("click", function () {
+          deckBtns.forEach(function (x) { x.classList.toggle("active", x === b); });
+          if (frame) frame.src = b.getAttribute("data-deck");
+        });
+      });
+      if (window.KOCDeckTouch && frame) window.KOCDeckTouch.initDeckTouchNav(frame);
     });
   </script>
   <script src="../../shared/suppress-ui-caret.js?v=20260904a"></script>

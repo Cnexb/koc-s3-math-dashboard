@@ -1,12 +1,12 @@
 /* JM29 Quadrilaterals — S3 Ch05 L01 section quiz */
 SectionQuiz.init({
-  quizId: "Quad",
-  section: "JM29 Quadrilaterals",
+  quizId: "math-jm29",
+  section: "JM29",
   sets: [
     {
       key: "l01",
       label: "L01 \u00b7 Properties of Quadrilaterals",
-      idPrefix: "quad-l01-q",
+      idPrefix: "jm29-",
       questions: [
         {
           id: 1,
