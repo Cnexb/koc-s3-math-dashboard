@@ -104,6 +104,9 @@
   }
 
   function getDefaultTab() {
+    var queryTab = new URLSearchParams(location.search).get("tab");
+    if (queryTab === "game" || queryTab === "games") return "game";
+    if (window.parent !== window) return "game";
     return "tools";
   }
 
