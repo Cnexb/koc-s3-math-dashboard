@@ -117,7 +117,11 @@
     });
   }
 
-  /** Maps a quizAnswer event to the REST body uni-tracker.js would POST. No network. */
+  /** Base-field projection for legacy offline tests, NOT the complete REST writer.
+   * Topic names are resolved from section by the platform uni-tracker.js.
+   * scripts/test-topic-columns.cjs tests the actual writer (including topic).
+   * Keep answer emitters independent of curriculum wording. No network here.
+   */
   function supabaseBodyFromEvent(session, data) {
     var subject = String(data.subject || (session && session.subject) || "").toUpperCase();
     var tableMap = {
